@@ -1,0 +1,94 @@
+{
+  "name": "analysis-sdm",
+  "version": "0.1.0",
+  "description": "Analysis SDM",
+  "author": "Atomist Inc.",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/johnsonr/ci-sdm#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnsonr/ci-sdm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johnsonr/ci-sdm/issues"
+  },
+  "bin": {
+    "spider": "./lib/script/spider.js"
+  },
+  "keywords": [
+    "atomist",
+    "automation",
+    "sdm",
+    "seed"
+  ],
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@atomist/automation-client": "^1.4.1-master.20190418153855",
+    "@atomist/sdm": "^1.5.0-master.20190419141554",
+    "@atomist/sdm-core": "^1.5.0-master.20190422144825",
+    "@atomist/sdm-pack-analysis": "^1.1.0-master.20190429060345",
+    "@atomist/sdm-pack-analysis-node": "^2.0.0-master.20190501154523",
+    "@atomist/sdm-pack-analysis-spring": "^2.0.0-master.20190428091941",
+    "@atomist/sdm-pack-build": "^1.0.3",
+    "@atomist/sdm-pack-docker": "^1.2.1-master.20190502172115",
+    "@atomist/sdm-pack-fingerprints": "^2.0.4",
+    "@atomist/sdm-pack-node": "^1.0.4-master.20190321220053",
+    "@atomist/sdm-pack-sloc": "^1.0.3-master.20190502175705",
+    "@atomist/sdm-pack-spring": "^2.0.0-master.20190421053515",
+    "@atomist/uhura": "^1.0.0-docker-parse.20190504213223",
+    "@octokit/rest": "^16.10.0",
+    "@types/yamljs": "^0.2.30",
+    "es6-promise-pool": "^2.5.0",
+    "express-handlebars": "^3.0.2",
+    "node-fetch": "^2.3.0",
+    "serve-static": "^1.13.2",
+    "stringify-tree": "^1.0.2",
+    "yamljs": "^0.3.0",
+    "zip-a-folder": "0.0.6"
+  },
+  "devDependencies": {
+    "@atomist/sdm-local": "^1.0.7-master.20190429204230",
+    "@types/mocha": "^5.2.5",
+    "@types/power-assert": "^1.5.0",
+    "espower-typescript": "^9.0.0",
+    "mocha": "^5.2.0",
+    "npm-run-all": "^4.1.5",
+    "power-assert": "^1.6.0",
+    "rimraf": "^2.6.2",
+    "supervisor": "^0.12.0",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "typedoc": "^0.13.0",
+    "typescript": "^3.1.6"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "autotest": "supervisor --watch index.ts,lib,test --extensions ts --no-restart-on exit --quiet --exec npm -- test",
+    "build": "run-s compile test lint doc",
+    "clean": "run-p clean:compile clean:test clean:doc clean:run",
+    "clean:compile": "rimraf git-info.json \"index.{d.ts,js{,.map}}\" \"{lib,test}/**/*.{d.ts,js{,.map}}\" lib/typings/types.ts",
+    "clean:dist": "run-s clean clean:npm",
+    "clean:doc": "rimraf doc",
+    "clean:npm": "rimraf node_modules",
+    "clean:run": "rimraf *-v8.log profile.txt log",
+    "clean:test": "rimraf .nyc_output coverage",
+    "compile": "run-s git:info gql:gen compile:ts",
+    "compile:ts": "tsc --project .",
+    "doc": "typedoc --mode modules --excludeExternals --ignoreCompilerErrors --exclude \"**/*.d.ts\" --out doc index.ts lib",
+    "git:info": "atm-git-info",
+    "gql:gen": "atm-gql-gen",
+    "lint": "tslint --config tslint.json --format verbose --project .",
+    "lint:fix": "npm run lint -- --fix",
+    "start": "atm-start",
+    "test": "mocha --require espower-typescript/guess \"test/**/*.test.ts\"",
+    "test:one": "mocha --require espower-typescript/guess \"test/**/${TEST:-*.test.ts}\"",
+    "typedoc": "npm run doc"
+  },
+  "engines": {
+    "node": ">=8.1.0",
+    "npm": ">=5.0.0"
+  }
+}

@@ -1,0 +1,130 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sdm
+  labels:
+    owner: atomist
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sdm-serviceaccount
+  namespace: sdm
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: sdm-role
+  namespace: sdm
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["extensions", "apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: sdm-role-binding
+  namespace: sdm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sdm-role
+subjects:
+  - kind: ServiceAccount
+    name: sdm-serviceaccount
+    namespace: sdm
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: empty-sdm
+  namespace: sdm
+  labels:
+    app: empty-sdm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: empty-sdm
+  template:
+    metadata:
+      labels:
+        app: empty-sdm
+        version: "0"
+    spec:
+      serviceAccountName: sdm-serviceaccount
+      containers:
+      - name: empty-sdm
+        image: atomist-seeds/empty-sdm:1.0.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ATOMIST_DEPLOYMENT_NAME
+          value: seed-sdm
+        - name: ATOMIST_DEPLOYMENT_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_ENV
+          value: production
+        - name: FORCE_COLOR
+          value: "1"
+        - name: ATOMIST_GOAL_LAUNCHER
+          value: kubernetes
+        - name: ATOMIST_CONFIG_PATH
+          value: /opt/atm/client.config.json
+        ports:
+        - name: http
+          containerPort: 2866
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 2866
+            scheme: HTTP
+          initialDelaySeconds: 20
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 2866
+            scheme: HTTP
+          initialDelaySeconds: 20
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 384Mi
+        volumeMounts:
+        - name: automation
+          mountPath: /opt/atm
+          readOnly: true
+      volumes:
+      - name: automation
+        secret:
+          secretName: automation
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1

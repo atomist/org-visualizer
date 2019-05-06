@@ -1,0 +1,10 @@
+<h1>Project {{analysis.id.owner}}:{{analysis.id.repo}}</h1>
+
+This is a good project
+
+<h2>Elements</h2>
+<ul>
+{{#each analysis.elements}}
+<li>{{this.name}}
+{{/each}}
+</ul>
