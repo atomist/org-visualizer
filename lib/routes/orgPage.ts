@@ -33,6 +33,11 @@ const serveStatic = require("serve-static");
  */
 export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
+        const helmet = require("helmet");
+        express.use(helmet.frameguard({
+            action: "allow-from",
+            domain: "https://blog.atomist.com",
+          }));
         const exphbs = require("express-handlebars");
         express.engine("handlebars", exphbs({ defaultLayout: "main" }));
         express.set("view engine", "handlebars");
