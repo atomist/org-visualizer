@@ -1,4 +1,8 @@
-import { astUtils, InMemoryProject, InMemoryProjectFile } from "@atomist/automation-client";
+import {
+    astUtils,
+    InMemoryProject,
+    InMemoryProjectFile,
+} from "@atomist/automation-client";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
 
 describe("docker parser", () => {

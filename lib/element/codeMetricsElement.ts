@@ -1,5 +1,11 @@
-import { TechnologyElement, TechnologyScanner } from "@atomist/sdm-pack-analysis";
-import { calculateCodeMetrics, CodeMetrics } from "@atomist/sdm-pack-sloc";
+import {
+    TechnologyElement,
+    TechnologyScanner,
+} from "@atomist/sdm-pack-analysis";
+import {
+    calculateCodeMetrics,
+    CodeMetrics,
+} from "@atomist/sdm-pack-sloc";
 
 export interface CodeMetricsElement extends TechnologyElement,
     Pick<CodeMetrics, "languages" | "totalFiles" | "lines" | "files"> {

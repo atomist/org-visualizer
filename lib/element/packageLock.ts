@@ -1,4 +1,7 @@
-import { TechnologyElement, TechnologyScanner } from "@atomist/sdm-pack-analysis";
+import {
+    TechnologyElement,
+    TechnologyScanner,
+} from "@atomist/sdm-pack-analysis";
 
 /**
  * Information extracted from package-lock.json files.

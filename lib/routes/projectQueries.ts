@@ -1,7 +1,10 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { CodeStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import { SunburstTreeEmitter, treeBuilder } from "../tree/TreeBuilder";
+import {
+    SunburstTreeEmitter,
+    treeBuilder,
+} from "../tree/TreeBuilder";
 
 /**
  * Languages used in this project

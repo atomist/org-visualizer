@@ -1,14 +1,27 @@
-import { astUtils, InMemoryProject, InMemoryProjectFile } from "@atomist/automation-client";
+import {
+    astUtils,
+    InMemoryProject,
+    InMemoryProjectFile,
+} from "@atomist/automation-client";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
 import { CodeMetrics } from "@atomist/sdm-pack-sloc";
-import { CodeStats, consolidate, Language, LanguageStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+    LanguageStats,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
-import { SunburstTreeEmitter, TreeBuilder, treeBuilder } from "../tree/TreeBuilder";
+import {
+    SunburstTreeEmitter,
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
 import {
     DefaultProjectAnalysisResultRenderer,
     OrgGrouper,

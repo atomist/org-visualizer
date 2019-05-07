@@ -1,10 +1,20 @@
-import { GitCommandGitProject, logger } from "@atomist/automation-client";
+import {
+    GitCommandGitProject,
+    logger,
+} from "@atomist/automation-client";
 import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
-import { Interpretation, ProjectAnalysis, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import {
+    Interpretation,
+    ProjectAnalysis,
+    ProjectAnalyzer,
+} from "@atomist/sdm-pack-analysis";
 import * as Octokit from "@octokit/rest";
 import { SpideredRepo } from "../../SpideredRepo";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
-import { Spider, SpiderOptions } from "../Spider";
+import {
+    Spider,
+    SpiderOptions,
+} from "../Spider";
 
 /**
  * Spider GitHub. Ensure that GITHUB_TOKEN environment variable is set.

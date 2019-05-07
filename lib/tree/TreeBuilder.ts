@@ -1,5 +1,8 @@
 import * as _ from "lodash";
-import { SunburstLeaf, SunburstTree } from "./sunburst";
+import {
+    SunburstLeaf,
+    SunburstTree,
+} from "./sunburst";
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst

@@ -19,8 +19,14 @@ import {
     ConfigureOptions,
     configureSdm,
 } from "@atomist/sdm-core";
-import { Express, RequestHandler } from "express";
-import { analysisResultStore, machine } from "./lib/machine/machine";
+import {
+    Express,
+    RequestHandler,
+} from "express";
+import {
+    analysisResultStore,
+    machine,
+} from "./lib/machine/machine";
 import { orgPage } from "./lib/routes/orgPage";
 import { projectPage } from "./lib/routes/projectPage";
 

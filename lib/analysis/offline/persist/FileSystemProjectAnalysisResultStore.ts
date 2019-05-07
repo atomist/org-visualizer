@@ -1,7 +1,13 @@
-import { logger, RepoId } from "@atomist/automation-client";
+import {
+    logger,
+    RepoId,
+} from "@atomist/automation-client";
 import * as fs from "fs";
 import * as path from "path";
-import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../ProjectAnalysisResult";
+import {
+    isProjectAnalysisResult,
+    ProjectAnalysisResult,
+} from "../../ProjectAnalysisResult";
 import { ProjectAnalysisResultStore } from "./ProjectAnalysisResultStore";
 
 import * as appRoot from "app-root-path";
