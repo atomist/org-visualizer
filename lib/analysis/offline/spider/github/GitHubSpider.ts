@@ -148,10 +148,12 @@ async function enrich(r: any, analyzer: ProjectAnalyzer, criteria: ScmSearchCrit
 
 async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): AsyncIterable<any> {
     const octokit = new Octokit();
-    octokit.authenticate({
-        type: "token",
-        token,
-    });
+    if (!!token) {
+        octokit.authenticate({
+            type: "token",
+            token,
+        });
+    }
     let results: any[] = [];
     let retrieved = 0;
     for (const q of criteria.githubQueries) {
