@@ -93,7 +93,8 @@ interface Enriched {
 }
 
 async function enrich(r: any, analyzer: ProjectAnalyzer, criteria: ScmSearchCriteria): Promise<Enriched | undefined> {
-    const project = await GitCommandGitProject.cloned({ token: process.env.GITHUB_TOKEN },
+    const project = await GitCommandGitProject.cloned(
+        process.env.GITHUB_TOKEN ? { token: process.env.GITHUB_TOKEN } : undefined,
         GitHubRepoRef.from({ owner: r.owner.login, repo: r.name }), {
             alwaysDeep: false,
             depth: 1,
@@ -108,7 +109,7 @@ async function enrich(r: any, analyzer: ProjectAnalyzer, criteria: ScmSearchCrit
 
     // When we get there
     // const interpretation = await analyzer.interpret(project, undefined, { full: false});
-    const analysis = await analyzer.analyze(project, undefined, { full: true});
+    const analysis = await analyzer.analyze(project, undefined, { full: true });
     const interpretation = await analyzer.interpret(analysis, undefined);
 
     return {

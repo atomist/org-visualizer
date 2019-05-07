@@ -23,15 +23,15 @@ Next, build with `npm run build`
 
 Next, `npm link` to create the `spider` binary.
 
-Ensure that your GitHub token is available to 
-Node processes via a `GITHUB_TOKEN` environment variable. (This will
-never be sent to Atomist.)
-
 `spider <github organization>` e.g. `spider atomist` (not the full org URL)
 
 Now start the server with `atomist start --local` to expose the visualizations.
 
 Go to http://localhost:2866
+
+<i>If you wish to access private repositories, ensure that your GitHub token is available to 
+Node processes via a `GITHUB_TOKEN` environment variable. (This will
+never be sent to Atomist.)<i>
 
 ## Architecture
 

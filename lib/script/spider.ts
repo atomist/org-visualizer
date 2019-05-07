@@ -13,10 +13,10 @@ import { createAnalyzer } from "../machine/machine";
 async function spider(org: string) {
     const analyzer = createAnalyzer(undefined);
 
-    const psf: Spider = new GitHubSpider();
+    const spider: Spider = new GitHubSpider();
     const persister = new FileSystemProjectAnalysisResultStore();
 
-    await psf.spider({
+    await spider.spider({
         githubQueries: [`org:${org}`],
         maxRetrieved: 300,
         maxReturned: 300,
