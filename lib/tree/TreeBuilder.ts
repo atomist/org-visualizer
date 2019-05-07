@@ -31,6 +31,18 @@ export interface SunburstTreeEmitter<ROOT> {
 
 export type Renderer<T> = (t: T) => SunburstLeaf;
 
+export interface PieSlice {
+    label: string;
+    value: number;
+}
+
+/**
+ * Export data in a format usable by d3 pie charts
+ */
+export function toPie<T>(array: T[], renderer: (t: T) => PieSlice): Array<PieSlice> {
+    return array.map(renderer);
+}
+
 /**
  * Access analysis data to emit a sunburst tree. All calculations will
  * be performed in memory once an initial cohort of repo analyses is provided.
