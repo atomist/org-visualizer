@@ -5,13 +5,17 @@ spider<p align="center">
 # @atomist-blogs/sunburster
 
 Visualize aspects of your organization. Extensible, with out of the box
-support for 
+support for the following queries:
 
 - TypeScript
 - Spring Boot (with Maven)
 - Docker
 - Library versions
-- Code of conduct
+- Inclusion of a code of conduct
+
+An example visualization, showing Docker ports:
+
+[Docker image visualization](images/dockerImageSunburst.png)
 
 ## Running
 
