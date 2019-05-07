@@ -27,7 +27,7 @@ Ensure that your GitHub token is available to
 Node processes via a `GITHUB_TOKEN` environment variable. (This will
 never be sent to Atomist.)
 
-`spider <github organization>`
+`spider <github organization>` e.g. `spider atomist` (not the full org URL)
 
 Now start the server with `atomist start --local` to expose the visualizations.
 
