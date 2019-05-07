@@ -15,7 +15,7 @@ support for the following queries:
 
 An example visualization, showing Docker ports:
 
-[Docker image visualization](images/dockerImageSunburst.png)
+![Docker image visualization](images/dockerImageSunburst.png "Docker image skew")
 
 ## Running
 
