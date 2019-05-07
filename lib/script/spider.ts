@@ -21,7 +21,10 @@ import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persis
 import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { Spider } from "../analysis/offline/spider/Spider";
 import { createAnalyzer } from "../machine/machine";
-import { configureLogging, MinimalLogging } from "@atomist/automation-client";
+import {
+    configureLogging,
+    MinimalLogging,
+} from "@atomist/automation-client";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(MinimalLogging);
