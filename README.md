@@ -2,7 +2,7 @@ spider<p align="center">
   <img src="https://images.atomist.com/sdm/SDM-Logo-Dark.png">
 </p>
 
-# @atomist-blogs/sunburster
+# @atomist/org-visualizer
 
 Visualize aspects of your organization. Extensible, with out of the box
 support for the following queries:
