@@ -9,6 +9,7 @@ RUN npm ci \
 COPY . .
 
 RUN npm link
+
 RUN spider atomist
 
 ENV ATOMIST_MODE local
