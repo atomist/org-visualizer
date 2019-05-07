@@ -6,6 +6,10 @@ import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persis
 import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { Spider } from "../analysis/offline/spider/Spider";
 import { createAnalyzer } from "../machine/machine";
+import { configureLogging, MinimalLogging } from "@atomist/automation-client";
+
+// Ensure we see console logging, and send info to the console
+configureLogging(MinimalLogging);
 
 /**
  * Spider a GitHub.com org
@@ -18,8 +22,8 @@ async function spider(org: string) {
 
     await spider.spider({
         githubQueries: [`org:${org}`],
-        maxRetrieved: 300,
-        maxReturned: 300,
+        maxRetrieved: 1500,
+        maxReturned: 1500,
         // projectTest: async p => await p.hasFile(".travis.yml") && p.hasFile("package.json"),
     }, analyzer, {
         persister,
