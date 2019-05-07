@@ -29,9 +29,9 @@ Now start the server with `atomist start --local` to expose the visualizations.
 
 Go to http://localhost:2866
 
-<i>If you wish to access private repositories, ensure that your GitHub token is available to 
+_If you wish to access private repositories, ensure that your GitHub token is available to 
 Node processes via a `GITHUB_TOKEN` environment variable. (This will
-never be sent to Atomist.)<i>
+never be sent to Atomist.)_
 
 ## Architecture
 
