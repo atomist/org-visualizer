@@ -4,7 +4,9 @@ spider<p align="center">
 
 # @atomist/org-visualizer
 
-Visualize aspects of your organization. Extensible, with out of the box
+Visualize aspects of your organization. See [Rod Johnson's blog](https://blog.atomist.com/this-will-surprise-you/) for discussion of the motivation.
+
+Extensible, with out of the box
 support for the following queries:
 
 - TypeScript
