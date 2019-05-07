@@ -1,16 +1,16 @@
 {
-  "name": "analysis-sdm",
+  "name": "@atomist/org-visualizer",
   "version": "0.1.0",
-  "description": "Analysis SDM",
+  "description": "Organization Visualizer using Atomist project scanning",
   "author": "Atomist Inc.",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/johnsonr/ci-sdm#readme",
+  "homepage": "https://github.com/atomist-blogs/org-visualizer#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnsonr/ci-sdm.git"
+    "url": "https://github.com/atomist-blogs/org-visualizer.git"
   },
   "bugs": {
-    "url": "https://github.com/johnsonr/ci-sdm/issues"
+    "url": "https://github.com/atomist-blogs/org-visualizer/issues"
   },
   "bin": {
     "spider": "./lib/script/spider.js"
@@ -39,8 +39,11 @@
     "@atomist/uhura": "^1.0.0-docker-parse.20190504213223",
     "@octokit/rest": "^16.10.0",
     "@types/yamljs": "^0.2.30",
+    "app-root-path": "^2.2.1",
     "es6-promise-pool": "^2.5.0",
+    "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
+    "lodash": "^4.17.11",
     "node-fetch": "^2.3.0",
     "serve-static": "^1.13.2",
     "stringify-tree": "^1.0.2",
