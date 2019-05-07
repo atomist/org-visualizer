@@ -39,7 +39,7 @@ export interface PieSlice {
 /**
  * Export data in a format usable by d3 pie charts
  */
-export function toPie<T>(array: T[], renderer: (t: T) => PieSlice): Array<PieSlice> {
+export function toPie<T>(array: T[], renderer: (t: T) => PieSlice): PieSlice[] {
     return array.map(renderer);
 }
 
