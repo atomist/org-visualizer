@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { TechnologyElement, TechnologyScanner } from "@atomist/sdm-pack-analysis";
+import {
+    TechnologyElement,
+    TechnologyScanner,
+} from "@atomist/sdm-pack-analysis";
 import { Project } from "@atomist/automation-client";
 
 export interface CodeOfConduct extends TechnologyElement {
