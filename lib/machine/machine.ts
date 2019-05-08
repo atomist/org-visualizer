@@ -22,19 +22,13 @@ import {
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
 import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
 import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
 
-import {
-    logger,
-    Project,
-} from "@atomist/automation-client";
+import { logger, } from "@atomist/automation-client";
 import { nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
 import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
@@ -43,6 +37,7 @@ import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persis
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { packageLockScanner } from "../element/packageLock";
+import { CodeOfConductScanner } from "../element/codeOfConduct";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -61,14 +56,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(gitlabCiScanner)
         .withScanner(reactScanner)
         .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
-        .withScanner(async (p: Project) => {
-            return await p.hasFile("CODE_OF_CONDUCT.md") ? {
-                name: "codeOfConduct",
-                tags: ["community"],
-                content: await p.getFile("CODE_OF_CONDUCT.md")
-                    .then(f => f.getContent()),
-            } : undefined;
-        })
+        .withScanner(CodeOfConductScanner)
         .build();
 }
 
