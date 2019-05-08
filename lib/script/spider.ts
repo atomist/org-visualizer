@@ -17,6 +17,10 @@
 
 // tslint:disable
 
+/**
+ * Main entry point script. Added as a binary in package.json
+ */
+
 import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persist/FileSystemProjectAnalysisResultStore";
 import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { Spider } from "../analysis/offline/spider/Spider";
@@ -39,27 +43,43 @@ async function spider(org: string) {
     const persister = new FileSystemProjectAnalysisResultStore();
 
     await spider.spider({
-        githubQueries: [`org:${org}`],
-        maxRetrieved: 1500,
-        maxReturned: 1500,
-        // projectTest: async p => await p.hasFile(".travis.yml") && p.hasFile("package.json"),
-    }, analyzer, {
-        persister,
-        keepExistingPersisted: async existing => {
-            console.log(`\tAnalyzing ${existing.analysis.id.url}`);
-            return false; // !!existing.analysis.elements.scripts
-        },
-        poolSize: 40,
-    });
+            // See the GitHub search API documentation at
+            // https://developer.github.com/v3/search/
+            // You can query for many other things here, beyond org
+            githubQueries: [`org:${org}`],
+
+            maxRetrieved: 1500,
+            maxReturned: 1500,
+            projectTest: async p => {
+                // Perform a computation here to return false if a project should not
+                // be analyzed and persisted, based on its contents. For example,
+                // this enables you to analyze only projects containing a particular file
+                // through calling getFile()
+                return true;
+            },
+        }, analyzer,
+        {
+            persister,
+            keepExistingPersisted: async existing => {
+                console.log(`\tAnalyzing ${existing.analysis.id.url}`);
+
+                // Perform a computation here to return true if an existing analysis seems valid
+                return false;
+            },
+            // Controls promise usage inNode
+            poolSize: 40,
+        });
 }
 
 if (process.argv.length < 3) {
-    console.log("Usage: spider <git hub organization>");
+    console.log("Usage: spider <GitHub organization>");
+    console.log("Example:");
+    console.log("spider atomist");
     process.exit(1);
 }
 
 const org = process.argv[2];
-console.log(`Will spider GitHub organization ${org}...`);
+console.log(`Spidering GitHub organization ${org}...`);
 spider(org).then(r => {
-    console.log(`Succesfully spidered GitHub organization ${org}`);
+    console.log(`Succesfully analyzed GitHub organization ${org}`);
 });
