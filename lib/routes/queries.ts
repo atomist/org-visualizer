@@ -257,7 +257,13 @@ export const WellKnownQueries: Queries = {
         treeBuilderFor(`Path ${params.path}`, params)
             .group({
                 name: params.path,
-                by: ar => _.get(ar.analysis, params.path, params.otherLabel),
+                by: ar => {
+                    const raw = _.get(ar.analysis, params.path, params.otherLabel);
+                    if (!raw) {
+                        return raw;
+                    }
+                    return JSON.stringify(raw);
+                },
             })
             .renderWith(DefaultProjectAnalysisResultRenderer),
 };
