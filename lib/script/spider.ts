@@ -41,37 +41,51 @@ process.on('uncaughtException', function (err) {
     process.exit(1);
 });
 
+interface SpiderOptions {
+    owner: string;
+
+    /**
+     * Refine name in GitHub search if searching for repos
+     */
+    search?: string;
+
+    /**
+     * If this is supplied, run a custom GitHub query
+     */
+    query?: string;
+}
 
 /**
  * Spider a GitHub.com org
  */
-async function spider(params: { owner: string, search?: string }) {
+async function spider(params: SpiderOptions) {
     const analyzer = createAnalyzer(undefined);
-    const org = params.owner
+    const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
     const spider: Spider = new GitHubSpider();
     const persister = new FileSystemProjectAnalysisResultStore();
+    const query = params.query || `org:${org}` + searchInRepoName;
 
     const result = await spider.spider({
-        // See the GitHub search API documentation at
-        // https://developer.github.com/v3/search/
-        // You can query for many other things here, beyond org
-        githubQueries: [`org:${org}` + searchInRepoName],
+            // See the GitHub search API documentation at
+            // https://developer.github.com/v3/search/
+            // You can query for many other things here, beyond org
+            githubQueries: [query],
 
-        maxRetrieved: 1500,
-        maxReturned: 1500,
-        projectTest: async p => {
-            // Perform a computation here to return false if a project should not
-            // be analyzed and persisted, based on its contents. For example,
-            // this enables you to analyze only projects containing a particular file
-            // through calling getFile()
-            return true;
+            maxRetrieved: 1500,
+            maxReturned: 1500,
+            projectTest: async p => {
+                // Perform a computation here to return false if a project should not
+                // be analyzed and persisted, based on its contents. For example,
+                // this enables you to analyze only projects containing a particular file
+                // through calling getFile()
+                return true;
+            },
+            subprojectFinder: firstSubprojectFinderOf(
+                fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
+            ),
         },
-        subprojectFinder: firstSubprojectFinderOf(
-            fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
-        ),
-    },
         analyzer,
         {
             persister,
@@ -89,28 +103,46 @@ async function spider(params: { owner: string, search?: string }) {
 
 yargs
     .option("owner", {
-        required: true,
+        required: false,
         alias: 'o',
         description: "GitHub user or organization",
     })
     .option("search", {
-        required: false,
-        alias: 's',
-        description: "Search within repository names"
-    }
+            required: false,
+            alias: 's',
+            description: "Search within repository names"
+        }
     )
-    .usage("spider --owner <GitHub user or org>")
+    .option("query", {
+            required: false,
+            alias: 'q',
+            description: "GitHub query"
+        }
+    )
+    .usage("spider --owner <GitHub user or org> OR --query <GitHub query>");
 
 const commandLineParameters = yargs.argv as any;
-const org = commandLineParameters.owner;
+const owner = commandLineParameters.owner;
 const search = commandLineParameters.search;
+const query = commandLineParameters.query;
 
-console.log(`Spidering GitHub organization ${org}...`);
-if (search) {
-    console.log(`Limiting to repositories with '${search}' in the name`);
+if (!owner && !query) {
+    console.log(`Please specify owner or query`);
+    process.exit(1);
 }
-spider({ owner: org, search }).then(r => {
-    console.log(`Successfully analyzed GitHub organization ${org}. result is `
+if (search) {
+    console.log(`Limiting to repositories in organization ${owner} with '${search}' in the name`);
+}
+if (query) {
+    console.log(`Running GitHub query '${query}'...`);
+} else {
+    console.log(`Spidering GitHub organization ${owner}...`);
+}
+
+const params = { owner, search, query };
+
+spider(params).then(r => {
+    console.log(`Successfully analyzed GitHub ${JSON.stringify(params)}. result is `
         + JSON.stringify(r, null, 2));
 }, err => {
     console.log("Oh no! " + err.message);

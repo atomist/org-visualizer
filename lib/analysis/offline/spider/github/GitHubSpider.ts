@@ -319,9 +319,6 @@ async function analyze(project: Project,
 async function analyzeProject(project: Project,
                               analyzer: ProjectAnalyzer,
                               subproject?: SubprojectDescription): Promise<RepoInfo> {
-    if (!!subproject) {
-        console.log("With parent");
-    }
     const readmeFile = await project.getFile("README.md");
     const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
     const totalFileCount = await project.totalFileCount();
