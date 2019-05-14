@@ -29,35 +29,50 @@ import {
     configureLogging,
     MinimalLogging,
 } from "@atomist/automation-client";
+import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
+import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
+import * as yargs from "yargs";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(MinimalLogging);
 
+process.on('uncaughtException', function (err) {
+    console.log(err);
+    process.exit(1);
+});
+
+
 /**
  * Spider a GitHub.com org
  */
-async function spider(org: string) {
+async function spider(params: { owner: string, search?: string }) {
     const analyzer = createAnalyzer(undefined);
+    const org = params.owner
+    const searchInRepoName = search ? ` ${search} in:name` : "";
 
     const spider: Spider = new GitHubSpider();
     const persister = new FileSystemProjectAnalysisResultStore();
 
-    await spider.spider({
-            // See the GitHub search API documentation at
-            // https://developer.github.com/v3/search/
-            // You can query for many other things here, beyond org
-            githubQueries: [`org:${org}`],
+    const result = await spider.spider({
+        // See the GitHub search API documentation at
+        // https://developer.github.com/v3/search/
+        // You can query for many other things here, beyond org
+        githubQueries: [`org:${org}` + searchInRepoName],
 
-            maxRetrieved: 1500,
-            maxReturned: 1500,
-            projectTest: async p => {
-                // Perform a computation here to return false if a project should not
-                // be analyzed and persisted, based on its contents. For example,
-                // this enables you to analyze only projects containing a particular file
-                // through calling getFile()
-                return true;
-            },
-        }, analyzer,
+        maxRetrieved: 1500,
+        maxReturned: 1500,
+        projectTest: async p => {
+            // Perform a computation here to return false if a project should not
+            // be analyzed and persisted, based on its contents. For example,
+            // this enables you to analyze only projects containing a particular file
+            // through calling getFile()
+            return true;
+        },
+        subprojectFinder: firstSubprojectFinderOf(
+            fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
+        ),
+    },
+        analyzer,
         {
             persister,
             keepExistingPersisted: async existing => {
@@ -69,17 +84,34 @@ async function spider(org: string) {
             // Controls promise usage inNode
             poolSize: 40,
         });
+    return result;
 }
 
-if (process.argv.length < 3) {
-    console.log("Usage: spider <GitHub organization>");
-    console.log("Example:");
-    console.log("spider atomist");
-    process.exit(1);
-}
+yargs
+    .option("owner", {
+        required: true,
+        alias: 'o',
+        description: "GitHub user or organization",
+    })
+    .option("search", {
+        required: false,
+        alias: 's',
+        description: "Search within repository names"
+    }
+    )
+    .usage("spider --owner <GitHub user or org>")
 
-const org = process.argv[2];
+const commandLineParameters = yargs.argv as any;
+const org = commandLineParameters.owner;
+const search = commandLineParameters.search;
+
 console.log(`Spidering GitHub organization ${org}...`);
-spider(org).then(r => {
-    console.log(`Succesfully analyzed GitHub organization ${org}`);
+if (search) {
+    console.log(`Limiting to repositories with '${search}' in the name`);
+}
+spider({ owner: org, search }).then(r => {
+    console.log(`Successfully analyzed GitHub organization ${org}. result is `
+        + JSON.stringify(r, null, 2));
+}, err => {
+    console.log("Oh no! " + err.message);
 });

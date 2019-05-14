@@ -24,7 +24,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "^1.4.1-master.20190418153855",
+    "@atomist/automation-client": "^1.4.1-nortissej.in-mem-subproject.20190513221636",
     "@atomist/sdm": "^1.5.0-master.20190419141554",
     "@atomist/sdm-core": "^1.5.0-master.20190422144825",
     "@atomist/sdm-pack-analysis": "^1.1.0-master.20190429060345",
@@ -43,12 +43,15 @@
     "es6-promise-pool": "^2.5.0",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
+    "fs-extra": "^8.0.0",
     "helmet": "^3.18.0",
     "lodash": "^4.17.11",
     "node-fetch": "^2.3.0",
+    "recursive-readdir": "^2.2.2",
     "serve-static": "^1.13.2",
     "stringify-tree": "^1.0.2",
     "yamljs": "^0.3.0",
+    "yargs": "^13.2.4",
     "zip-a-folder": "0.0.6"
   },
   "devDependencies": {
@@ -89,7 +92,8 @@
     "start": "atm-start",
     "test": "mocha --require espower-typescript/guess \"test/**/*.test.ts\"",
     "test:one": "mocha --require espower-typescript/guess \"test/**/${TEST:-*.test.ts}\"",
-    "typedoc": "npm run doc"
+    "typedoc": "npm run doc",
+    "spider": "npm run compile:ts && node ./lib/script/spider.js -o Azure-Samples -s cognitive"
   },
   "engines": {
     "node": ">=8.1.0",

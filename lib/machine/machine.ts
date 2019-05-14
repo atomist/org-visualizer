@@ -41,8 +41,8 @@ import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiSc
 import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persist/FileSystemProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
-import { packageLockScanner } from "../element/packageLock";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
+import { packageLockScanner } from "../element/packageLock";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -117,7 +117,11 @@ function updatedStoredAnalysisIfNecessary(opts: {
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
                 const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });
                 logger.info("Performing fresh analysis of project at %s", pu.id.url);
-                await opts.analyzedRepoStore.persist({ analysis, timestamp: now });
+                await opts.analyzedRepoStore.persist({
+                    analysis,
+                    timestamp: now,
+                    subproject: found.subproject,
+                });
             } else {
                 logger.info("Stored analysis of project at %s is up to date", pu.id.url);
             }

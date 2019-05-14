@@ -16,7 +16,7 @@
 
 import {
     logger,
-    RepoId,
+    RepoRef,
 } from "@atomist/automation-client";
 import * as fs from "fs";
 import * as path from "path";
@@ -24,15 +24,29 @@ import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
 } from "../../ProjectAnalysisResult";
-import { ProjectAnalysisResultStore } from "./ProjectAnalysisResultStore";
+import {
+    PersistResult,
+    ProjectAnalysisResultStore,
+    ProjectUrl,
+} from "./ProjectAnalysisResultStore";
 
 import * as appRoot from "app-root-path";
+
+const readdir = require("recursive-readdir");
+import * as fse from "fs-extra";
+import {
+    PersistenceResult,
+    SpiderFailure,
+} from "../spider/Spider";
 
 /**
  * Store files under the /spidered directory of current project unless otherwise specified
  */
 export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
+    /**
+     * Base path
+     */
     public readonly path: string;
 
     constructor(userPath?: string) {
@@ -52,52 +66,66 @@ export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResu
         return (await this.loadAll()).length;
     }
 
-    public async persist(what: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<number> {
+    public async persist(what: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
         const repos = isProjectAnalysisResult(what) ? [what] : what;
         let persisted = 0;
+        const written: PersistenceResult[] = [];
+        const errors: SpiderFailure[] = [];
         for await (const repo of repos) {
             const filePath = this.toFilePath(repo.analysis.id);
             try {
                 const json = JSON.stringify(repo, undefined, 2);
-                fs.writeFileSync(filePath, json);
+                fse.outputFileSync(filePath, json);
                 logger.info(`Persisted to ${filePath}`);
                 ++persisted;
+                written.push(filePath);
             } catch (err) {
+                errors.push({ repoUrl: repo.analysis.id.url, whileTryingTo: "persist", message: err.message });
                 logger.error("Cannot persist file to %s: %s", filePath, err.message);
             }
         }
-        return persisted;
+        return { attemptedCount: persisted, failed: errors, succeeded: written };
     }
 
-    public async load(repo: RepoId): Promise<ProjectAnalysisResult> {
+    public async load(repo: RepoRef): Promise<ProjectAnalysisResult | undefined> {
+        const filepath = this.toFilePath(repo);
+        if (!fs.existsSync(filepath)) {
+            logger.info("No persisted file found for %s", filepath);
+            return undefined;
+        }
         try {
-            const raw = fs.readFileSync(this.toFilePath(repo)).toString();
+            const raw = fs.readFileSync(filepath).toString();
             const r = JSON.parse(raw) as ProjectAnalysisResult;
             return r;
         } catch (err) {
-            logger.error("Cannot loadAll file from %s: %s", this.toFilePath(repo), err.message);
+            logger.error("Cannot load file from %s: %s", filepath, err.message);
             return undefined;
         }
     }
 
     public async loadAll(): Promise<ProjectAnalysisResult[]> {
-        const files = fs.readdirSync(this.path);
+        const filePaths = await readdir(this.path);
         const results: ProjectAnalysisResult[] = [];
-        for (const file of files) {
-            const filePath = path.join(this.path, file);
+        for (const filePath of filePaths) {
             try {
                 const raw = fs.readFileSync(filePath).toString();
                 const ar = JSON.parse(raw);
                 results.push(ar);
             } catch (err) {
-                logger.warn("Badly formed JSON in %s: %s", filePath, err.message);
+                logger.warn("Badly formed JSON in '%s': %s", filePath, err.message);
             }
         }
         return results;
     }
 
-    private toFilePath(repo: RepoId): string {
-        return `${this.path}/${repo.owner}:${repo.repo}.json`;
+    private toFilePath(repo: RepoRef): string {
+        const base = path.join(this.path, repo.owner, repo.repo, repo.path || "");
+        // if (!!repo.path) {
+        //     base += "::" + path;
+        // }
+        const absPath = base + ".json";
+        console.log(`Absolute path='${absPath}'`);
+        return absPath;
     }
 
 }

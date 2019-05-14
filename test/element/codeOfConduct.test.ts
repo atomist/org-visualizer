@@ -15,8 +15,8 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
-import { CodeOfConductScanner } from "../../lib/element/codeOfConduct";
 import * as assert from "power-assert";
+import { CodeOfConductScanner } from "../../lib/element/codeOfConduct";
 
 describe("codeOfConductScanner", () => {
 

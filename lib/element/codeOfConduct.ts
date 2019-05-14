@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Project } from "@atomist/automation-client";
 import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
-import { Project } from "@atomist/automation-client";
 
 export interface CodeOfConduct extends TechnologyElement {
 
@@ -47,7 +47,7 @@ export const CodeOfConductScanner: TechnologyScanner<CodeOfConduct> =
                 tags: ["community"],
                 title: titleOf(content),
                 content,
-            }
+            };
         }
         return undefined;
     };
