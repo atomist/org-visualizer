@@ -1,5 +1,5 @@
 import { Huckleberry } from "./Huckleberry";
-import { Interpretation } from "@atomist/sdm-pack-analysis";
+import { Interpretation, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { AutofixRegistration, CodeTransformRegistration } from "@atomist/sdm";
 
 export class HuckleberryManager {
@@ -17,7 +17,7 @@ export class HuckleberryManager {
                 return {
                     name: `add-hucklerry-${huck.name}`,
                     intent: `add huckleberry ${huck.name}`,
-                    transform: huck.apply(huck.ideal),
+                    transform: huck.makeItSo(huck.ideal, undefined),
                 }
             });
         // TODO huck extractor command
@@ -25,11 +25,12 @@ export class HuckleberryManager {
 
     get autofixes(): AutofixRegistration[] {
         return this.huckleberries
-            .filter(huck => !!huck.ideal && !!huck.apply)
+            .filter(huck => !!huck.ideal && !!huck.makeItSo)
             .map(huck => {
                 return {
                     name: `${huck.name}-autofix`,
-                    transform: huck.apply(huck.ideal),
+                    // TODO this is wrong because it may not exist
+                    transform: huck.makeItSo(huck.ideal, undefined),
                 }
             });
     }
@@ -39,22 +40,22 @@ export class HuckleberryManager {
      * @param {Interpretation} interpretation
      * @return {Promise<Array<Huckleberry<any>>>}
      */
-    public async extract(interpretation: Interpretation): Promise<Array<Huckleberry<any>>> {
+    // TODO interpretation?
+    public async extract(pa: ProjectAnalysis): Promise<Array<Huckleberry<any>>> {
         return this.huckleberries
-            .filter(huck => !!interpretation.reason.analysis.fingerprints[huck.name]);
+            .filter(huck => !!pa.fingerprints[huck.name]);
     }
 
     /**
-     * Which Huckleberries could grow in this project?
+     * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
-     * @param {Interpretation} interpretation
      * @return {Promise<Array<Huckleberry<any>>>}
      */
-    public async growable(interpretation: Interpretation): Promise<Array<Huckleberry<any>>> {
-        const promises = this.huckleberries
-            .map(h => h.canGrowHere(interpretation.reason.analysis));
-        const relevant: boolean[] = await Promise.all(promises);
-        return this.huckleberries.filter((h, i) => relevant[i]);
+    public async growable(analysis: ProjectAnalysis): Promise<Array<Huckleberry<any>>> {
+        const present = await this.extract(analysis);
+        const canGrow = await Promise.all(this.huckleberries
+             .map(h => h.canGrowHere(analysis)));
+        return this.huckleberries.filter((h, i) => !present[i] && canGrow[i])
     }
 
     constructor(...huckleberries: Huckleberry<any>[]) {

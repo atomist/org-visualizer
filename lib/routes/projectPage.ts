@@ -22,6 +22,51 @@ import {
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
+import { HuckleberryManager } from "../huckleberry/HuckleberryManager";
+import { TypeScriptVersion, TypeScriptVersionHuckleberry } from "../huckleberry/TypeScriptVersionHuckleberry";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { Huckleberry } from "../huckleberry/Huckleberry";
+import { NodeStack } from "@atomist/sdm-pack-analysis-node";
+import { NodeLibraryVersion, NodeLibraryVersionHuckleberry } from "../huckleberry/NodeLibraryVersionHuckleberry";
+
+const huckleberryManager = new HuckleberryManager(
+    new TypeScriptVersionHuckleberry(),
+    new NodeLibraryVersionHuckleberry(new NodeLibraryVersion("axios", "1.0.2")),
+);
+
+export interface DisplayableHuckleberry {
+    name: string;
+    readable: string;
+    ideal: string;
+}
+
+async function presentHuckleberries(ar: ProjectAnalysisResult): Promise<DisplayableHuckleberry[]> {
+    //const i = analy
+    const hucksFound = await huckleberryManager.extract(ar.analysis);
+    return hucksFound.map(huck => {
+        const instance = ar.analysis.fingerprints[huck.name];
+        // TODO check if it has a ideal before attempting to compute it
+        return {
+            name: huck.name,
+            readable: huck.toReadableString(instance),
+            ideal: huck.toReadableString(huck.ideal),
+        };
+    });
+}
+
+async function possibleHuckleberries(ar: ProjectAnalysisResult): Promise<DisplayableHuckleberry[]> {
+    //const i = analy
+    const hucksFound = await huckleberryManager.growable(ar.analysis);
+    return hucksFound.map(huck => {
+        // TODO check if it has a ideal
+        return {
+            name: huck.name,
+            readable: "Absent",
+            ideal: huck.toReadableString(huck.ideal),
+        };
+    });
+}
+
 
 export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
@@ -37,6 +82,12 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                 url: undefined,
             };
             const analyzedRepo = await analyzedRepoStore.load(id);
+            // TODO fragile
+            const node = analyzedRepo.analysis.elements.node as NodeStack;
+            if (node) {
+                analyzedRepo.analysis.fingerprints.tsVersion = new TypeScriptVersion(node.typeScript.version);
+            }
+
             if (!analyzedRepo) {
                 res.render("noProject", {
                     id,
@@ -51,6 +102,8 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
+                    huckleberries: await presentHuckleberries(analyzedRepo),
+                    otherHuckleberries: await possibleHuckleberries(analyzedRepo),
                 });
             }
         });

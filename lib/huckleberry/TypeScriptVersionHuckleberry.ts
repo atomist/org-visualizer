@@ -15,7 +15,7 @@ export class TypeScriptVersion extends AbstractFingerprint {
 
 export class TypeScriptVersionHuckleberry implements Huckleberry<TypeScriptVersion> {
 
-    public apply(t: TypeScriptVersion): CodeTransform {
+    public makeItSo(t: TypeScriptVersion): CodeTransform {
         return async p => {
             throw new Error("Applying TypeScript version not yet supported");
         }
@@ -39,7 +39,7 @@ export class TypeScriptVersionHuckleberry implements Huckleberry<TypeScriptVersi
     }
 
     public toReadableString(h: TypeScriptVersion): string {
-        return h.version;
+        return h.typeScriptVersion;
     }
 
     constructor(public readonly ideal = new TypeScriptVersion("3.4.5")) {

@@ -31,11 +31,11 @@ export interface Huckleberry<H extends Fingerprint> {
 
     /**
      * Apply the given Huckleberry level
-     * @param {H} h huckleberry to apply
+     * @param {H} h huckleberry to makeItSo
      * @param existingState existing state of the Huckleberry. May be undefined
      * @return {CodeTransform}
      */
-    apply?(h: H, existingState: H | undefined): CodeTransform;
+    makeItSo?(h: H, existingState: H | undefined): CodeTransform;
 
     /**
      * Compare these two Huckleberries
