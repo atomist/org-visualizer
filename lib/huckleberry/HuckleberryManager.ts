@@ -15,8 +15,14 @@
  */
 
 import { Huckleberry } from "./Huckleberry";
-import { Interpretation, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { AutofixRegistration, CodeTransformRegistration } from "@atomist/sdm";
+import {
+    Interpretation,
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis";
+import {
+    AutofixRegistration,
+    CodeTransformRegistration,
+} from "@atomist/sdm";
 
 export class HuckleberryManager {
 

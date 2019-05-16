@@ -15,7 +15,10 @@
  */
 
 import { Huckleberry } from "./Huckleberry";
-import { AbstractFingerprint, CodeTransform } from "@atomist/sdm";
+import {
+    AbstractFingerprint,
+    CodeTransform,
+} from "@atomist/sdm";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 export class NodeLibraryVersion extends AbstractFingerprint {

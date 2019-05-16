@@ -23,11 +23,17 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
 import { HuckleberryManager } from "../huckleberry/HuckleberryManager";
-import { TypeScriptVersion, TypeScriptVersionHuckleberry } from "../huckleberry/TypeScriptVersionHuckleberry";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionHuckleberry,
+} from "../huckleberry/TypeScriptVersionHuckleberry";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { Huckleberry } from "../huckleberry/Huckleberry";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
-import { NodeLibraryVersion, NodeLibraryVersionHuckleberry } from "../huckleberry/NodeLibraryVersionHuckleberry";
+import {
+    NodeLibraryVersion,
+    NodeLibraryVersionHuckleberry,
+} from "../huckleberry/NodeLibraryVersionHuckleberry";
 
 const huckleberryManager = new HuckleberryManager(
     new TypeScriptVersionHuckleberry(),
