@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { Huckleberry } from "./Huckleberry";
+import { Huckleberry, WarningFlag } from "./Huckleberry";
 import {
     AbstractFingerprint,
     CodeTransform,
 } from "@atomist/sdm";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
+/**
+ * Represents a version of a particular library
+ */
 export class NodeLibraryVersion extends AbstractFingerprint {
 
     constructor(public readonly libName: string, public readonly libVersion: string) {
@@ -34,6 +37,8 @@ export class NodeLibraryVersion extends AbstractFingerprint {
 
 export class NodeLibraryVersionHuckleberry implements Huckleberry<NodeLibraryVersion> {
 
+    private readonly flags: Array<(n: NodeLibraryVersion) => WarningFlag>;
+
     public makeItSo(t: NodeLibraryVersion): CodeTransform {
         return async p => {
             throw new Error("Applying Node library version not yet supported");
@@ -41,7 +46,7 @@ export class NodeLibraryVersionHuckleberry implements Huckleberry<NodeLibraryVer
     };
 
     get name() {
-        return this.ideal.libName;
+        return isNodeLibraryVersion(this.sample) ? this.sample.libName : this.sample;
     }
 
     public async canGrowHere(pa: ProjectAnalysis): Promise<boolean> {
@@ -52,18 +57,46 @@ export class NodeLibraryVersionHuckleberry implements Huckleberry<NodeLibraryVer
         return h1.libVersion > h2.libVersion ? 1 : -1;
     }
 
-    // public flag(h: NodeLibraryVersion) {
-    //     if (h.libVersion < "3") {
-    //         return { severity: "warn" as any, category: "ts", detail: `Version ${h.libVersion} is old` };
-    //     }
-    //     return undefined;
-    // }
+    public flag(h: NodeLibraryVersion): WarningFlag {
+        for (const flag of this.flags) {
+            const f = flag(h);
+            if (!!f) {
+                return f;
+            }
+        }
+        return undefined;
+    }
 
     public toReadableString(h: NodeLibraryVersion): string {
         return h.libName + ":" + h.libVersion;
     }
 
-    constructor(public readonly ideal: NodeLibraryVersion) {
+    get ideal(): NodeLibraryVersion {
+        return isNodeLibraryVersion(this.sample) ? this.sample : undefined;
     }
 
+    /**
+     * Version is ideal or version
+     * @param {NodeLibraryVersion | string} sample
+     * @param {(n: NodeLibraryVersion) => WarningFlag} flags
+     */
+    constructor(private readonly sample: NodeLibraryVersion | string,
+                ...flags: Array<(n: NodeLibraryVersion) => WarningFlag>) {
+        this.flags = flags;
+    }
+
+}
+
+function isNodeLibraryVersion(a: any): a is NodeLibraryVersion {
+    const maybe = a as NodeLibraryVersion;
+    return !!maybe.libName && !!maybe.libVersion;
+}
+
+/**
+ * Ban this library
+ * @param {string} name
+ * @return {NodeLibraryVersionHuckleberry}
+ */
+export function bannedLibraryHuckleberry(name: string): Huckleberry<any> {
+    return new NodeLibraryVersionHuckleberry(name);
 }

@@ -31,13 +31,16 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { Huckleberry } from "../huckleberry/Huckleberry";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 import {
+    bannedLibraryHuckleberry,
     NodeLibraryVersion,
     NodeLibraryVersionHuckleberry,
 } from "../huckleberry/NodeLibraryVersionHuckleberry";
+import { huckleberryQueries } from "./huckleberryQueries";
 
 const huckleberryManager = new HuckleberryManager(
     new TypeScriptVersionHuckleberry(),
-    new NodeLibraryVersionHuckleberry(new NodeLibraryVersion("axios", "1.0.2")),
+    new NodeLibraryVersionHuckleberry(new NodeLibraryVersion("@atomist/sdm", "2.0.0")),
+    bannedLibraryHuckleberry("axios"),
 );
 
 export interface DisplayableHuckleberry {
@@ -45,6 +48,8 @@ export interface DisplayableHuckleberry {
     readable: string;
     ideal: string;
 }
+
+export const huckQueries = huckleberryQueries(huckleberryManager);
 
 async function presentHuckleberries(ar: ProjectAnalysisResult): Promise<DisplayableHuckleberry[]> {
     //const i = analy

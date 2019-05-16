@@ -317,7 +317,7 @@ function byElement(list: string[]): ProjectAnalysisResultGrouper {
     };
 }
 
-function treeBuilderFor(name: string, params: any): TreeBuilder<ProjectAnalysisResult, ProjectAnalysisResult> {
+export function treeBuilderFor(name: string, params: any): TreeBuilder<ProjectAnalysisResult, ProjectAnalysisResult> {
     const tb = treeBuilder<ProjectAnalysisResult>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :

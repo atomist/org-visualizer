@@ -20,6 +20,8 @@ import { Fingerprint } from "@atomist/automation-client/lib/project/fingerprint/
 import { HasMessages } from "@atomist/sdm-pack-analysis/lib/analysis/support/messageGoal";
 import { ReviewComment } from "@atomist/automation-client";
 
+export type WarningFlag = Pick<ReviewComment, "severity" | "category" | "detail"> | undefined
+
 /**
  * Management for a fingerprint
  * Path under analysis is fingerprints.name
@@ -43,7 +45,7 @@ export interface Huckleberry<H extends Fingerprint> {
      * @param {H} h
      * @return {Promise<HasMessages>}
      */
-    flag?(h: H): Pick<ReviewComment, "severity" | "category" | "detail"> | undefined;
+    flag?(h: H): WarningFlag;
 
     /**
      * Apply the given Huckleberry level

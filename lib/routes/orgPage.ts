@@ -22,6 +22,9 @@ import {
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { WellKnownQueries } from "./queries";
+import { huckQueries } from "./projectPage";
+import { NodeStack } from "@atomist/sdm-pack-analysis-node";
+import { TypeScriptVersion } from "../huckleberry/TypeScriptVersionHuckleberry";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
@@ -60,7 +63,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             }
 
             const queryString = jsonToQueryString(req.query);
-            const cannedQueryDefinition = WellKnownQueries[req.params.query];
+            //WellKnownQueries
+            const cannedQueryDefinition = huckQueries[req.params.query];
             if (!cannedQueryDefinition) {
                 return res.render("noQuery", {
                     query: req.params.query,
@@ -74,8 +78,17 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             });
         });
         express.get("/querydata/:query", ...handlers, async (req, res) => {
-            const cannedQuery = WellKnownQueries[req.params.query](req.query);
+            const cannedQuery = huckQueries[req.params.query](req.query);
             const repos = await store.loadAll();
+
+            repos.forEach(analyzedRepo => {
+                // TODO fragile
+                const node = analyzedRepo.analysis.elements.node as NodeStack;
+                if (node) {
+                    analyzedRepo.analysis.fingerprints.tsVersion = new TypeScriptVersion(node.typeScript.version);
+                }
+            });
+
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
             res.json(data);
