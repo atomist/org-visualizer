@@ -18,9 +18,11 @@ import { featureQueriesFrom } from "./featureQueries";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TypeScriptVersionFeature } from "../feature/domain/TypeScriptVersionFeature";
 import { NodeLibraryVersion, NodeLibraryVersionFeature } from "../feature/domain/NodeLibraryVersionFeature";
+import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
 
 export const featureManager = new DefaultFeatureManager(
     new TypeScriptVersionFeature(),
+    new DockerBaseImageFeature(),
     new NodeLibraryVersionFeature("@atomist/sdm"),
     new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
     //bannedLibraryHuckleberry("axios"),
