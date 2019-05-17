@@ -23,7 +23,9 @@ import { FP } from "@atomist/sdm-pack-fingerprints";
  */
 export interface FeatureManager {
 
-    features: ManagedFeature<any>[];
+    features: Array<ManagedFeature<any>>;
+
+    featuresWithIdeals(): Promise<Array<ManagedFeature<any> & { ideal?: FP }>>;
 
     /**
      * Find all the Features we can manage in this project

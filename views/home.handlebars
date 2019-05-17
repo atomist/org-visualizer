@@ -2,6 +2,14 @@
 
 <h2>Common queries</h2>
 
+<h3>Features</h3>
+
+{{#each features}}
+    <li>Ideal: {{this.ideal.data}}
+    <a href="./query/{{this.name}}?byOrg=true">{{this.name}}</a>
+    </li>
+{{/each}}
+
 <h3>Community</h3>
 <li><a href="./query/path?path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of Conduct</a></li>
 

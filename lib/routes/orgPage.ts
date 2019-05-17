@@ -17,7 +17,7 @@
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureQueries } from "./features";
+import { featureManager, featureQueries } from "./features";
 import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";
@@ -45,7 +45,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.use(serveStatic("public", { index: false }));
 
         express.get("/", ...handlers, async (req, res) => {
-            res.render("home", {});
+            res.render("home", {
+                features: await featureManager.featuresWithIdeals(),
+            });
         });
 
         express.get("/organization/:owner", ...handlers, async (req, res) => {

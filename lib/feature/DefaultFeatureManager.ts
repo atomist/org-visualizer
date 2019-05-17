@@ -18,6 +18,7 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { FeatureManager } from "./FeatureManager";
+import { TypeScriptVersion } from "./TypeScriptVersionFeature";
 
 /**
  * Features must have unique names
@@ -25,6 +26,17 @@ import { FeatureManager } from "./FeatureManager";
 export class DefaultFeatureManager implements FeatureManager {
 
     public readonly features: ManagedFeature<any>[];
+
+    public async featuresWithIdeals() {
+        const results: Array<ManagedFeature<any> & { ideal?: FP }> = [];
+        for (const feature of this.features) {
+            results.push({
+                ...feature,
+                ideal: await this.ideal(feature.name),
+            })
+        }
+        return results;
+    }
 
     // /**
     //  * Commands to transform
@@ -75,6 +87,10 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public async ideal(name: string): Promise<FP | undefined> {
+        // TODO use preferences
+        if (name === "tsVersion") {
+            return new TypeScriptVersion("3.4.5");
+        }
         return undefined;
     }
 
