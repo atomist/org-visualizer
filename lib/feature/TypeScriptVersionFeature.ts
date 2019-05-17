@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint, } from "@atomist/sdm";
+import {
+    AbstractFingerprint,
+} from "@atomist/sdm";
 import { InferredTechnologyFeature } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 

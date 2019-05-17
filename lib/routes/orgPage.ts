@@ -15,9 +15,15 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Express, RequestHandler, } from "express";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager, featureQueries } from "./features";
+import {
+    featureManager,
+    featureQueries,
+} from "./features";
 import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";

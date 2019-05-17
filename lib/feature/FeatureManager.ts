@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
+import {
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 

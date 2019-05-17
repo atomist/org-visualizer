@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Queries, treeBuilderFor } from "./queries";
+import {
+    Queries,
+    treeBuilderFor,
+} from "./queries";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { FeatureManager } from "../feature/FeatureManager";

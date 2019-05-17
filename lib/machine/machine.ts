@@ -34,7 +34,10 @@ import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
 import {
     logger,
 } from "@atomist/automation-client";
-import { nodeScanner, nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
+import {
+    nodeScanner,
+    nodeStackSupport,
+} from "@atomist/sdm-pack-analysis-node";
 import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
@@ -43,7 +46,10 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { packageLockScanner } from "../element/packageLock";
-import { TypeScriptVersion, TypeScriptVersionFeature } from "../feature/TypeScriptVersionFeature";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionFeature,
+} from "../feature/TypeScriptVersionFeature";
 
 /**
  * Add scanners to the analyzer to extract data
