@@ -15,7 +15,7 @@ support for the following queries:
 - Library versions
 - Inclusion of a code of conduct
 
-An example visualization, showing Docker ports:
+An example visualization, showing Docker images:
 
 ![Docker image visualization](images/dockerImageSunburst.png "Docker image skew")
 
