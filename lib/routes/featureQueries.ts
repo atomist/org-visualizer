@@ -15,15 +15,15 @@
  */
 
 import { Queries, treeBuilderFor } from "./queries";
-import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { FeatureManager } from "../feature/FeatureManager";
+import { featureManager } from "./features";
 
 /**
  * Well known queries against our repo cohort
  */
-export function featureQueriesFrom(hm: DefaultFeatureManager): Queries {
+export function featureQueriesFrom(hm: FeatureManager): Queries {
     const queries: Queries = {};
 
     for (const huck of hm.features) {
@@ -34,6 +34,25 @@ export function featureQueriesFrom(hm: DefaultFeatureManager): Queries {
                     name: huck.name,
                     by: ar => {
                         const hi = ar.analysis.fingerprints[huck.name];
+                        return !!hi ? huck.toDisplayableString(hi) : undefined;
+                    },
+                })
+                .renderWith(DefaultProjectAnalysisResultRenderer);
+
+        queries[huck.name + "-ideal"] = params =>
+            // TODO better name?
+            treeBuilderFor(huck.name, params)
+                .group({
+                    name: huck.name + " ideal?",
+                    by: async ar => {
+                        const hi = ar.analysis.fingerprints[huck.name];
+                        if (!hi) {
+                            return undefined;
+                        }
+                        const ideal = await featureManager.ideal(huck.name);
+                        if (ideal) {
+                            return hi.sha === ideal.sha ? `Yes (${huck.toDisplayableString(ideal)})` : "No";
+                        }
                         return !!hi ? huck.toDisplayableString(hi) : undefined;
                     },
                 })

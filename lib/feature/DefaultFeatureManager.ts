@@ -89,7 +89,7 @@ export class DefaultFeatureManager implements FeatureManager {
     public async ideal(name: string): Promise<FP | undefined> {
         // TODO use preferences
         if (name === "tsVersion") {
-            return new TypeScriptVersion("3.4.5");
+            return new TypeScriptVersion("^3.4.5");
         }
         return undefined;
     }
