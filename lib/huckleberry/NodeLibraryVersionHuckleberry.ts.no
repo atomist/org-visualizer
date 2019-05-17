@@ -19,7 +19,9 @@ import {
     AbstractFingerprint,
     CodeTransform,
 } from "@atomist/sdm";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { InferredTechnologyFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { NodeStack } from "@atomist/sdm-pack-analysis-node";
+import { TypeScriptVersion } from "./TypeScriptVersionFeature";
 
 /**
  * Represents a version of a particular library
@@ -35,21 +37,26 @@ export class NodeLibraryVersion extends AbstractFingerprint {
     }
 }
 
-export class NodeLibraryVersionHuckleberry implements Huckleberry<NodeLibraryVersion> {
+export class NodeLibraryVersionHuckleberry implements InferredTechnologyFeature<NodeStack, NodeLibraryVersion> {
 
     private readonly flags: Array<(n: NodeLibraryVersion) => WarningFlag>;
 
-    public makeItSo(t: NodeLibraryVersion): CodeTransform {
-        return async p => {
-            throw new Error("Applying Node library version not yet supported");
+    public get apply() {
+        return async (p, t) => {
+            throw new Error(`Applying Node library version ${t.libVersion} not yet supported`);
         }
     };
+
+    public consequence(ns: NodeStack) {
+        const version = ns.dependencies.find(dep => dep.artifact);
+        return new NodeLibraryVersion(n)
+    }
 
     get name() {
         return isNodeLibraryVersion(this.sample) ? this.sample.libName : this.sample;
     }
 
-    public async canGrowHere(pa: ProjectAnalysis): Promise<boolean> {
+    public async relevant(pa: ProjectAnalysis): Promise<boolean> {
         return !!pa.elements.node;
     }
 
@@ -67,12 +74,8 @@ export class NodeLibraryVersionHuckleberry implements Huckleberry<NodeLibraryVer
         return undefined;
     }
 
-    public toReadableString(h: NodeLibraryVersion): string {
+    public toDisplayableString(h: NodeLibraryVersion): string {
         return h.libName + ":" + h.libVersion;
-    }
-
-    get ideal(): NodeLibraryVersion {
-        return isNodeLibraryVersion(this.sample) ? this.sample : undefined;
     }
 
     /**

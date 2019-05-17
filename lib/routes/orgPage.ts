@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { WellKnownQueries } from "./queries";
-import { huckQueries } from "./projectPage";
+import { huckQueries } from "./huckleberryQueries";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
-import { TypeScriptVersion } from "../huckleberry/TypeScriptVersionHuckleberry";
+import { TypeScriptVersion } from "../huckleberry/TypeScriptVersionFeature";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
@@ -66,6 +61,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             //WellKnownQueries
             const cannedQueryDefinition = huckQueries[req.params.query];
             if (!cannedQueryDefinition) {
+                console.log("Known huck queries = " + Object.getOwnPropertyNames(huckQueries));
                 return res.render("noQuery", {
                     query: req.params.query,
                 });
@@ -80,15 +76,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/querydata/:query", ...handlers, async (req, res) => {
             const cannedQuery = huckQueries[req.params.query](req.query);
             const repos = await store.loadAll();
-
-            repos.forEach(analyzedRepo => {
-                // TODO fragile
-                const node = analyzedRepo.analysis.elements.node as NodeStack;
-                if (node) {
-                    analyzedRepo.analysis.fingerprints.tsVersion = new TypeScriptVersion(node.typeScript.version);
-                }
-            });
-
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
             res.json(data);

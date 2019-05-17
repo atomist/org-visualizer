@@ -15,55 +15,47 @@
  */
 
 import { Huckleberry } from "./Huckleberry";
-import {
-    Interpretation,
-    ProjectAnalysis,
-} from "@atomist/sdm-pack-analysis";
-import {
-    AutofixRegistration,
-    CodeTransformRegistration,
-} from "@atomist/sdm";
+import { ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
+import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
 export class HuckleberryManager {
 
-    public readonly huckleberries: Huckleberry<any>[];
+    public readonly huckleberries: ManagedFeature<any>[];
 
-    /**
-     * Commands to transform
-     * @return {Array<CodeTransformRegistration<{name: string}>>}
-     */
-    get commands(): Array<CodeTransformRegistration<{ name: string }>> {
-        // Commands
-        return this.huckleberries
-            .map(huck => {
-                return {
-                    name: `add-hucklerry-${huck.name}`,
-                    intent: `add huckleberry ${huck.name}`,
-                    transform: huck.makeItSo(huck.ideal, undefined),
-                }
-            });
-        // TODO huck extractor command
-    }
-
-    get autofixes(): AutofixRegistration[] {
-        return this.huckleberries
-            .filter(huck => !!huck.ideal && !!huck.makeItSo)
-            .map(huck => {
-                return {
-                    name: `${huck.name}-autofix`,
-                    // TODO this is wrong because it may not exist
-                    transform: huck.makeItSo(huck.ideal, undefined),
-                }
-            });
-    }
+    // /**
+    //  * Commands to transform
+    //  * @return {Array<CodeTransformRegistration<{name: string}>>}
+    //  */
+    // get commands(): Array<CodeTransformRegistration<{ name: string }>> {
+    //     // Commands
+    //     return this.huckleberries
+    //         .map(huck => {
+    //             return {
+    //                 name: `add-hucklerry-${huck.name}`,
+    //                 intent: `add huckleberry ${huck.name}`,
+    //                 transform: huck.makeItSo(huck.ideal, undefined),
+    //             }
+    //         });
+    //     // TODO huck extractor command
+    // }
+    //
+    // get autofixes(): AutofixRegistration[] {
+    //     return this.huckleberries
+    //         .filter(huck => !!huck.ideal && !!huck.makeItSo)
+    //         .map(huck => {
+    //             return {
+    //                 name: `${huck.name}-autofix`,
+    //                 // TODO this is wrong because it may not exist
+    //                 transform: huck.makeItSo(huck.ideal, undefined),
+    //             }
+    //         });
+    // }
 
     /**
      * Find all the Huckleberries we can manage in this project
-     * @param {Interpretation} interpretation
      * @return {Promise<Array<Huckleberry<any>>>}
      */
-    // TODO interpretation?
-    public async extract(pa: ProjectAnalysis): Promise<Array<Huckleberry<any>>> {
+    public async extract(pa: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
         return this.huckleberries
             .filter(huck => !!pa.fingerprints[huck.name]);
     }
@@ -73,14 +65,15 @@ export class HuckleberryManager {
      * They may not all be present
      * @return {Promise<Array<Huckleberry<any>>>}
      */
-    public async growable(analysis: ProjectAnalysis): Promise<Array<Huckleberry<any>>> {
-        const present = await this.extract(analysis);
-        const canGrow = await Promise.all(this.huckleberries
-             .map(h => h.canGrowHere(analysis)));
-        return this.huckleberries.filter((h, i) => !present[i] && canGrow[i])
+    public async growable(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
+        // const present = await this.extract(analysis);
+        // const canGrow = await Promise.all(this.huckleberries
+        //      .map(h => h.canGrowHere(analysis)));
+        // return this.huckleberries.filter((h, i) => !present[i] && canGrow[i])
+        return [];
     }
 
-    constructor(...huckleberries: Huckleberry<any>[]) {
+    constructor(...huckleberries: ManagedFeature<any>[]) {
         this.huckleberries = huckleberries;
     }
 }
