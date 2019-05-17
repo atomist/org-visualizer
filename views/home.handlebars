@@ -5,9 +5,10 @@
 <h3>Features</h3>
 
 {{#each features}}
-    <li>Ideal: {{this.ideal.data}}
-    <a href="./query/{{this.name}}?byOrg=true">{{this.name}}</a> -
-        <a href="./query/{{this.name}}-ideal?byOrg=true">Ideal {{this.name}}?</a>
+
+    <li><i>{{this.name}}</i> Ideal: {{this.ideal.data}}
+    <a href="./query/{{this.name}}?byOrg=true">Skew</a> -
+        <a href="./query/{{this.name}}-ideal?byOrg=true">Progress toward ideal</a>
     </li>
 {{/each}}
 

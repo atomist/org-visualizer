@@ -20,7 +20,7 @@ import {
 } from "./queries";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { FeatureManager } from "../feature/FeatureManager";
+import { FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 
 /**
@@ -53,8 +53,8 @@ export function featureQueriesFrom(hm: FeatureManager): Queries {
                             return undefined;
                         }
                         const ideal = await featureManager.ideal(huck.name);
-                        if (ideal) {
-                            console.log(`We have ${hi.sha} they have ${ideal.sha}`)
+                        if (ideal && isDistinctIdeal(ideal)) {
+                            console.log(`We have ${hi.sha} they have ${ideal.sha}`);
                             return hi.sha === ideal.sha ? `Yes (${huck.toDisplayableString(ideal)})` : "No";
                         }
                         return !!hi ? huck.toDisplayableString(hi) : undefined;
@@ -84,7 +84,7 @@ export async function featuresFound(fm: FeatureManager, ar: ProjectAnalysisResul
         results.push({
             name: huck.name,
             readable: huck.toDisplayableString(instance),
-            ideal: hideal ? huck.toDisplayableString(hideal) : undefined,
+            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
         });
     }
     return results;
@@ -92,13 +92,28 @@ export async function featuresFound(fm: FeatureManager, ar: ProjectAnalysisResul
 
 export async function possibleFeaturesNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
     const hucksFound = await fm.possibleFeaturesNotFound(ar.analysis);
+    const necessaryNotFound = await fm.necessaryFeaturesNotFound(ar.analysis);
+    const results: DisplayableFeature[] = [];
+    for (const huck of hucksFound.filter(h => !necessaryNotFound.some(n => n.name === h.name))) {
+        const hideal = await fm.ideal(huck.name);
+        results.push({
+            name: huck.name,
+            readable: "None",
+            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
+        });
+    }
+    return results;
+}
+
+export async function necessaryFeaturesNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
+    const hucksFound = await fm.necessaryFeaturesNotFound(ar.analysis);
     const results: DisplayableFeature[] = [];
     for (const huck of hucksFound) {
         const hideal = await fm.ideal(huck.name);
         results.push({
             name: huck.name,
             readable: "None",
-            ideal: hideal ? huck.toDisplayableString(hideal) : undefined,
+            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
         });
     }
     return results;

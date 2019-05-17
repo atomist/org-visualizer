@@ -1,24 +1,36 @@
 
 <h1>Project {{owner}} / {{repo}}</h1>
 
+<a href="../../">Home</a>
+<br/>
+
 <h2>Project Source</h2>
 <a href="{{analysis.id.url}}">{{analysis.id.url}}</a>
 
 <h2>Detail</h2>
 
-Huckleberries:
+Features:
 
 <ul>
-{{#each huckleberries}}
+{{#each featuresFound}}
     <li>{{this.name}} {{this.readable}} <b><font color="red">{{this.ideal}}</b></font>
     </li>
 {{/each}}
 </ul>
 
 <br>
-Possible Huckleberries:
+Desired other features:
 <ul>
-{{#each otherHuckleberries}}
+    {{#each necessaryFeaturesNotFound}}
+        <li>{{this.name}} <b>{{this.ideal}}</b>
+        </li>
+    {{/each}}
+</ul>
+
+<br>
+Possible other features:
+<ul>
+{{#each possibleFeaturesNotFound}}
     <li>{{this.name}} <b>{{this.ideal}}</b>
     </li>
 {{/each}}

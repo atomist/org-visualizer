@@ -17,7 +17,7 @@
 import {
     AbstractFingerprint,
 } from "@atomist/sdm";
-import { InferredTechnologyFeature } from "@atomist/sdm-pack-analysis";
+import { InferredFeature } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 
 export class TypeScriptVersion extends AbstractFingerprint {
@@ -28,7 +28,7 @@ export class TypeScriptVersion extends AbstractFingerprint {
 
 }
 
-export class TypeScriptVersionFeature implements InferredTechnologyFeature<NodeStack, TypeScriptVersion> {
+export class TypeScriptVersionFeature implements InferredFeature<NodeStack, TypeScriptVersion> {
 
     public readonly name = "tsVersion";
 
@@ -46,6 +46,10 @@ export class TypeScriptVersionFeature implements InferredTechnologyFeature<NodeS
     }
 
     public get relevanceTest() {
+        return pa => !!pa.elements.node;
+    }
+
+    public get necessityTest() {
         return pa => !!pa.elements.node;
     }
 

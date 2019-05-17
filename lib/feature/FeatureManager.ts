@@ -21,26 +21,47 @@ import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/Technolo
 import { FP } from "@atomist/sdm-pack-fingerprints";
 
 /**
+ * Constant meaning to eliminate a feature
+ * @type {string}
+ */
+export type Eliminate = "eliminate";
+
+export type IdealStatus = FP | undefined | Eliminate;
+
+export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
+    if (!idealStatus) {
+        return false;
+    }
+    const maybe = idealStatus as FP;
+    return !!maybe.abbreviation;
+}
+
+/**
  * Features must have unique names
  */
 export interface FeatureManager {
 
     features: Array<ManagedFeature<any>>;
 
-    featuresWithIdeals(): Promise<Array<ManagedFeature<any> & { ideal?: FP }>>;
+    featuresWithIdeals(): Promise<Array<ManagedFeature<any> & { ideal: IdealStatus }>>;
 
     /**
      * Find all the Features we can manage in this project
-     * @return {Promise<Array<Huckleberry<any>>>}
      */
     featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
 
     /**
      * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
-     * @return {Promise<Array<Huckleberry<any>>>}
      */
     possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
 
-    ideal(name: string): Promise<FP | undefined>;
+    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
+
+    /**
+     * Return exterminate if this feature should go
+     * @param {string} name
+     * @return {Promise<FP | "exterminate" | undefined>}
+     */
+    ideal(name: string): Promise<IdealStatus>;
 }

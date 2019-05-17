@@ -17,7 +17,7 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { FP } from "@atomist/sdm-pack-fingerprints";
-import { FeatureManager } from "./FeatureManager";
+import { Eliminate, FeatureManager, IdealStatus } from "./FeatureManager";
 import { TypeScriptVersion } from "./TypeScriptVersionFeature";
 
 /**
@@ -28,7 +28,7 @@ export class DefaultFeatureManager implements FeatureManager {
     public readonly features: ManagedFeature<any>[];
 
     public async featuresWithIdeals() {
-        const results: Array<ManagedFeature<any> & { ideal?: FP }> = [];
+        const results: Array<ManagedFeature<any> & { ideal: IdealStatus }> = [];
         for (const feature of this.features) {
             results.push({
                 ...feature,
@@ -82,14 +82,24 @@ export class DefaultFeatureManager implements FeatureManager {
     public async possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
         const present = await this.featuresFound(analysis);
         const canGrow = await Promise.all(this.features
-            .map(h => h.relevanceTest(analysis)));
+            .map(h => (h.relevanceTest || (() => false))(analysis)));
         return this.features.filter((h, i) => !present[i] && canGrow[i])
     }
 
-    public async ideal(name: string): Promise<FP | undefined> {
+    public async necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
+        const present = await this.featuresFound(analysis);
+        const shouldGrow = await Promise.all(this.features
+            .map(h => (h.necessityTest || (() => false))(analysis)));
+        return this.features.filter((h, i) => !present[i] && shouldGrow[i])
+    }
+
+    public async ideal(name: string): Promise<IdealStatus> {
         // TODO use preferences
         if (name === "tsVersion") {
             return new TypeScriptVersion("^3.4.5");
+        }
+        if (name === "axios") {
+            return "eliminate";
         }
         return undefined;
     }

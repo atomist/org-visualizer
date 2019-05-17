@@ -23,7 +23,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
 import {
-    featuresFound,
+    featuresFound, necessaryFeaturesNotFound,
     possibleFeaturesNotFound,
 } from "./featureQueries";
 import { featureManager } from "./features";
@@ -57,8 +57,10 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
-                    huckleberries: await featuresFound(featureManager, analyzedRepo),
-                    otherHuckleberries: await possibleFeaturesNotFound(featureManager, analyzedRepo),
+                    featuresFound: await featuresFound(featureManager, analyzedRepo),
+                    possibleFeaturesNotFound: await possibleFeaturesNotFound(featureManager, analyzedRepo),
+                    necessaryFeaturesNotFound: await necessaryFeaturesNotFound(featureManager, analyzedRepo),
+
                 });
             }
         });

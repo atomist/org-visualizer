@@ -17,10 +17,12 @@
 import { featureQueriesFrom } from "./featureQueries";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TypeScriptVersionFeature } from "../feature/TypeScriptVersionFeature";
+import { NodeLibraryVersion, NodeLibraryVersionFeature } from "../feature/NodeLibraryVersionFeature";
 
 export const featureManager = new DefaultFeatureManager(
     new TypeScriptVersionFeature(),
-    //new NodeLibraryVersionHuckleberry(new NodeLibraryVersion("@atomist/sdm", "2.0.0")),
+    new NodeLibraryVersionFeature("@atomist/sdm"),
+    new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
     //bannedLibraryHuckleberry("axios"),
 );
 export const featureQueries = featureQueriesFrom(featureManager);

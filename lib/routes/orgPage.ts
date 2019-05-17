@@ -50,9 +50,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.set("view engine", "handlebars");
         express.use(serveStatic("public", { index: false }));
 
+
         express.get("/", ...handlers, async (req, res) => {
+            const features = await featureManager.featuresWithIdeals();
             res.render("home", {
-                features: await featureManager.featuresWithIdeals(),
+                features,
             });
         });
 
@@ -72,7 +74,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             //WellKnownQueries
             const cannedQueryDefinition = allQueries[req.params.query];
             if (!cannedQueryDefinition) {
-                console.log("Known queries = " + Object.getOwnPropertyNames(allQueries));
                 return res.render("noQuery", {
                     query: req.params.query,
                 });
