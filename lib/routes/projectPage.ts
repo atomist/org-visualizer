@@ -19,10 +19,8 @@ import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
-import { TypeScriptVersion, } from "../huckleberry/TypeScriptVersionFeature";
-import { Huckleberry } from "../huckleberry/Huckleberry";
-import { NodeStack } from "@atomist/sdm-pack-analysis-node";
-import { possibleHuckleberries, presentHuckleberries } from "./huckleberryQueries";
+import { possibleFeaturesNotFound, featuresFound } from "./featureQueries";
+import { featureManager } from "./features";
 
 export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
@@ -53,8 +51,8 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
-                    huckleberries: await presentHuckleberries(analyzedRepo),
-                    otherHuckleberries: await possibleHuckleberries(analyzedRepo),
+                    huckleberries: await featuresFound(featureManager, analyzedRepo),
+                    otherHuckleberries: await possibleFeaturesNotFound(featureManager, analyzedRepo),
                 });
             }
         });

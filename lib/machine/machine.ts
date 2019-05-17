@@ -43,7 +43,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { packageLockScanner } from "../element/packageLock";
-import { TypeScriptVersion, TypeScriptVersionFeature } from "../huckleberry/TypeScriptVersionFeature";
+import { TypeScriptVersion, TypeScriptVersionFeature } from "../feature/TypeScriptVersionFeature";
 
 /**
  * Add scanners to the analyzer to extract data

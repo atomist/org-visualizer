@@ -15,18 +15,18 @@
  */
 
 import { Queries, treeBuilderFor } from "./queries";
-import { HuckleberryManager } from "../huckleberry/HuckleberryManager";
+import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
-import { TypeScriptVersionFeature } from "../huckleberry/TypeScriptVersionFeature";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { FeatureManager } from "../feature/FeatureManager";
 
 /**
  * Well known queries against our repo cohort
  */
-export function huckleberryQueries(hm: HuckleberryManager): Queries {
+export function featureQueriesFrom(hm: DefaultFeatureManager): Queries {
     const queries: Queries = {};
 
-    for (const huck of hm.huckleberries) {
+    for (const huck of hm.features) {
         queries[huck.name] = params =>
             // TODO better name?
             treeBuilderFor(huck.name, params)
@@ -45,44 +45,40 @@ export function huckleberryQueries(hm: HuckleberryManager): Queries {
 }
 
 
-const huckleberryManager = new HuckleberryManager(
-    new TypeScriptVersionFeature(),
-    //new NodeLibraryVersionHuckleberry(new NodeLibraryVersion("@atomist/sdm", "2.0.0")),
-    //bannedLibraryHuckleberry("axios"),
-);
 
-export interface DisplayableHuckleberry {
+export interface DisplayableFeature {
     name: string;
     readable: string;
     ideal?: string;
 }
 
-export const huckQueries = huckleberryQueries(huckleberryManager);
-
-export async function presentHuckleberries(ar: ProjectAnalysisResult): Promise<DisplayableHuckleberry[]> {
-    const hucksFound = await huckleberryManager.extract(ar.analysis);
-    return hucksFound.map(huck => {
+export async function featuresFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
+    const hucksFound = await fm.featuresFound(ar.analysis);
+    const results: DisplayableFeature[] = [];
+    for (const huck of hucksFound) {
         const instance = ar.analysis.fingerprints[huck.name];
-        // TODO check if it has a ideal before attempting to compute it
-        return {
+        const hideal = await fm.ideal(huck.name);
+        results.push({
             name: huck.name,
             readable: huck.toDisplayableString(instance),
-            // ideal: huck.toDisplayableString(huck.ideal),
-        };
-    });
+            ideal: hideal ? huck.toDisplayableString(hideal) : undefined,
+        });
+    }
+    return results;
 }
 
-export async function possibleHuckleberries(ar: ProjectAnalysisResult): Promise<DisplayableHuckleberry[]> {
-    //const i = analy
-    const hucksFound = await huckleberryManager.growable(ar.analysis);
-    return hucksFound.map(huck => {
-        // TODO check if it has a ideal
-        return {
+export async function possibleFeaturesNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
+    const hucksFound = await fm.possibleFeaturesNotFound(ar.analysis);
+    const results: DisplayableFeature[] = [];
+    for (const huck of hucksFound) {
+        const hideal = await fm.ideal(huck.name);
+        results.push({
             name: huck.name,
-            readable: "Absent",
-            //ideal: huck.toDisplayableString(huck.ideal),
-        };
-    });
+            readable: "None",
+            ideal: hideal ? huck.toDisplayableString(hideal) : undefined,
+        });
+    }
+    return results;
 }
 
 

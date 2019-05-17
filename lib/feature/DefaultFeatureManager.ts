@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { Huckleberry } from "./Huckleberry";
-import { ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
+import { FP } from "@atomist/sdm-pack-fingerprints";
+import { FeatureManager } from "./FeatureManager";
 
-export class HuckleberryManager {
+/**
+ * Features must have unique names
+ */
+export class DefaultFeatureManager implements FeatureManager {
 
-    public readonly huckleberries: ManagedFeature<any>[];
+    public readonly features: ManagedFeature<any>[];
 
     // /**
     //  * Commands to transform
@@ -52,28 +56,29 @@ export class HuckleberryManager {
     // }
 
     /**
-     * Find all the Huckleberries we can manage in this project
-     * @return {Promise<Array<Huckleberry<any>>>}
+     * Find all the Features we can manage in this project
      */
-    public async extract(pa: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
-        return this.huckleberries
+    public async featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
+        return this.features
             .filter(huck => !!pa.fingerprints[huck.name]);
     }
 
     /**
-     * Which Huckleberries could grow in this project that are not already growing.
+     * Which features could grow in this project that are not already growing.
      * They may not all be present
-     * @return {Promise<Array<Huckleberry<any>>>}
      */
-    public async growable(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
-        // const present = await this.extract(analysis);
-        // const canGrow = await Promise.all(this.huckleberries
-        //      .map(h => h.canGrowHere(analysis)));
-        // return this.huckleberries.filter((h, i) => !present[i] && canGrow[i])
-        return [];
+    public async possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>> {
+        const present = await this.featuresFound(analysis);
+        const canGrow = await Promise.all(this.features
+            .map(h => h.relevanceTest(analysis)));
+        return this.features.filter((h, i) => !present[i] && canGrow[i])
     }
 
-    constructor(...huckleberries: ManagedFeature<any>[]) {
-        this.huckleberries = huckleberries;
+    public async ideal(name: string): Promise<FP | undefined> {
+        return undefined;
+    }
+
+    constructor(...features: ManagedFeature<any>[]) {
+        this.features = features;
     }
 }
