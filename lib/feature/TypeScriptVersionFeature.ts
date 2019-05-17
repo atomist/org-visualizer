@@ -23,12 +23,9 @@ import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 export class TypeScriptVersion extends AbstractFingerprint {
 
     constructor(public readonly typeScriptVersion: string) {
-        super("tsVersion", "tsv", "1.0.0");
+        super("tsVersion", "tsv", "1.0.0", typeScriptVersion);
     }
 
-    get data(): string {
-        return JSON.stringify(this.typeScriptVersion);
-    }
 }
 
 export class TypeScriptVersionFeature implements InferredTechnologyFeature<NodeStack, TypeScriptVersion> {

@@ -54,6 +54,7 @@ export function featureQueriesFrom(hm: FeatureManager): Queries {
                         }
                         const ideal = await featureManager.ideal(huck.name);
                         if (ideal) {
+                            console.log(`We have ${hi.sha} they have ${ideal.sha}`)
                             return hi.sha === ideal.sha ? `Yes (${huck.toDisplayableString(ideal)})` : "No";
                         }
                         return !!hi ? huck.toDisplayableString(hi) : undefined;
