@@ -49,7 +49,7 @@ import { packageLockScanner } from "../element/packageLock";
 import {
     TypeScriptVersion,
     TypeScriptVersionFeature,
-} from "../feature/TypeScriptVersionFeature";
+} from "../feature/domain/TypeScriptVersionFeature";
 
 /**
  * Add scanners to the analyzer to extract data
