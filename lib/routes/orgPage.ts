@@ -18,9 +18,14 @@ import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration"
 import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { featureQueries } from "./features";
+import { WellKnownQueries } from "./queries";
+
+import * as _ from "lodash";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
+
+const allQueries = _.merge(featureQueries, WellKnownQueries);
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -57,9 +62,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const queryString = jsonToQueryString(req.query);
             //WellKnownQueries
-            const cannedQueryDefinition = featureQueries[req.params.query];
+            const cannedQueryDefinition = allQueries[req.params.query];
             if (!cannedQueryDefinition) {
-                console.log("Known huck queries = " + Object.getOwnPropertyNames(featureQueries));
+                console.log("Known queries = " + Object.getOwnPropertyNames(allQueries));
                 return res.render("noQuery", {
                     query: req.params.query,
                 });
@@ -72,7 +77,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             });
         });
         express.get("/querydata/:query", ...handlers, async (req, res) => {
-            const cannedQuery = featureQueries[req.params.query](req.query);
+            const cannedQuery = allQueries[req.params.query](req.query);
             const repos = await store.loadAll();
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
