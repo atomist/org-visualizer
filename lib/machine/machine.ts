@@ -22,23 +22,14 @@ import {
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
 import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
 import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
 
-import {
-    logger,
-} from "@atomist/automation-client";
-import {
-    nodeScanner,
-    nodeStackSupport,
-} from "@atomist/sdm-pack-analysis-node";
-import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
+import { logger, } from "@atomist/automation-client";
+import { nodeStackSupport, } from "@atomist/sdm-pack-analysis-node";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
 import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persist/FileSystemProjectAnalysisResultStore";
@@ -46,10 +37,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { packageLockScanner } from "../element/packageLock";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/domain/TypeScriptVersionFeature";
+import { features } from "../routes/features";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -59,16 +47,8 @@ import {
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         .withScanner(packageLockScanner)
-        .withScanner({
-            classify: () => undefined,
-            scan: nodeScanner,
-            features: [
-                // TODO bad to have to do these twice
-                new TypeScriptVersionFeature(),
-            ],
-        })
-        // .withStack(nodeStackSupport(sdm))
-        .withStack(springBootStackSupport(sdm))
+        .withStack(nodeStackSupport(sdm))
+        .withFeatures(features)
         .withScanner(new DockerScanner())
         .withScanner(travisScanner)
         .withScanner(circleScanner)

@@ -19,12 +19,17 @@ import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TypeScriptVersionFeature } from "../feature/domain/TypeScriptVersionFeature";
 import { NodeLibraryVersion, NodeLibraryVersionFeature } from "../feature/domain/NodeLibraryVersionFeature";
 import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
+import { createAnalyzer } from "../machine/machine";
+import { ManagedFeature } from "@atomist/sdm-pack-analysis";
 
-export const featureManager = new DefaultFeatureManager(
+export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
     new DockerBaseImageFeature(),
     new NodeLibraryVersionFeature("@atomist/sdm"),
     new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
-    //bannedLibraryHuckleberry("axios"),
+];
+
+export const featureManager = new DefaultFeatureManager(
+    ...features,
 );
 export const featureQueries = featureQueriesFrom(featureManager);
