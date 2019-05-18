@@ -45,10 +45,8 @@ export class SpecificDockerBaseImage extends AbstractFingerprint {
 export class SpecificDockerBaseImageFeature implements InferredFeature<DockerStack, SpecificDockerBaseImage> {
 
     get displayName() {
-        return "Docker base image " + this.name;
+        return "Docker base image " + this.image;
     }
-
-    public readonly name;
 
     public selector = fp => fp.name.startsWith("docker:");
 
@@ -85,7 +83,6 @@ export class SpecificDockerBaseImageFeature implements InferredFeature<DockerSta
     }
 
     constructor(public readonly image: string) {
-        this.name = `docker:${image}`;
     }
 
 }

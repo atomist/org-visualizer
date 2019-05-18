@@ -35,7 +35,7 @@ export const features: Array<ManagedFeature<any, any>> = [
 // Group
 
 const Ideals = {
-    axios: Eliminate,
+    "nodedeps:axios": Eliminate,
     "nodedeps:lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
     "nodedeps:@atomist/sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
     tsVersion: new TypeScriptVersion("^3.4.5"),
