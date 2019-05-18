@@ -35,6 +35,8 @@ export class NodeLibraryVersion extends AbstractFingerprint {
 
 export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, NodeLibraryVersion> {
 
+    public displayName = "Node dependencies";
+
     public selector = fp => fp.name.startsWith("nodedeps");
 
     public get apply() {

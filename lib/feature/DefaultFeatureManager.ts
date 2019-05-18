@@ -102,17 +102,19 @@ export class DefaultFeatureManager implements FeatureManager {
      * They may not all be present
      */
     public async possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>> {
-        const present = await this.featuresFound(analysis);
-        const canGrow = await Promise.all(this.features
-            .map(h => (h.relevanceTest || (() => false))(analysis)));
-        return this.features.filter((h, i) => !present[i] && canGrow[i])
+        // const present = await this.featuresFound(analysis);
+        // const canGrow = await Promise.all(this.features
+        //     .map(h => (h.relevanceTest || (() => false))(analysis)));
+        // return this.features.filter((h, i) => !present[i] && canGrow[i])
+        return [];
     }
 
     public async necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>> {
-        const present = await this.featuresFound(analysis);
-        const shouldGrow = await Promise.all(this.features
-            .map(h => (h.necessityTest || (() => false))(analysis)));
-        return this.features.filter((h, i) => !present[i] && shouldGrow[i])
+        // const present = await this.featuresFound(analysis);
+        // const shouldGrow = await Promise.all(this.features
+        //     .map(h => (h.necessityTest || (() => false))(analysis)));
+        // return this.features.filter((h, i) => !present[i] && shouldGrow[i])
+        return [];
     }
 
     constructor(

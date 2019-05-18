@@ -42,6 +42,8 @@ export class DockerBaseImage extends AbstractFingerprint {
 
 export class DockerBaseImageFeature implements InferredFeature<DockerStack, DockerBaseImage> {
 
+    public readonly displayName = "Docker base image";
+
     public readonly name = "docker-base-image";
 
     public selector = fp => fp.name === this.name;
