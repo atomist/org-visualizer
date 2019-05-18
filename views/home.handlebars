@@ -7,8 +7,8 @@
 {{#each features}}
 
     <li><i>{{this.name}}</i> Ideal: {{this.ideal.data}}
-    <a href="./query/{{this.name}}?byOrg=true">Skew</a> -
-        <a href="./query/{{this.name}}-ideal?byOrg=true">Progress toward ideal</a>
+    <a href="./query?name={{this.name}}&byOrg=true">Skew</a> -
+        <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal</a>
     </li>
 {{/each}}
 

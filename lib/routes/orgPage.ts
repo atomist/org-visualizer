@@ -63,7 +63,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 name: req.params.owner,
             });
         });
-        express.get("/query/:query", ...handlers, async (req, res) => {
+        express.get("/query", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             if (relevantRepos.length === 0) {
@@ -71,22 +71,23 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             }
 
             const queryString = jsonToQueryString(req.query);
-            //WellKnownQueries
-            const cannedQueryDefinition = allQueries[req.params.query];
+            const cannedQueryDefinition = allQueries[req.query.name];
             if (!cannedQueryDefinition) {
                 return res.render("noQuery", {
-                    query: req.params.query,
+                    query: req.query.name,
                 });
             }
-            const dataUrl = `/querydata/${req.params.query}?${queryString}`;
+            const dataUrl = `/query.json?${queryString}`;
             res.render("orgViz", {
                 name: req.params.owner,
                 dataUrl,
                 query: req.params.query,
             });
         });
-        express.get("/querydata/:query", ...handlers, async (req, res) => {
-            const cannedQuery = allQueries[req.params.query](req.query);
+        express.get("/query.json", ...handlers, async (req, res) => {
+            const cannedQuery = allQueries[req.query.name]({
+                //name: req.params.name,
+            });
             const repos = await store.loadAll();
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
