@@ -41,6 +41,8 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
         }
     };
 
+    selector = fp => fp.name === "tsVersion";
+
     public consequence(analysis: ProjectAnalysis) {
         const n = analysis.elements.node as NodeStack;
         if (!n) {

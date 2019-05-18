@@ -27,45 +27,49 @@ import {
 } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 
+import * as _ from "lodash";
+import { FP } from "@atomist/sdm-pack-fingerprints";
+
 /**
  * Well known queries against our repo cohort
  */
-export function featureQueriesFrom(hm: FeatureManager): Queries {
+export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisResult[]): Queries {
     const queries: Queries = {};
 
-    for (const huck of hm.features) {
-        queries[huck.name] = params =>
-            // TODO better name?
-            treeBuilderFor(huck.name, params)
+    const fingerprintNames = _.uniq(_.flatMap(repos, r => Object.getOwnPropertyNames(r.analysis.fingerprints)));
+    for (const name of fingerprintNames) {
+        queries[name] = params =>
+            treeBuilderFor(name, params)
                 .group({
-                    name: huck.name,
+                    name,
                     by: ar => {
-                        const hi = ar.analysis.fingerprints[huck.name];
-                        return !!hi ? huck.toDisplayableString(hi) : undefined;
+                        const fp = ar.analysis.fingerprints[name];
+                        const feature = hm.featureFor(fp);
+                        return !!fp ? feature.toDisplayableString(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisResultRenderer);
 
-        queries[huck.name + "-ideal"] = params =>
+        queries[name + "-ideal"] = params =>
             // TODO better name?
-            treeBuilderFor(huck.name, params)
+            treeBuilderFor(name, params)
                 .group({
-                    name: huck.name + " ideal?",
+                    name: name + " ideal?",
                     by: async ar => {
-                        const hi = ar.analysis.fingerprints[huck.name];
-                        const ideal = await featureManager.idealResolver(huck.name);
+                        const fp = ar.analysis.fingerprints[name];
+                        const ideal = await featureManager.idealResolver(name);
                         if (ideal === "eliminate") {
-                            return !hi ? `Yes (gone)` : "No (present)";
+                            return !fp ? `Yes (gone)` : "No (present)";
                         }
-                        if (!hi) {
+                        if (!fp) {
                             return undefined;
                         }
-
+                        const feature = hm.featureFor(fp);
                         if (ideal && isDistinctIdeal(ideal)) {
-                            console.log(`We have ${hi.sha} they have ${ideal.sha}`);
-                            return hi.sha === ideal.sha ? `Yes (${huck.toDisplayableString(ideal)})` : "No";
+                            console.log(`We have ${fp.sha} they have ${ideal.sha}`);
+                            return fp.sha === ideal.sha ? `Yes (${feature.toDisplayableString(ideal)})` : "No";
                         }
-                        return !!hi ? huck.toDisplayableString(hi) : undefined;
+                        return !!fp ? feature.toDisplayableString(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisResultRenderer);
@@ -77,31 +81,38 @@ export function featureQueriesFrom(hm: FeatureManager): Queries {
 
 
 
-export interface DisplayableFeature {
+export interface DisplayableFingerprint {
     name: string;
     readable: string;
     ideal?: string;
 }
 
-export async function featuresFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
-    const hucksFound = await fm.featuresFound(ar.analysis);
-    const results: DisplayableFeature[] = [];
-    for (const huck of hucksFound) {
-        const instance = ar.analysis.fingerprints[huck.name];
-        const hideal = await fm.idealResolver(huck.name);
-        results.push({
-            name: huck.name,
-            readable: huck.toDisplayableString(instance),
-            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
-        });
+function allFingerprints(ar: ProjectAnalysisResult): FP[] {
+    return Object.getOwnPropertyNames(ar.analysis.fingerprints).map(name => ar.analysis.fingerprints[name]);
+}
+
+export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
+    const results: DisplayableFingerprint[] = [];
+    const fingerprints = allFingerprints(ar);
+    for (const instance of fingerprints) {
+        const hideal = await fm.idealResolver(instance.name);
+        const huck = fm.featureFor(instance);
+        if (huck) {
+            results.push({
+                name: instance.name,
+                readable: huck.toDisplayableString(instance),
+                ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
+            });
+        }
     }
     return results;
 }
 
-export async function possibleFeaturesNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
+/*
+export async function possibleFingerprintsNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
     const hucksFound = await fm.possibleFeaturesNotFound(ar.analysis);
     const necessaryNotFound = await fm.necessaryFeaturesNotFound(ar.analysis);
-    const results: DisplayableFeature[] = [];
+    const results: DisplayableFingerprint[] = [];
     for (const huck of hucksFound.filter(h => !necessaryNotFound.some(n => n.name === h.name))) {
         const hideal = await fm.idealResolver(huck.name);
         results.push({
@@ -113,9 +124,9 @@ export async function possibleFeaturesNotFound(fm: FeatureManager, ar: ProjectAn
     return results;
 }
 
-export async function necessaryFeaturesNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFeature[]> {
+export async function necessaryFingerprintsNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
     const hucksFound = await fm.necessaryFeaturesNotFound(ar.analysis);
-    const results: DisplayableFeature[] = [];
+    const results: DisplayableFingerprint[] = [];
     for (const huck of hucksFound) {
         const hideal = await fm.idealResolver(huck.name);
         results.push({
@@ -127,5 +138,6 @@ export async function necessaryFeaturesNotFound(fm: FeatureManager, ar: ProjectA
     return results;
 }
 
+*/
 
 

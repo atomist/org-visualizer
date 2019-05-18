@@ -23,9 +23,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
 import {
-    featuresFound,
-    necessaryFeaturesNotFound,
-    possibleFeaturesNotFound,
+    fingerprintsFound,
 } from "./featureQueries";
 import { featureManager } from "./features";
 
@@ -58,9 +56,9 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
-                    featuresFound: await featuresFound(featureManager, analyzedRepo),
-                    possibleFeaturesNotFound: await possibleFeaturesNotFound(featureManager, analyzedRepo),
-                    necessaryFeaturesNotFound: await necessaryFeaturesNotFound(featureManager, analyzedRepo),
+                    featuresFound: await fingerprintsFound(featureManager, analyzedRepo),
+                    //possibleFeaturesNotFound: await possibleFingerprintsNotFound(featureManager, analyzedRepo),
+                    //necessaryFeaturesNotFound: await necessaryFingerprintsNotFound(featureManager, analyzedRepo),
 
                 });
             }

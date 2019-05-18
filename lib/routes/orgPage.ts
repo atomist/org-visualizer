@@ -22,16 +22,15 @@ import {
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     featureManager,
-    featureQueries,
 } from "./features";
 import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";
+import { featureQueriesFrom } from "./featureQueries";
+import { IdealStatus } from "../feature/FeatureManager";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
-
-const allQueries = _.merge(featureQueries, WellKnownQueries);
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -44,15 +43,16 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.use(helmet.frameguard({
             action: "allow-from",
             domain: "https://blog.atomist.com",
-          }));
+        }));
         const exphbs = require("express-handlebars");
         express.engine("handlebars", exphbs({ defaultLayout: "main" }));
         express.set("view engine", "handlebars");
         express.use(serveStatic("public", { index: false }));
 
-
         express.get("/", ...handlers, async (req, res) => {
-            const features = await featureManager.featuresWithIdeals();
+            const repos = await store.loadAll();
+
+            const features = await featureManager.managedFingerprints(repos);
             res.render("home", {
                 features,
             });
@@ -65,6 +65,10 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         });
         express.get("/query", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
+
+            const featureQueries = featureQueriesFrom(featureManager, repos);
+            const allQueries = _.merge(featureQueries, WellKnownQueries);
+
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             if (relevantRepos.length === 0) {
                 return res.send(`No matching repos for organization ${req.params.owner}`);
@@ -85,10 +89,14 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             });
         });
         express.get("/query.json", ...handlers, async (req, res) => {
+            const repos = await store.loadAll();
+
+            const featureQueries = featureQueriesFrom(featureManager, repos);
+            const allQueries = _.merge(featureQueries, WellKnownQueries);
+
             const cannedQuery = allQueries[req.query.name]({
                 //name: req.params.name,
             });
-            const repos = await store.loadAll();
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
             res.json(data);

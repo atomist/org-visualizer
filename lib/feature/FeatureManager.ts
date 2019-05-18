@@ -15,10 +15,11 @@
  */
 
 import {
-    ProjectAnalysis,
+    ManagedFeature,
+    ProjectAnalysis, TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
-import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 /**
  * Constant meaning to eliminate a feature
@@ -44,27 +45,41 @@ export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
 
 export type IdealResolver = (name: string) => Promise<IdealStatus>;
 
+export interface ManagedFingerprint {
+    name: string;
+    ideal: IdealStatus;
+}
+
 /**
  * Features must have unique names
  */
 export interface FeatureManager {
 
-    features: Array<ManagedFeature<any>>;
+    readonly features: Array<ManagedFeature<TechnologyElement>>;
 
-    featuresWithIdeals(): Promise<Array<ManagedFeature<any> & { ideal: IdealStatus }>>;
+    /**
+     * Find the feature that manages this fingerprint
+     * @param {FP} fp
+     * @return {ManagedFeature<TechnologyElement> | undefined}
+     */
+    featureFor(fp: FP): ManagedFeature<TechnologyElement> | undefined;
+
+    managedFingerprintNames(results: ProjectAnalysisResult[]): string[];
+
+    managedFingerprints(results: ProjectAnalysisResult[]): Promise<ManagedFingerprint[]>;
 
     /**
      * Find all the Features we can manage in this project
      */
-    featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
+    featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
 
     /**
      * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
      */
-    possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
+    possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
 
-    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
+    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
 
     /**
      * Function that can resolve status for this feature

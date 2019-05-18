@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-import { featureQueriesFrom } from "./featureQueries";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/domain/TypeScriptVersionFeature";
-import {
-    NodeLibraryVersion,
-    NodeLibraryVersionFeature,
-} from "../feature/domain/NodeLibraryVersionFeature";
+import { TypeScriptVersion, TypeScriptVersionFeature, } from "../feature/domain/TypeScriptVersionFeature";
+import { NodeLibraryVersion, NodeLibraryVersionFeature, } from "../feature/domain/NodeLibraryVersionFeature";
 import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
-import { createAnalyzer } from "../machine/machine";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
 import {
     SpecificDockerBaseImage,
@@ -37,9 +29,10 @@ export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
     new DockerBaseImageFeature(),
     new SpecificDockerBaseImageFeature("node"),
-    new NodeLibraryVersionFeature("@atomist/sdm"),
-    new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
+    new NodeLibraryVersionFeature(),
 ];
+
+// Group
 
 const Ideals = {
     axios: Eliminate,
@@ -52,4 +45,3 @@ export const featureManager = new DefaultFeatureManager(
     async name => Ideals[name],
     ...features,
 );
-export const featureQueries = featureQueriesFrom(featureManager);

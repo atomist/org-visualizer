@@ -21,7 +21,7 @@ import {
     InferredFeature,
     ProjectAnalysis,
 } from "@atomist/sdm-pack-analysis";
-import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
+import { RelevanceTest } from "@atomist/sdm-pack-analysis";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
 import {
@@ -43,6 +43,8 @@ export class DockerBaseImage extends AbstractFingerprint {
 export class DockerBaseImageFeature implements InferredFeature<DockerStack, DockerBaseImage> {
 
     public readonly name = "docker-base-image";
+
+    public selector = fp => fp.name === this.name;
 
     public get apply() {
         return async (p, t) => {

@@ -19,10 +19,9 @@ import {
 } from "@atomist/sdm";
 import {
     InferredFeature,
-    ProjectAnalysis,
+    ProjectAnalysis, RelevanceTest,
 } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
-import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
 /**
  * Represents a version of a particular library
@@ -30,13 +29,13 @@ import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/Technolog
 export class NodeLibraryVersion extends AbstractFingerprint {
 
     constructor(public readonly libName: string, public readonly libVersion: string) {
-        super(libName, libName, "1.0.0", libName + ":" + libVersion);
+        super("nodedeps:" + libName, libName, "1.0.0", libName + ":" + libVersion);
     }
 }
 
 export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, NodeLibraryVersion> {
 
-    //private readonly flags: Array<(n: NodeLibraryVersion) => WarningFlag>;
+    public selector = fp => fp.name.startsWith("nodedeps");
 
     public get apply() {
         return async (p, t) => {
@@ -49,27 +48,12 @@ export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, Nod
         if (!ns) {
             return undefined;
         }
-        const found = ns.dependencies.find(dep => dep.artifact === this.name);
-        return found ? new NodeLibraryVersion(this.name, found.version) : undefined;
+        return ns.dependencies.map(dep => new NodeLibraryVersion(dep.artifact, dep.version));
     }
 
     get relevanceTest(): RelevanceTest {
         return pa => !!pa.elements.node;
     }
-
-    public compare(h1: NodeLibraryVersion, h2: NodeLibraryVersion, by: string): number {
-        return h1.libVersion > h2.libVersion ? 1 : -1;
-    }
-
-    // public flag(h: NodeLibraryVersion): WarningFlag {
-    //     for (const flag of this.flags) {
-    //         const f = flag(h);
-    //         if (!!f) {
-    //             return f;
-    //         }
-    //     }
-    //     return undefined;
-    // }
 
     public toDisplayableString(h: NodeLibraryVersion): string {
         return h.libName + ":" + h.libVersion;
@@ -80,7 +64,7 @@ export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, Nod
     //  * @param {NodeLibraryVersion | string} sample
     //  * @param {(n: NodeLibraryVersion) => WarningFlag} flags
     //  */
-    constructor(public readonly name: string,
+    constructor(
                 public readonly necessityTest?: RelevanceTest) {
              //   ...flags: Array<(n: NodeLibraryVersion) => WarningFlag>) {
         //this.flags = flags;
@@ -100,4 +84,9 @@ function isNodeLibraryVersion(a: any): a is NodeLibraryVersion {
 //  */
 // export function bannedLibraryHuckleberry(name: string): Huckleberry<any> {
 //     return new NodeLibraryVersionFeature(name);
+// }
+
+
+// public compare(h1: NodeLibraryVersion, h2: NodeLibraryVersion, by: string): number {
+//     return h1.libVersion > h2.libVersion ? 1 : -1;
 // }
