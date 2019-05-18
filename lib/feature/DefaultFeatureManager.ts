@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { ManagedFeature, ProjectAnalysis, TechnologyElement } from "@atomist/sdm-pack-analysis";
+import {
+    ManagedFeature,
+    ProjectAnalysis,
+    TechnologyElement,
+} from "@atomist/sdm-pack-analysis";
 import {
     FeatureManager,
     IdealResolver,
-    IdealStatus, ManagedFingerprint, ManagedFingerprints,
+    IdealStatus,
+    ManagedFingerprint,
+    ManagedFingerprints,
 } from "./FeatureManager";
 
 import * as _ from "lodash";

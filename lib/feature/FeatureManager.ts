@@ -16,9 +16,13 @@
 
 import {
     ManagedFeature,
-    ProjectAnalysis, TechnologyElement,
+    ProjectAnalysis,
+    TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
-import { Feature, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { ManagedFingerprint } from "./FeatureManager";
 

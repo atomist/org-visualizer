@@ -15,8 +15,14 @@
  */
 
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { TypeScriptVersion, TypeScriptVersionFeature, } from "../feature/domain/TypeScriptVersionFeature";
-import { NodeLibraryVersion, NodeLibraryVersionFeature, } from "../feature/domain/NodeLibraryVersionFeature";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionFeature,
+} from "../feature/domain/TypeScriptVersionFeature";
+import {
+    NodeLibraryVersion,
+    NodeLibraryVersionFeature,
+} from "../feature/domain/NodeLibraryVersionFeature";
 import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
 import {
