@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint, } from "@atomist/sdm";
-import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import {
+    AbstractFingerprint,
+} from "@atomist/sdm";
+import {
+    InferredFeature,
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis";
 import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import { astUtils, InMemoryProject, InMemoryProjectFile } from "@atomist/automation-client";
+import {
+    astUtils,
+    InMemoryProject,
+    InMemoryProjectFile,
+} from "@atomist/automation-client";
 
 /**
  * Represents a version of a particular library

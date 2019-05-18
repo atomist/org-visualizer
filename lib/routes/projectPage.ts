@@ -23,7 +23,8 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
 import {
-    featuresFound, necessaryFeaturesNotFound,
+    featuresFound,
+    necessaryFeaturesNotFound,
     possibleFeaturesNotFound,
 } from "./featureQueries";
 import { featureManager } from "./features";

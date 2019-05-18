@@ -17,7 +17,10 @@
 import {
     AbstractFingerprint,
 } from "@atomist/sdm";
-import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import {
+    InferredFeature,
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 
 export class TypeScriptVersion extends AbstractFingerprint {

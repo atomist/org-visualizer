@@ -20,7 +20,11 @@ import {
 } from "./queries";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { Eliminate, FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
+import {
+    Eliminate,
+    FeatureManager,
+    isDistinctIdeal,
+} from "../feature/FeatureManager";
 import { featureManager } from "./features";
 
 /**
