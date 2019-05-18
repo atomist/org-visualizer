@@ -48,6 +48,11 @@ export type IdealResolver = (name: string) => Promise<IdealStatus>;
 
 export interface ManagedFingerprint {
     name: string;
+
+    /**
+     * Number of projects this fingerprint appears in
+     */
+    appearsIn: number;
     ideal: IdealStatus;
 }
 

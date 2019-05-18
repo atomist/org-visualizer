@@ -53,9 +53,9 @@ export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, Nod
         return ns.dependencies.map(dep => new NodeLibraryVersion(dep.artifact, dep.version));
     }
 
-    get relevanceTest(): RelevanceTest {
-        return pa => !!pa.elements.node;
-    }
+    // get relevanceTest(): RelevanceTest {
+    //     return pa => !!pa.elements.node;
+    // }
 
     public toDisplayableString(h: NodeLibraryVersion): string {
         return h.libName + ":" + h.libVersion;

@@ -36,12 +36,16 @@ export const features: Array<ManagedFeature<any, any>> = [
 
 const Ideals = {
     axios: Eliminate,
-    "@atomist/sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
+    "nodedeps:lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
+    "nodedeps:@atomist/sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
     tsVersion: new TypeScriptVersion("^3.4.5"),
     "docker:node": new SpecificDockerBaseImage("node", "11"),
 };
 
 export const featureManager = new DefaultFeatureManager(
-    async name => Ideals[name],
+    async name => {
+        console.log(`Ideal for '${name}' is ${JSON.stringify(Ideals[name])}`);
+        return Ideals[name];
+    },
     ...features,
 );

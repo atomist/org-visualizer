@@ -57,12 +57,13 @@ export class DefaultFeatureManager implements FeatureManager {
             for (const name of names) {
                 fingerprints.push({
                     name,
+                    appearsIn: fps.filter(fp => fp.name === name).length,
                     ideal: await this.idealResolver(name),
                 });
             }
             result.features.push({
                 feature,
-                fingerprints,
+                fingerprints: fingerprints.sort((a, b) => b.appearsIn - a.appearsIn),
             });
         }
         return result;

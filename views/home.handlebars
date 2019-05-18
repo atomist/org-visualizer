@@ -10,7 +10,7 @@
 
 {{#each this.fingerprints}}
 
-    <li><i>{{this.name}}</i> Ideal: {{this.ideal.data}}
+    <li><i>{{this.name}} ({{this.appearsIn}})</i> Ideal: {{this.ideal.data}}
     <a href="./query?name={{this.name}}&byOrg=true">Skew</a> -
         <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal</a>
     </li>
