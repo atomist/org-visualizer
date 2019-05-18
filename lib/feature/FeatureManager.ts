@@ -18,8 +18,9 @@ import {
     ManagedFeature,
     ProjectAnalysis, TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import { Feature, FP } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { ManagedFingerprint } from "./FeatureManager";
 
 /**
  * Constant meaning to eliminate a feature
@@ -50,6 +51,13 @@ export interface ManagedFingerprint {
     ideal: IdealStatus;
 }
 
+export interface ManagedFingerprints {
+    features: Array<{
+        feature: ManagedFeature<TechnologyElement>,
+        fingerprints: ManagedFingerprint[],
+    }>;
+}
+
 /**
  * Features must have unique names
  */
@@ -66,7 +74,7 @@ export interface FeatureManager {
 
     managedFingerprintNames(results: ProjectAnalysisResult[]): string[];
 
-    managedFingerprints(results: ProjectAnalysisResult[]): Promise<ManagedFingerprint[]>;
+    managedFingerprints(results: ProjectAnalysisResult[]): Promise<ManagedFingerprints>;
 
     /**
      * Find all the Features we can manage in this project

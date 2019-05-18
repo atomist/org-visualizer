@@ -5,12 +5,21 @@
 <h3>Features</h3>
 
 {{#each features}}
+    {{ this.feature.displayName}}
+    <p>
+
+{{#each this.fingerprints}}
 
     <li><i>{{this.name}}</i> Ideal: {{this.ideal.data}}
     <a href="./query?name={{this.name}}&byOrg=true">Skew</a> -
         <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal</a>
     </li>
 {{/each}}
+
+    <br>
+
+{{/each}}
+
 
 <h3>Community</h3>
 <li><a href="./query/path?path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of Conduct</a></li>

@@ -54,7 +54,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const features = await featureManager.managedFingerprints(repos);
             res.render("home", {
-                features,
+                features : features.features,
             });
         });
 

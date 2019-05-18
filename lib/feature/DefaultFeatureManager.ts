@@ -18,7 +18,7 @@ import { ManagedFeature, ProjectAnalysis, TechnologyElement } from "@atomist/sdm
 import {
     FeatureManager,
     IdealResolver,
-    IdealStatus, ManagedFingerprint,
+    IdealStatus, ManagedFingerprint, ManagedFingerprints,
 } from "./FeatureManager";
 
 import * as _ from "lodash";
@@ -46,16 +46,26 @@ export class DefaultFeatureManager implements FeatureManager {
         return _.uniq(relevantFingerprints.map(fp => fp.name));
     }
 
-    public async managedFingerprints(repos: ProjectAnalysisResult[]): Promise<ManagedFingerprint[]> {
-        const names = this.managedFingerprintNames(repos);
-        const results: ManagedFingerprint[] = [];
-        for (const name of names) {
-            results.push({
-                name,
-                ideal: await this.idealResolver(name),
+    public async managedFingerprints(repos: ProjectAnalysisResult[]): Promise<ManagedFingerprints> {
+        const result: ManagedFingerprints = {
+            features: [],
+        };
+        const fps: FP[] = _.flatMap(repos, allFingerprints);
+        for (const feature of this.features) {
+            const names = _.uniq(fps.filter(fp => feature.selector(fp)).map(fp => fp.name));
+            const fingerprints: ManagedFingerprint[] = [];
+            for (const name of names) {
+                fingerprints.push({
+                    name,
+                    ideal: await this.idealResolver(name),
+                });
+            }
+            result.features.push({
+                feature,
+                fingerprints,
             });
         }
-        return results;
+        return result;
     }
 
     // /**

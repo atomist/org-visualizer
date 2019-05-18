@@ -33,6 +33,8 @@ export class TypeScriptVersion extends AbstractFingerprint {
 
 export class TypeScriptVersionFeature implements InferredFeature<NodeStack, TypeScriptVersion> {
 
+    public displayName = "TypeScript version";
+
     public readonly name = "tsVersion";
 
     get apply() {
