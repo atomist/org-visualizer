@@ -18,6 +18,7 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { FeatureManager, IdealStatus } from "./FeatureManager";
 import { TypeScriptVersion } from "./domain/TypeScriptVersionFeature";
+import { SpecificDockerBaseImage } from "./domain/SpecificDockerBaseImageFeature";
 
 /**
  * Features must have unique names
@@ -96,6 +97,9 @@ export class DefaultFeatureManager implements FeatureManager {
         // TODO use preferences
         if (name === "tsVersion") {
             return new TypeScriptVersion("^3.4.5");
+        }
+        if (name === "docker:node") {
+            return new SpecificDockerBaseImage("node", "11");
         }
         if (name === "axios") {
             return "eliminate";

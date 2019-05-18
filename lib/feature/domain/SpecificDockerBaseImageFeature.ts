@@ -54,7 +54,7 @@ export class SpecificDockerBaseImageFeature implements InferredFeature<DockerSta
         if (images.length !== 1) {
             return undefined;
         }
-        const [image, version] = images[0].split(":");
+        const [image, version] = images[0].split(/[\:\/]/);
         if (image !== this.image) {
             return undefined;
         }
@@ -62,18 +62,8 @@ export class SpecificDockerBaseImageFeature implements InferredFeature<DockerSta
     }
 
     get relevanceTest(): RelevanceTest {
-        return pa => !!pa.elements.node;
+        return pa => true;
     }
-
-    // public flag(h: NodeLibraryVersion): WarningFlag {
-    //     for (const flag of this.flags) {
-    //         const f = flag(h);
-    //         if (!!f) {
-    //             return f;
-    //         }
-    //     }
-    //     return undefined;
-    // }
 
     public toDisplayableString(h: SpecificDockerBaseImage): string {
         return h.imageVersion;

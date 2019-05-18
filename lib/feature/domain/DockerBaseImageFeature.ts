@@ -18,8 +18,8 @@ import { AbstractFingerprint, } from "@atomist/sdm";
 import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
-
-import * as _ from "lodash";
+import { DockerFileParser } from "@atomist/sdm-pack-docker";
+import { astUtils, InMemoryProject, InMemoryProjectFile } from "@atomist/automation-client";
 
 /**
  * Represents a version of a particular library
@@ -41,24 +41,23 @@ export class DockerBaseImageFeature implements InferredFeature<DockerStack, Dock
         }
     };
 
-    public consequence(a: ProjectAnalysis) {
-       const s = _.get(a, "elements.docker.dockerFile.parsed.image");
-       return s ? new DockerBaseImage(s) : undefined;
+    public async consequence(a: ProjectAnalysis) {
+        const docker = a.elements.docker as DockerStack;
+        if (!docker || !docker.dockerFile) {
+            return undefined;
+        }
+        const file = new InMemoryProjectFile(docker.dockerFile.path, docker.dockerFile.content);
+        const images = await astUtils.findValues(InMemoryProject.of(file), DockerFileParser, "**/Dockerfile",
+            "//FROM/image");
+        if (images.length !== 1) {
+            return undefined;
+        }
+        return new DockerBaseImage(images[0]);
     }
 
     get relevanceTest(): RelevanceTest {
-        return pa => !!pa.elements.node;
+        return pa => true;
     }
-
-    // public flag(h: NodeLibraryVersion): WarningFlag {
-    //     for (const flag of this.flags) {
-    //         const f = flag(h);
-    //         if (!!f) {
-    //             return f;
-    //         }
-    //     }
-    //     return undefined;
-    // }
 
     public toDisplayableString(h: DockerBaseImage): string {
         return h.base;

@@ -20,7 +20,7 @@ import {
 } from "./queries";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
+import { Eliminate, FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 
 /**
@@ -49,10 +49,14 @@ export function featureQueriesFrom(hm: FeatureManager): Queries {
                     name: huck.name + " ideal?",
                     by: async ar => {
                         const hi = ar.analysis.fingerprints[huck.name];
+                        const ideal = await featureManager.ideal(huck.name);
+                        if (ideal === "eliminate") {
+                            return !hi ? `Yes (gone)` : "No (present)";
+                        }
                         if (!hi) {
                             return undefined;
                         }
-                        const ideal = await featureManager.ideal(huck.name);
+
                         if (ideal && isDistinctIdeal(ideal)) {
                             console.log(`We have ${hi.sha} they have ${ideal.sha}`);
                             return hi.sha === ideal.sha ? `Yes (${huck.toDisplayableString(ideal)})` : "No";
