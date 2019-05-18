@@ -15,7 +15,7 @@
  */
 
 import { AbstractFingerprint, } from "@atomist/sdm";
-import { InferredFeature } from "@atomist/sdm-pack-analysis";
+import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
@@ -39,7 +39,11 @@ export class NodeLibraryVersionFeature implements InferredFeature<NodeStack, Nod
         }
     };
 
-    public consequence(ns: NodeStack) {
+    public consequence(analysis: ProjectAnalysis) {
+        const ns = analysis.elements.node as NodeStack;
+        if (!ns) {
+            return undefined;
+        }
         const found = ns.dependencies.find(dep => dep.artifact === this.name);
         return found ? new NodeLibraryVersion(this.name, found.version) : undefined;
     }

@@ -15,7 +15,7 @@
  */
 
 import { AbstractFingerprint, } from "@atomist/sdm";
-import { InferredFeature } from "@atomist/sdm-pack-analysis";
+import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { RelevanceTest } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 
@@ -27,7 +27,7 @@ import * as _ from "lodash";
 export class DockerBaseImage extends AbstractFingerprint {
 
     constructor(public readonly base: string) {
-        super("docker", "dbi", "1.0.0", base);
+        super("docker-base-image", "dbi", "1.0.0", base);
     }
 }
 
@@ -41,8 +41,8 @@ export class DockerBaseImageFeature implements InferredFeature<DockerStack, Dock
         }
     };
 
-    public consequence(ns: DockerStack) {
-       const s = _.get(ns, "dockerFile.parsed.image");
+    public consequence(a: ProjectAnalysis) {
+       const s = _.get(a, "elements.docker.dockerFile.parsed.image");
        return s ? new DockerBaseImage(s) : undefined;
     }
 

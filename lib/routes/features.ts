@@ -21,10 +21,12 @@ import { NodeLibraryVersion, NodeLibraryVersionFeature } from "../feature/domain
 import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
 import { createAnalyzer } from "../machine/machine";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
+import { SpecificDockerBaseImageFeature } from "../feature/domain/SpecificDockerBaseImageFeature";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
     new DockerBaseImageFeature(),
+    new SpecificDockerBaseImageFeature("node"),
     new NodeLibraryVersionFeature("@atomist/sdm"),
     new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
 ];

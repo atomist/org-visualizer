@@ -17,7 +17,7 @@
 import {
     AbstractFingerprint,
 } from "@atomist/sdm";
-import { InferredFeature } from "@atomist/sdm-pack-analysis";
+import { InferredFeature, ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 
 export class TypeScriptVersion extends AbstractFingerprint {
@@ -38,8 +38,11 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
         }
     };
 
-    public consequence(n: NodeStack) {
-        console.log("Consequence of " + n);
+    public consequence(analysis: ProjectAnalysis) {
+        const n = analysis.elements.node as NodeStack;
+        if (!n) {
+            return undefined;
+        }
         return !!n.typeScript ?
             new TypeScriptVersion(n.typeScript.version) :
             undefined;

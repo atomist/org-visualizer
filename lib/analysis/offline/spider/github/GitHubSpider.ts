@@ -213,7 +213,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
     try {
         analyzeResults = await analyze(project, analyzer, criteria);
     } catch (err) {
-        logger.error("Could not clone/analyze " + sourceData.url + ": " + err.message);
+        logger.error("Could not clone/analyze " + sourceData.url + ": " + err.message, err);
         return {
             failedToCloneOrAnalyze: [{ repoUrl: sourceData.url, whileTryingTo: "analyze", message: err.message }],
             failedToPersist: [],
