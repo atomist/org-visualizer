@@ -16,7 +16,10 @@
 
 import { featureQueriesFrom } from "./featureQueries";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { TypeScriptVersion, TypeScriptVersionFeature } from "../feature/domain/TypeScriptVersionFeature";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionFeature,
+} from "../feature/domain/TypeScriptVersionFeature";
 import {
     NodeLibraryVersion,
     NodeLibraryVersionFeature,
@@ -26,7 +29,7 @@ import { createAnalyzer } from "../machine/machine";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
 import {
     SpecificDockerBaseImage,
-    SpecificDockerBaseImageFeature
+    SpecificDockerBaseImageFeature,
 } from "../feature/domain/SpecificDockerBaseImageFeature";
 import { Eliminate } from "../feature/FeatureManager";
 

@@ -16,7 +16,11 @@
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
-import { FeatureManager, IdealResolver, IdealStatus, } from "./FeatureManager";
+import {
+    FeatureManager,
+    IdealResolver,
+    IdealStatus,
+} from "./FeatureManager";
 
 /**
  * Features must have unique names
