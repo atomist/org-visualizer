@@ -53,7 +53,7 @@ export function featureQueriesFrom(hm: FeatureManager): Queries {
                     name: huck.name + " ideal?",
                     by: async ar => {
                         const hi = ar.analysis.fingerprints[huck.name];
-                        const ideal = await featureManager.ideal(huck.name);
+                        const ideal = await featureManager.idealResolver(huck.name);
                         if (ideal === "eliminate") {
                             return !hi ? `Yes (gone)` : "No (present)";
                         }
@@ -88,7 +88,7 @@ export async function featuresFound(fm: FeatureManager, ar: ProjectAnalysisResul
     const results: DisplayableFeature[] = [];
     for (const huck of hucksFound) {
         const instance = ar.analysis.fingerprints[huck.name];
-        const hideal = await fm.ideal(huck.name);
+        const hideal = await fm.idealResolver(huck.name);
         results.push({
             name: huck.name,
             readable: huck.toDisplayableString(instance),
@@ -103,7 +103,7 @@ export async function possibleFeaturesNotFound(fm: FeatureManager, ar: ProjectAn
     const necessaryNotFound = await fm.necessaryFeaturesNotFound(ar.analysis);
     const results: DisplayableFeature[] = [];
     for (const huck of hucksFound.filter(h => !necessaryNotFound.some(n => n.name === h.name))) {
-        const hideal = await fm.ideal(huck.name);
+        const hideal = await fm.idealResolver(huck.name);
         results.push({
             name: huck.name,
             readable: "None",
@@ -117,7 +117,7 @@ export async function necessaryFeaturesNotFound(fm: FeatureManager, ar: ProjectA
     const hucksFound = await fm.necessaryFeaturesNotFound(ar.analysis);
     const results: DisplayableFeature[] = [];
     for (const huck of hucksFound) {
-        const hideal = await fm.ideal(huck.name);
+        const hideal = await fm.idealResolver(huck.name);
         results.push({
             name: huck.name,
             readable: "None",

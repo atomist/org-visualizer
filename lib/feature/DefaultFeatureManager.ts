@@ -16,12 +16,7 @@
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
-import {
-    FeatureManager,
-    IdealStatus,
-} from "./FeatureManager";
-import { TypeScriptVersion } from "./domain/TypeScriptVersionFeature";
-import { SpecificDockerBaseImage } from "./domain/SpecificDockerBaseImageFeature";
+import { FeatureManager, IdealResolver, IdealStatus, } from "./FeatureManager";
 
 /**
  * Features must have unique names
@@ -35,7 +30,7 @@ export class DefaultFeatureManager implements FeatureManager {
         for (const feature of this.features) {
             results.push({
                 ...feature,
-                ideal: await this.ideal(feature.name),
+                ideal: await this.idealResolver(feature.name),
             })
         }
         return results;
@@ -96,21 +91,9 @@ export class DefaultFeatureManager implements FeatureManager {
         return this.features.filter((h, i) => !present[i] && shouldGrow[i])
     }
 
-    public async ideal(name: string): Promise<IdealStatus> {
-        // TODO use preferences
-        if (name === "tsVersion") {
-            return new TypeScriptVersion("^3.4.5");
-        }
-        if (name === "docker:node") {
-            return new SpecificDockerBaseImage("node", "11");
-        }
-        if (name === "axios") {
-            return "eliminate";
-        }
-        return undefined;
-    }
-
-    constructor(...features: ManagedFeature<any>[]) {
+    constructor(public readonly idealResolver: IdealResolver,
+                ...features: ManagedFeature<any>[]
+    ) {
         this.features = features;
     }
 }

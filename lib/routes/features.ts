@@ -16,7 +16,7 @@
 
 import { featureQueriesFrom } from "./featureQueries";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { TypeScriptVersionFeature } from "../feature/domain/TypeScriptVersionFeature";
+import { TypeScriptVersion, TypeScriptVersionFeature } from "../feature/domain/TypeScriptVersionFeature";
 import {
     NodeLibraryVersion,
     NodeLibraryVersionFeature,
@@ -24,7 +24,11 @@ import {
 import { DockerBaseImageFeature } from "../feature/domain/DockerBaseImageFeature";
 import { createAnalyzer } from "../machine/machine";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
-import { SpecificDockerBaseImageFeature } from "../feature/domain/SpecificDockerBaseImageFeature";
+import {
+    SpecificDockerBaseImage,
+    SpecificDockerBaseImageFeature
+} from "../feature/domain/SpecificDockerBaseImageFeature";
+import { Eliminate } from "../feature/FeatureManager";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
@@ -34,7 +38,15 @@ export const features: Array<ManagedFeature<any, any>> = [
     new NodeLibraryVersionFeature("axios",  pa => !!pa.elements.node),
 ];
 
+const Ideals = {
+    axios: Eliminate,
+    "@atomist/sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
+    tsVersion: new TypeScriptVersion("^3.4.5"),
+    "docker:node": new SpecificDockerBaseImage("docker:node", "11"),
+};
+
 export const featureManager = new DefaultFeatureManager(
+    async name => Ideals[name],
     ...features,
 );
 export const featureQueries = featureQueriesFrom(featureManager);

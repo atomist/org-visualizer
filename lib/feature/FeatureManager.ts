@@ -28,6 +28,12 @@ export type Eliminate = "eliminate";
 
 export type IdealStatus = FP | undefined | Eliminate;
 
+/**
+ * Constant version of eliminate
+ * @type {"eliminate"}
+ */
+export const Eliminate: Eliminate = "eliminate";
+
 export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
     if (!idealStatus) {
         return false;
@@ -35,6 +41,8 @@ export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
     const maybe = idealStatus as FP;
     return !!maybe.abbreviation;
 }
+
+export type IdealResolver = (name: string) => Promise<IdealStatus>;
 
 /**
  * Features must have unique names
@@ -59,9 +67,9 @@ export interface FeatureManager {
     necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<any>>>;
 
     /**
-     * Return exterminate if this feature should go
+     * Function that can resolve status for this feature
      * @param {string} name
      * @return {Promise<FP | "exterminate" | undefined>}
      */
-    ideal(name: string): Promise<IdealStatus>;
+    idealResolver: IdealResolver;
 }
