@@ -15,12 +15,22 @@
  */
 
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { TypeScriptVersion, TypeScriptVersionFeature, } from "../feature/domain/TypeScriptVersionFeature";
-import { NodeLibraryVersion, } from "../feature/domain/NodeLibraryVersionFeature";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionFeature,
+} from "../feature/domain/TypeScriptVersionFeature";
+import {
+    NodeLibraryVersion,
+} from "../feature/domain/NodeLibraryVersionFeature";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
-import { SpecificDockerBaseImage, } from "../feature/domain/SpecificDockerBaseImageFeature";
+import {
+    SpecificDockerBaseImage,
+} from "../feature/domain/SpecificDockerBaseImageFeature";
 import { Eliminate } from "../feature/FeatureManager";
-import { DockerFrom, NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import {
+    DockerFrom,
+    NpmDeps,
+} from "@atomist/sdm-pack-fingerprints";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
