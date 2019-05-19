@@ -29,6 +29,7 @@ import { featureManager } from "./features";
 
 import * as _ from "lodash";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { allFingerprints } from "../feature/DefaultFeatureManager";
 
 /**
  * Well known queries against our repo cohort
@@ -36,7 +37,7 @@ import { FP } from "@atomist/sdm-pack-fingerprints";
 export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisResult[]): Queries {
     const queries: Queries = {};
 
-    const fingerprintNames = _.uniq(_.flatMap(repos, r => Object.getOwnPropertyNames(r.analysis.fingerprints)));
+    const fingerprintNames = _.uniq(allFingerprints(repos).map(fp => fp.name));
     for (const name of fingerprintNames) {
         queries[name] = params =>
             treeBuilderFor(name, params)
@@ -51,7 +52,6 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
                 .renderWith(DefaultProjectAnalysisResultRenderer);
 
         queries[name + "-ideal"] = params =>
-            // TODO better name?
             treeBuilderFor(name, params)
                 .group({
                     name: name + " ideal?",
@@ -85,10 +85,6 @@ export interface DisplayableFingerprint {
     name: string;
     readable: string;
     ideal?: string;
-}
-
-function allFingerprints(ar: ProjectAnalysisResult): FP[] {
-    return Object.getOwnPropertyNames(ar.analysis.fingerprints).map(name => ar.analysis.fingerprints[name]);
 }
 
 export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {

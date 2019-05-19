@@ -31,8 +31,10 @@ import * as _ from "lodash";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
-function allFingerprints(ar: ProjectAnalysisResult): FP[] {
-    return Object.getOwnPropertyNames(ar.analysis.fingerprints).map(name => ar.analysis.fingerprints[name]);
+export function allFingerprints(ar: ProjectAnalysisResult | ProjectAnalysisResult[]): FP[] {
+    const results: ProjectAnalysisResult[] = Array.isArray(ar) ? ar : [ar] as any;
+    return _.flatMap(results, ar => Object.getOwnPropertyNames(ar.analysis.fingerprints)
+        .map(name => ar.analysis.fingerprints[name]));
 }
 
 /**
