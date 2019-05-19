@@ -73,7 +73,9 @@ export class DefaultFeatureManager implements FeatureManager {
             }
             result.features.push({
                 feature,
-                fingerprints: fingerprints.sort((a, b) => b.appearsIn - a.appearsIn),
+                fingerprints: fingerprints
+                    .sort((a, b) => b.appearsIn - a.appearsIn)
+                    .sort((a, b) => b.variants - a.variants),
             });
         }
         return result;

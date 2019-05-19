@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    Queries,
-    treeBuilderFor,
-} from "./queries";
+import { Queries, treeBuilderFor, } from "./queries";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import {
-    Eliminate,
-    FeatureManager,
-    isDistinctIdeal,
-} from "../feature/FeatureManager";
+import { FeatureManager, isDistinctIdeal, } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 
 import * as _ from "lodash";
-import { FP } from "@atomist/sdm-pack-fingerprints";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
 
 /**

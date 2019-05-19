@@ -53,6 +53,15 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const repos = await store.loadAll();
 
             const features = await featureManager.managedFingerprints(repos);
+
+            // Enrich features for handlebars template
+            for (const feature of features.features) {
+                for (const fp of feature.fingerprints) {
+                    (fp as any).bad = fp.variants > features.projectsAnalyzed / 10;
+                    (fp as any).good = fp.variants === 1;
+                }
+            }
+
             res.render("home", {
                 repos,
                 features,
