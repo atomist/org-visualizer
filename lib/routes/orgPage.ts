@@ -27,7 +27,10 @@ import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";
 import { featureQueriesFrom } from "./featureQueries";
-import { allManagedFingerprints, IdealStatus } from "../feature/FeatureManager";
+import {
+    allManagedFingerprints,
+    IdealStatus,
+} from "../feature/FeatureManager";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
