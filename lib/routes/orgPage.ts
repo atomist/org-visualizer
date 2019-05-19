@@ -25,7 +25,10 @@ import {
 } from "./features";
 import { WellKnownQueries } from "./queries";
 
+import { PossibleIdeals } from "@atomist/sdm-pack-analysis";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
+import { TypeScriptVersion } from "../feature/domain/TypeScriptVersionFeature";
 import {
     allManagedFingerprints,
     IdealStatus,
@@ -102,9 +105,23 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 if (ideal === "eliminate") {
                     return "eliminate";
                 }
-                console.log("JESS: " + ideal.data);
                 return ideal.data;
             }
+
+            const possibleIdeals: PossibleIdeals<FP> = {
+                world: {
+                    scope: "world",
+                    reason: "hard-coded",
+                    url: "http://jessitron.com",
+                    ideal: new TypeScriptVersion("3.4.56"),
+                },
+                fromProjects: {
+                    scope: "fromProjects",
+                    reason: "hard-coded also",
+                    url: "http://jessitron.com",
+                    ideal: new TypeScriptVersion("3.4.77"),
+                },
+            };
 
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             res.render("orgViz", {
@@ -112,6 +129,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 dataUrl,
                 query: req.params.query,
                 fingerprintName,
+                possibleIdeals,
                 currentIdeal: currentIdealForDisplay,
             });
         });

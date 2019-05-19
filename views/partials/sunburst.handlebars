@@ -1,10 +1,31 @@
 <!-- See https://bl.ocks.org/vasturiano/12da9071095fbd4df434e60d52d2d58d -->
-
 <!-- Display a sunburst -->
-
-<h1>{{ fingerprintName }}</h1>
-<h2>Current ideal: {{ currentIdeal }}</h2>
-
+<h1>
+  {{fingerprintName}}
+</h1>
+{{#if currentIdeal}}
+<h2>
+  Current ideal:
+  {{currentIdeal}}
+</h2>
+{{else}}
+<h2>
+  Set an ideal?
+</h2>
+{{#if possibleIdeals.world}}
+<li>
+  The <a href="{{possibleIdeals.world.url}}">world</a> suggests:
+  <button>{{possibleIdeals.world.ideal.data}}</button>
+</li>
+{{/if}}
+{{#if possibleIdeals.fromProjects}}
+<li>
+  Based on existing projects, you might want:
+  <button>{{possibleIdeals.fromProjects.ideal.data}}</button>
+</li>
+{{/if}}
+<li>Other: <input /><button type="submit">Set</button></li>
+{{/if}}
 <script>
-    sunburst('{{query}}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
+  sunburst('{{query}}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
 </script>
