@@ -19,8 +19,8 @@ import {
 } from "@atomist/sdm";
 import {
     InferredFeature,
-    ProjectAnalysis,
     PossibleIdeals,
+    ProjectAnalysis,
 } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 
