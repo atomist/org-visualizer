@@ -1,17 +1,19 @@
 <h1>Atomist Explorer</h1>
 
+{{ features.projectsAnalyzed }} projects
+
 <h2>Common queries</h2>
 
 <h3>Features</h3>
 
-{{#each features}}
+{{#each features.features}}
     {{ this.feature.displayName}}
     <p>
 
 {{#each this.fingerprints}}
 
     <li><i>{{this.name}}</i> ({{this.appearsIn}})
-    <a href="./query?name={{this.name}}&byOrg=true">Skew</a>
+    <a href="./query?name={{this.name}}&byOrg=true">Skew ({{this.variants}})</a>
     {{#if this.ideal }}
         - <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal <b>{{this.ideal.data}}</b></a>
     {{/if}}

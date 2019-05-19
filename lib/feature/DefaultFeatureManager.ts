@@ -56,6 +56,7 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public async managedFingerprints(repos: ProjectAnalysisResult[]): Promise<ManagedFingerprints> {
         const result: ManagedFingerprints = {
+            projectsAnalyzed: repos.length,
             features: [],
         };
         const fps: FP[] = _.flatMap(repos, allFingerprints);
@@ -66,6 +67,7 @@ export class DefaultFeatureManager implements FeatureManager {
                 fingerprints.push({
                     name,
                     appearsIn: fps.filter(fp => fp.name === name).length,
+                    variants: _.uniq(fps.filter(fp => fp.name === name).map(fp => fp.sha)).length,
                     ideal: await this.idealResolver(name),
                 });
             }

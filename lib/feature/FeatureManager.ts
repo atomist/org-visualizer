@@ -57,10 +57,19 @@ export interface ManagedFingerprint {
      * Number of projects this fingerprint appears in
      */
     appearsIn: number;
+
     ideal: IdealStatus;
+
+    /**
+     * Number of variants
+     */
+    variants: number;
 }
 
 export interface ManagedFingerprints {
+
+    projectsAnalyzed: number;
+
     features: Array<{
         feature: ManagedFeature<TechnologyElement>,
         fingerprints: ManagedFingerprint[],
