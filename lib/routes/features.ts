@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/domain/TypeScriptVersionFeature";
-import {
-    NodeLibraryVersion,
-} from "../feature/domain/NodeLibraryVersionFeature";
 import { ManagedFeature } from "@atomist/sdm-pack-analysis";
-import {
-    SpecificDockerBaseImage,
-} from "../feature/domain/SpecificDockerBaseImageFeature";
-import { Eliminate } from "../feature/FeatureManager";
 import {
     DockerFrom,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
+import {
+    NodeLibraryVersion,
+} from "../feature/domain/NodeLibraryVersionFeature";
+import {
+    SpecificDockerBaseImage,
+} from "../feature/domain/SpecificDockerBaseImageFeature";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionFeature,
+} from "../feature/domain/TypeScriptVersionFeature";
+import { Eliminate } from "../feature/FeatureManager";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
@@ -41,11 +41,11 @@ export const features: Array<ManagedFeature<any, any>> = [
 // Group
 
 const Ideals = {
-    "nodedeps:axios": Eliminate,
-    "nodedeps:lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
-    "nodedeps:@atomist/sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
-    tsVersion: new TypeScriptVersion("^3.4.5"),
-    "docker:node": new SpecificDockerBaseImage("node", "11"),
+    "npm-project-dep::axios": Eliminate,
+    "npm-project-dep::lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
+    "npm-project-dep::atomist::sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
+    //  "tsVersion": new TypeScriptVersion("^3.4.5"),
+    "docker-base-image-node": new SpecificDockerBaseImage("node", "11"),
 };
 
 export const featureManager = new DefaultFeatureManager(

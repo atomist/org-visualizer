@@ -20,6 +20,7 @@ import {
 import {
     InferredFeature,
     ProjectAnalysis,
+    PossibleIdeals,
 } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 
@@ -40,10 +41,10 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
     get apply() {
         return async (p, tsi) => {
             throw new Error(`Applying TypeScript version ${tsi.typeScriptVersion} not yet supported`);
-        }
-    };
+        };
+    }
 
-    selector = fp => fp.name === "tsVersion";
+    public selector = fp => fp.name === "tsVersion";
 
     public consequence(analysis: ProjectAnalysis) {
         const n = analysis.elements.node as NodeStack;
@@ -74,8 +75,23 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
         return h.typeScriptVersion;
     }
 
+    public async suggestIdeal(fingerprintName: string, cohort: TypeScriptVersion[]): Promise<PossibleIdeals<TypeScriptVersion>> {
+        return {
+            world: {
+                reason: "hard-coded",
+                url: "http://jessitron.com",
+                ideal: new TypeScriptVersion("3.4.57"),
+            },
+            fromProjects: {
+                reason: "hard-coded also",
+                url: "http://jessitron.com",
+                ideal: new TypeScriptVersion("3.4.79"),
+            },
+        };
+    }
+
 }
 
-//public compare(h1: TypeScriptVersion, h2: TypeScriptVersion, by: string): number {
+// public compare(h1: TypeScriptVersion, h2: TypeScriptVersion, by: string): number {
 //         return h1.typeScriptVersion > h2.typeScriptVersion ? 1 : -1;
 //     }

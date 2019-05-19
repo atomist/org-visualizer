@@ -84,6 +84,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const allQueries = _.merge(featureQueries, WellKnownQueries);
             const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
+            // TODO: this sucks
+            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             if (relevantRepos.length === 0) {
                 return res.send(`No matching repos for organization ${req.params.owner}`);
@@ -108,20 +111,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return ideal.data;
             }
 
-            const possibleIdeals: PossibleIdeals<FP> = {
-                world: {
-                    scope: "world",
-                    reason: "hard-coded",
-                    url: "http://jessitron.com",
-                    ideal: new TypeScriptVersion("3.4.56"),
-                },
-                fromProjects: {
-                    scope: "fromProjects",
-                    reason: "hard-coded also",
-                    url: "http://jessitron.com",
-                    ideal: new TypeScriptVersion("3.4.77"),
-                },
-            };
+            const possibleIdeals: PossibleIdeals<FP> = feature.suggestIdeal ?
+                await feature.suggestIdeal(fingerprintName, []) : {};
 
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             res.render("orgViz", {
