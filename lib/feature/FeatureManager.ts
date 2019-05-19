@@ -84,6 +84,15 @@ export interface ManagedFingerprints {
     }>;
 }
 
+export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {
+    const clone: ManagedFingerprints = _.cloneDeep(mfs);
+    for (const feature of clone.features) {
+        feature.fingerprints = feature.fingerprints.filter(test);
+    }
+    clone.features = clone.features.filter(f => f.fingerprints.length > 0);
+    return clone;
+}
+
 export function allManagedFingerprints(mfs: ManagedFingerprints): ManagedFingerprint[] {
     return _.uniqBy(_.flatMap(mfs.features, f => f.fingerprints), mf => mf.name);
 }

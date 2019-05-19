@@ -15,13 +15,11 @@
     </li>
 {{/each}}
 
-<h2>Common queries</h2>
 
-<h3>Features</h3>
+<h2>Features</h2>
 
-{{#each features.features}}
-    {{ this.feature.displayName}}
-    <p>
+{{#each importantFeatures.features}}
+    <h3>{{ this.feature.displayName}}</h3>
 
 {{#each this.fingerprints}}
 
@@ -34,9 +32,9 @@
     </li>
 {{/each}}
 
-    <br>
-
 {{/each}}
+
+<h2>Common queries</h2>
 
 
 <h3>Community</h3>

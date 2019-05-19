@@ -15,23 +15,19 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    featureManager,
-} from "./features";
+import { featureManager, } from "./features";
 import { WellKnownQueries } from "./queries";
 
 import { PossibleIdeals } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { TypeScriptVersion } from "../feature/domain/TypeScriptVersionFeature";
 import {
     allManagedFingerprints,
     IdealStatus,
+    ManagedFingerprints,
+    relevantFingerprints,
 } from "../feature/FeatureManager";
 import { featureQueriesFrom } from "./featureQueries";
 
@@ -65,10 +61,13 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 .sort((a, b) => b.appearsIn - a.appearsIn)
                 .sort((a, b) => b.variants - a.variants);
 
+            const importantFeatures = relevantFingerprints(features, fp => fp.variants > 1);
+
             res.render("home", {
                 actionableFingerprints,
                 repos,
                 features,
+                importantFeatures,
             });
         });
 
