@@ -26,11 +26,11 @@ import {
 import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";
-import { featureQueriesFrom } from "./featureQueries";
 import {
     allManagedFingerprints,
     IdealStatus,
 } from "../feature/FeatureManager";
+import { featureQueriesFrom } from "./featureQueries";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
@@ -79,6 +79,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const featureQueries = featureQueriesFrom(featureManager, repos);
             const allQueries = _.merge(featureQueries, WellKnownQueries);
+            const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             if (relevantRepos.length === 0) {
@@ -93,10 +94,25 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 });
             }
             const dataUrl = `/query.json?${queryString}`;
+
+            function displayIdeal(ideal: IdealStatus): string | undefined {
+                if (ideal === undefined) {
+                    return undefined;
+                }
+                if (ideal === "eliminate") {
+                    return "eliminate";
+                }
+                console.log("JESS: " + ideal.data);
+                return ideal.data;
+            }
+
+            const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             res.render("orgViz", {
                 name: req.params.owner,
                 dataUrl,
                 query: req.params.query,
+                fingerprintName,
+                currentIdeal: currentIdealForDisplay,
             });
         });
         express.get("/query.json", ...handlers, async (req, res) => {
@@ -106,7 +122,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const allQueries = _.merge(featureQueries, WellKnownQueries);
 
             const cannedQuery = allQueries[req.query.name]({
-                //name: req.params.name,
+                // name: req.params.name,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);

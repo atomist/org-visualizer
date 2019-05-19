@@ -2,6 +2,8 @@
 
 <!-- Display a sunburst -->
 
+<h1>{{ fingerprintName }}</h1>
+<h2>Current ideal: {{ currentIdeal }}</h2>
 
 <script>
     sunburst('{{query}}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
