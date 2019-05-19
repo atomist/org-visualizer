@@ -27,7 +27,7 @@ import { WellKnownQueries } from "./queries";
 
 import * as _ from "lodash";
 import { featureQueriesFrom } from "./featureQueries";
-import { IdealStatus } from "../feature/FeatureManager";
+import { allManagedFingerprints, IdealStatus } from "../feature/FeatureManager";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
@@ -54,15 +54,13 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const features = await featureManager.managedFingerprints(repos);
 
-            // Enrich features for handlebars template
-            for (const feature of features.features) {
-                for (const fp of feature.fingerprints) {
-                    (fp as any).bad = fp.variants > features.projectsAnalyzed / 10;
-                    (fp as any).good = fp.variants === 1;
-                }
-            }
+            const actionableFingerprints = allManagedFingerprints(features)
+                .filter(mf => mf.variants > features.projectsAnalyzed / 10)
+                .sort((a, b) => b.appearsIn - a.appearsIn)
+                .sort((a, b) => b.variants - a.variants);
 
             res.render("home", {
+                actionableFingerprints,
                 repos,
                 features,
             });

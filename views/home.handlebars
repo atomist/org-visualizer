@@ -2,6 +2,19 @@
 
 {{ features.projectsAnalyzed }} projects
 
+<h2>Action Items</h2>
+
+{{#each actionableFingerprints}}
+    <li><i>{{this.featureName}}:
+        {{this.name}}</i>: {{this.appearsIn}} projects,
+
+        <a href="./query?name={{this.name}}&byOrg=true">{{this.variants}} variants</a>
+        {{#if this.ideal }}
+            - <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal <b>{{this.ideal.data}}</b></a>
+        {{/if}}
+    </li>
+{{/each}}
+
 <h2>Common queries</h2>
 
 <h3>Features</h3>
@@ -12,13 +25,9 @@
 
 {{#each this.fingerprints}}
 
-    {{#if this.bad}}<font color="red"> {{else}} <font color="black">
-    {{/if}}
+        <li><i>{{this.name}}</i>: {{this.appearsIn}} projects,
 
-        <li><i>{{this.name}}</i> ({{this.appearsIn}})
-</font>
-
-    <a href="./query?name={{this.name}}&byOrg=true">Skew ({{this.variants}})</a>
+    <a href="./query?name={{this.name}}&byOrg=true">{{this.variants}} variants</a>
     {{#if this.ideal }}
         - <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal <b>{{this.ideal.data}}</b></a>
     {{/if}}

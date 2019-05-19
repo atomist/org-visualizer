@@ -26,6 +26,8 @@ import {
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { ManagedFingerprint } from "./FeatureManager";
 
+import * as _ from "lodash";
+
 /**
  * Constant meaning to eliminate a feature
  * @type {string}
@@ -51,6 +53,9 @@ export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
 export type IdealResolver = (name: string) => Promise<IdealStatus>;
 
 export interface ManagedFingerprint {
+
+    featureName: string;
+
     name: string;
 
     /**
@@ -70,10 +75,17 @@ export interface ManagedFingerprints {
 
     projectsAnalyzed: number;
 
+    /**
+     * Array of features with data about fingerprints they manage
+     */
     features: Array<{
         feature: ManagedFeature<TechnologyElement>,
         fingerprints: ManagedFingerprint[],
     }>;
+}
+
+export function allManagedFingerprints(mfs: ManagedFingerprints): ManagedFingerprint[] {
+    return _.uniqBy(_.flatMap(mfs.features, f => f.fingerprints), mf => mf.name);
 }
 
 /**

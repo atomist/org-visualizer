@@ -59,16 +59,17 @@ export class DefaultFeatureManager implements FeatureManager {
             projectsAnalyzed: repos.length,
             features: [],
         };
-        const fps: FP[] = _.flatMap(repos, allFingerprints);
+        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
-            const names = _.uniq(fps.filter(fp => feature.selector(fp)).map(fp => fp.name));
+            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: ManagedFingerprint[] = [];
             for (const name of names) {
                 fingerprints.push({
                     name,
-                    appearsIn: fps.filter(fp => fp.name === name).length,
-                    variants: _.uniq(fps.filter(fp => fp.name === name).map(fp => fp.sha)).length,
+                    appearsIn: allFingerprintsInAllProjects.filter(fp => fp.name === name).length,
+                    variants: _.uniq(allFingerprintsInAllProjects.filter(fp => fp.name === name).map(fp => fp.sha)).length,
                     ideal: await this.idealResolver(name),
+                    featureName: feature.displayName,
                 });
             }
             result.features.push({
