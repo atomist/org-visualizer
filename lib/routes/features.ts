@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ManagedFeature, Scorer } from "@atomist/sdm-pack-analysis";
+import {
+    ManagedFeature,
+    Scorer,
+} from "@atomist/sdm-pack-analysis";
 import {
     DockerFrom,
     NpmDeps,
@@ -30,7 +33,11 @@ import {
     TypeScriptVersion,
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
-import { Eliminate, FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
+import {
+    Eliminate,
+    FeatureManager,
+    isDistinctIdeal,
+} from "../feature/FeatureManager";
 import has = Reflect.has;
 import { FiveStar } from "@atomist/sdm-pack-analysis/lib/analysis/Score";
 

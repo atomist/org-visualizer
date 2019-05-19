@@ -15,9 +15,14 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Express, RequestHandler, } from "express";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager, } from "./features";
+import {
+    featureManager,
+} from "./features";
 import { WellKnownQueries } from "./queries";
 
 import { PossibleIdeals } from "@atomist/sdm-pack-analysis";
