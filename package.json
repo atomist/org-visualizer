@@ -27,7 +27,7 @@
     "@atomist/automation-client": "^1.4.1-nortissej.in-mem-subproject.20190513221636",
     "@atomist/sdm": "^1.5.0-master.20190517174921",
     "@atomist/sdm-core": "^1.5.0-master.20190422144825",
-    "@atomist/sdm-pack-analysis": "^1.1.0-ideals-change-the-world.20190519215622",
+    "@atomist/sdm-pack-analysis": "^1.1.0-ideals-change-the-world.20190519220841",
     "@atomist/sdm-pack-analysis-node": "^2.0.0-master.20190501154523",
     "@atomist/sdm-pack-analysis-spring": "^2.0.0-master.20190428091941",
     "@atomist/sdm-pack-build": "^1.0.3",

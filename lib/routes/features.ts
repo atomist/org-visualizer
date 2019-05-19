@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ManagedFeature } from "@atomist/sdm-pack-analysis";
+import { ManagedFeature, Scorer } from "@atomist/sdm-pack-analysis";
 import {
     DockerFrom,
     NpmDeps,
@@ -30,7 +30,9 @@ import {
     TypeScriptVersion,
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
-import { Eliminate } from "../feature/FeatureManager";
+import { Eliminate, FeatureManager, isDistinctIdeal } from "../feature/FeatureManager";
+import has = Reflect.has;
+import { FiveStar } from "@atomist/sdm-pack-analysis/lib/analysis/Score";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
@@ -44,7 +46,7 @@ const Ideals = {
     "npm-project-dep::axios": Eliminate,
     "npm-project-dep::lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
     "npm-project-dep::atomist::sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
-    //  "tsVersion": new TypeScriptVersion("^3.4.5"),
+     "tsVersion": new TypeScriptVersion("^3.4.5"),
     "docker-base-image-node": new SpecificDockerBaseImage("node", "11"),
 };
 
@@ -55,3 +57,25 @@ export const featureManager = new DefaultFeatureManager(
     },
     ...features,
 );
+
+export function idealConvergenceScorer(fm: FeatureManager): Scorer {
+    return async i => {
+        const allFingerprintNames = Object.getOwnPropertyNames(i.reason.analysis.fingerprints);
+        let correctFingerprints = 0;
+        let hasIdeal = 0;
+        for (const name of allFingerprintNames) {
+            const ideal = await fm.idealResolver(name);
+            if (isDistinctIdeal(ideal)) {
+                ++hasIdeal;
+                if (ideal.sha === i.reason.analysis.fingerprints[name].sha) {
+                    ++correctFingerprints;
+                }
+            }
+        }
+        const proportion = hasIdeal > 0 ? correctFingerprints / hasIdeal : 1;
+        return {
+            name: "ideals",
+            score: Math.round(proportion * 5) as any,
+        };
+    };
+}

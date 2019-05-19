@@ -24,7 +24,7 @@ import {
 import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
 import {
     analyzerBuilder,
-    ProjectAnalyzer,
+    ProjectAnalyzer, Scorer,
 } from "@atomist/sdm-pack-analysis";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
@@ -44,7 +44,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { packageLockScanner } from "../element/packageLock";
-import { features } from "../routes/features";
+import { featureManager, features, idealConvergenceScorer } from "../routes/features";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -64,6 +64,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(reactScanner)
         .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
         .withScanner(CodeOfConductScanner)
+        .withScorer(idealConvergenceScorer(featureManager))
         .build();
 }
 
