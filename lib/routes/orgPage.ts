@@ -21,7 +21,8 @@ import {
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
-    featureManager, setIdeal,
+    featureManager,
+    setIdeal,
 } from "./features";
 import { WellKnownQueries } from "./queries";
 
