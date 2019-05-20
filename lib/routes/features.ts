@@ -34,12 +34,6 @@ import {
 import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import {
-    NodeLibraryVersion,
-} from "../feature/domain/NodeLibraryVersionFeature";
-import {
-    SpecificDockerBaseImage,
-} from "../feature/domain/SpecificDockerBaseImageFeature";
-import {
     TypeScriptVersion,
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
