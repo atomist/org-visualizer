@@ -31,6 +31,7 @@ import {
     deconstructNpmDepsFingerprintName,
     getNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
+import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import {
     NodeLibraryVersion,
@@ -45,6 +46,7 @@ import {
 import {
     Eliminate,
     FeatureManager,
+    IdealStatus,
     isDistinctIdeal,
 } from "../feature/FeatureManager";
 
@@ -79,16 +81,32 @@ async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<Poss
 
 // Group
 
-const Ideals = {
+const DefaultIdeals: Record<string, IdealStatus> = {
     "npm-project-dep::axios": Eliminate,
-    "npm-project-dep::lodash": new NodeLibraryVersion("lodash", "^4.17.11"),
-    "npm-project-dep::atomist::sdm": new NodeLibraryVersion("@atomist/sdm", "1.5.0"),
+    "npm-project-dep::lodash": getNpmDepFingerprint("lodash", "^4.17.11"),
+    "npm-project-dep::atomist::sdm": getNpmDepFingerprint("@atomist/sdm", "1.5.0"),
     "tsVersion": new TypeScriptVersion("^3.4.5"),
-    "docker-base-image-node": new SpecificDockerBaseImage("node", "11"),
 };
+
+const stupidStorageFilename = "ideals.json";
+const Ideals: Record<string, IdealStatus> = retrieveFromStupidLocalStorage() || DefaultIdeals;
+
+function retrieveFromStupidLocalStorage(): Record<string, IdealStatus> | undefined {
+    try {
+        return JSON.parse(fs.readFileSync(stupidStorageFilename).toString());
+    } catch (err) {
+        logger.info("Did not retrieve from " + stupidStorageFilename + ": " + err.message);
+        return undefined;
+    }
+}
+
+function saveToStupidLocalStorage(value: Record<string, IdealStatus>): void {
+    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value));
+}
 
 export function setIdeal(fingerprintName: string, ideal: FP) {
     Ideals[fingerprintName] = ideal;
+    saveToStupidLocalStorage(Ideals);
 }
 
 export const featureManager = new DefaultFeatureManager(
