@@ -180,7 +180,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const allQueries = _.merge(featureQueries, WellKnownQueries);
 
             const cannedQuery = allQueries[req.query.name]({
-                // name: req.params.name,
+                ...req.query,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(relevantRepos);
