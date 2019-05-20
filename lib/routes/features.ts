@@ -95,7 +95,7 @@ function retrieveFromStupidLocalStorage(): Record<string, IdealStatus> | undefin
 }
 
 function saveToStupidLocalStorage(value: Record<string, IdealStatus>): void {
-    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value));
+    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, null, 2));
 }
 
 export function setIdeal(fingerprintName: string, ideal: FP) {

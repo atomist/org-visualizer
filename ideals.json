@@ -1,1 +1,51 @@
-{"npm-project-dep::axios":"eliminate","npm-project-dep::lodash":{"name":"npm-project-dep::lodash","abbreviation":"npmdeps","version":"0.0.1","data":["lodash","^4.17.11"],"sha":"8e3e3956d6cc0eaec951b18ba906e16dc60f5272a40c446efd584339f39278d0"},"npm-project-dep::atomist::sdm":{"name":"npm-project-dep::atomist::sdm","abbreviation":"npmdeps","version":"0.0.1","data":["@atomist/sdm","1.5.0"],"sha":"5db664376f9d41a1a3286fe435268ee60aaa74022a941d4eaa62e8825921a5c5"},"tsVersion":{"name":"tsVersion","abbreviation":"tsv","version":"1.0.0","data":"^3.4.5","sha":"93869460dfbb39a56390c1f4f91bde8ad83dc0793dd3a3e1ac6e24c9630740c99486f4aba7ddd44dbcaef8fbd2ce57cc58a1b0b5c4041ca2e355f309080a4755","typeScriptVersion":"^3.4.5"},"npm-project-dep::types::lodash":{"name":"npm-project-dep::types::lodash","abbreviation":"npmdeps","version":"0.0.1","data":["@types/lodash","4.14.130\n"],"sha":"730ddd149060da0b2c3097a1e4e3502e279809286ed958ac631069bd3f8b0583"}}
+{
+  "npm-project-dep::axios": "eliminate",
+  "npm-project-dep::lodash": {
+    "name": "npm-project-dep::lodash",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "lodash",
+      "^4.17.11"
+    ],
+    "sha": "8e3e3956d6cc0eaec951b18ba906e16dc60f5272a40c446efd584339f39278d0"
+  },
+  "npm-project-dep::atomist::sdm": {
+    "name": "npm-project-dep::atomist::sdm",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm",
+      "1.5.0"
+    ],
+    "sha": "5db664376f9d41a1a3286fe435268ee60aaa74022a941d4eaa62e8825921a5c5"
+  },
+  "tsVersion": {
+    "name": "tsVersion",
+    "abbreviation": "tsv",
+    "version": "1.0.0",
+    "data": "^3.4.5",
+    "sha": "93869460dfbb39a56390c1f4f91bde8ad83dc0793dd3a3e1ac6e24c9630740c99486f4aba7ddd44dbcaef8fbd2ce57cc58a1b0b5c4041ca2e355f309080a4755",
+    "typeScriptVersion": "^3.4.5"
+  },
+  "npm-project-dep::types::lodash": {
+    "name": "npm-project-dep::types::lodash",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/lodash",
+      "4.14.130\n"
+    ],
+    "sha": "730ddd149060da0b2c3097a1e4e3502e279809286ed958ac631069bd3f8b0583"
+  },
+  "npm-project-dep::atomist::sdm-core": {
+    "name": "npm-project-dep::atomist::sdm-core",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-core",
+      "1.4.0\n"
+    ],
+    "sha": "1ad37188bc4785d2dc89ee1493da43a7664cd51d574e96fb5ac02eb0209975bd"
+  }
+}
