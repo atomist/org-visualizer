@@ -26,7 +26,8 @@ import {
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import {
-    deconstructNpmDepsFingerprintName, getNpmDepFingerprint,
+    deconstructNpmDepsFingerprintName,
+    getNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import {
