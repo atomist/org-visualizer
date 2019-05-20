@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
+import { execPromise } from "@atomist/sdm";
 import {
     ManagedFeature,
     PossibleIdeal,
@@ -57,10 +59,19 @@ export const features: Array<ManagedFeature<any, any>> = [
 
 async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<PossibleIdeals<FP>> {
     const libraryName = deconstructNpmDepsFingerprintName(fingerprintName);
-    const world: PossibleIdeal<FP> = {
-        ideal: getNpmDepFingerprint(libraryName, "v4.2"),
-        reason: "latest from NPM",
-    };
+
+    let world: PossibleIdeal<FP>;
+    try {
+        const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
+        logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
+        world = {
+            ideal: getNpmDepFingerprint(libraryName, result.stdout),
+            reason: "latest from NPM",
+        };
+    } catch (err) {
+        logger.error("Could not find version of " + libraryName + ": " + err.message);
+    }
+
     return {
         world,
     };
