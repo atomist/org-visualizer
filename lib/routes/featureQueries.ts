@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {
-    Queries,
-    treeBuilderFor,
-} from "./queries";
-import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     FeatureManager,
     isDistinctIdeal,
 } from "../feature/FeatureManager";
 import { featureManager } from "./features";
+import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
+import {
+    Queries,
+    treeBuilderFor,
+} from "./queries";
 
 import * as _ from "lodash";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
@@ -44,7 +44,8 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
                     by: ar => {
                         const fp = ar.analysis.fingerprints[name];
                         const feature = hm.featureFor(fp);
-                        return !!fp ? feature.toDisplayableString(fp) : undefined;
+                        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
+                        return !!fp ? toDisplayableFingerprint(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisResultRenderer);
@@ -63,11 +64,13 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
                             return undefined;
                         }
                         const feature = hm.featureFor(fp);
+                        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
                         if (ideal && isDistinctIdeal(ideal)) {
                             console.log(`We have ${fp.sha} they have ${ideal.sha}`);
-                            return fp.sha === ideal.sha ? `Yes (${feature.toDisplayableString(ideal)})` : "No";
+
+                            return fp.sha === ideal.sha ? `Yes (${toDisplayableFingerprint(ideal)})` : "No";
                         }
-                        return !!fp ? feature.toDisplayableString(fp) : undefined;
+                        return !!fp ? feature.toDisplayableFingerprint(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisResultRenderer);
@@ -76,8 +79,6 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
     console.log("Huckleberry queries=" + Object.getOwnPropertyNames(queries));
     return queries;
 }
-
-
 
 export interface DisplayableFingerprint {
     name: string;
@@ -92,10 +93,11 @@ export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisR
         const hideal = await fm.idealResolver(instance.name);
         const huck = fm.featureFor(instance);
         if (huck) {
+            const toDisplayableFingerprint = huck.toDisplayableFingerprint || (fp => fp.data);
             results.push({
                 name: instance.name,
-                readable: huck.toDisplayableString(instance),
-                ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
+                readable: toDisplayableFingerprint(instance),
+                ideal: isDistinctIdeal(hideal) ? huck.toDisplayableFingerprint(hideal) : undefined,
             });
         }
     }
@@ -133,5 +135,3 @@ export async function necessaryFingerprintsNotFound(fm: FeatureManager, ar: Proj
 }
 
 */
-
-
