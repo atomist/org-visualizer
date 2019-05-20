@@ -139,7 +139,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return ideal.data;
             }
 
-
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = (feature && feature.toDisplayableFingerprintName) ?
                 feature.toDisplayableFingerprintName(fingerprintName) :
@@ -150,10 +149,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 // TODO: this sucks
                 if (feature && feature.suggestIdeal) {
                     possibleIdeals = await feature.suggestIdeal(fingerprintName, []);
-
+                    const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
                     for (const p of ["world", "local"]) {
                         if (possibleIdeals[p]) {
                             possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
+                            possibleIdeals[p].displayValue = toDisplayableFingerprint(possibleIdeals[p].ideal);
                         }
                     }
                 }
