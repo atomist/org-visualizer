@@ -104,6 +104,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.post("/setIdeal", ...handlers, async (req, res) => {
             logger.info("setting ideal " + JSON.stringify(req.body));
             setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
+            res.send(200);
         });
 
         express.get("/query", ...handlers, async (req, res) => {
@@ -112,9 +113,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const featureQueries = featureQueriesFrom(featureManager, repos);
             const allQueries = _.merge(featureQueries, WellKnownQueries);
             const fingerprintName = req.query.name.replace(/-ideal$/, "");
-
-            // TODO: this sucks
-            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
 
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             if (relevantRepos.length === 0) {
@@ -140,16 +138,21 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return ideal.data;
             }
 
-            const possibleIdeals: PossibleIdeals<FP> = feature.suggestIdeal ?
-                await feature.suggestIdeal(fingerprintName, []) : {};
+            const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
+            let possibleIdeals: PossibleIdeals<FP> = {};
+            if (!currentIdealForDisplay) {
+                // TODO: this sucks
+                const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+                if (feature && feature.suggestIdeal) {
+                    possibleIdeals = await feature.suggestIdeal(fingerprintName, []);
 
-            for (const p of ["world", "local"]) {
-                if (possibleIdeals[p]) {
-                    possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
+                    for (const p of ["world", "local"]) {
+                        if (possibleIdeals[p]) {
+                            possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
+                        }
+                    }
                 }
             }
-
-            const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             res.render("orgViz", {
                 name: req.params.owner,
                 dataUrl,

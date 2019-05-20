@@ -15,7 +15,6 @@
 {{#if possibleIdeals.world}}
 <li>
   The <a href="{{possibleIdeals.world.url}}">world</a> suggests:
-  <button>{{possibleIdeals.world.ideal.data}}</button>
   <form action="/setIdeal" method="post">
     <input hidden=true type="text" id="stringifiedFP" name="stringifiedFP"
       value="{{possibleIdeals.world.stringified}}" />
