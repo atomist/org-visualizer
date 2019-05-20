@@ -129,6 +129,12 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             }
             const dataUrl = `/query.json?${queryString}`;
 
+            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+            const fingerprintDisplayName = (feature && feature.toDisplayableFingerprintName) ?
+                feature.toDisplayableFingerprintName(fingerprintName) :
+                fingerprintName;
+
+            const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
             function displayIdeal(ideal: IdealStatus): string | undefined {
                 if (ideal === undefined) {
                     return undefined;
@@ -136,20 +142,19 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 if (ideal === "eliminate") {
                     return "eliminate";
                 }
-                return ideal.data;
+                try {
+                    return toDisplayableFingerprint(ideal);
+                } catch (err) {
+                    logger.error("Could not display fingerprint: " + err);
+                    return JSON.stringify(ideal.data);
+                }
             }
-
-            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
-            const fingerprintDisplayName = (feature && feature.toDisplayableFingerprintName) ?
-                feature.toDisplayableFingerprintName(fingerprintName) :
-                fingerprintName;
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             let possibleIdeals: PossibleIdeals<FP> = {};
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
                 if (feature && feature.suggestIdeal) {
                     possibleIdeals = await feature.suggestIdeal(fingerprintName, []);
-                    const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
                     for (const p of ["world", "local"]) {
                         if (possibleIdeals[p]) {
                             possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
