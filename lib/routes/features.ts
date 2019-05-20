@@ -87,6 +87,10 @@ const Ideals = {
     "docker-base-image-node": new SpecificDockerBaseImage("node", "11"),
 };
 
+export function setIdeal(fingerprintName: string, ideal: FP) {
+    Ideals[fingerprintName] = ideal;
+}
+
 export const featureManager = new DefaultFeatureManager(
     async name => {
         console.log(`Ideal for '${name}' is ${JSON.stringify(Ideals[name])}`);

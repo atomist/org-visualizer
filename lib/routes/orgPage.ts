@@ -21,10 +21,11 @@ import {
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
-    featureManager,
+    featureManager, setIdeal,
 } from "./features";
 import { WellKnownQueries } from "./queries";
 
+import { logger } from "@atomist/automation-client";
 import { PossibleIdeals } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
@@ -46,11 +47,19 @@ const serveStatic = require("serve-static");
  */
 export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
+
+        const bodyParser = require("body-parser");
+        express.use(bodyParser.json());       // to support JSON-encoded bodies
+        express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+            extended: true,
+        }));
+
         const helmet = require("helmet");
         express.use(helmet.frameguard({
             action: "allow-from",
             domain: "https://blog.atomist.com",
         }));
+
         const exphbs = require("express-handlebars");
         express.engine("handlebars", exphbs({ defaultLayout: "main" }));
         express.set("view engine", "handlebars");
@@ -89,8 +98,12 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return res.send(`No matching repos for organization ${req.params.owner}`);
             }
             return res.render("projects", {
-               repos,
+                repos,
             });
+        });
+        express.post("/setIdeal", ...handlers, async (req, res) => {
+            logger.info("setting ideal " + JSON.stringify(req.body));
+            setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
         });
 
         express.get("/query", ...handlers, async (req, res) => {
@@ -129,6 +142,12 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const possibleIdeals: PossibleIdeals<FP> = feature.suggestIdeal ?
                 await feature.suggestIdeal(fingerprintName, []) : {};
+
+            for (const p of ["world", "local"]) {
+                if (possibleIdeals[p]) {
+                    possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
+                }
+            }
 
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             res.render("orgViz", {
