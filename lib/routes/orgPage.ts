@@ -139,11 +139,15 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return ideal.data;
             }
 
+
+            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+            const fingerprintDisplayName = (feature && feature.toDisplayableFingerprintName) ?
+                feature.toDisplayableFingerprintName(fingerprintName) :
+                fingerprintName;
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             let possibleIdeals: PossibleIdeals<FP> = {};
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
-                const feature = featureManager.featureFor({ name: fingerprintName } as FP);
                 if (feature && feature.suggestIdeal) {
                     possibleIdeals = await feature.suggestIdeal(fingerprintName, []);
 
@@ -159,6 +163,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 dataUrl,
                 query: req.params.query,
                 fingerprintName,
+                fingerprintDisplayName,
                 possibleIdeals,
                 currentIdeal: currentIdealForDisplay,
             });
