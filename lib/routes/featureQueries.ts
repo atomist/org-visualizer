@@ -44,7 +44,7 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
                     by: ar => {
                         const fp = ar.analysis.fingerprints[name];
                         const feature = hm.featureFor(fp);
-                        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
+                        const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
                         return !!fp ? toDisplayableFingerprint(fp) : undefined;
                     },
                 })
