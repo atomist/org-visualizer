@@ -19,7 +19,7 @@ import {
     featureManager,
     IdealStore,
     retrieveFromStupidLocalStorage,
-    saveToStupidLocalStorage
+    saveToStupidLocalStorage,
 } from "./routes/features";
 import { allFingerprints } from "./feature/DefaultFeatureManager";
 
