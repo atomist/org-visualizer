@@ -81,6 +81,18 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 name: req.params.owner,
             });
         });
+
+        express.get("/projects", ...handlers, async (req, res) => {
+            const repos = await store.loadAll();
+            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
+            if (relevantRepos.length === 0) {
+                return res.send(`No matching repos for organization ${req.params.owner}`);
+            }
+            return res.render("projects", {
+               repos,
+            });
+        });
+
         express.get("/query", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 

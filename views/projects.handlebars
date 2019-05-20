@@ -1,0 +1,13 @@
+<h1>Atomist Explorer</h1>
+
+{{ repos.length }} projects
+
+<br>
+
+{{#each repos }}
+
+    <li>
+        <b>{{this.analysis.id.repo}}</b>: <a href="{{this.analysis.id.url}}">{{this.analysis.id.url}}</a>
+    </li>
+
+{{/each}}
