@@ -73,9 +73,9 @@ async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<Poss
     };
 }
 
-// Group
+export type IdealStore = Record<string, IdealStatus>;
 
-const DefaultIdeals: Record<string, IdealStatus> = {
+const DefaultIdeals: IdealStore = {
     "npm-project-dep::axios": Eliminate,
     "npm-project-dep::lodash": getNpmDepFingerprint("lodash", "^4.17.11"),
     "npm-project-dep::atomist::sdm": getNpmDepFingerprint("@atomist/sdm", "1.5.0"),
@@ -83,18 +83,21 @@ const DefaultIdeals: Record<string, IdealStatus> = {
 };
 
 const stupidStorageFilename = "ideals.json";
-const Ideals: Record<string, IdealStatus> = retrieveFromStupidLocalStorage() || DefaultIdeals;
+const Ideals: IdealStore = retrieveFromStupidLocalStorage();
 
-function retrieveFromStupidLocalStorage(): Record<string, IdealStatus> | undefined {
+export function retrieveFromStupidLocalStorage(): IdealStore {
     try {
-        return JSON.parse(fs.readFileSync(stupidStorageFilename).toString());
+        logger.info("Retrieving ideals from %s", stupidStorageFilename);
+        const ideals = JSON.parse(fs.readFileSync(stupidStorageFilename).toString());
+        logger.info("Found %d ideals", Object.getOwnPropertyNames(ideals).length);
+        return ideals;
     } catch (err) {
         logger.info("Did not retrieve from " + stupidStorageFilename + ": " + err.message);
-        return undefined;
+        return {};
     }
 }
 
-function saveToStupidLocalStorage(value: Record<string, IdealStatus>): void {
+export function saveToStupidLocalStorage(value: IdealStore): void {
     fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, null, 2));
 }
 

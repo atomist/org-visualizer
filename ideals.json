@@ -1,14 +1,31 @@
 {
-  "npm-project-dep::axios": "eliminate",
-  "npm-project-dep::lodash": {
-    "name": "npm-project-dep::lodash",
+  "tsVersion": {
+    "name": "tsVersion",
+    "abbreviation": "tsv",
+    "version": "1.0.0",
+    "data": "3.4.57",
+    "sha": "6e783249ff5cf9fab9c13f69be7d8bf153ade3ed117bb4b59b41eb777788b4d361fce2dcea54532fbfdd0e1d673e5f06550ecf97ffd2999599e3cbd0c4d3268e",
+    "typeScriptVersion": "3.4.57"
+  },
+  "npm-project-dep::atomist::antlr": {
+    "name": "npm-project-dep::atomist::antlr",
     "abbreviation": "npmdeps",
     "version": "0.0.1",
     "data": [
-      "lodash",
-      "^4.17.11"
+      "@atomist/antlr",
+      "1.0.2\n"
     ],
-    "sha": "8e3e3956d6cc0eaec951b18ba906e16dc60f5272a40c446efd584339f39278d0"
+    "sha": "a4b1bf87e996391334a941cfcfe83cbd9673f2ed7a8a5eae79939d2b7980478b"
+  },
+  "npm-project-dep::atomist::automation-client": {
+    "name": "npm-project-dep::atomist::automation-client",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client",
+      "1.4.0\n"
+    ],
+    "sha": "19db5eea6ca04401e7378c0d64710bb5d1f5257b4515c1dada25c9adb899abc2"
   },
   "npm-project-dep::atomist::sdm": {
     "name": "npm-project-dep::atomist::sdm",
@@ -16,17 +33,159 @@
     "version": "0.0.1",
     "data": [
       "@atomist/sdm",
-      "1.5.0"
+      "1.4.1\n"
     ],
-    "sha": "5db664376f9d41a1a3286fe435268ee60aaa74022a941d4eaa62e8825921a5c5"
+    "sha": "9493e6e455e9a62bc9242ac40a5e5c709c458ce426eb85f8bb61186538ee6491"
   },
-  "tsVersion": {
-    "name": "tsVersion",
-    "abbreviation": "tsv",
-    "version": "1.0.0",
-    "data": "^3.4.5",
-    "sha": "93869460dfbb39a56390c1f4f91bde8ad83dc0793dd3a3e1ac6e24c9630740c99486f4aba7ddd44dbcaef8fbd2ce57cc58a1b0b5c4041ca2e355f309080a4755",
-    "typeScriptVersion": "^3.4.5"
+  "npm-project-dep::atomist::sdm-pack-markdown": {
+    "name": "npm-project-dep::atomist::sdm-pack-markdown",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-markdown",
+      "0.1.3\n"
+    ],
+    "sha": "d590f22671112c61c846b429de7c21146c435542f3c7771a1367737446042918"
+  },
+  "npm-project-dep::material-ui::core": {
+    "name": "npm-project-dep::material-ui::core",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@material-ui/core",
+      "3.9.3\n"
+    ],
+    "sha": "dd061195aa4ed61aeff6f6f8e642c9f871f10ee314ee30346253aa359dc24636"
+  },
+  "npm-project-dep::types::codemirror": {
+    "name": "npm-project-dep::types::codemirror",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/codemirror",
+      "0.0.74\n"
+    ],
+    "sha": "621a9bcfd43af8ac402d99374a93e91cb062fda9219514b23cfad35db002f170"
+  },
+  "npm-project-dep::ajv": {
+    "name": "npm-project-dep::ajv",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "ajv",
+      "6.10.0\n"
+    ],
+    "sha": "30ae0b2ead4265856bc3856463dd7f587c80976be15198e80f7474b651eb2e90"
+  },
+  "npm-project-dep::codemirror": {
+    "name": "npm-project-dep::codemirror",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "codemirror",
+      "5.46.0\n"
+    ],
+    "sha": "da742f706e6a568b88735664062266ba999355c5330a116622105bb97c371318"
+  },
+  "npm-project-dep::express": {
+    "name": "npm-project-dep::express",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "express",
+      "4.17.0\n"
+    ],
+    "sha": "414f1135334f9ea8dbd6ed86b885951600d33461b2b3845d623a0abf188d342e"
+  },
+  "npm-project-dep::jsx-loader": {
+    "name": "npm-project-dep::jsx-loader",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "jsx-loader",
+      "0.13.2\n"
+    ],
+    "sha": "0ac9043cad1c501d151b4087d4a1b81911535665e56866348b6055527978cf85"
+  },
+  "npm-project-dep::lodash": {
+    "name": "npm-project-dep::lodash",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "lodash",
+      "4.17.11\n"
+    ],
+    "sha": "3d86a02a6200c43074a650d3716422c3c0604fd4896898105e98f706a0c00684"
+  },
+  "npm-project-dep::react": {
+    "name": "npm-project-dep::react",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "react",
+      "16.8.6\n"
+    ],
+    "sha": "02c78e1c43e679611d615a86fda3379c1d8f1959751ffb45fc5969c05af5d708"
+  },
+  "npm-project-dep::react-codemirror2": {
+    "name": "npm-project-dep::react-codemirror2",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "react-codemirror2",
+      "6.0.0\n"
+    ],
+    "sha": "b81010204b3123a62ca7fa5e837b9074c9f2012438a1d7b0d2fdb3bc1c374490"
+  },
+  "npm-project-dep::react-dom": {
+    "name": "npm-project-dep::react-dom",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "react-dom",
+      "16.8.6\n"
+    ],
+    "sha": "60cfef60ffe86f5db1c857b980bced421ad6e4af20b8f723f390ff5c3f98471c"
+  },
+  "npm-project-dep::react-json-view": {
+    "name": "npm-project-dep::react-json-view",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "react-json-view",
+      "1.19.1\n"
+    ],
+    "sha": "dd011de43120df6c1ac9c49bdfe09cc1118f1a281d4bf353358cb409abcabb7c"
+  },
+  "npm-project-dep::stringify-tree": {
+    "name": "npm-project-dep::stringify-tree",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "stringify-tree",
+      "1.0.2\n"
+    ],
+    "sha": "dcfdcff60b3d1e01ebebab2c11dffaa5b023cfc8f4aa9eb9a95dc7be8b022dd6"
+  },
+  "npm-project-dep::style-loader": {
+    "name": "npm-project-dep::style-loader",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "style-loader",
+      "0.23.1\n"
+    ],
+    "sha": "546fa67bdacecfdca155df6bfdef34e1b974ab830450052ccb23fd4fdfbd8c10"
+  },
+  "npm-project-dep::jessitron::antlr4ts": {
+    "name": "npm-project-dep::jessitron::antlr4ts",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@jessitron/antlr4ts",
+      "0.4.0-dev\n"
+    ],
+    "sha": "fb270b70117fbecadd9a3a3f4447e7d65cc99a45445c1c56ab42989fe39ddcfe"
   },
   "npm-project-dep::types::lodash": {
     "name": "npm-project-dep::types::lodash",
@@ -38,6 +197,56 @@
     ],
     "sha": "730ddd149060da0b2c3097a1e4e3502e279809286ed958ac631069bd3f8b0583"
   },
+  "npm-project-dep::antlr4ts": {
+    "name": "npm-project-dep::antlr4ts",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "antlr4ts",
+      "0.5.0-alpha.3\n"
+    ],
+    "sha": "99f45ee5e43ae6f1c412521bd7578d48b13f7e268baa74f29b81e49ecab3fcca"
+  },
+  "npm-project-dep::atomist::automation-client-ext-dashboard": {
+    "name": "npm-project-dep::atomist::automation-client-ext-dashboard",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client-ext-dashboard",
+      "1.0.2\n"
+    ],
+    "sha": "70ef4e5457c7b8d4f11080e9532f8996e56ce168b55d13b30e798edb4d32c6a5"
+  },
+  "npm-project-dep::atomist::automation-client-ext-logzio": {
+    "name": "npm-project-dep::atomist::automation-client-ext-logzio",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client-ext-logzio",
+      "1.0.2\n"
+    ],
+    "sha": "7fe83c90584ae3b8259eb2b624c53877051b50cf11d3e0885ff3bd35e38991f8"
+  },
+  "npm-project-dep::atomist::automation-client-ext-raven": {
+    "name": "npm-project-dep::atomist::automation-client-ext-raven",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client-ext-raven",
+      "1.0.2\n"
+    ],
+    "sha": "5c0147d8b52635d47f92ef04bc042759cb9db708bbfd70221e52e0c9153bd263"
+  },
+  "npm-project-dep::atomist::clj-editors": {
+    "name": "npm-project-dep::atomist::clj-editors",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/clj-editors",
+      "0.6.3\n"
+    ],
+    "sha": "117cd396156221a84d548e2b94a1cad925078b141ecf452dc15fdd9e54e6460f"
+  },
   "npm-project-dep::atomist::sdm-core": {
     "name": "npm-project-dep::atomist::sdm-core",
     "abbreviation": "npmdeps",
@@ -47,5 +256,2515 @@
       "1.4.0\n"
     ],
     "sha": "1ad37188bc4785d2dc89ee1493da43a7664cd51d574e96fb5ac02eb0209975bd"
+  },
+  "npm-project-dep::atomist::sdm-pack-build": {
+    "name": "npm-project-dep::atomist::sdm-pack-build",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-build",
+      "1.0.4\n"
+    ],
+    "sha": "f7464c4c2738dac185eebadd4b14e80c74397d161388e3875a68278643fbc0cd"
+  },
+  "npm-project-dep::atomist::sdm-pack-clojure": {
+    "name": "npm-project-dep::atomist::sdm-pack-clojure",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-clojure",
+      "1.0.11\n"
+    ],
+    "sha": "36e66b62f9c91fd2e7abda44f5cc4d41c7617f49fa883282a849fd69c1a5ee79"
+  },
+  "npm-project-dep::atomist::sdm-pack-docker": {
+    "name": "npm-project-dep::atomist::sdm-pack-docker",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-docker",
+      "1.2.0\n"
+    ],
+    "sha": "a856e921ac7cb89fce281bb1355298ccca95746012461418ede322586dfd089a"
+  },
+  "npm-project-dep::atomist::sdm-pack-fingerprints": {
+    "name": "npm-project-dep::atomist::sdm-pack-fingerprints",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-fingerprints",
+      "3.0.2\n"
+    ],
+    "sha": "80066249ba2f86f4b6008727cdd42d0687544451b9dc52935e91a1d6659e34d7"
+  },
+  "npm-project-dep::atomist::sdm-pack-issue": {
+    "name": "npm-project-dep::atomist::sdm-pack-issue",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-issue",
+      "1.2.2\n"
+    ],
+    "sha": "6fd07878e4aeba9808386475a50d05f2c451065322bddd6754ca15ad673567fc"
+  },
+  "npm-project-dep::atomist::sdm-pack-node": {
+    "name": "npm-project-dep::atomist::sdm-pack-node",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-node",
+      "1.0.3\n"
+    ],
+    "sha": "99fc893cef6a9fd122a34486746f2e7284cba01563562b6e96f2323d84f56137"
+  },
+  "npm-project-dep::atomist::slack-messages": {
+    "name": "npm-project-dep::atomist::slack-messages",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/slack-messages",
+      "1.1.0\n"
+    ],
+    "sha": "85b0b968050d808bb9c79b097bc4431547129f0c1814d833bc60916c33ea5940"
+  },
+  "npm-project-dep::kubernetes::client-node": {
+    "name": "npm-project-dep::kubernetes::client-node",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@kubernetes/client-node",
+      "0.8.2\n"
+    ],
+    "sha": "f33d239e258278475384f6295573c94f7f819bc386b69c736075d5a5bd13c5e9"
+  },
+  "npm-project-dep::dateformat": {
+    "name": "npm-project-dep::dateformat",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "dateformat",
+      "3.0.3\n"
+    ],
+    "sha": "0d52cd4afd60a454108de2b381e25ec91532be75b0ff05824a0c9072a725fc8d"
+  },
+  "npm-project-dep::fs-extra": {
+    "name": "npm-project-dep::fs-extra",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "fs-extra",
+      "8.0.1\n"
+    ],
+    "sha": "61d77ef50e44e7142f5b81500e1c9109a3462dda6465f842e8b01b4f3a619ca1"
+  },
+  "npm-project-dep::node-dir": {
+    "name": "npm-project-dep::node-dir",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "node-dir",
+      "0.1.17\n"
+    ],
+    "sha": "ca94f4f04efd13ad8b2d42a135ec5b250f8207619a82fbcd54260ab71050be3b"
+  },
+  "npm-project-dep::uuid": {
+    "name": "npm-project-dep::uuid",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "uuid",
+      "3.3.2\n"
+    ],
+    "sha": "881b545e6104f1b258ca41027029ea9a03b6269afee89a49b1c60f407cf0f15b"
+  },
+  "npm-project-dep::atomist::microgrammar": {
+    "name": "npm-project-dep::atomist::microgrammar",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/microgrammar",
+      "1.2.0\n"
+    ],
+    "sha": "0770fe73feee433fd83425f1af06a3badb9b5b12e8435aed0e2d9481c7ecbe81"
+  },
+  "npm-project-dep::atomist::sdm-pack-analysis": {
+    "name": "npm-project-dep::atomist::sdm-pack-analysis",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-analysis",
+      "1.0.0\n"
+    ],
+    "sha": "1f90eba8ab21b31e5bd2f46bc4d48b469e3d09407fc6a4d1820ea2f389fe0b70"
+  },
+  "npm-project-dep::atomist::sdm-pack-changelog": {
+    "name": "npm-project-dep::atomist::sdm-pack-changelog",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-changelog",
+      "1.0.2\n"
+    ],
+    "sha": "c67575f7650699f355f5a6f3ebb1d448452a1da48fe9afaf89346fee35355de8"
+  },
+  "npm-project-dep::atomist::sdm-pack-k8s": {
+    "name": "npm-project-dep::atomist::sdm-pack-k8s",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-k8s",
+      "1.4.2\n"
+    ],
+    "sha": "de0c6444fc389301886158e3443b13f0bddcddc00466e018857e97c7c33f0a6b"
+  },
+  "npm-project-dep::atomist::sdm-pack-s3": {
+    "name": "npm-project-dep::atomist::sdm-pack-s3",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-s3",
+      "0.4.1\n"
+    ],
+    "sha": "c9eb200325ca90cce043d60fd9c177566ce5dff4a1b861d3ac6317611ba00fcf"
+  },
+  "npm-project-dep::atomist::sdm-pack-spring": {
+    "name": "npm-project-dep::atomist::sdm-pack-spring",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-spring",
+      "1.1.1\n"
+    ],
+    "sha": "cdea530eb126428a8ca1530fa8bac56709248fa9a28d0eb40e4700eae6acc4a9"
+  },
+  "npm-project-dep::types::app-root-path": {
+    "name": "npm-project-dep::types::app-root-path",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/app-root-path",
+      "1.2.4\n"
+    ],
+    "sha": "7304da8fba423ab20546bb2ddbfadabf2fa0a0c8256fd245a624652677f8925a"
+  },
+  "npm-project-dep::types::fs-extra": {
+    "name": "npm-project-dep::types::fs-extra",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/fs-extra",
+      "7.0.0\n"
+    ],
+    "sha": "f2c868dc7c409d6cc76ecc79376f5b358c41997e3dfd60d5a044eb0e1db91afd"
+  },
+  "npm-project-dep::types::json-stringify-safe": {
+    "name": "npm-project-dep::types::json-stringify-safe",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/json-stringify-safe",
+      "5.0.0\n"
+    ],
+    "sha": "3d2db020233ae6b88c062af1bb7d4f3046135111759e358de80e1841586b8921"
+  },
+  "npm-project-dep::types::node": {
+    "name": "npm-project-dep::types::node",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/node",
+      "12.0.2\n"
+    ],
+    "sha": "72a16619f08961b36055b5ade4727d4d1412b9bb08a65b053044704a5aec763b"
+  },
+  "npm-project-dep::types::semver": {
+    "name": "npm-project-dep::types::semver",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/semver",
+      "6.0.0\n"
+    ],
+    "sha": "b795e9214367c924555a6a92a904600f869ba176af2c29c0f40cbe627986bc9c"
+  },
+  "npm-project-dep::app-root-path": {
+    "name": "npm-project-dep::app-root-path",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "app-root-path",
+      "2.2.1\n"
+    ],
+    "sha": "d149228ec53d3b3cee20a2280a4f7ca2fb78d7a470888661226b407d6aaffe10"
+  },
+  "npm-project-dep::compromise": {
+    "name": "npm-project-dep::compromise",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "compromise",
+      "11.13.2\n"
+    ],
+    "sha": "0e12b74a3ecbc0531024651fdc92a9f46989bc7bf8e4fe4a9c47eb3e14469aa7"
+  },
+  "npm-project-dep::gc-stats": {
+    "name": "npm-project-dep::gc-stats",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "gc-stats",
+      "1.3.0\n"
+    ],
+    "sha": "0d49ddbbee91f5be7ce52781f926913b6be49b313c3e11819911ed673269ac06"
+  },
+  "npm-project-dep::json-stringify-safe": {
+    "name": "npm-project-dep::json-stringify-safe",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "json-stringify-safe",
+      "5.0.1\n"
+    ],
+    "sha": "40378c4647a4db8febfaa233dac2dfdff8e30eca906a1e207423e759fc8dd56e"
+  },
+  "npm-project-dep::license-checker": {
+    "name": "npm-project-dep::license-checker",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "license-checker",
+      "25.0.1\n"
+    ],
+    "sha": "f90247e35af0a4a558ef6da9582b3138262dd50f325dd7fa902cbdae8ca0d76a"
+  },
+  "npm-project-dep::minimatch": {
+    "name": "npm-project-dep::minimatch",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "minimatch",
+      "3.0.4\n"
+    ],
+    "sha": "969725ef0deba9c2ea10a24337fcb49e49aee2b3d6cd9ef76ff4efe2d52a3802"
+  },
+  "npm-project-dep::semver": {
+    "name": "npm-project-dep::semver",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "semver",
+      "6.0.0\n"
+    ],
+    "sha": "553fe8e494467ee21f04f08a5971ec7bfca2ec07d0024535c21a8c3e2260acf4"
+  },
+  "npm-project-dep::spdx-license-list": {
+    "name": "npm-project-dep::spdx-license-list",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "spdx-license-list",
+      "6.0.0\n"
+    ],
+    "sha": "cb8e6c41263d0e88ad2c471bfb395b9298781f827f7e13932393553c3a086b2d"
+  },
+  "npm-project-dep::tslint": {
+    "name": "npm-project-dep::tslint",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "tslint",
+      "5.16.0\n"
+    ],
+    "sha": "1a28d69106e3c2ab4f9897ab234aba752e8532732392818e4672d3126a41666d"
+  },
+  "npm-project-dep::typedoc": {
+    "name": "npm-project-dep::typedoc",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "typedoc",
+      "0.14.2\n"
+    ],
+    "sha": "10f99acb4f38b4d0d7b8df5c313d2ef3918fe2f7ba8b112935e1ec45145b9cc6"
+  },
+  "npm-project-dep::typescript": {
+    "name": "npm-project-dep::typescript",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "typescript",
+      "3.4.5\n"
+    ],
+    "sha": "5b56dae3bb31b021ef4343b13e3fb7667ecc18ae2698d52da55296cdaa501e3d"
+  },
+  "npm-project-dep::types::serialize-error": {
+    "name": "npm-project-dep::types::serialize-error",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/serialize-error",
+      "4.0.1\n"
+    ],
+    "sha": "2b9681a49a64ec091e712b04e35f86a0886c682885458bb8bc7ecc7155876c60"
+  },
+  "npm-project-dep::serialize-error": {
+    "name": "npm-project-dep::serialize-error",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "serialize-error",
+      "4.1.0\n"
+    ],
+    "sha": "e328bc68466e1e2b021579e566b955a9560f3963883338af9f151ab401df6df8"
+  },
+  "npm-project-dep::humio": {
+    "name": "npm-project-dep::humio",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "humio",
+      "0.4.0-beta2\n"
+    ],
+    "sha": "7c77dedfd91e22606a0951052b69ce4f32000e02f2c947488e2e04c4c913202e"
+  },
+  "npm-project-dep::winston": {
+    "name": "npm-project-dep::winston",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "winston",
+      "3.2.1\n"
+    ],
+    "sha": "8df4eda21db4480beb83207d16f3295950a8e1b5b8da57e028bf976162b5ea25"
+  },
+  "npm-project-dep::winston-transport": {
+    "name": "npm-project-dep::winston-transport",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "winston-transport",
+      "4.3.0\n"
+    ],
+    "sha": "71898629d43471e6daa39079a1267f15dd1b2addfb81d2deb388fae29851693a"
+  },
+  "npm-project-dep::logzio-nodejs": {
+    "name": "npm-project-dep::logzio-nodejs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "logzio-nodejs",
+      "1.0.5\n"
+    ],
+    "sha": "24645c44321b1d7468b213d36594ccfe65c8260121fd4c785c47a080876c558f"
+  },
+  "npm-project-dep::node-vault": {
+    "name": "npm-project-dep::node-vault",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "node-vault",
+      "0.9.8\n"
+    ],
+    "sha": "acc85f3eb4108eb0c7b3b8df698b71cee4f484f25d11512bb365d50c41e69844"
+  },
+  "npm-project-dep::git-url-parse": {
+    "name": "npm-project-dep::git-url-parse",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "git-url-parse",
+      "11.1.2\n"
+    ],
+    "sha": "979b40fcebfb0d7d4ba9019e8cb5202e8d03a2db5871303bb3d7f5253a337f42"
+  },
+  "npm-project-dep::raven": {
+    "name": "npm-project-dep::raven",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "raven",
+      "2.6.4\n"
+    ],
+    "sha": "dfd1856db567561d13e40e41e292138b2137e90c10af704aba1e3fee655135e4"
+  },
+  "npm-project-dep::atomist::tree-path": {
+    "name": "npm-project-dep::atomist::tree-path",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/tree-path",
+      "1.0.3\n"
+    ],
+    "sha": "d531c867408b52c025c310f5b1b26c58fd92d151c6f6e99f2adbf596723ad564"
+  },
+  "npm-project-dep::octokit::rest": {
+    "name": "npm-project-dep::octokit::rest",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@octokit/rest",
+      "16.26.0\n"
+    ],
+    "sha": "e37760e653171e2cd299f08d974c56592c19f672148646a8502ad0d7c7b5af69"
+  },
+  "npm-project-dep::typed::curry": {
+    "name": "npm-project-dep::typed::curry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@typed/curry",
+      "1.0.1\n"
+    ],
+    "sha": "b1cb40bdf835ee106483ea23ded775f5d55b2276e73b1a1c6da6f7d08646d5cd"
+  },
+  "npm-project-dep::types::base-64": {
+    "name": "npm-project-dep::types::base-64",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/base-64",
+      "0.1.3\n"
+    ],
+    "sha": "abee6b98ae0915be8fc080a070a1ac2666b973a290df9a9eb1f488934aed1270"
+  },
+  "npm-project-dep::types::body-parser": {
+    "name": "npm-project-dep::types::body-parser",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/body-parser",
+      "1.17.0\n"
+    ],
+    "sha": "eb2a994725e270cf717513801c2d3015fb870841a2b5fe0f226489337cd36240"
+  },
+  "npm-project-dep::types::cors": {
+    "name": "npm-project-dep::types::cors",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/cors",
+      "2.8.5\n"
+    ],
+    "sha": "16943a5f04b5c89622d116790420a790a96e23415d4db16df19f924dea95abb2"
+  },
+  "npm-project-dep::types::cross-spawn": {
+    "name": "npm-project-dep::types::cross-spawn",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/cross-spawn",
+      "6.0.0\n"
+    ],
+    "sha": "a0a07d47e84bc2ad488c0e1798ccd65081d463ab9481914846e8bd5c8aa52b49"
+  },
+  "npm-project-dep::types::express": {
+    "name": "npm-project-dep::types::express",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/express",
+      "4.16.1\n"
+    ],
+    "sha": "1f0e8fb73280f116eae639267f2065f117ca1851a419534ed1586a831e97c34c"
+  },
+  "npm-project-dep::types::glob": {
+    "name": "npm-project-dep::types::glob",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/glob",
+      "7.1.1\n"
+    ],
+    "sha": "4c2289f40f7641b26bc5fac2c8fce9317f58de8acc0f21daebc1478b6f84671c"
+  },
+  "npm-project-dep::types::graphql": {
+    "name": "npm-project-dep::types::graphql",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/graphql",
+      "14.2.0\n"
+    ],
+    "sha": "c919103c689806aa1f91814006c5a726239fa3475b15f0096886f2a5d7020bf8"
+  },
+  "npm-project-dep::types::helmet": {
+    "name": "npm-project-dep::types::helmet",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/helmet",
+      "0.0.43\n"
+    ],
+    "sha": "50ad683fe4d45285181c5ca2261d317b5975e32d2a1fbda1d2c18996fc086b53"
+  },
+  "npm-project-dep::types::inquirer": {
+    "name": "npm-project-dep::types::inquirer",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/inquirer",
+      "6.0.2\n"
+    ],
+    "sha": "57c798878cae4f446a614f39826c95543d9afc849553b5e2152d6cbc38d12514"
+  },
+  "npm-project-dep::types::isomorphic-fetch": {
+    "name": "npm-project-dep::types::isomorphic-fetch",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/isomorphic-fetch",
+      "0.0.35\n"
+    ],
+    "sha": "e515dad660bcdc07a78ec27b67b27d6e432ea49988cc84c3fd334d129a3ea39b"
+  },
+  "npm-project-dep::types::minimatch": {
+    "name": "npm-project-dep::types::minimatch",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/minimatch",
+      "3.0.3\n"
+    ],
+    "sha": "d3068bba2fd92996aef7c35a792c2bfa396368b4362f27d82853a335d30e6d9a"
+  },
+  "npm-project-dep::types::node-statsd": {
+    "name": "npm-project-dep::types::node-statsd",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/node-statsd",
+      "0.1.2\n"
+    ],
+    "sha": "b635e61aa0d01bf9b11a79182559f23dcad1432e586f1bc29fc99a726e370323"
+  },
+  "npm-project-dep::types::passport": {
+    "name": "npm-project-dep::types::passport",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/passport",
+      "1.0.0\n"
+    ],
+    "sha": "d151585ec4fd70a37d3ef3453650ecb2a08c8caba372f313f83caab23aa99f33"
+  },
+  "npm-project-dep::types::passport-http": {
+    "name": "npm-project-dep::types::passport-http",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/passport-http",
+      "0.3.8\n"
+    ],
+    "sha": "ee897044b75eb7ae3cdde5a6069bdd83c6025a11e9688b6ee7ed900a51be4eca"
+  },
+  "npm-project-dep::types::passport-http-bearer": {
+    "name": "npm-project-dep::types::passport-http-bearer",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/passport-http-bearer",
+      "1.0.33\n"
+    ],
+    "sha": "9b17a9f5302a99bb3ebf3a7ba0482782e4c7ef58d5d320862a704a0bfed98921"
+  },
+  "npm-project-dep::types::power-assert": {
+    "name": "npm-project-dep::types::power-assert",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/power-assert",
+      "1.5.0\n"
+    ],
+    "sha": "bcb67d20d1413903f01406c27883b01254d332d7184db8a5e97b10e71befbc74"
+  },
+  "npm-project-dep::types::promise-retry": {
+    "name": "npm-project-dep::types::promise-retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/promise-retry",
+      "1.1.3\n"
+    ],
+    "sha": "8ec446d28df217787652236830d376e4a2c0b2c3593e66d315a76cf45865f910"
+  },
+  "npm-project-dep::types::retry": {
+    "name": "npm-project-dep::types::retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/retry",
+      "0.12.0\n"
+    ],
+    "sha": "af21b0e2177cdb4d680ba5e24d7ac34c1eb02cdf92ff3b3d7b96a7afcb0af3a9"
+  },
+  "npm-project-dep::types::shelljs": {
+    "name": "npm-project-dep::types::shelljs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/shelljs",
+      "0.8.5\n"
+    ],
+    "sha": "909f83d998e1103e1c87e5696900ce12cc5641031cd012f1882fb14e1c59ba0b"
+  },
+  "npm-project-dep::types::strip-ansi": {
+    "name": "npm-project-dep::types::strip-ansi",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/strip-ansi",
+      "5.2.1\n"
+    ],
+    "sha": "b04f10bd427cbe533313b1b0dacd9f678e1c0d2b402e4e3776c25dae0883da3b"
+  },
+  "npm-project-dep::types::utf8": {
+    "name": "npm-project-dep::types::utf8",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/utf8",
+      "2.1.6\n"
+    ],
+    "sha": "b15623cb1090f0b93491ca1e6d6f41148a5a84ea6972c6c15da29ca6b619e415"
+  },
+  "npm-project-dep::types::uuid": {
+    "name": "npm-project-dep::types::uuid",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/uuid",
+      "3.4.4\n"
+    ],
+    "sha": "61ed21af1c60f466b7124693ad4c58975b681550ea35671261c45391fff202c8"
+  },
+  "npm-project-dep::types::ws": {
+    "name": "npm-project-dep::types::ws",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/ws",
+      "6.0.1\n"
+    ],
+    "sha": "f5ffd8df70ea71c8230ccc274a4bdc80a01ebdb8cbdd8b62e0ec009059128479"
+  },
+  "npm-project-dep::apollo": {
+    "name": "npm-project-dep::apollo",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "apollo",
+      "2.12.0\n"
+    ],
+    "sha": "5d07290372b15dba8e966dfe7541914accaa1d923fb77407d847271f9a9ce6ed"
+  },
+  "npm-project-dep::apollo-cache-inmemory": {
+    "name": "npm-project-dep::apollo-cache-inmemory",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "apollo-cache-inmemory",
+      "1.5.1\n"
+    ],
+    "sha": "4ef5f10eef40104695050b2433fca62eb5b58957899f447920b1145d777434f7"
+  },
+  "npm-project-dep::apollo-client": {
+    "name": "npm-project-dep::apollo-client",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "apollo-client",
+      "2.5.1\n"
+    ],
+    "sha": "887063c034cdded30e08bf9899341eb03e75ff51d602eb46b2003a27565048e0"
+  },
+  "npm-project-dep::apollo-link": {
+    "name": "npm-project-dep::apollo-link",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "apollo-link",
+      "1.2.11\n"
+    ],
+    "sha": "1682f6d39568cc81a6897135d5513b94e3c9165ce27f49a7d3ecfe8dad410340"
+  },
+  "npm-project-dep::apollo-link-http": {
+    "name": "npm-project-dep::apollo-link-http",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "apollo-link-http",
+      "1.5.14\n"
+    ],
+    "sha": "d4da373f20c1cc3d4f03427621247b7f6a9116a242edd1faedb1003c0d7aecd3"
+  },
+  "npm-project-dep::asciify": {
+    "name": "npm-project-dep::asciify",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "asciify",
+      "1.3.5\n"
+    ],
+    "sha": "1008bca033f6d9229e1bb5abe61db04fc263b5e2d8595d7638d2846684bfae75"
+  },
+  "npm-project-dep::async-exit-hook": {
+    "name": "npm-project-dep::async-exit-hook",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "async-exit-hook",
+      "2.0.1\n"
+    ],
+    "sha": "6db19bc4872f52084c06b9e272e7c418573e17babf98de2fa8abe7d7f0c6b588"
+  },
+  "npm-project-dep::axios": {
+    "name": "npm-project-dep::axios",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "axios",
+      "0.18.0\n"
+    ],
+    "sha": "e3559b96b781aea14e77f3dc7fcabe6c7f3e357985d14ac0692af88549b3ddd4"
+  },
+  "npm-project-dep::axios-fetch": {
+    "name": "npm-project-dep::axios-fetch",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "axios-fetch",
+      "1.1.0\n"
+    ],
+    "sha": "17379b68648d4a5cdeb83f0ce7dc83ef97d620448d58f85bfb94f67141a0713a"
+  },
+  "npm-project-dep::base-64": {
+    "name": "npm-project-dep::base-64",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "base-64",
+      "0.1.0\n"
+    ],
+    "sha": "afeb3820f8072cc7d4dd91f2c173a81cec422ee92e24e9600f289ceb5933c9b8"
+  },
+  "npm-project-dep::body-parser": {
+    "name": "npm-project-dep::body-parser",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "body-parser",
+      "1.19.0\n"
+    ],
+    "sha": "b2d3d463837e6ccff1fb2ffaa7e42d21b9d67d2e5d8918ab3e2c776b4441ca1e"
+  },
+  "npm-project-dep::chalk": {
+    "name": "npm-project-dep::chalk",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "chalk",
+      "2.4.2\n"
+    ],
+    "sha": "12ce32920a08cf58891b14c245037d0392dee2eaf2ea5eecb0a86566b1fbd671"
+  },
+  "npm-project-dep::child-process-promise": {
+    "name": "npm-project-dep::child-process-promise",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "child-process-promise",
+      "2.2.1\n"
+    ],
+    "sha": "7e58035461f82de92f6f4331a6c23721458b92308e4c102a9dd2ca20c4b023d1"
+  },
+  "npm-project-dep::cluster": {
+    "name": "npm-project-dep::cluster",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cluster",
+      "0.7.7\n"
+    ],
+    "sha": "e7affb81c01cd27122e74259b3b9a538ca8cb7e3277662003f9035845ea3098e"
+  },
+  "npm-project-dep::cors": {
+    "name": "npm-project-dep::cors",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cors",
+      "2.8.5\n"
+    ],
+    "sha": "c3f5e1bf451a52ca3f7c809e0b0059938689bd9a36f4b2f7ffcf77c02fba2009"
+  },
+  "npm-project-dep::cross-spawn": {
+    "name": "npm-project-dep::cross-spawn",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cross-spawn",
+      "6.0.5\n"
+    ],
+    "sha": "047074bcdca134b2e3f3154f8e8e279f2b813cbeb849055dfbcba1ec0a07f877"
+  },
+  "npm-project-dep::es6-promise-pool": {
+    "name": "npm-project-dep::es6-promise-pool",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "es6-promise-pool",
+      "2.5.0\n"
+    ],
+    "sha": "34740f3918eec4039fb869be8702ab283c947c99ff5530333970051430f32994"
+  },
+  "npm-project-dep::express-session": {
+    "name": "npm-project-dep::express-session",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "express-session",
+      "1.16.1\n"
+    ],
+    "sha": "bbc3f150b3baad0b5a1aba9aaed6eeeb0529858acc32c60fe0c842266d392d1d"
+  },
+  "npm-project-dep::find-up": {
+    "name": "npm-project-dep::find-up",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "find-up",
+      "4.0.0\n"
+    ],
+    "sha": "acc077e53718174d0dbb3cbd18cfdf5614a684e7961952ff1257f5d1564b305c"
+  },
+  "npm-project-dep::flat": {
+    "name": "npm-project-dep::flat",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "flat",
+      "4.1.0\n"
+    ],
+    "sha": "e7ea74d4292dada215142cbf09fb3364acde7b9f417089739159da03ee357563"
+  },
+  "npm-project-dep::glob": {
+    "name": "npm-project-dep::glob",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "glob",
+      "7.1.4\n"
+    ],
+    "sha": "43ddccabf1d2185fdc1562ab0ee3119a10993595ef04db8fea97f0e04e1e9582"
+  },
+  "npm-project-dep::glob-promise": {
+    "name": "npm-project-dep::glob-promise",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "glob-promise",
+      "3.4.0\n"
+    ],
+    "sha": "12127b40cb46a9a5942290a6c739e3f939d3dc010876cc0bc5cb58a06d674a0d"
+  },
+  "npm-project-dep::glob-stream": {
+    "name": "npm-project-dep::glob-stream",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "glob-stream",
+      "6.1.0\n"
+    ],
+    "sha": "e07518783a8a73b25924a7bb3c313f1910e8d4845281fa7a8383b5c7ff81e33c"
+  },
+  "npm-project-dep::graphql": {
+    "name": "npm-project-dep::graphql",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql",
+      "14.3.0\n"
+    ],
+    "sha": "25b61e29dbfa613c1abafcee707f3b116442824ecc3b1985c512bbd6caa74ade"
+  },
+  "npm-project-dep::graphql-code-generator": {
+    "name": "npm-project-dep::graphql-code-generator",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-code-generator",
+      "0.18.2\n"
+    ],
+    "sha": "fd24303a7d2fe40124ca0083ce8bfa56de22a30de637c070ff81bb8cd6358ea3"
+  },
+  "npm-project-dep::graphql-codegen-core": {
+    "name": "npm-project-dep::graphql-codegen-core",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-codegen-core",
+      "0.18.2\n"
+    ],
+    "sha": "f67dc6b0cff94e4ffebd052ccd1b137a4ada56cd77dc23d00854140bd76d1ba2"
+  },
+  "npm-project-dep::graphql-codegen-typescript-client": {
+    "name": "npm-project-dep::graphql-codegen-typescript-client",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-codegen-typescript-client",
+      "0.18.2\n"
+    ],
+    "sha": "f6666e6cda5b48bde297b52de63bbf184934d8413e89e377c590c868dbc44d8d"
+  },
+  "npm-project-dep::graphql-codegen-typescript-common": {
+    "name": "npm-project-dep::graphql-codegen-typescript-common",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-codegen-typescript-common",
+      "0.18.2\n"
+    ],
+    "sha": "a6e91876b028c24c8ced85a214fab260b77dcaaebece6aba1802ca3f830f1186"
+  },
+  "npm-project-dep::graphql-codegen-typescript-server": {
+    "name": "npm-project-dep::graphql-codegen-typescript-server",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-codegen-typescript-server",
+      "0.18.2\n"
+    ],
+    "sha": "2598b9c4c0cac84eccb970c7e8d309ffa37a020616b6f4c6d9cba3bc9c1b4563"
+  },
+  "npm-project-dep::graphql-tag": {
+    "name": "npm-project-dep::graphql-tag",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "graphql-tag",
+      "2.10.1\n"
+    ],
+    "sha": "3f8e174e57b174d5e04ac2a4b0619764e3dc7a0f88c0e9b92241748ad7b92e48"
+  },
+  "npm-project-dep::heavy": {
+    "name": "npm-project-dep::heavy",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "heavy",
+      "6.1.2\n"
+    ],
+    "sha": "d1c21266c7bf1f2f750f54bc5b1a3112e82346178a3372f2d03517d691b02599"
+  },
+  "npm-project-dep::helmet": {
+    "name": "npm-project-dep::helmet",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "helmet",
+      "3.18.0\n"
+    ],
+    "sha": "75af1eb90a1f92f1f834e3a412327adb73efe9c96372f471563bb43b76c7bc93"
+  },
+  "npm-project-dep::hot-shots": {
+    "name": "npm-project-dep::hot-shots",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "hot-shots",
+      "6.3.0\n"
+    ],
+    "sha": "beace59ba978c75268163c80a226d1f13a1f6e2734d1384076cf542925671ef1"
+  },
+  "npm-project-dep::https-proxy-agent": {
+    "name": "npm-project-dep::https-proxy-agent",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "https-proxy-agent",
+      "2.2.1\n"
+    ],
+    "sha": "396fa9821390985d0e81feba5b18030d412d668b5b694a72159039c535ffa6f6"
+  },
+  "npm-project-dep::inquirer": {
+    "name": "npm-project-dep::inquirer",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "inquirer",
+      "6.3.1\n"
+    ],
+    "sha": "6ce018d576d24c160c6cd98fc384945fe6bc8344a008109440c933929a12f084"
+  },
+  "npm-project-dep::isbinaryfile": {
+    "name": "npm-project-dep::isbinaryfile",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "isbinaryfile",
+      "4.0.0\n"
+    ],
+    "sha": "c1ea4f0a08caf3e5ae4d04308453d7e09ca3cd82cc09a83a127d7a79ef5d70fe"
+  },
+  "npm-project-dep::logform": {
+    "name": "npm-project-dep::logform",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "logform",
+      "2.1.2\n"
+    ],
+    "sha": "e792a1280533185e2738fcdbd123afbdb72d64f959df51395e9be27cc0cceb45"
+  },
+  "npm-project-dep::lru_map": {
+    "name": "npm-project-dep::lru_map",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "lru_map",
+      "0.3.3\n"
+    ],
+    "sha": "928eaaa8055c882b9880fc722b113661aeb037a38802dae748c670eb3d079e40"
+  },
+  "npm-project-dep::metrics": {
+    "name": "npm-project-dep::metrics",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "metrics",
+      "0.1.21\n"
+    ],
+    "sha": "901164c93b5f15195332e3aa04823c595d89ce2c3559c75b0e1724417a715a39"
+  },
+  "npm-project-dep::murmurhash3js": {
+    "name": "npm-project-dep::murmurhash3js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "murmurhash3js",
+      "3.0.1\n"
+    ],
+    "sha": "2bdac3cade0f558ba28dcb9dc550962593bd72c631c4f2500101b70d215a83d2"
+  },
+  "npm-project-dep::node-cache": {
+    "name": "npm-project-dep::node-cache",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "node-cache",
+      "4.2.0\n"
+    ],
+    "sha": "7914a8cecaf9d55d7749d1816bf951a48b6c91d147c8fa0112ec2124e32d6ba0"
+  },
+  "npm-project-dep::node-statsd": {
+    "name": "npm-project-dep::node-statsd",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "node-statsd",
+      "0.1.1\n"
+    ],
+    "sha": "b214b55c5feaf21d2b2c88e24dc09507e4b3c0fcd2f080bda0d2c346c7751e6e"
+  },
+  "npm-project-dep::passport": {
+    "name": "npm-project-dep::passport",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "passport",
+      "0.4.0\n"
+    ],
+    "sha": "fba12f636a1d0343e1cfe6c774a538eac92d9df4a1a7e90e1cd8bb8a26849dbe"
+  },
+  "npm-project-dep::passport-http": {
+    "name": "npm-project-dep::passport-http",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "passport-http",
+      "0.3.0\n"
+    ],
+    "sha": "67e962917740f54523ef40bfea971e9cd2e9fa67f2ce2803c96420d84b5531b6"
+  },
+  "npm-project-dep::passport-http-bearer": {
+    "name": "npm-project-dep::passport-http-bearer",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "passport-http-bearer",
+      "1.0.1\n"
+    ],
+    "sha": "f2ff171b4a03608713167f74c1c7eda57ec64bdfcbe39c07c05454d492184951"
+  },
+  "npm-project-dep::passport-http-header-token": {
+    "name": "npm-project-dep::passport-http-header-token",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "passport-http-header-token",
+      "1.1.0\n"
+    ],
+    "sha": "51c5d23c153abbb33aef5e74a347aa41011a5f892fb5ecff91181ada093485da"
+  },
+  "npm-project-dep::portfinder": {
+    "name": "npm-project-dep::portfinder",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "portfinder",
+      "1.0.20\n"
+    ],
+    "sha": "d5c501f09e1e77a57175f46d26328c1d142fd5f842eb5b2e769eb87105cfa4b6"
+  },
+  "npm-project-dep::power-assert": {
+    "name": "npm-project-dep::power-assert",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "power-assert",
+      "1.6.1\n"
+    ],
+    "sha": "4f0d1556cb5854ba31e31a6b75d87d2215c123400a1f3dc3703fc5db15ae2ba7"
+  },
+  "npm-project-dep::promise-retry": {
+    "name": "npm-project-dep::promise-retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "promise-retry",
+      "1.1.1\n"
+    ],
+    "sha": "d246b2a0e4ef495fae688b70e74a6e6b3fbaaef9c9ce24c49031723d5c5717f5"
+  },
+  "npm-project-dep::proper-lockfile": {
+    "name": "npm-project-dep::proper-lockfile",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "proper-lockfile",
+      "4.1.1\n"
+    ],
+    "sha": "093eed7bce7b579bc682395fd91359742e4ce6b3abc9dd86ecd0c9c2c305248d"
+  },
+  "npm-project-dep::retry": {
+    "name": "npm-project-dep::retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "retry",
+      "0.12.0\n"
+    ],
+    "sha": "22fb88a10c88730ca48829e50083e9fe2afff9848994ae8f0638f69e2f69f672"
+  },
+  "npm-project-dep::shelljs": {
+    "name": "npm-project-dep::shelljs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "shelljs",
+      "0.8.3\n"
+    ],
+    "sha": "c77770fc72477961fc49a72204c71ac68a8d17512a2971282d549abe62fbf4a5"
+  },
+  "npm-project-dep::source-map-support": {
+    "name": "npm-project-dep::source-map-support",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "source-map-support",
+      "0.5.12\n"
+    ],
+    "sha": "2cace6e9f25cf63049ef0d3a4435fc8b88286235787afbd2a1d400e3032b4c20"
+  },
+  "npm-project-dep::sprintf-js": {
+    "name": "npm-project-dep::sprintf-js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "sprintf-js",
+      "1.1.2\n"
+    ],
+    "sha": "cae27da41e3c1fed4336fdf7911ee05a8ed0c34f12f42ac0a7c318f120b2b744"
+  },
+  "npm-project-dep::stack-trace": {
+    "name": "npm-project-dep::stack-trace",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "stack-trace",
+      "0.0.10\n"
+    ],
+    "sha": "9b0ce4c08b2f6e5f4aa59cbfd5ff5e589ba0f3f23d3ff243fb588f0c6cbc0b0c"
+  },
+  "npm-project-dep::stream-spigot": {
+    "name": "npm-project-dep::stream-spigot",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "stream-spigot",
+      "3.0.6\n"
+    ],
+    "sha": "7f89336d011507f0d4e1b9160c2122aee044b9ec414f7bca42ddeb94672c0610"
+  },
+  "npm-project-dep::strip-ansi": {
+    "name": "npm-project-dep::strip-ansi",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "strip-ansi",
+      "5.2.0\n"
+    ],
+    "sha": "ac8c9cf911763c07740d724763b97272d4c6742cfe28a98864286f57c8a4abe8"
+  },
+  "npm-project-dep::tinyqueue": {
+    "name": "npm-project-dep::tinyqueue",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "tinyqueue",
+      "2.0.2\n"
+    ],
+    "sha": "94abeb986827013d858a647e70dd05b8e9202e30a00796e28967ae61a50fc797"
+  },
+  "npm-project-dep::tmp-promise": {
+    "name": "npm-project-dep::tmp-promise",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "tmp-promise",
+      "1.1.0\n"
+    ],
+    "sha": "8fd8e12e2787482d7bae3a793b5aa50c18e96a708c169d5a97c7cdd8b2dc9b9a"
+  },
+  "npm-project-dep::tree-kill": {
+    "name": "npm-project-dep::tree-kill",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "tree-kill",
+      "1.2.1\n"
+    ],
+    "sha": "bfce9ad0bb7940cbb7d4eaf92a617294a52f77e68e33b39eaf538f09dd43380a"
+  },
+  "npm-project-dep::utf8": {
+    "name": "npm-project-dep::utf8",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "utf8",
+      "3.0.0\n"
+    ],
+    "sha": "75aa49cd93926f2513ba404b76e1cb58a8a5d9ba8d34f2ffb7fd058c7dda9052"
+  },
+  "npm-project-dep::ws": {
+    "name": "npm-project-dep::ws",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "ws",
+      "7.0.0\n"
+    ],
+    "sha": "3c4d3f7954a21e07f401aaea0080e41171926ab3656885d4e9fe16e26480b11b"
+  },
+  "npm-project-dep::properties": {
+    "name": "npm-project-dep::properties",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "properties",
+      "1.2.1\n"
+    ],
+    "sha": "c0c3474c5e7d5ac36a0c4b2665022b3cc2d23b67d28e0c084555d41473c31e5a"
+  },
+  "npm-project-dep::atomist::sdm-local": {
+    "name": "npm-project-dep::atomist::sdm-local",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-local",
+      "1.0.6\n"
+    ],
+    "sha": "77b7be27ad0c5c376eac18f32e24b58e0f2dc9495e1b89c9546169428e8dae01"
+  },
+  "npm-project-dep::types::git-url-parse": {
+    "name": "npm-project-dep::types::git-url-parse",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/git-url-parse",
+      "9.0.0\n"
+    ],
+    "sha": "5f984fa87ec432a38fb0fcc06631c733d69470a364511522158fcf5e9fe9b314"
+  },
+  "npm-project-dep::types::opn": {
+    "name": "npm-project-dep::types::opn",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/opn",
+      "5.5.0\n"
+    ],
+    "sha": "a042b1b5f7eef47de4e46a79bc1b69bff326042173e396f3aa5ac0f03d6bb6e3"
+  },
+  "npm-project-dep::types::read-pkg-up": {
+    "name": "npm-project-dep::types::read-pkg-up",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/read-pkg-up",
+      "3.0.1\n"
+    ],
+    "sha": "4d8fa89654f5cb05fea1919d8130f0236f9146a356cdb48619e8d0eaa45651bf"
+  },
+  "npm-project-dep::types::tmp": {
+    "name": "npm-project-dep::types::tmp",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/tmp",
+      "0.1.0\n"
+    ],
+    "sha": "3c8668b17b69d86da39bd1deb3ac0abff8bcb7e4e333e5d757b8c77fa42715a0"
+  },
+  "npm-project-dep::types::yargs": {
+    "name": "npm-project-dep::types::yargs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/yargs",
+      "13.0.0\n"
+    ],
+    "sha": "062a19167a58443e0b8301b6f5d52b79b931e2fb3c4e682179ab2b7bfd9d5dbe"
+  },
+  "npm-project-dep::cli-highlight": {
+    "name": "npm-project-dep::cli-highlight",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cli-highlight",
+      "2.1.1\n"
+    ],
+    "sha": "ccf33110c2802f0188bc047fb00abe7f382cf8d5eb54774a2675b27d934f3b22"
+  },
+  "npm-project-dep::cli-spinner": {
+    "name": "npm-project-dep::cli-spinner",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cli-spinner",
+      "0.2.10\n"
+    ],
+    "sha": "3010940e15d849bd24b838447f70c2f20a26c53dad6bd45d708ecc056eb86a19"
+  },
+  "npm-project-dep::enquirer": {
+    "name": "npm-project-dep::enquirer",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "enquirer",
+      "2.3.0\n"
+    ],
+    "sha": "55872dd0c894158ff8f8e6a28ec362b3c214156727ca968b1c0fe9290d991d40"
+  },
+  "npm-project-dep::js-sha256": {
+    "name": "npm-project-dep::js-sha256",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "js-sha256",
+      "0.9.0\n"
+    ],
+    "sha": "2f096c12dcaa28c6c62c69b5ca6d8170500bd7c6bfe10cac0147a86e68349308"
+  },
+  "npm-project-dep::opn": {
+    "name": "npm-project-dep::opn",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "opn",
+      "6.0.0\n"
+    ],
+    "sha": "ae88d5f0573090963d31dd41dc8432432337b2f97a41e5d06159f6c1d96cfed3"
+  },
+  "npm-project-dep::read-pkg-up": {
+    "name": "npm-project-dep::read-pkg-up",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "read-pkg-up",
+      "6.0.0\n"
+    ],
+    "sha": "43808f70adf1feeb834f32d68f96e5d7e13349a57d738e4b57258e8942ca8566"
+  },
+  "npm-project-dep::yargs": {
+    "name": "npm-project-dep::yargs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "yargs",
+      "13.2.4\n"
+    ],
+    "sha": "c747fa8bdee6a219752050858cdb4ea00b8a63736d3df173dde79c1d76e07cb9"
+  },
+  "npm-project-dep::types::mime-types": {
+    "name": "npm-project-dep::types::mime-types",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/mime-types",
+      "2.1.0\n"
+    ],
+    "sha": "d3df7f2b71406efa9b1eae952d801cffa657bb4c3555dae09358743cce450e80"
+  },
+  "npm-project-dep::aws-sdk": {
+    "name": "npm-project-dep::aws-sdk",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "aws-sdk",
+      "2.459.0\n"
+    ],
+    "sha": "124994569ac60c594ef4d4ec64ee268b6e90e26107b1ae7378403a8736074567"
+  },
+  "npm-project-dep::mime-types": {
+    "name": "npm-project-dep::mime-types",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "mime-types",
+      "2.1.24\n"
+    ],
+    "sha": "08447f514c8d4ea622b0783a60363b51861af75ec1cf6a3d497bb980d4aa6249"
+  },
+  "npm-project-dep::ts-essentials": {
+    "name": "npm-project-dep::ts-essentials",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "ts-essentials",
+      "2.0.7\n"
+    ],
+    "sha": "cf800d824670a96fac45c22e3b59c1ccf0b587d399a27de15e1518c9ca4e8c11"
+  },
+  "npm-project-dep::atomist::automation-client-ext-humio": {
+    "name": "npm-project-dep::atomist::automation-client-ext-humio",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client-ext-humio",
+      "1.0.3-master.20190319172045\n"
+    ],
+    "sha": "f5247d473b9793f76c10021a9c2feb22bb635a3729d8a38dabfb27f5dd1318d4"
+  },
+  "npm-project-dep::atomist::sdm-pack-lifecycle": {
+    "name": "npm-project-dep::atomist::sdm-pack-lifecycle",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-lifecycle",
+      "0.1.0-master.20190517111959\n"
+    ],
+    "sha": "37bde23b67340ad022f265948d1ea797373c03e1757a7a4cb78d75c9ee754a97"
+  },
+  "npm-project-dep::atomist::sdm-pack-lifecycle-github": {
+    "name": "npm-project-dep::atomist::sdm-pack-lifecycle-github",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-lifecycle-github",
+      "0.1.0-master.20190517135844\n"
+    ],
+    "sha": "82d1be6c6279decb7f3c36f7ce7fb0f7dfdd96ba710ff73c1e044b73eb9638e7"
+  },
+  "npm-project-dep::atomist::sdm-pack-rcca-github": {
+    "name": "npm-project-dep::atomist::sdm-pack-rcca-github",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-rcca-github",
+      "0.1.0\n"
+    ],
+    "sha": "a3673aec6a310a1dcb92ef0bfc8b28c31eb857fe3b5859a7820a28dfda54c034"
+  },
+  "npm-project-dep::lodash.flatten": {
+    "name": "npm-project-dep::lodash.flatten",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "lodash.flatten",
+      "4.4.0\n"
+    ],
+    "sha": "dd9f941332f7644b8841621b1269ffd694897a6ee8fb1a1c3a2911c47635eda7"
+  },
+  "npm-project-dep::atomist::automation-client-ext-eventlog": {
+    "name": "npm-project-dep::atomist::automation-client-ext-eventlog",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/automation-client-ext-eventlog",
+      "1.0.2\n"
+    ],
+    "sha": "1749c4e28292790e0baad7554cf9deeb087d86ffc543d372e14c9bfa1e6eabbc"
+  },
+  "npm-project-dep::atomist::sdm-pack-checkstyle": {
+    "name": "npm-project-dep::atomist::sdm-pack-checkstyle",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-checkstyle",
+      "1.0.3\n"
+    ],
+    "sha": "88fd30c03e562da1c63abf2cdc93caa9c2aa0573259919ce5631a0e75a0c7835"
+  },
+  "npm-project-dep::atomist::sdm-pack-cloudfoundry": {
+    "name": "npm-project-dep::atomist::sdm-pack-cloudfoundry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-cloudfoundry",
+      "1.0.3\n"
+    ],
+    "sha": "846f4c9a9c79ecf2cc10ef462f8d6d05b2307512c15579ae7b538336f273517c"
+  },
+  "npm-project-dep::atomist::sdm-pack-sloc": {
+    "name": "npm-project-dep::atomist::sdm-pack-sloc",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-sloc",
+      "1.0.2\n"
+    ],
+    "sha": "0293dfa4363b3449287230f0a33617565051cb9c8c8f656d5d68968e012a9f61"
+  },
+  "npm-project-dep::atomist::sdm-pack-sonarqube": {
+    "name": "npm-project-dep::atomist::sdm-pack-sonarqube",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-sonarqube",
+      "1.0.1\n"
+    ],
+    "sha": "3b0daffb0a39a706dc64266149926d391556e483af5d9777297b5290826b5a9d"
+  },
+  "npm-project-dep::commitlint::config-conventional": {
+    "name": "npm-project-dep::commitlint::config-conventional",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@commitlint/config-conventional",
+      "7.6.0\n"
+    ],
+    "sha": "445f39b7456bb9dc6f74484b5b1b8d2242c193c84909a23065bf53c1d805eb6b"
+  },
+  "npm-project-dep::commitlint::lint": {
+    "name": "npm-project-dep::commitlint::lint",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@commitlint/lint",
+      "7.6.0\n"
+    ],
+    "sha": "089bcbc4bfab8201d2e1cb8d1f06ae4a878553d0bfe68360354db7edb74b975b"
+  },
+  "npm-project-dep::commitlint::load": {
+    "name": "npm-project-dep::commitlint::load",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@commitlint/load",
+      "7.6.2\n"
+    ],
+    "sha": "a544e412def8dfbdc68ec6ac58a9d2e7d0f5ab8febf1f4537177393f8ff6d7d8"
+  },
+  "npm-project-dep::types::properties-reader": {
+    "name": "npm-project-dep::types::properties-reader",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/properties-reader",
+      "0.0.1\n"
+    ],
+    "sha": "365fd605f09a30cbd654da7c3310d62a0c9a94598712b377fc1e025788ffc5d3"
+  },
+  "npm-project-dep::properties-reader": {
+    "name": "npm-project-dep::properties-reader",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "properties-reader",
+      "0.0.16\n"
+    ],
+    "sha": "b06ec85219c438650e03124b2b59108c56982be5f6b9e7f6678c29372f226f88"
+  },
+  "npm-project-dep::winston-logzio": {
+    "name": "npm-project-dep::winston-logzio",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "winston-logzio",
+      "5.0.0\n"
+    ],
+    "sha": "ffb02c9b8d37b49d74ba1c6a6a1e3f5baf54922c14af37722f43119e1f362ead"
+  },
+  "npm-project-dep::canvas": {
+    "name": "npm-project-dep::canvas",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "canvas",
+      "2.5.0\n"
+    ],
+    "sha": "577cd3bd20afb500c75143a7533dacca0c9149cf6cdc29fb4fb4e66bb465e6ce"
+  },
+  "npm-project-dep::gh-badges": {
+    "name": "npm-project-dep::gh-badges",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "gh-badges",
+      "2.1.0\n"
+    ],
+    "sha": "4bbab4fae19e692a215dde65cad5a83008d89e3c7646521813dadc42f5c3098c"
+  },
+  "npm-project-dep::stripchar": {
+    "name": "npm-project-dep::stripchar",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "stripchar",
+      "1.2.1\n"
+    ],
+    "sha": "26180dc0ce247372928bf5475b316bf66ead16eb2b93cdd452f50c2b8768ca8d"
+  },
+  "npm-project-dep::swig": {
+    "name": "npm-project-dep::swig",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "swig",
+      "1.4.2\n"
+    ],
+    "sha": "4b4a115016b50da27c4f44a6c1b7dc5d030372de0ef8ac0d21d2b452a358bd71"
+  },
+  "npm-project-dep::types::proper-lockfile": {
+    "name": "npm-project-dep::types::proper-lockfile",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/proper-lockfile",
+      "4.1.0\n"
+    ],
+    "sha": "633817f47dda7e95a0f15f3ece80335303fa3305fe89842c5b497910a4c786f9"
+  },
+  "npm-project-dep::types::request": {
+    "name": "npm-project-dep::types::request",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/request",
+      "2.48.1\n"
+    ],
+    "sha": "35b7fcc69b30d2a0c697e924c91816632dcf95da4c44ecd285925fbf6fc48be0"
+  },
+  "npm-project-dep::copyfiles": {
+    "name": "npm-project-dep::copyfiles",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "copyfiles",
+      "2.1.0\n"
+    ],
+    "sha": "ae6b082f80fde7456b97e4c3d3cdbca3b8599630a5afc42151b6d44ab9db79ca"
+  },
+  "npm-project-dep::moment": {
+    "name": "npm-project-dep::moment",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "moment",
+      "2.24.0\n"
+    ],
+    "sha": "bc002cdd17e08ae09faac6f113da2cb58e96cfe05b6b9391d39cb49b8712baed"
+  },
+  "npm-project-dep::moment-duration-format": {
+    "name": "npm-project-dep::moment-duration-format",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "moment-duration-format",
+      "2.2.2\n"
+    ],
+    "sha": "da3072a8f732a66d3af3a2056862c21d8772be4ec3e312460bcf57b3536777fb"
+  },
+  "npm-project-dep::tempfile": {
+    "name": "npm-project-dep::tempfile",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "tempfile",
+      "3.0.0\n"
+    ],
+    "sha": "bd02a3061e5979f30c850959f8606f330eebf57802756b1a0c8854f870c72bab"
+  },
+  "npm-project-dep::types::express-handlebars": {
+    "name": "npm-project-dep::types::express-handlebars",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/express-handlebars",
+      "0.0.31\n"
+    ],
+    "sha": "6882643c7d8f66005c3c8e0bab13fae7ce36910bd6eb161bf0de6c9579dbd9bc"
+  },
+  "npm-project-dep::types::express-serve-static-core": {
+    "name": "npm-project-dep::types::express-serve-static-core",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/express-serve-static-core",
+      "4.16.4\n"
+    ],
+    "sha": "dd360ebff304f3940c66c211bf282c0630aa04b592239d6e51b4cf8a1cb31d59"
+  },
+  "npm-project-dep::types::jssha": {
+    "name": "npm-project-dep::types::jssha",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/jssha",
+      "2.0.0\n"
+    ],
+    "sha": "1cba0a46443366269a0acf5c4c22c83fe5a648bdf1a81e3725fa12c510db1ef3"
+  },
+  "npm-project-dep::types::marked": {
+    "name": "npm-project-dep::types::marked",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/marked",
+      "0.6.5\n"
+    ],
+    "sha": "41efa3abc60205ebfe2bfa9498f85ab9e3e18a4830a6b6a5f5614a2050a149de"
+  },
+  "npm-project-dep::types::node-notifier": {
+    "name": "npm-project-dep::types::node-notifier",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/node-notifier",
+      "5.4.0\n"
+    ],
+    "sha": "27a852bdfbce6011be375d4e4bbb4fec72b98853f1de69448a03aa7becfb4c97"
+  },
+  "npm-project-dep::types::sprintf-js": {
+    "name": "npm-project-dep::types::sprintf-js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/sprintf-js",
+      "1.1.2\n"
+    ],
+    "sha": "54dda41aebb7a4032820846e07fdb369edca078894b0cbd7c0317d90340e795a"
+  },
+  "npm-project-dep::ansi.js": {
+    "name": "npm-project-dep::ansi.js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "ansi.js",
+      "0.0.5\n"
+    ],
+    "sha": "efc28caf2547519c2b8128f670e5c5a3e5ace5d5d1e31e0ef9f1a90c8da3309a"
+  },
+  "npm-project-dep::boxen": {
+    "name": "npm-project-dep::boxen",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "boxen",
+      "3.2.0\n"
+    ],
+    "sha": "94995fcec727e59b87a00c6de715461a9f1386c37e7a84c0cb73b5f970609182"
+  },
+  "npm-project-dep::express-handlebars": {
+    "name": "npm-project-dep::express-handlebars",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "express-handlebars",
+      "3.1.0\n"
+    ],
+    "sha": "cd6b6cd8f9500742baacb00442632856dba5f7974e3bffd4466f31eef187adb8"
+  },
+  "npm-project-dep::file-url": {
+    "name": "npm-project-dep::file-url",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "file-url",
+      "3.0.0\n"
+    ],
+    "sha": "d7cb97c3b11616ebdbd97d6357c24e7fc6354f44380c9f5c2eae832660c08923"
+  },
+  "npm-project-dep::format-date": {
+    "name": "npm-project-dep::format-date",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "format-date",
+      "1.0.0\n"
+    ],
+    "sha": "93b97b3fea239267d9e9dc9e2b4ef6cd727a6faf1829d2aeb40f07720a8bb4f3"
+  },
+  "npm-project-dep::jssha": {
+    "name": "npm-project-dep::jssha",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "jssha",
+      "2.3.1\n"
+    ],
+    "sha": "a991f2769e7d08c21bbe151abfce7a2d300afcb623fc81829f0c7f6af801bdfd"
+  },
+  "npm-project-dep::marked": {
+    "name": "npm-project-dep::marked",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "marked",
+      "0.6.2\n"
+    ],
+    "sha": "48ef98bca8bae8969925066d21710a36310c072007af94918548265b70e42f16"
+  },
+  "npm-project-dep::marked-terminal": {
+    "name": "npm-project-dep::marked-terminal",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "marked-terminal",
+      "3.2.0\n"
+    ],
+    "sha": "52fa87e81d0691ec5dd4d9ef522c55e4aae0182d1a4618cd90b7a0888a16fb3a"
+  },
+  "npm-project-dep::on-new-line": {
+    "name": "npm-project-dep::on-new-line",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "on-new-line",
+      "1.0.0\n"
+    ],
+    "sha": "e573ed0181e91e4044889abe3821488764c4174c9d7e308221f25158ef5d0f5f"
+  },
+  "npm-project-dep::simple-node-logger": {
+    "name": "npm-project-dep::simple-node-logger",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "simple-node-logger",
+      "18.12.22\n"
+    ],
+    "sha": "975148e8930479ad93c0acafcaa6e14177cb6ec45d29f45af32f8a535985ed04"
+  },
+  "npm-project-dep::terminal-kit": {
+    "name": "npm-project-dep::terminal-kit",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "terminal-kit",
+      "1.28.0\n"
+    ],
+    "sha": "ad29265e1210f11796adcfd31a634dbb67d71f3049168bedac88434eafecc96a"
+  },
+  "npm-project-dep::types::package-json": {
+    "name": "npm-project-dep::types::package-json",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/package-json",
+      "5.0.1\n"
+    ],
+    "sha": "595e2d15e4156bb6b2a185e380ceaa00c4ad5e4b9f308f810b400ea02fba6f69"
+  },
+  "npm-project-dep::types::yamljs": {
+    "name": "npm-project-dep::types::yamljs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/yamljs",
+      "0.2.30\n"
+    ],
+    "sha": "6cc27000b0f5acfed2eaf4201c5c951ebd2df0ee7f6cbf58980310423724f28c"
+  },
+  "npm-project-dep::yamljs": {
+    "name": "npm-project-dep::yamljs",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "yamljs",
+      "0.3.0\n"
+    ],
+    "sha": "2667e2cbdd62a171c44c9e6dd0af1a9bea40aa8ab2ca85c6b63d3279a0dd6625"
+  },
+  "npm-project-dep::changelog-parser": {
+    "name": "npm-project-dep::changelog-parser",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "changelog-parser",
+      "2.8.0\n"
+    ],
+    "sha": "012ccfee97a8cacb7877554ce93146f79adb665a968d6b93a05807eb61469883"
+  },
+  "npm-project-dep::remark": {
+    "name": "npm-project-dep::remark",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "remark",
+      "10.0.1\n"
+    ],
+    "sha": "926acfad3afb0d59962f602a30f489f88a122b1738d507d788a88f29bb851cf9"
+  },
+  "npm-project-dep::remark-defsplit": {
+    "name": "npm-project-dep::remark-defsplit",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "remark-defsplit",
+      "1.3.1\n"
+    ],
+    "sha": "6947808e8e49a4916a868628523743a418b2b6fad504b761a2cea107f3d53970"
+  },
+  "npm-project-dep::remark-inline-links": {
+    "name": "npm-project-dep::remark-inline-links",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "remark-inline-links",
+      "3.1.2\n"
+    ],
+    "sha": "f99fa7330b2a0e1a8fbe97fb461589e591fc1d422df01d3fe19095c232b4a9cc"
+  },
+  "npm-project-dep::remark-reference-links": {
+    "name": "npm-project-dep::remark-reference-links",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "remark-reference-links",
+      "4.0.3\n"
+    ],
+    "sha": "7974929712b09a4906c0e8b41d778fd91ee2d1a1c7edea61701e0f0370f99506"
+  },
+  "npm-project-dep::xml2js": {
+    "name": "npm-project-dep::xml2js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "xml2js",
+      "0.4.19\n"
+    ],
+    "sha": "74efebab5a92748abdd61d2fad5c11cd0f7bcfa24e180ba109059d0b69830ad8"
+  },
+  "npm-project-dep::js-yaml": {
+    "name": "npm-project-dep::js-yaml",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "js-yaml",
+      "3.13.1\n"
+    ],
+    "sha": "28e6ca319ee98952f75504ab6eac145396e1c3564c613fd52ee1248d10ee5ce0"
+  },
+  "npm-project-dep::dockerfile-ast": {
+    "name": "npm-project-dep::dockerfile-ast",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "dockerfile-ast",
+      "0.0.14\n"
+    ],
+    "sha": "7e8c6a4cb4c69ca69fddcf387c4f7894809602c5257817fe7ed38ec28818bbb7"
+  },
+  "npm-project-dep::vscode-languageserver-types": {
+    "name": "npm-project-dep::vscode-languageserver-types",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "vscode-languageserver-types",
+      "3.14.0\n"
+    ],
+    "sha": "e2fccc39018e31188de0c88ea45c736feaeee9abef81fd6a374b44fde863324d"
+  },
+  "npm-project-dep::docker-file-parser": {
+    "name": "npm-project-dep::docker-file-parser",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "docker-file-parser",
+      "1.0.4\n"
+    ],
+    "sha": "b91d3e02972a4cc0f6d6827a7af4b1640ba3857d059bdd1c57dfdefba222912e"
+  },
+  "npm-project-dep::cljs-oss::module-deps": {
+    "name": "npm-project-dep::cljs-oss::module-deps",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@cljs-oss/module-deps",
+      "1.1.1\n"
+    ],
+    "sha": "6cf3f90342cd7f9994a9e34a26478ad4c1733f7802f49baa4d3efa38c85752d6"
+  },
+  "npm-project-dep::xml-js": {
+    "name": "npm-project-dep::xml-js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "xml-js",
+      "1.6.11\n"
+    ],
+    "sha": "0fac43b0905ae9c810eea3924319eb9fd9604a22990abef611f91890b5986ce6"
+  },
+  "npm-project-dep::gitlab": {
+    "name": "npm-project-dep::gitlab",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "gitlab",
+      "4.5.1\n"
+    ],
+    "sha": "76e6bd0f7728c4fd9aeb3af4cb406e23a87b0f530ec6de4be11cf5dd0aa3a89d"
+  },
+  "npm-project-dep::types::js-yaml": {
+    "name": "npm-project-dep::types::js-yaml",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/js-yaml",
+      "3.12.1\n"
+    ],
+    "sha": "4aac6a768b919f04c620aa6b218d820905db18d4d6c2f64c4cb58b90d56591a9"
+  },
+  "npm-project-dep::types::json-stable-stringify": {
+    "name": "npm-project-dep::types::json-stable-stringify",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/json-stable-stringify",
+      "1.0.32\n"
+    ],
+    "sha": "045ecef371ab9849bbb4b304d7140300cc61b0cb98a02b09b0141be8e4d4446c"
+  },
+  "npm-project-dep::types::p-retry": {
+    "name": "npm-project-dep::types::p-retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/p-retry",
+      "3.0.1\n"
+    ],
+    "sha": "387843c6df8bc0c8a197189daa46dfbc13bc7f5f0dc768fdcab3d0825ce49b06"
+  },
+  "npm-project-dep::json-stable-stringify": {
+    "name": "npm-project-dep::json-stable-stringify",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "json-stable-stringify",
+      "1.0.1\n"
+    ],
+    "sha": "d1c5228d3d181642733eb38d3048066e82e463e21b1839df622e0164f319622e"
+  },
+  "npm-project-dep::p-retry": {
+    "name": "npm-project-dep::p-retry",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "p-retry",
+      "4.1.0\n"
+    ],
+    "sha": "e32fa4551040e2de40fb1cb724f9f0fc9797184cf7014b532485d81a790cc4ac"
+  },
+  "npm-project-dep::request": {
+    "name": "npm-project-dep::request",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "request",
+      "2.88.0\n"
+    ],
+    "sha": "2d678b043bbe0c2b646df707d6ddb70a02745ea557511af5d04fe618a0e1669c"
+  },
+  "npm-project-dep::types::base64-js": {
+    "name": "npm-project-dep::types::base64-js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/base64-js",
+      "1.2.5\n"
+    ],
+    "sha": "5cf0ced4b3526bed5b33337354a6634d2612d7b2f694947cad876bb44575937d"
+  },
+  "npm-project-dep::types::deepmerge": {
+    "name": "npm-project-dep::types::deepmerge",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/deepmerge",
+      "2.2.0\n"
+    ],
+    "sha": "06b53ce070f4978db9d612c312cd6624d10d83b9fb9336a9bc40a9cec2c3372e"
+  },
+  "npm-project-dep::types::murmurhash3js": {
+    "name": "npm-project-dep::types::murmurhash3js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/murmurhash3js",
+      "3.0.2\n"
+    ],
+    "sha": "a1c9b154a2f07df25a082cde386c3d56e90511d0c36e6ee35fd79d3af75c215a"
+  },
+  "npm-project-dep::types::toposort": {
+    "name": "npm-project-dep::types::toposort",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/toposort",
+      "2.0.1\n"
+    ],
+    "sha": "b9712a842a1786e8aced48c2e063f4cbf16340bf7b9fc40f34641a11a9b7ecb2"
+  },
+  "npm-project-dep::base64-js": {
+    "name": "npm-project-dep::base64-js",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "base64-js",
+      "1.3.0\n"
+    ],
+    "sha": "ec2ddf051ff5c3137f8964c35936c5e8eab5ee65266b5f1890673b11b82c44bd"
+  },
+  "npm-project-dep::deepmerge": {
+    "name": "npm-project-dep::deepmerge",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "deepmerge",
+      "3.2.0\n"
+    ],
+    "sha": "7ccf667112d16aa7512b2951487e6c24bf43776f14bb76df4cc7282e794977bb"
+  },
+  "npm-project-dep::toposort": {
+    "name": "npm-project-dep::toposort",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "toposort",
+      "2.0.2\n"
+    ],
+    "sha": "7bcbb9ff43aca4c2521ddcc909c61e591b5dbdef55923db2f662247e6677ce2d"
+  },
+  "npm-project-dep::types::unist": {
+    "name": "npm-project-dep::types::unist",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/unist",
+      "2.0.3\n"
+    ],
+    "sha": "0df4da0b5d8d45dae3c2bb537a01adaeb1c7db15e0fa0be0cf7b9cfc2beb500a"
+  },
+  "npm-project-dep::remark-parse": {
+    "name": "npm-project-dep::remark-parse",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "remark-parse",
+      "6.0.3\n"
+    ],
+    "sha": "8590c8c88a5c000139c0eb18a0fd0e30596589d697bf3b7f9586252622f4e728"
+  },
+  "npm-project-dep::unified": {
+    "name": "npm-project-dep::unified",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "unified",
+      "7.1.0\n"
+    ],
+    "sha": "36b8500ee042d2b3c35676cb4fc39a2845850fb6bbf7a320f78387b12a18f5e5"
+  },
+  "npm-project-dep::types::dateformat": {
+    "name": "npm-project-dep::types::dateformat",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/dateformat",
+      "3.0.0\n"
+    ],
+    "sha": "b42252d564f13a08045bb17632c67a2676a684faa3db2f85e2d016d0d6a21749"
+  },
+  "npm-project-dep::types::hasha": {
+    "name": "npm-project-dep::types::hasha",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/hasha",
+      "3.0.1\n"
+    ],
+    "sha": "698e44ea3ebc2ef37330b4d7eda22b25c9c887d5800eb5d0655a36f59d6d412e"
+  },
+  "npm-project-dep::base64url": {
+    "name": "npm-project-dep::base64url",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "base64url",
+      "3.0.1\n"
+    ],
+    "sha": "5f0b88fa2850d007e0aeb492349ffffa6ccbf629cdc55c1b811f56c6993772b2"
+  },
+  "npm-project-dep::hasha": {
+    "name": "npm-project-dep::hasha",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "hasha",
+      "5.0.0\n"
+    ],
+    "sha": "1085d1157218c8a728f5ae16b43fc8a15d9eb64458e60607e59d713dbd77bdd9"
+  },
+  "npm-project-dep::octokit::plugin-throttling": {
+    "name": "npm-project-dep::octokit::plugin-throttling",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@octokit/plugin-throttling",
+      "2.6.0\n"
+    ],
+    "sha": "344f57d2d5f7eee50dbc1a7b7d054942f5c8101167772ddf7bea8912f708a320"
+  },
+  "npm-project-dep::sloc": {
+    "name": "npm-project-dep::sloc",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "sloc",
+      "0.2.1\n"
+    ],
+    "sha": "1d74bd6dab590c833cd5a0d4a7f2199e321b8d7ab93385127c0ca8b378e1137a"
+  },
+  "npm-project-dep::types::decompress": {
+    "name": "npm-project-dep::types::decompress",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/decompress",
+      "4.2.3\n"
+    ],
+    "sha": "a5720f11209a80cca83e0ca424c503c35078997988a960e68e09a405420a4a8d"
+  },
+  "npm-project-dep::types::xmldoc": {
+    "name": "npm-project-dep::types::xmldoc",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/xmldoc",
+      "1.1.4\n"
+    ],
+    "sha": "fcc71800776dad300fa96879ac23085b7a8616a9e70f3c3c7a2b23c048907ff0"
+  },
+  "npm-project-dep::decompress": {
+    "name": "npm-project-dep::decompress",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "decompress",
+      "4.2.0\n"
+    ],
+    "sha": "154dc43cedf9596e63d3cad014bef8556d93f1faeafc62ebe1541d5d68882ba2"
+  },
+  "npm-project-dep::prettify-xml": {
+    "name": "npm-project-dep::prettify-xml",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "prettify-xml",
+      "1.2.0\n"
+    ],
+    "sha": "aa0ca9f9012ed01b543c94b476b1545df6396a1432f860ce0d76d63d48bf486d"
+  },
+  "npm-project-dep::toml": {
+    "name": "npm-project-dep::toml",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "toml",
+      "3.0.0\n"
+    ],
+    "sha": "03251ca3d4c4809c491033487db444a61c58a0f923dd1b68856359b87f900802"
+  },
+  "npm-project-dep::xmldoc": {
+    "name": "npm-project-dep::xmldoc",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "xmldoc",
+      "1.1.2\n"
+    ],
+    "sha": "bff15d0a3fe8d4356fc2d079a335db19745edc04f9984c4d436897a290edbad2"
+  },
+  "npm-project-dep::atomist::spring-automation": {
+    "name": "npm-project-dep::atomist::spring-automation",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/spring-automation",
+      "0.7.0-20180528014307\n"
+    ],
+    "sha": "4d189669f4f212a94d45c6cd66617057b09ab1df8b1537d33a2bae834c670601"
+  },
+  "npm-project-dep::types::cucumber": {
+    "name": "npm-project-dep::types::cucumber",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/cucumber",
+      "4.0.5\n"
+    ],
+    "sha": "7f4d2cc90ec5db7a824b08299076a060d8bbe8d3e7d52fa90dec6e97d079759c"
+  },
+  "npm-project-dep::cucumber": {
+    "name": "npm-project-dep::cucumber",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cucumber",
+      "5.1.0\n"
+    ],
+    "sha": "28e8b0a9de24706eefcd62d87a98e74deb2643e691bb9e3c9a5a42b8f82c66a2"
+  },
+  "npm-project-dep::npm": {
+    "name": "npm-project-dep::npm",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "npm",
+      "6.9.0\n"
+    ],
+    "sha": "eb5fb4f66197f252cceddf89bc5cb23da65c84a9c3af95e88b5f41510fecfaf9"
+  },
+  "npm-project-dep::random-word": {
+    "name": "npm-project-dep::random-word",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "random-word",
+      "2.0.0\n"
+    ],
+    "sha": "1c954facd1e13d17f9283d5911a84a3e603ffd0d0785255700bf8dc2e6b5e10e"
+  },
+  "npm-project-dep::types::cron": {
+    "name": "npm-project-dep::types::cron",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/cron",
+      "1.7.1\n"
+    ],
+    "sha": "cace0bb07a2bdaa9de96d39839be86a086cc54b2b7f5e52b25300969556e2ff3"
+  },
+  "npm-project-dep::types::find-up": {
+    "name": "npm-project-dep::types::find-up",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/find-up",
+      "2.1.1\n"
+    ],
+    "sha": "3614080a228af2cd8ff6a6bcf9e42fc31080c9dfd2828b1ee8d9b9132af9ad67"
+  },
+  "npm-project-dep::types::stack-trace": {
+    "name": "npm-project-dep::types::stack-trace",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@types/stack-trace",
+      "0.0.29\n"
+    ],
+    "sha": "0a03d26484c93b2fda648e9fb19d5c487d533b3ca3af318c6c4c556081c5fdc9"
+  },
+  "npm-project-dep::cron": {
+    "name": "npm-project-dep::cron",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "cron",
+      "1.7.1\n"
+    ],
+    "sha": "0236a3e617d8924de783c02bce9dd28ce4ce1c210c86f1f86bc0e85d6ca1e9df"
+  },
+  "npm-project-dep::sha-regex": {
+    "name": "npm-project-dep::sha-regex",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "sha-regex",
+      "1.0.4\n"
+    ],
+    "sha": "f678385fbd2391b061e0908b6a7874e340dd506acea532a343b7a3d71ebcc64a"
+  },
+  "npm-project-dep::atomist::cli": {
+    "name": "npm-project-dep::atomist::cli",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/cli",
+      "1.4.0\n"
+    ],
+    "sha": "a12f73746dca85ccd1acdf197b92b82def70b03a85fe1addf06d3417a3a1b620"
+  },
+  "npm-project-dep::atomist::sdm-pack-analysis-dotnet": {
+    "name": "npm-project-dep::atomist::sdm-pack-analysis-dotnet",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-analysis-dotnet",
+      "0.1.0-master.20190506042825\n"
+    ],
+    "sha": "0e9bf78014e7fee4778b54471657ce4bc3c5a01073ab18cf82c55656ac88163e"
+  },
+  "npm-project-dep::atomist::sdm-pack-analysis-node": {
+    "name": "npm-project-dep::atomist::sdm-pack-analysis-node",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-analysis-node",
+      "1.0.0\n"
+    ],
+    "sha": "9cc77c75fe185d0a8b5dab7dbaeb80bd15b31e034e0889dca0dda063f94a7066"
+  },
+  "npm-project-dep::atomist::sdm-pack-analysis-spring": {
+    "name": "npm-project-dep::atomist::sdm-pack-analysis-spring",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "@atomist/sdm-pack-analysis-spring",
+      "1.0.1\n"
+    ],
+    "sha": "65e5378ab58d3e43ce5db4fb7fd9565ee7f96326a638fa6326d36d216ca5aabb"
+  },
+  "npm-project-dep::fast-deep-equal": {
+    "name": "npm-project-dep::fast-deep-equal",
+    "abbreviation": "npmdeps",
+    "version": "0.0.1",
+    "data": [
+      "fast-deep-equal",
+      "2.0.1\n"
+    ],
+    "sha": "ae505dbe114c360d915235d429f1eb4598190dc3a5cdf97557dbf3be3a0698be"
   }
 }
