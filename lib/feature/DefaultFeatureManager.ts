@@ -84,14 +84,19 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public async projectFingerprints(par: ProjectAnalysisResult): Promise<Array<{
         feature: ManagedFeature<TechnologyElement>,
-        fingerprints: FP[],
+        fingerprints: Array<FP & { ideal?: IdealStatus, stringified: string, displayName: string }>,
     }>> {
         const result = [];
         const allFingerprintsInOneProject: FP[] = allFingerprints(par);
         for (const feature of this.features) {
-            const fingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
+            const originalFingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
+            const toDisplayableFingerprintName = feature.toDisplayableFingerprintName || (ffff => ffff);
+            const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
+            const fingerprints = _.cloneDeep(originalFingerprints);
             for (const fp of fingerprints) {
                 (fp as any).ideal = await this.idealResolver(fp.name);
+                (fp as any).stringified = toDisplayableFingerprint(fp);
+                (fp as any).displayName = toDisplayableFingerprintName(fp.name);
             }
             result.push({
                 feature,
