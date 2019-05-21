@@ -7,16 +7,16 @@
     "sha": "6e783249ff5cf9fab9c13f69be7d8bf153ade3ed117bb4b59b41eb777788b4d361fce2dcea54532fbfdd0e1d673e5f06550ecf97ffd2999599e3cbd0c4d3268e",
     "typeScriptVersion": "3.4.57"
   },
-  "npm-project-dep::atomist::antlr": {
-    "name": "npm-project-dep::atomist::antlr",
-    "abbreviation": "npmdeps",
-    "version": "0.0.1",
-    "data": [
-      "@atomist/antlr",
-      "1.0.2\n"
-    ],
-    "sha": "a4b1bf87e996391334a941cfcfe83cbd9673f2ed7a8a5eae79939d2b7980478b"
-  },
+  "npm-project-dep::lodash": {
+        "name": "npm-project-dep::lodash",
+        "abbreviation": "npmdeps",
+        "version": "0.0.1",
+        "data": [
+          "lodash",
+          "^4.17.10"
+        ],
+        "sha": "86ab646814a6ae1ec90fdce380cb5ec0af61cba7bca7cdf786d2c916b1e2326a"
+      },
   "npm-project-dep::atomist::automation-client": {
     "name": "npm-project-dep::atomist::automation-client",
     "abbreviation": "npmdeps",
@@ -107,16 +107,6 @@
     ],
     "sha": "0ac9043cad1c501d151b4087d4a1b81911535665e56866348b6055527978cf85"
   },
-  "npm-project-dep::lodash": {
-    "name": "npm-project-dep::lodash",
-    "abbreviation": "npmdeps",
-    "version": "0.0.1",
-    "data": [
-      "lodash",
-      "4.17.11\n"
-    ],
-    "sha": "3d86a02a6200c43074a650d3716422c3c0604fd4896898105e98f706a0c00684"
-  },
   "npm-project-dep::react": {
     "name": "npm-project-dep::react",
     "abbreviation": "npmdeps",
@@ -187,26 +177,7 @@
     ],
     "sha": "fb270b70117fbecadd9a3a3f4447e7d65cc99a45445c1c56ab42989fe39ddcfe"
   },
-  "npm-project-dep::types::lodash": {
-    "name": "npm-project-dep::types::lodash",
-    "abbreviation": "npmdeps",
-    "version": "0.0.1",
-    "data": [
-      "@types/lodash",
-      "4.14.130\n"
-    ],
-    "sha": "730ddd149060da0b2c3097a1e4e3502e279809286ed958ac631069bd3f8b0583"
-  },
-  "npm-project-dep::antlr4ts": {
-    "name": "npm-project-dep::antlr4ts",
-    "abbreviation": "npmdeps",
-    "version": "0.0.1",
-    "data": [
-      "antlr4ts",
-      "0.5.0-alpha.3\n"
-    ],
-    "sha": "99f45ee5e43ae6f1c412521bd7578d48b13f7e268baa74f29b81e49ecab3fcca"
-  },
+  "npm-project-dep::types::lodash": "eliminate",
   "npm-project-dep::atomist::automation-client-ext-dashboard": {
     "name": "npm-project-dep::atomist::automation-client-ext-dashboard",
     "abbreviation": "npmdeps",

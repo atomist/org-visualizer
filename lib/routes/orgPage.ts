@@ -108,12 +108,35 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const analysis = await store.load({ owner: req.params.owner, repo: req.params.repo, url: "" });
 
-            const features = await featureManager.projectFingerprints(analysis);
+            const featuresAndFingerprints = await featureManager.projectFingerprints(analysis);
+
+            // assign style based on ideal
+            for (const featureAndFingerprints of featuresAndFingerprints) {
+                for (const fp of featureAndFingerprints.fingerprints) {
+                    if (fp.ideal) {
+                        if (fp.ideal === "eliminate") {
+                            (fp as any).style = "color:red";
+                            (fp as any).idealDisplayString = "eliminate";
+                        } else {
+                            const idealFP = fp.ideal as FP;
+                            if (idealFP.sha === fp.sha) {
+                                (fp as any).style = "color:green";
+                            } else {
+                                (fp as any).style = "color:red";
+                                const toDisplayableFingerprint = featureAndFingerprints.feature.toDisplayableFingerprint || (ffff => ffff.data);
+                                (fp as any).idealDisplayString = toDisplayableFingerprint(idealFP);
+                            }
+                        }
+                    } else {
+                        (fp as any).style = "";
+                    }
+                }
+            }
 
             return res.render("project", {
                 owner: req.params.owner,
                 repo: req.params.repo,
-                features,
+                features: featuresAndFingerprints,
             });
         });
 

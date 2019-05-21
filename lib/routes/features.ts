@@ -61,7 +61,7 @@ async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<Poss
         const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
         logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
         world = {
-            ideal: getNpmDepFingerprint(libraryName, result.stdout),
+            ideal: getNpmDepFingerprint(libraryName, result.stdout.trim()),
             reason: "latest from NPM",
         };
     } catch (err) {
