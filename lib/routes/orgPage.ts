@@ -66,6 +66,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.set("view engine", "handlebars");
         express.use(serveStatic("public", { index: false }));
 
+        // the org page itself
         express.get("/", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
@@ -102,6 +103,22 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 repos,
             });
         });
+
+        express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
+
+            const analysis = await store.load({ owner: req.params.owner, repo: req.params.repo, url: "" });
+
+            const allFeatures = await featureManager.managedFingerprints([analysis]);
+
+            const featureStuff = relevantFingerprints(allFeatures, fp => true);
+
+            return res.render("project", {
+                owner: req.params.owner,
+                repo: req.params.repo,
+                features: featureStuff.features,
+            });
+        });
+
         express.post("/setIdeal", ...handlers, async (req, res) => {
             logger.info("setting ideal " + JSON.stringify(req.body));
             setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));

@@ -1,10 +1,18 @@
-<h1>Project {{analysis.id.owner}}:{{analysis.id.repo}}</h1>
+<h1>Project {{owner}}:{{repo}}</h1>
 
 This is a good project
 
-<h2>Elements</h2>
-<ul>
-{{#each analysis.elements}}
-<li>{{this.name}}
+<h2>Features</h2>
+
+{{#each features}}
+<h3>{{ this.feature.displayName}}</h3>
+
+{{#each this.fingerprints}}
+
+<li><i>{{#if this.displayName }}{{this.displayName}}{{else}}{{this.name}}{{/if}}</i>: {{this.data}}
+</li>
 {{/each}}
+
+{{/each}}
+
 </ul>
