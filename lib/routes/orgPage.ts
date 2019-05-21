@@ -108,14 +108,12 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const analysis = await store.load({ owner: req.params.owner, repo: req.params.repo, url: "" });
 
-            const allFeatures = await featureManager.managedFingerprints([analysis]);
-
-            const featureStuff = relevantFingerprints(allFeatures, fp => true);
+            const features = await featureManager.projectFingerprints(analysis);
 
             return res.render("project", {
                 owner: req.params.owner,
                 repo: req.params.repo,
-                features: featureStuff.features,
+                features,
             });
         });
 

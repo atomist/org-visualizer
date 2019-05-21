@@ -27,8 +27,8 @@ import {
     ManagedFingerprints,
 } from "./FeatureManager";
 
-import * as _ from "lodash";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 export function allFingerprints(ar: ProjectAnalysisResult | ProjectAnalysisResult[]): FP[] {
@@ -42,7 +42,7 @@ export function allFingerprints(ar: ProjectAnalysisResult | ProjectAnalysisResul
  */
 export class DefaultFeatureManager implements FeatureManager {
 
-    public readonly features: ManagedFeature<TechnologyElement>[];
+    public readonly features: Array<ManagedFeature<TechnologyElement>>;
 
     public featureFor(fp: FP): ManagedFeature<TechnologyElement> | undefined {
         return !!fp ? this.features.find(f => f.selector(fp)) : undefined;
@@ -82,6 +82,24 @@ export class DefaultFeatureManager implements FeatureManager {
         return result;
     }
 
+    public async projectFingerprints(par: ProjectAnalysisResult): Promise<Array<{
+        feature: ManagedFeature<TechnologyElement>,
+        fingerprints: FP[],
+    }>> {
+        const result = [];
+        const allFingerprintsInOneProject: FP[] = allFingerprints(par);
+        for (const feature of this.features) {
+            const fingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
+            for (const fp of fingerprints) {
+                (fp as any).ideal = await this.idealResolver(fp.name);
+            }
+            result.push({
+                feature,
+                fingerprints,
+            });
+        }
+        return result;
+    }
     // /**
     //  * Commands to transform
     //  * @return {Array<CodeTransformRegistration<{name: string}>>}
@@ -117,7 +135,7 @@ export class DefaultFeatureManager implements FeatureManager {
     public async featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>> {
         return _.uniq(
             _.flatMap(Object.getOwnPropertyNames(pa.fingerprints)
-                .map(name => this.features.filter(f => f.selector(pa.fingerprints[name])))
+                .map(name => this.features.filter(f => f.selector(pa.fingerprints[name]))),
             ));
     }
 
@@ -143,7 +161,7 @@ export class DefaultFeatureManager implements FeatureManager {
 
     constructor(
         public readonly idealResolver: IdealResolver,
-        ...features: ManagedFeature<TechnologyElement>[]
+        ...features: Array<ManagedFeature<TechnologyElement>>
     ) {
         this.features = features;
     }
