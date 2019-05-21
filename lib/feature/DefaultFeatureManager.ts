@@ -90,18 +90,20 @@ export class DefaultFeatureManager implements FeatureManager {
         const allFingerprintsInOneProject: FP[] = allFingerprints(par);
         for (const feature of this.features) {
             const originalFingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
-            const toDisplayableFingerprintName = feature.toDisplayableFingerprintName || (ffff => ffff);
-            const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
-            const fingerprints = _.cloneDeep(originalFingerprints);
-            for (const fp of fingerprints) {
-                (fp as any).ideal = await this.idealResolver(fp.name);
-                (fp as any).stringified = toDisplayableFingerprint(fp);
-                (fp as any).displayName = toDisplayableFingerprintName(fp.name);
+            if (originalFingerprints.length > 0) {
+                const toDisplayableFingerprintName = feature.toDisplayableFingerprintName || (ffff => ffff);
+                const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
+                const fingerprints = _.cloneDeep(originalFingerprints);
+                for (const fp of fingerprints) {
+                    (fp as any).ideal = await this.idealResolver(fp.name);
+                    (fp as any).stringified = toDisplayableFingerprint(fp);
+                    (fp as any).displayName = toDisplayableFingerprintName(fp.name);
+                }
+                result.push({
+                    feature,
+                    fingerprints,
+                });
             }
-            result.push({
-                feature,
-                fingerprints,
-            });
         }
         return result;
     }
