@@ -43,6 +43,7 @@ import {
     IdealStatus,
     isDistinctIdeal,
 } from "../feature/FeatureManager";
+import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 
 export const features: Array<ManagedFeature<any, any>> = [
     new TypeScriptVersionFeature(),
@@ -51,6 +52,7 @@ export const features: Array<ManagedFeature<any, any>> = [
         ...NpmDeps,
         suggestIdeal: idealFromNpm,
     },
+   new TsLintPropertyFeature(),
 ];
 
 async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<PossibleIdeals<FP>> {
