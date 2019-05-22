@@ -50,6 +50,7 @@ import {
     features,
     idealConvergenceScorer,
 } from "../routes/features";
+import { GitActivityScanner } from "./gitActivityScanner";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -61,6 +62,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(packageLockScanner)
         .withStack(nodeStackSupport(sdm))
         .withFeatures(features)
+        .withScanner(GitActivityScanner)
         .withScanner(new DockerScanner())
         .withScanner(travisScanner)
         .withScanner(circleScanner)
