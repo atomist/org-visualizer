@@ -36,7 +36,9 @@ import {
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
-    FeatureManager, ManagedFeature, PossibleIdeal,
+    FeatureManager,
+    ManagedFeature,
+    PossibleIdeal,
 } from "../feature/FeatureManager";
 
 export const features: ManagedFeature[] = [

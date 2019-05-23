@@ -20,9 +20,11 @@ import {
 } from "@atomist/sdm-pack-analysis";
 import {
     FeatureManager,
-    IdealResolver, ManagedFeature,
+    IdealResolver,
+    ManagedFeature,
     ManagedFingerprint,
-    ManagedFingerprints, PossibleIdeal,
+    ManagedFingerprints,
+    PossibleIdeal,
 } from "./FeatureManager";
 
 import { FP } from "@atomist/sdm-pack-fingerprints";
