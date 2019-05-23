@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    AbstractFingerprint,
-} from "@atomist/sdm";
+import { AbstractFingerprint, } from "@atomist/sdm";
 import { Feature } from "@atomist/sdm-pack-fingerprints";
 
 import * as _ from "lodash";

@@ -38,7 +38,7 @@ async function setIdeals() {
                 const ideal = await feature.suggestIdeal(name, []);
                 if (ideal && ideal.world) {
                     console.log(`Adding ideal ${JSON.stringify(ideal)} for fingerprint name '${name}'`);
-                    ideals[name] = ideal.world.ideal;
+                    ideals[name] = ideal;
                 }
             }
         }

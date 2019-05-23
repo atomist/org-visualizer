@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    AbstractFingerprint,
-} from "@atomist/sdm";
-import {
-    InferredFeature,
-    PossibleIdeals,
-    ProjectAnalysis,
-} from "@atomist/sdm-pack-analysis";
+import { AbstractFingerprint, } from "@atomist/sdm";
+import { PossibleIdeals, ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
+import { AnalysisDerivedFeature } from "../FeatureManager";
 
 export class TypeScriptVersion extends AbstractFingerprint {
 
@@ -32,7 +27,7 @@ export class TypeScriptVersion extends AbstractFingerprint {
 
 }
 
-export class TypeScriptVersionFeature implements InferredFeature<NodeStack, TypeScriptVersion> {
+export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScriptVersion> {
 
     public displayName = "TypeScript version";
 
@@ -46,7 +41,7 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
 
     public selector = fp => fp.name === "tsVersion";
 
-    public consequence(analysis: ProjectAnalysis) {
+    public async derive(analysis: ProjectAnalysis) {
         const n = analysis.elements.node as NodeStack;
         if (!n) {
             return undefined;
@@ -64,12 +59,6 @@ export class TypeScriptVersionFeature implements InferredFeature<NodeStack, Type
         return pa => !!pa.elements.node;
     }
 
-    // public flag(h: TypeScriptVersion) {
-    //     if (h.typeScriptVersion < "3") {
-    //         return { severity: "warn" as any, category: "ts", detail: `Version ${h.typeScriptVersion} is old` };
-    //     }
-    //     return undefined;
-    // }
 
     public toDisplayableString(h: TypeScriptVersion): string {
         return h.typeScriptVersion;

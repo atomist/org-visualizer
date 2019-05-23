@@ -17,8 +17,6 @@
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import {
-    ManagedFeature,
-    PossibleIdeal,
     PossibleIdeals,
     Scorer,
 } from "@atomist/sdm-pack-analysis";
@@ -38,50 +36,48 @@ import {
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
-    Eliminate,
-    FeatureManager,
-    IdealStatus,
-    isDistinctIdeal,
+    FeatureManager, PossibleIdeal, ManagedFeature,
 } from "../feature/FeatureManager";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 
-export const features: Array<ManagedFeature<any, any>> = [
+export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
     DockerFrom,
     {
         ...NpmDeps,
-        suggestIdeal: idealFromNpm,
+        suggestIdeals: idealFromNpm,
     },
    new TsLintPropertyFeature(),
 ];
 
-async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<PossibleIdeals<FP>> {
+async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<Array<PossibleIdeal<FP>>> {
     const libraryName = deconstructNpmDepsFingerprintName(fingerprintName);
-
-    let world: PossibleIdeal<FP>;
     try {
         const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
         logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
-        world = {
+        return [{
+            fingerprintName,
             ideal: getNpmDepFingerprint(libraryName, result.stdout.trim()),
             reason: "latest from NPM",
-        };
+        }];
     } catch (err) {
         logger.error("Could not find version of " + libraryName + ": " + err.message);
     }
 
-    return {
-        world,
-    };
+    return undefined;
 }
 
-export type IdealStore = Record<string, IdealStatus>;
+export type IdealStore = Record<string, PossibleIdeal>;
 
 const DefaultIdeals: IdealStore = {
-    "npm-project-dep::axios": Eliminate,
-    "npm-project-dep::lodash": getNpmDepFingerprint("lodash", "^4.17.11"),
-    "npm-project-dep::atomist::sdm": getNpmDepFingerprint("@atomist/sdm", "1.5.0"),
-    "tsVersion": new TypeScriptVersion("^3.4.5"),
+    "npm-project-dep::axios": {
+        fingerprintName: "npm-project-dep::axios",
+        ideal: undefined,
+        reason: "Proxying errors",
+    },
+    // "npm-project-dep::lodash": getNpmDepFingerprint("lodash", "^4.17.11"),
+    // "npm-project-dep::atomist::sdm": getNpmDepFingerprint("@atomist/sdm", "1.5.0"),
+    // "tsVersion": new TypeScriptVersion("^3.4.5"),
 };
 
 const stupidStorageFilename = "ideals.json";
@@ -123,9 +119,9 @@ export function idealConvergenceScorer(fm: FeatureManager): Scorer {
         let hasIdeal = 0;
         for (const name of allFingerprintNames) {
             const ideal = await fm.idealResolver(name);
-            if (isDistinctIdeal(ideal)) {
+            if (ideal && ideal.ideal) {
                 ++hasIdeal;
-                if (ideal.sha === i.reason.analysis.fingerprints[name].sha) {
+                if (ideal.ideal.sha === i.reason.analysis.fingerprints[name].sha) {
                     ++correctFingerprints;
                 }
             }

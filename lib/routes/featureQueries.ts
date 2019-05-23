@@ -17,7 +17,6 @@
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     FeatureManager,
-    isDistinctIdeal,
 } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
@@ -62,7 +61,7 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                     by: async ar => {
                         const fp = ar.analysis.fingerprints[name];
                         const ideal = await featureManager.idealResolver(name);
-                        if (ideal === "eliminate") {
+                        if (!ideal.ideal) {
                             return !fp ? `Yes (gone)` : "No (present)";
                         }
                         if (!fp) {
@@ -70,10 +69,9 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                         }
                         const feature = hm.featureFor(fp);
                         const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
-                        if (ideal && isDistinctIdeal(ideal)) {
-                            console.log(`We have ${fp.sha} they have ${ideal.sha}`);
-
-                            return fp.sha === ideal.sha ? `Yes (${toDisplayableFingerprint(ideal)})` : "No";
+                        if (ideal && ideal.ideal) {
+                            console.log(`We have ${fp.sha} they have ${ideal.ideal.sha}`);
+                            return fp.sha === ideal.ideal.sha ? `Yes (${toDisplayableFingerprint(ideal.ideal)})` : "No";
                         }
                         return !!fp ? feature.toDisplayableFingerprint(fp) : undefined;
                     },
@@ -101,7 +99,7 @@ export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisR
             results.push({
                 name: instance.name,
                 readable: toDisplayableFingerprint(instance),
-                ideal: isDistinctIdeal(hideal) ? huck.toDisplayableFingerprint(hideal) : undefined,
+                ideal: hideal.ideal ? huck.toDisplayableFingerprint(hideal.ideal) : undefined,
             });
         }
     }

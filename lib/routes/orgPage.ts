@@ -32,7 +32,6 @@ import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     allManagedFingerprints,
-    IdealStatus,
     ManagedFingerprints,
     relevantFingerprints,
 } from "../feature/FeatureManager";

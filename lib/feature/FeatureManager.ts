@@ -15,42 +15,45 @@
  */
 
 import {
-    ManagedFeature,
     ProjectAnalysis,
     TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
 import {
+    DerivedFeature,
     Feature,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { ManagedFingerprint } from "./FeatureManager";
 
 import * as _ from "lodash";
 
-/**
- * Constant meaning to eliminate a feature
- * @type {string}
- */
-export type Eliminate = "eliminate";
+export interface PossibleIdeal<FPI extends FP = FP> {
 
-export type IdealStatus = FP | undefined | Eliminate;
+    /**
+     * Name fo the fingerprint we were asked to provide an ideal for.
+     */
+    readonly fingerprintName: string;
 
-/**
- * Constant version of eliminate
- * @type {"eliminate"}
- */
-export const Eliminate: Eliminate = "eliminate";
+    /**
+     * The ideal fingerprint instance. May be undefined, indicating that
+     * this fingerprint should be elminated from projects.
+     */
+    readonly ideal: FPI;
 
-export function isDistinctIdeal(idealStatus: IdealStatus): idealStatus is FP {
-    if (!idealStatus) {
-        return false;
-    }
-    const maybe = idealStatus as FP;
-    return !!maybe.abbreviation;
+    /**
+     * Reason for the choice
+     */
+    readonly reason: string;
+
+    /**
+     * URL, if any, associated with the ideal fingerprint instance.
+     */
+    readonly url?: string;
 }
 
-export type IdealResolver = (name: string) => Promise<IdealStatus>;
+
+
+export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
 export interface ManagedFingerprint {
 
@@ -63,7 +66,7 @@ export interface ManagedFingerprint {
      */
     appearsIn: number;
 
-    ideal: IdealStatus;
+    ideal: PossibleIdeal;
 
     /**
      * Number of variants
@@ -79,7 +82,7 @@ export interface ManagedFingerprints {
      * Array of features with data about fingerprints they manage
      */
     features: Array<{
-        feature: ManagedFeature<TechnologyElement>,
+        feature: ManagedFeature,
         fingerprints: ManagedFingerprint[],
     }>;
 }
@@ -102,20 +105,26 @@ export function allManagedFingerprints(mfs: ManagedFingerprints): ManagedFingerp
     return _.uniqBy(_.flatMap(mfs.features, f => f.fingerprints), mf => mf.name);
 }
 
+export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<ProjectAnalysis, FPI>;
+
+export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
+
 /**
  * Features must have unique names
  */
 export interface FeatureManager {
 
-    readonly features: Array<ManagedFeature<TechnologyElement>>;
+    readonly features: ManagedFeature[];
 
     /**
      * Find the feature that manages this fingerprint
      * @param {FP} fp
      * @return {ManagedFeature<TechnologyElement> | undefined}
      */
-    featureFor(fp: FP): ManagedFeature<TechnologyElement> | undefined;
+    featureFor(fp: FP): ManagedFeature | undefined;
 
+
+    // TODO take hasFingerprints
     managedFingerprintNames(results: ProjectAnalysisResult[]): string[];
 
     managedFingerprints(results: ProjectAnalysisResult[]): Promise<ManagedFingerprints>;
@@ -123,15 +132,15 @@ export interface FeatureManager {
     /**
      * Find all the Features we can manage in this project
      */
-    featuresFound(pa: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
+    featuresFound(pa: ProjectAnalysis): Promise<ManagedFeature[]>;
 
     /**
      * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
      */
-    possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
+    possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]>;
 
-    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<Array<ManagedFeature<TechnologyElement>>>;
+    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]>;
 
     /**
      * Function that can resolve status for this feature
