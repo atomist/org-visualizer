@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { spawnPromise } from "@atomist/sdm";
 import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
-import { spawnPromise } from "@atomist/sdm";
 import * as util from "util";
 
-const exec = util.promisify(require('child_process').exec);
+const exec = util.promisify(require("child_process").exec);
 
 export interface GitActivity extends TechnologyElement {
 
@@ -42,7 +42,7 @@ export const GitActivityScanner: TechnologyScanner<GitActivity> =
             tags: ["git"],
             name: "gitActivity",
             last7,
-        }
+        };
     };
 
 function sinceDays(days: number): string {

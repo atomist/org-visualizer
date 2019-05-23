@@ -32,8 +32,8 @@ import { HasFingerprints } from "../routes/featureQueries";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     const results = Array.isArray(ar) ? ar : [ar] as any;
-    return _.flatMap(results, ar => Object.getOwnPropertyNames(ar.fingerprints)
-        .map(name => ar.fingerprints[name]));
+    return _.flatMap(results, arr => Object.getOwnPropertyNames(arr.fingerprints)
+        .map(name => arr.fingerprints[name]));
 }
 
 /**

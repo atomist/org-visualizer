@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint, } from "@atomist/sdm";
+import { AbstractFingerprint } from "@atomist/sdm";
 import { Feature } from "@atomist/sdm-pack-fingerprints";
 
 import * as _ from "lodash";
@@ -57,9 +57,9 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
                     property,
                     pathObj[property] || "");
             });
-    };
+    }
 
-    //toDisplayableFingerprintName
+    // toDisplayableFingerprintName
 
     // public async suggestIdeal(fingerprintName: string, cohort: TypeScriptVersion[]): Promise<PossibleIdeals<TypeScriptVersion>> {
     //     return {

@@ -25,12 +25,12 @@ import {
     treeBuilderFor,
 } from "./queries";
 
+import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import * as _ from "lodash";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
-import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 
 export interface HasFingerprints {
-    fingerprints: ConsolidatedFingerprints
+    fingerprints: ConsolidatedFingerprints;
 }
 
 /**

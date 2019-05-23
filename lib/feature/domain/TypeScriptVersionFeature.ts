@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint, } from "@atomist/sdm";
-import { PossibleIdeals, ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
+import { AbstractFingerprint } from "@atomist/sdm";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
+import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import { AnalysisDerivedFeature } from "../FeatureManager";
 
 export class TypeScriptVersion extends AbstractFingerprint {
@@ -59,24 +60,18 @@ export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScri
         return pa => !!pa.elements.node;
     }
 
-
     public toDisplayableString(h: TypeScriptVersion): string {
         return h.typeScriptVersion;
     }
 
-    public async suggestIdeal(fingerprintName: string, cohort: TypeScriptVersion[]): Promise<PossibleIdeals<TypeScriptVersion>> {
-        return {
-            world: {
-                reason: "hard-coded",
-                url: "http://jessitron.com",
-                ideal: new TypeScriptVersion("3.4.57"),
-            },
-            fromProjects: {
-                reason: "hard-coded also",
-                url: "http://jessitron.com",
-                ideal: new TypeScriptVersion("3.4.79"),
-            },
-        };
+    public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<TypeScriptVersion>>> {
+        const ideal = new TypeScriptVersion("3.4.57");
+        return [{
+            fingerprintName,
+            reason: "hard-coded",
+            url: "http://jessitron.com",
+            ideal,
+        }];
     }
 
 }

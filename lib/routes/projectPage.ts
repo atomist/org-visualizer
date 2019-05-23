@@ -20,12 +20,12 @@ import {
     RequestHandler,
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { jsonToQueryString } from "./orgPage";
-import { languagesQuery } from "./projectQueries";
 import {
     fingerprintsFound,
 } from "./featureQueries";
 import { featureManager } from "./features";
+import { jsonToQueryString } from "./orgPage";
+import { languagesQuery } from "./projectQueries";
 
 export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
@@ -57,8 +57,8 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     ...id,
                     dataUrl,
                     featuresFound: await fingerprintsFound(featureManager, analyzedRepo),
-                    //possibleFeaturesNotFound: await possibleFingerprintsNotFound(featureManager, analyzedRepo),
-                    //necessaryFeaturesNotFound: await necessaryFingerprintsNotFound(featureManager, analyzedRepo),
+                    // possibleFeaturesNotFound: await possibleFingerprintsNotFound(featureManager, analyzedRepo),
+                    // necessaryFeaturesNotFound: await necessaryFingerprintsNotFound(featureManager, analyzedRepo),
 
                 });
             }

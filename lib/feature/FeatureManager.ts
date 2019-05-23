@@ -51,8 +51,6 @@ export interface PossibleIdeal<FPI extends FP = FP> {
     readonly url?: string;
 }
 
-
-
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
 export interface ManagedFingerprint {
@@ -122,7 +120,6 @@ export interface FeatureManager {
      * @return {ManagedFeature<TechnologyElement> | undefined}
      */
     featureFor(fp: FP): ManagedFeature | undefined;
-
 
     // TODO take hasFingerprints
     managedFingerprintNames(results: ProjectAnalysisResult[]): string[];

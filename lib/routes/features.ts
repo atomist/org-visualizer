@@ -30,14 +30,14 @@ import {
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
+import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 import {
     TypeScriptVersion,
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
-    FeatureManager, PossibleIdeal, ManagedFeature,
+    FeatureManager, ManagedFeature, PossibleIdeal,
 } from "../feature/FeatureManager";
-import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
