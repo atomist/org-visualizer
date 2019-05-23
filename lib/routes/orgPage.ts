@@ -27,8 +27,7 @@ import {
 import { WellKnownQueries } from "./queries";
 
 import { logger } from "@atomist/automation-client";
-import { PossibleIdeals } from "@atomist/sdm-pack-analysis";
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import { FP, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     allManagedFingerprints,
@@ -113,11 +112,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             for (const featureAndFingerprints of featuresAndFingerprints) {
                 for (const fp of featureAndFingerprints.fingerprints) {
                     if (fp.ideal) {
-                        if (fp.ideal === "eliminate") {
+                        if (fp.ideal.ideal === undefined) {
                             (fp as any).style = "color:red";
                             (fp as any).idealDisplayString = "eliminate";
                         } else {
-                            const idealFP = fp.ideal as FP;
+                            const idealFP = fp.ideal.ideal;
                             if (idealFP.sha === fp.sha) {
                                 (fp as any).style = "color:green";
                             } else {
@@ -172,31 +171,30 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 fingerprintName;
 
             const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
-            function displayIdeal(ideal: IdealStatus): string | undefined {
+            function displayIdeal(ideal: PossibleIdeal): string | undefined {
                 if (ideal === undefined) {
                     return undefined;
                 }
-                if (ideal === "eliminate") {
+                if (ideal.ideal === undefined) {
                     return "eliminate";
                 }
                 try {
-                    return toDisplayableFingerprint(ideal);
+                    return toDisplayableFingerprint(ideal.ideal);
                 } catch (err) {
                     logger.error("Could not display fingerprint: " + err);
-                    return JSON.stringify(ideal.data);
+                    return JSON.stringify(ideal.ideal.data);
                 }
             }
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
-            let possibleIdeals: PossibleIdeals<FP> = {};
+            let possibleIdeals: PossibleIdeal[] = [];
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
-                if (feature && feature.suggestIdeals) {
-                    possibleIdeals = await feature.suggestIdeals(fingerprintName, []);
-                    for (const p of ["world", "local"]) {
-                        if (possibleIdeals[p]) {
-                            possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);
-                            possibleIdeals[p].displayValue = toDisplayableFingerprint(possibleIdeals[p].ideal);
-                        }
+                if (feature && feature.suggestedIdeals) {
+                    possibleIdeals = await feature.suggestedIdeals(fingerprintName);
+                    for (const ideal of possibleIdeals) {
+                        // the gui uses this
+                        (ideal as any).stringified = JSON.stringify(ideal);
+                        (ideal as any).displayValue = toDisplayableFingerprint(ideal.ideal);
                     }
                 }
             }

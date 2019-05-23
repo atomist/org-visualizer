@@ -17,7 +17,6 @@
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import {
-    PossibleIdeals,
     Scorer,
 } from "@atomist/sdm-pack-analysis";
 import {
@@ -45,12 +44,12 @@ export const features: ManagedFeature[] = [
     DockerFrom,
     {
         ...NpmDeps,
-        suggestIdeals: idealFromNpm,
+        suggestedIdeals: idealFromNpm,
     },
-   new TsLintPropertyFeature(),
+    new TsLintPropertyFeature(),
 ];
 
-async function idealFromNpm(fingerprintName: string, cohort: FP[]): Promise<Array<PossibleIdeal<FP>>> {
+async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdeal<FP>>> {
     const libraryName = deconstructNpmDepsFingerprintName(fingerprintName);
     try {
         const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
@@ -96,10 +95,10 @@ export function retrieveFromStupidLocalStorage(): IdealStore {
 }
 
 export function saveToStupidLocalStorage(value: IdealStore): void {
-    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, null, 2));
+    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, undefined, 2));
 }
 
-export function setIdeal(fingerprintName: string, ideal: FP) {
+export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
     Ideals[fingerprintName] = ideal;
     saveToStupidLocalStorage(Ideals);
 }

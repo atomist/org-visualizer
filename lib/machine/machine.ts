@@ -61,8 +61,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         .withScanner(packageLockScanner)
         .withStack(nodeStackSupport(sdm))
-            // TODO fix analysis pack
-        //.withFeatures(features)
+        .withFeatures(features)
         .withScanner(GitActivityScanner)
         .withScanner(new DockerScanner())
         .withScanner(travisScanner)
