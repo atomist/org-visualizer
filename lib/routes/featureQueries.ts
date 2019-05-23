@@ -28,11 +28,16 @@ import {
 
 import * as _ from "lodash";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
+import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+
+export interface HasFingerprints {
+    fingerprints: ConsolidatedFingerprints
+}
 
 /**
  * Well known queries against our repo cohort
  */
-export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisResult[]): Queries {
+export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[]): Queries {
     const queries: Queries = {};
 
     const fingerprintNames = _.uniq(allFingerprints(repos).map(fp => fp.name));
@@ -76,7 +81,6 @@ export function featureQueriesFrom(hm: FeatureManager, repos: ProjectAnalysisRes
                 .renderWith(DefaultProjectAnalysisResultRenderer);
     }
 
-    console.log("Huckleberry queries=" + Object.getOwnPropertyNames(queries));
     return queries;
 }
 
@@ -88,7 +92,7 @@ export interface DisplayableFingerprint {
 
 export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
     const results: DisplayableFingerprint[] = [];
-    const fingerprints = allFingerprints(ar);
+    const fingerprints = allFingerprints(ar.analysis);
     for (const instance of fingerprints) {
         const hideal = await fm.idealResolver(instance.name);
         const huck = fm.featureFor(instance);

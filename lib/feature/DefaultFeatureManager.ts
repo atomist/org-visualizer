@@ -30,11 +30,12 @@ import {
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { HasFingerprints } from "../routes/featureQueries";
 
-export function allFingerprints(ar: ProjectAnalysisResult | ProjectAnalysisResult[]): FP[] {
-    const results: ProjectAnalysisResult[] = Array.isArray(ar) ? ar : [ar] as any;
-    return _.flatMap(results, ar => Object.getOwnPropertyNames(ar.analysis.fingerprints)
-        .map(name => ar.analysis.fingerprints[name]));
+export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
+    const results = Array.isArray(ar) ? ar : [ar] as any;
+    return _.flatMap(results, ar => Object.getOwnPropertyNames(ar.fingerprints)
+        .map(name => ar.fingerprints[name]));
 }
 
 /**
@@ -49,7 +50,7 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public managedFingerprintNames(results: ProjectAnalysisResult[]): string[] {
-        const fingerprints: FP[] = _.flatMap(results, allFingerprints);
+        const fingerprints: FP[] = _.flatMap(results.map(r => r.analysis), allFingerprints);
         const relevantFingerprints = fingerprints.filter(fp => this.features.some(feature => feature.selector(fp)));
         return _.uniq(relevantFingerprints.map(fp => fp.name));
     }
@@ -59,7 +60,7 @@ export class DefaultFeatureManager implements FeatureManager {
             projectsAnalyzed: repos.length,
             features: [],
         };
-        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
+        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos.map(r => r.analysis), allFingerprints);
         for (const feature of this.features) {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: ManagedFingerprint[] = [];
@@ -87,7 +88,7 @@ export class DefaultFeatureManager implements FeatureManager {
         fingerprints: Array<FP & { ideal?: IdealStatus, stringified: string, displayName: string }>,
     }>> {
         const result = [];
-        const allFingerprintsInOneProject: FP[] = allFingerprints(par);
+        const allFingerprintsInOneProject: FP[] = allFingerprints(par.analysis);
         for (const feature of this.features) {
             const originalFingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
             if (originalFingerprints.length > 0) {
