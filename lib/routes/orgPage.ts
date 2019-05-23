@@ -190,8 +190,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             let possibleIdeals: PossibleIdeals<FP> = {};
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
-                if (feature && feature.suggestIdeal) {
-                    possibleIdeals = await feature.suggestIdeal(fingerprintName, []);
+                if (feature && feature.suggestIdeals) {
+                    possibleIdeals = await feature.suggestIdeals(fingerprintName, []);
                     for (const p of ["world", "local"]) {
                         if (possibleIdeals[p]) {
                             possibleIdeals[p].stringified = JSON.stringify(possibleIdeals[p].ideal);

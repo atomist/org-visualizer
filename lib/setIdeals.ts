@@ -34,8 +34,8 @@ async function setIdeals() {
         if (!ideals[name]) {
             // TODO dirty
             const feature = featureManager.featureFor({name} as any);
-            if (feature && feature.suggestIdeal) {
-                const ideal = await feature.suggestIdeal(name, []);
+            if (feature && feature.suggestIdeals) {
+                const ideal = await feature.suggestIdeals(name, []);
                 if (ideal && ideal.world) {
                     console.log(`Adding ideal ${JSON.stringify(ideal)} for fingerprint name '${name}'`);
                     ideals[name] = ideal;
