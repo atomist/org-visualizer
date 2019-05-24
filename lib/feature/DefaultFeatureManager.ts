@@ -15,10 +15,6 @@
  */
 
 import {
-    ProjectAnalysis,
-    TechnologyElement,
-} from "@atomist/sdm-pack-analysis";
-import {
     FeatureManager,
     HasFingerprints,
     IdealResolver,
@@ -51,18 +47,18 @@ export class DefaultFeatureManager implements FeatureManager {
         return !!fp ? this.features.find(f => f.selector(fp)) : undefined;
     }
 
-    public managedFingerprintNames(results: ProjectAnalysisResult[]): string[] {
-        const fingerprints: FP[] = _.flatMap(results.map(r => r.analysis), allFingerprints);
+    public managedFingerprintNames(results: HasFingerprints[]): string[] {
+        const fingerprints: FP[] = _.flatMap(results, allFingerprints);
         const relevantFingerprints = fingerprints.filter(fp => this.features.some(feature => feature.selector(fp)));
         return _.uniq(relevantFingerprints.map(fp => fp.name));
     }
 
-    public async managedFingerprints(repos: ProjectAnalysisResult[]): Promise<ManagedFingerprints> {
+    public async managedFingerprints(repos: HasFingerprints[]): Promise<ManagedFingerprints> {
         const result: ManagedFingerprints = {
             projectsAnalyzed: repos.length,
             features: [],
         };
-        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos.map(r => r.analysis), allFingerprints);
+        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: ManagedFingerprint[] = [];
@@ -142,7 +138,7 @@ export class DefaultFeatureManager implements FeatureManager {
     /**
      * Find all the Features we can manage in this project
      */
-    public async featuresFound(pa: ProjectAnalysis): Promise<ManagedFeature[]> {
+    public async featuresFound(pa: HasFingerprints): Promise<ManagedFeature[]> {
         return _.uniq(
             _.flatMap(Object.getOwnPropertyNames(pa.fingerprints)
                 .map(name => this.features.filter(f => f.selector(pa.fingerprints[name]))),
@@ -153,7 +149,7 @@ export class DefaultFeatureManager implements FeatureManager {
      * Which features could grow in this project that are not already growing.
      * They may not all be present
      */
-    public async possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]> {
+    public async possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
         // const present = await this.featuresFound(analysis);
         // const canGrow = await Promise.all(this.features
         //     .map(h => (h.relevanceTest || (() => false))(analysis)));
@@ -161,7 +157,7 @@ export class DefaultFeatureManager implements FeatureManager {
         return [];
     }
 
-    public async necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]> {
+    public async necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
         // const present = await this.featuresFound(analysis);
         // const shouldGrow = await Promise.all(this.features
         //     .map(h => (h.necessityTest || (() => false))(analysis)));

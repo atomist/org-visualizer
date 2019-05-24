@@ -15,7 +15,10 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Express, RequestHandler } from "express";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { featureManager, setIdeal } from "./features";
 import { WellKnownQueries } from "./wellKnownQueries";
@@ -35,7 +38,6 @@ import {
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
-
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -65,7 +67,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/org", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
-            const features = await featureManager.managedFingerprints(repos);
+            const features = await featureManager.managedFingerprints(repos.map(r => r.analysis));
 
             const actionableFingerprints = allManagedFingerprints(features)
                 .filter(mf => mf.variants > features.projectsAnalyzed / 10)
@@ -215,7 +217,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 ...req.query,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            const data = await cannedQuery.toSunburstTree(relevantRepos);
+            console.log("Build tree from " + relevantRepos.length);
+            const data = await cannedQuery.toSunburstTree(relevantRepos.map(r => r.analysis));
             res.json(data);
         });
     };

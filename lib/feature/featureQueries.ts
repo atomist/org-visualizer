@@ -19,7 +19,7 @@ import {
     HasFingerprints,
 } from "./FeatureManager";
 import { featureManager } from "../routes/features";
-import { DefaultProjectAnalysisResultRenderer } from "../routes/projectAnalysisResultUtils";
+import { DefaultProjectAnalysisRenderer } from "../routes/projectAnalysisResultUtils";
 import {
     treeBuilderFor,
 } from "../routes/wellKnownQueries";
@@ -41,20 +41,20 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                 .group({
                     name,
                     by: ar => {
-                        const fp = ar.analysis.fingerprints[name];
+                        const fp = ar.fingerprints[name];
                         const feature = hm.featureFor(fp);
                         const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
                         return !!fp ? toDisplayableFingerprint(fp) : undefined;
                     },
                 })
-                .renderWith(DefaultProjectAnalysisResultRenderer);
+                .renderWith(DefaultProjectAnalysisRenderer);
 
         queries[name + "-ideal"] = params =>
             treeBuilderFor(name, params)
                 .group({
                     name: name + " ideal?",
                     by: async ar => {
-                        const fp = ar.analysis.fingerprints[name];
+                        const fp = ar.fingerprints[name];
                         const ideal = await featureManager.idealResolver(name);
                         if (!ideal.ideal) {
                             return !fp ? `Yes (gone)` : "No (present)";
@@ -71,7 +71,7 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                         return !!fp ? feature.toDisplayableFingerprint(fp) : undefined;
                     },
                 })
-                .renderWith(DefaultProjectAnalysisResultRenderer);
+                .renderWith(DefaultProjectAnalysisRenderer);
     }
 
     return queries;
