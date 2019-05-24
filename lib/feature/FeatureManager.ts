@@ -21,7 +21,8 @@ import {
 import {
     DerivedFeature,
     Feature,
-    FP, PossibleIdeal,
+    FP,
+    PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 

@@ -19,14 +19,18 @@ import {
     TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
 import {
-    FeatureManager, HasFingerprints,
+    FeatureManager,
+    HasFingerprints,
     IdealResolver,
     ManagedFeature,
     ManagedFingerprint,
     ManagedFingerprints,
 } from "./FeatureManager";
 
-import { FP, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    FP,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 

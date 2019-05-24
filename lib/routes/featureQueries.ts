@@ -16,7 +16,8 @@
 
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
-    FeatureManager, HasFingerprints,
+    FeatureManager,
+    HasFingerprints,
 } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
