@@ -30,14 +30,12 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
+import serveStatic = require("serve-static");
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
-
-// tslint:disable-next-line
-const serveStatic = require("serve-static");
 
 /**
  * Add the org page route to Atomist SDM Express server.
