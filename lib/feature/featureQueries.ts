@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { FeatureManager, HasFingerprints, } from "./FeatureManager";
+import {
+    FeatureManager,
+    HasFingerprints,
+} from "./FeatureManager";
 import { featureManager } from "../routes/features";
 import { DefaultProjectAnalysisResultRenderer } from "../routes/projectAnalysisResultUtils";
-import { treeBuilderFor, } from "../routes/wellKnownQueries";
+import {
+    treeBuilderFor,
+} from "../routes/wellKnownQueries";
 
 import * as _ from "lodash";
 import { allFingerprints } from "./DefaultFeatureManager";
