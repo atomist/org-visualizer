@@ -43,26 +43,7 @@ import {
     OrgGrouper,
     ProjectAnalysisResultGrouper,
 } from "./projectAnalysisResultUtils";
-
-export interface QueryParams {
-
-    byOrg?: boolean;
-
-    otherLabel?: string;
-
-    /**
-     * Path inside
-     */
-    path?: string;
-
-    // tODO change to value
-    artifact?: string;
-
-    // TODO get rid of it
-    list?: string;
-}
-
-export type Queries = Record<string, (params: QueryParams) => SunburstTreeEmitter<ProjectAnalysisResult>>;
+import { Queries } from "../feature/queries";
 
 /**
  * Well known queries against our repo cohort

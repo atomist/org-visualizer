@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import {
-    FeatureManager,
-    HasFingerprints,
-} from "../feature/FeatureManager";
-import { featureManager } from "./features";
-import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
-import {
-    Queries,
-    treeBuilderFor,
-} from "./queries";
+import { FeatureManager, HasFingerprints, } from "./FeatureManager";
+import { featureManager } from "../routes/features";
+import { DefaultProjectAnalysisResultRenderer } from "../routes/projectAnalysisResultUtils";
+import { treeBuilderFor, } from "../routes/wellKnownQueries";
 
 import * as _ from "lodash";
-import { allFingerprints } from "../feature/DefaultFeatureManager";
+import { allFingerprints } from "./DefaultFeatureManager";
+import { Queries } from "./queries";
 
 /**
  * Well known queries against our repo cohort
@@ -84,9 +78,9 @@ export interface DisplayableFingerprint {
     ideal?: string;
 }
 
-export async function fingerprintsFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
+export async function fingerprintsFound(fm: FeatureManager, ar: HasFingerprints): Promise<DisplayableFingerprint[]> {
     const results: DisplayableFingerprint[] = [];
-    const fingerprints = allFingerprints(ar.analysis);
+    const fingerprints = allFingerprints(ar);
     for (const instance of fingerprints) {
         const hideal = await fm.idealResolver(instance.name);
         const huck = fm.featureFor(instance);

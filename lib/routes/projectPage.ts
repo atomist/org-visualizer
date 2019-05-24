@@ -22,7 +22,7 @@ import {
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     fingerprintsFound,
-} from "./featureQueries";
+} from "../feature/featureQueries";
 import { featureManager } from "./features";
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
@@ -56,7 +56,7 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
-                    featuresFound: await fingerprintsFound(featureManager, analyzedRepo),
+                    featuresFound: await fingerprintsFound(featureManager, analyzedRepo.analysis),
                     // possibleFeaturesNotFound: await possibleFingerprintsNotFound(featureManager, analyzedRepo),
                     // necessaryFeaturesNotFound: await necessaryFingerprintsNotFound(featureManager, analyzedRepo),
 

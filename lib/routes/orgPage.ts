@@ -24,7 +24,7 @@ import {
     featureManager,
     setIdeal,
 } from "./features";
-import { WellKnownQueries } from "./queries";
+import { WellKnownQueries } from "./wellKnownQueries";
 
 import { logger } from "@atomist/automation-client";
 import {
@@ -37,7 +37,7 @@ import {
     ManagedFingerprints,
     relevantFingerprints,
 } from "../feature/FeatureManager";
-import { featureQueriesFrom } from "./featureQueries";
+import { featureQueriesFrom } from "../feature/featureQueries";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");

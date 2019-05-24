@@ -28,7 +28,7 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 import * as _ from "lodash";
 import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
-
+import { SunburstTreeEmitter } from "../tree/TreeBuilder";
 
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
@@ -100,7 +100,6 @@ export interface FeatureManager {
     /**
      * Find the feature that manages this fingerprint
      * @param {FP} fp
-     * @return {ManagedFeature<TechnologyElement> | undefined}
      */
     featureFor(fp: FP): ManagedFeature | undefined;
 
