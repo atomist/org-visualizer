@@ -15,16 +15,12 @@
  */
 
 import {
-    ProjectAnalysis,
-} from "@atomist/sdm-pack-analysis";
-import {
     DerivedFeature,
     Feature,
     FP,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+import { ConsolidatedFingerprints, ProjectAnalysis } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
@@ -101,22 +97,22 @@ export interface FeatureManager {
     featureFor(fp: FP): ManagedFeature | undefined;
 
     // TODO take hasFingerprints
-    managedFingerprintNames(results: ProjectAnalysisResult[]): string[];
+    managedFingerprintNames(results: HasFingerprints[]): string[];
 
-    managedFingerprints(results: ProjectAnalysisResult[]): Promise<ManagedFingerprints>;
+    managedFingerprints(results: HasFingerprints[]): Promise<ManagedFingerprints>;
 
     /**
      * Find all the Features we can manage in this project
      */
-    featuresFound(pa: ProjectAnalysis): Promise<ManagedFeature[]>;
+    featuresFound(hf: HasFingerprints): Promise<ManagedFeature[]>;
 
     /**
      * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
      */
-    possibleFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]>;
+    possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 
-    necessaryFeaturesNotFound(analysis: ProjectAnalysis): Promise<ManagedFeature[]>;
+    necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 
     /**
      * Function that can resolve status for this feature
