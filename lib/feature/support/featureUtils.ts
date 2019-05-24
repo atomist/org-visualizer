@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ManagedFingerprint, ManagedFingerprints } from "../FeatureManager";
+import {
+    ManagedFingerprint,
+    ManagedFingerprints,
+} from "../FeatureManager";
 import * as _ from "lodash";
 
 export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {

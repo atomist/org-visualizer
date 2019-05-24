@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
-import { DerivedFeature, Feature, FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
+import {
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis";
+import {
+    DerivedFeature,
+    Feature,
+    FP,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 
