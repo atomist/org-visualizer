@@ -91,15 +91,16 @@ export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerived
  */
 export interface FeatureManager {
 
+    /**
+     * All the features we are manage
+     */
     readonly features: ManagedFeature[];
 
     /**
      * Find the feature that manages this fingerprint
-     * @param {FP} fp
      */
     featureFor(fp: FP): ManagedFeature | undefined;
 
-    // TODO take hasFingerprints
     managedFingerprintNames(results: HasFingerprints[]): string[];
 
     managedFingerprints(results: HasFingerprints[]): Promise<ManagedFingerprints>;
@@ -118,9 +119,7 @@ export interface FeatureManager {
     necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 
     /**
-     * Function that can resolve status for this feature
-     * @param {string} name
-     * @return {Promise<FP | "exterminate" | undefined>}
+     * Function that can resolve ideal status for this feature
      */
     idealResolver: IdealResolver;
 }

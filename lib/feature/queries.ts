@@ -35,4 +35,8 @@ export interface QueryParams {
     list?: string;
 }
 
+/**
+ * Queries we can run against features
+ */
+// TODO should take HasFingerprints...but also needs to have a standard for the leaves
 export type Queries = Record<string, (params: QueryParams) => SunburstTreeEmitter<ProjectAnalysisResult>>;
