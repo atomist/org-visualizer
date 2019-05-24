@@ -21,35 +21,13 @@ import {
 import {
     DerivedFeature,
     Feature,
-    FP,
+    FP, PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 import * as _ from "lodash";
+import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 
-export interface PossibleIdeal<FPI extends FP = FP> {
-
-    /**
-     * Name fo the fingerprint we were asked to provide an ideal for.
-     */
-    readonly fingerprintName: string;
-
-    /**
-     * The ideal fingerprint instance. May be undefined, indicating that
-     * this fingerprint should be elminated from projects.
-     */
-    readonly ideal: FPI;
-
-    /**
-     * Reason for the choice
-     */
-    readonly reason: string;
-
-    /**
-     * URL, if any, associated with the ideal fingerprint instance.
-     */
-    readonly url?: string;
-}
 
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
@@ -83,6 +61,10 @@ export interface ManagedFingerprints {
         feature: ManagedFeature,
         fingerprints: ManagedFingerprint[],
     }>;
+}
+
+export interface HasFingerprints {
+    fingerprints: ConsolidatedFingerprints;
 }
 
 export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {

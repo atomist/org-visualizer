@@ -16,14 +16,8 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import {
-    Scorer,
-} from "@atomist/sdm-pack-analysis";
-import {
-    DockerFrom,
-    FP,
-    NpmDeps,
-} from "@atomist/sdm-pack-fingerprints";
+import { Scorer, } from "@atomist/sdm-pack-analysis";
+import { DockerFrom, FP, NpmDeps, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 import {
     deconstructNpmDepsFingerprintName,
     getNpmDepFingerprint,
@@ -31,15 +25,8 @@ import {
 import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/domain/TypeScriptVersionFeature";
-import {
-    FeatureManager,
-    ManagedFeature,
-    PossibleIdeal,
-} from "../feature/FeatureManager";
+import { TypeScriptVersionFeature, } from "../feature/domain/TypeScriptVersionFeature";
+import { FeatureManager, ManagedFeature } from "../feature/FeatureManager";
 
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),

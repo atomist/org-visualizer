@@ -16,7 +16,7 @@
 
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
-    FeatureManager,
+    FeatureManager, HasFingerprints,
 } from "../feature/FeatureManager";
 import { featureManager } from "./features";
 import { DefaultProjectAnalysisResultRenderer } from "./projectAnalysisResultUtils";
@@ -25,13 +25,8 @@ import {
     treeBuilderFor,
 } from "./queries";
 
-import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import * as _ from "lodash";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
-
-export interface HasFingerprints {
-    fingerprints: ConsolidatedFingerprints;
-}
 
 /**
  * Well known queries against our repo cohort

@@ -19,18 +19,16 @@ import {
     TechnologyElement,
 } from "@atomist/sdm-pack-analysis";
 import {
-    FeatureManager,
+    FeatureManager, HasFingerprints,
     IdealResolver,
     ManagedFeature,
     ManagedFingerprint,
     ManagedFingerprints,
-    PossibleIdeal,
 } from "./FeatureManager";
 
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import { FP, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { HasFingerprints } from "../routes/featureQueries";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     const results = Array.isArray(ar) ? ar : [ar] as any;
