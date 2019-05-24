@@ -14,44 +14,26 @@
  * limitations under the License.
  */
 
-import {
-    astUtils,
-    InMemoryProject,
-    InMemoryProjectFile,
-} from "@atomist/automation-client";
+import { astUtils, InMemoryProject, InMemoryProjectFile, } from "@atomist/automation-client";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import { CodeMetrics } from "@atomist/sdm-pack-sloc";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-    LanguageStats,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
-import {
-    SunburstTreeEmitter,
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
-import {
-    DefaultProjectAnalysisRenderer,
-    OrgGrouper, ProjectAnalysisGrouper,
-} from "./projectAnalysisResultUtils";
-import { Queries } from "../feature/queries";
+import { treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
+import { DefaultProjectAnalysisRenderer, OrgGrouper, ProjectAnalysisGrouper, } from "./projectAnalysisResultUtils";
+import { Analyzed, Queries } from "../feature/queries";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 /**
  * Well known queries against our repo cohort
  */
-export const WellKnownQueries: Queries = {
+export const WellKnownQueries: Queries<ProjectAnalysis> = {
 
     licenses: params =>
-        treeBuilderFor("licenses", params)
+        treeBuilderFor<ProjectAnalysis>("licenses", params)
             .group({
                 name: "license",
                 by: ar => {
@@ -80,7 +62,7 @@ export const WellKnownQueries: Queries = {
             .renderWith(DefaultProjectAnalysisRenderer),
 
     langs: params =>
-        treeBuilderFor("languages", params)
+        treeBuilderFor<ProjectAnalysis>("languages", params)
             .customGroup<CodeStats>({
                 name: "language", to: ars => {
                     const cms: CodeStats[] = _.flatten(ars.map(ar => ar.elements.codemetrics as CodeMetricsElement)
@@ -110,7 +92,7 @@ export const WellKnownQueries: Queries = {
 
     // Version of a particular library
     libraryVersions: params =>
-        treeBuilderFor(`Versions of ${params.artifact}`, params)
+        treeBuilderFor<ProjectAnalysis>(`Versions of ${params.artifact}`, params)
             .group({
                 name: "version",
                 by: ar => {
@@ -131,7 +113,7 @@ export const WellKnownQueries: Queries = {
             .renderWith(DefaultProjectAnalysisRenderer),
 
     dependencyCount: params =>
-        treeBuilderFor("dependency count", params)
+        treeBuilderFor<ProjectAnalysis>("dependency count", params)
             .group({ name: "size", by: groupByDependencyCount })
             .renderWith(ar => {
                 const size = ar.dependencies.length;
@@ -142,7 +124,7 @@ export const WellKnownQueries: Queries = {
                 };
             }),
     loc: params =>
-        treeBuilderFor("loc", params)
+        treeBuilderFor<ProjectAnalysis>("loc", params)
             .group({ name: "size", by: groupByLoc })
             .split<CodeStats>({
                 splitter: ar => {
@@ -165,7 +147,7 @@ export const WellKnownQueries: Queries = {
             .renderWith(DefaultProjectAnalysisRenderer),
 
     dockerPorts: params =>
-        treeBuilderFor("Docker ports", params)
+        treeBuilderFor<ProjectAnalysis>("Docker ports", params)
             .group({
                 name: "docker",
                 by: async ar => {
@@ -183,7 +165,7 @@ export const WellKnownQueries: Queries = {
             .renderWith(DefaultProjectAnalysisRenderer),
 
     dockerImages: params =>
-        treeBuilderFor("Docker images", params)
+        treeBuilderFor<ProjectAnalysis>("Docker images", params)
             .group({
                 name: "docker",
                 by: async ar => {
@@ -219,7 +201,7 @@ export const WellKnownQueries: Queries = {
             .renderWith(DefaultProjectAnalysisRenderer),
 
     uhura: params =>
-        treeBuilderFor("Uhura readiness", params)
+        treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
             .group({
                 // Group by count of Uhura
                 name: "level", by: a => {
@@ -315,9 +297,8 @@ function byElement(list: string[]): ProjectAnalysisGrouper {
         return "none";
     };
 }
-
-export function treeBuilderFor(name: string, params: any): TreeBuilder<ProjectAnalysis, ProjectAnalysis> {
-    const tb = treeBuilder<ProjectAnalysis>(name);
+export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, params: any): TreeBuilder<A, A> {
+    const tb = treeBuilder<A>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;

@@ -16,6 +16,8 @@
 
 import { SunburstTreeEmitter } from "../tree/TreeBuilder";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { HasFingerprints } from "./FeatureManager";
+import { RemoteRepoRef } from "@atomist/automation-client";
 
 export interface QueryParams {
 
@@ -36,6 +38,11 @@ export interface QueryParams {
 }
 
 /**
+ * Result of an analysis. We must always have at least fingerprints and repo identification
+ */
+export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
+
+/**
  * Queries we can run against features
  */
-export type Queries = Record<string, (params: QueryParams) => SunburstTreeEmitter<ProjectAnalysis>>;
+export type Queries<A extends Analyzed = Analyzed> = Record<string, (params: QueryParams) => SunburstTreeEmitter<Analyzed>>;

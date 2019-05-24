@@ -17,13 +17,16 @@
 import * as _ from "lodash";
 import * as path from "path";
 import { Renderer } from "../tree/TreeBuilder";
+import { Analyzed } from "../feature/queries";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+
+export type AnalyzedGrouper = (ar: Analyzed) => string;
 
 export type ProjectAnalysisGrouper = (ar: ProjectAnalysis) => string;
 
-export const OrgGrouper: ProjectAnalysisGrouper = a => _.get(a, "id.owner");
+export const OrgGrouper: AnalyzedGrouper = a => _.get(a, "id.owner");
 
-export const DefaultProjectAnalysisRenderer: Renderer<ProjectAnalysis> =
+export const DefaultProjectAnalysisRenderer: Renderer<Analyzed> =
     ar => {
         const projectName = ar.id.path ?
             ar.id.repo + path.sep + ar.id.path :
