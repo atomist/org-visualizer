@@ -15,29 +15,16 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler, } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    featureManager,
-    setIdeal,
-} from "./features";
+import { featureManager, setIdeal, } from "./features";
 import { WellKnownQueries } from "./wellKnownQueries";
 
 import { logger } from "@atomist/automation-client";
-import {
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import {
-    allManagedFingerprints,
-    ManagedFingerprints,
-    relevantFingerprints,
-} from "../feature/FeatureManager";
 import { featureQueriesFrom } from "../feature/featureQueries";
+import { allManagedFingerprints, relevantFingerprints } from "../feature/support/featureUtils";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");

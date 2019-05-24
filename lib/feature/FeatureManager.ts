@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-import {
-    ProjectAnalysis,
-    TechnologyElement,
-} from "@atomist/sdm-pack-analysis";
-import {
-    DerivedFeature,
-    Feature,
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { ProjectAnalysis, } from "@atomist/sdm-pack-analysis";
+import { DerivedFeature, Feature, FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-
-import * as _ from "lodash";
 import { ConsolidatedFingerprints } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
-import { SunburstTreeEmitter } from "../tree/TreeBuilder";
 
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
+/**
+ * Report on use of a fingerprint across of cohort of projects
+ */
 export interface ManagedFingerprint {
 
+    /**
+     * Feature that owns this fingerprint
+     */
     featureName: string;
 
+    /**
+     * Fingerprint name
+     */
     name: string;
 
     /**
@@ -46,11 +44,14 @@ export interface ManagedFingerprint {
     ideal: PossibleIdeal;
 
     /**
-     * Number of variants
+     * Number of variants of this fingerprint across the cohort
      */
     variants: number;
 }
 
+/**
+ * Report on feature usage in a cohort of projects
+ */
 export interface ManagedFingerprints {
 
     projectsAnalyzed: number;
@@ -64,30 +65,19 @@ export interface ManagedFingerprints {
     }>;
 }
 
+/**
+ * Implemented by ProjectAnalysis or any other structure
+ * representing a repo exposing fingerprint data
+ */
 export interface HasFingerprints {
     fingerprints: ConsolidatedFingerprints;
 }
 
-export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {
-    const clone: ManagedFingerprints = _.cloneDeep(mfs);
-    for (const featureAndFingerprints of clone.features) {
-        featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
-        if (featureAndFingerprints.feature.toDisplayableFingerprintName) {
-            for (const fp of featureAndFingerprints.fingerprints) {
-                (fp as any).displayName = featureAndFingerprints.feature.toDisplayableFingerprintName(fp.name);
-            }
-        }
-    }
-    clone.features = clone.features.filter(f => f.fingerprints.length > 0);
-    return clone;
-}
-
-export function allManagedFingerprints(mfs: ManagedFingerprints): ManagedFingerprint[] {
-    return _.uniqBy(_.flatMap(mfs.features, f => f.fingerprints), mf => mf.name);
-}
-
 export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<ProjectAnalysis, FPI>;
 
+/**
+ * Type of feature we can manage
+ */
 export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
 
 /**
