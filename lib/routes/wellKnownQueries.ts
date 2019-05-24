@@ -39,11 +39,11 @@ import {
     TreeBuilder,
 } from "../tree/TreeBuilder";
 import {
-    DefaultProjectAnalysisResultRenderer,
-    OrgGrouper,
-    ProjectAnalysisResultGrouper,
+    DefaultProjectAnalysisRenderer,
+    OrgGrouper, ProjectAnalysisGrouper,
 } from "./projectAnalysisResultUtils";
 import { Queries } from "../feature/queries";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 /**
  * Well known queries against our repo cohort
@@ -55,35 +55,35 @@ export const WellKnownQueries: Queries = {
             .group({
                 name: "license",
                 by: ar => {
-                    if (!ar.analysis.elements.node) {
+                    if (!ar.elements.node) {
                         return "not npm";
                     }
-                    return _.get(ar.analysis, "elements.node.packageJson.license", "No license");
+                    return _.get(ar, "elements.node.packageJson.license", "No license");
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     typeScriptVersions: params =>
         treeBuilderFor("TypeScript versions", params)
             .group({
                 name: "version",
-                by: ar => _.get(ar.analysis, "elements.node.typeScript.version", params.otherLabel),
+                by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     springVersions: params =>
         treeBuilderFor("Spring Boot version", params)
             .group({
                 name: "version",
-                by: ar => _.get(ar.analysis, "elements.node.springboot.version", params.otherLabel),
+                by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     langs: params =>
         treeBuilderFor("languages", params)
             .customGroup<CodeStats>({
                 name: "language", to: ars => {
-                    const cms: CodeStats[] = _.flatten(ars.map(ar => ar.analysis.elements.codemetrics as CodeMetricsElement)
+                    const cms: CodeStats[] = _.flatten(ars.map(ar => ar.elements.codemetrics as CodeMetricsElement)
                         .filter(x => !!x)
                         .map(c => c.languages));
                     const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
@@ -92,20 +92,20 @@ export const WellKnownQueries: Queries = {
                     return s;
                 },
             })
-            .map<ProjectAnalysisResult & { lang: string }>((cs: CodeStats[], source: ProjectAnalysisResult[]) => {
+            .map<ProjectAnalysis & { lang: string }>((cs: CodeStats[], source: ProjectAnalysis[]) => {
                 return _.flatMap(cs, s => {
                     return source.filter(ar => {
-                        const cm = ar.analysis.elements.codemetrics as CodeMetricsElement;
+                        const cm = ar.elements.codemetrics as CodeMetricsElement;
                         return cm.languages.some(l => l.language.name === s.language.name);
                     })
                         .map(ar => ({ ...ar, lang: s.language.name }));
                 });
             })
             .renderWith(ar => ({
-                name: ar.analysis.id.repo,
-                size: (ar.analysis.elements.codemetrics as CodeMetricsElement).languages.find(l => l.language.name === ar.lang).total,
-                url: `/projects/${ar.analysis.id.owner}/${ar.analysis.id.repo}`,
-                repoUrl: ar.analysis.id.url,
+                name: ar.id.repo,
+                size: (ar.elements.codemetrics as CodeMetricsElement).languages.find(l => l.language.name === ar.lang).total,
+                url: `/projects/${ar.id.owner}/${ar.id.repo}`,
+                repoUrl: ar.id.url,
             })),
 
     // Version of a particular library
@@ -121,23 +121,23 @@ export const WellKnownQueries: Queries = {
             .group({
                 name: "resolved",
                 by: ar => {
-                    const pl = ar.analysis.elements.packageLock as PackageLock;
+                    const pl = ar.elements.packageLock as PackageLock;
                     if (!pl) {
                         return params.artifact;
                     }
                     return pl.packageLock.dependencies[params.artifact].version;
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     dependencyCount: params =>
         treeBuilderFor("dependency count", params)
             .group({ name: "size", by: groupByDependencyCount })
             .renderWith(ar => {
-                const size = ar.analysis.dependencies.length;
+                const size = ar.dependencies.length;
                 return {
-                    name: `${ar.analysis.id.repo} (${size})`,
-                    url: ar.analysis.id.url,
+                    name: `${ar.id.repo} (${size})`,
+                    url: ar.id.url,
                     size,
                 };
             }),
@@ -146,10 +146,10 @@ export const WellKnownQueries: Queries = {
             .group({ name: "size", by: groupByLoc })
             .split<CodeStats>({
                 splitter: ar => {
-                    const cm = ar.analysis.elements.codemetrics as CodeMetricsElement;
+                    const cm = ar.elements.codemetrics as CodeMetricsElement;
                     return cm.languages;
                 },
-                namer: a => a.analysis.id.repo,
+                namer: a => a.id.repo,
             })
             .renderWith(cs => {
                 return {
@@ -162,14 +162,14 @@ export const WellKnownQueries: Queries = {
     docker: params =>
         treeBuilderFor("Docker Y/N", params)
             .group({ name: "docker", by: byDocker })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     dockerPorts: params =>
         treeBuilderFor("Docker ports", params)
             .group({
                 name: "docker",
                 by: async ar => {
-                    const docker = ar.analysis.elements.docker as DockerStack;
+                    const docker = ar.elements.docker as DockerStack;
                     if (!docker || !docker.dockerFile) {
                         return undefined;
                     }
@@ -180,14 +180,14 @@ export const WellKnownQueries: Queries = {
                     return ports || "none";
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     dockerImages: params =>
         treeBuilderFor("Docker images", params)
             .group({
                 name: "docker",
                 by: async ar => {
-                    const docker = ar.analysis.elements.docker as DockerStack;
+                    const docker = ar.elements.docker as DockerStack;
                     if (!docker || !docker.dockerFile) {
                         return undefined;
                     }
@@ -200,7 +200,7 @@ export const WellKnownQueries: Queries = {
             .group({
                 name: "version",
                 by: async ar => {
-                    const docker = ar.analysis.elements.docker as DockerStack;
+                    const docker = ar.elements.docker as DockerStack;
                     if (!docker || !docker.dockerFile) {
                         return undefined;
                     }
@@ -210,13 +210,13 @@ export const WellKnownQueries: Queries = {
                     return images.map(i => i.split(":")[1]).join(",");
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     // TODO classifies only one or other. Should have a hierarchy of choices?
     using: params =>
         treeBuilderFor("Docker Y/N", params)
             .group({ name: "docker", by: byElement(params.list.split(",")) })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     uhura: params =>
         treeBuilderFor("Uhura readiness", params)
@@ -239,7 +239,7 @@ export const WellKnownQueries: Queries = {
             .group({
                 name: "phaseStatus",
                 by: a => {
-                    const ps = a.analysis.phaseStatus;
+                    const ps = a.phaseStatus;
                     if (!ps) {
                         return undefined;
                     }
@@ -249,7 +249,7 @@ export const WellKnownQueries: Queries = {
                         .join(",");
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 
     // Generic path
     path: params =>
@@ -257,22 +257,22 @@ export const WellKnownQueries: Queries = {
             .group({
                 name: params.path,
                 by: ar => {
-                    const raw = _.get(ar.analysis, params.path, params.otherLabel);
+                    const raw = _.get(ar, params.path, params.otherLabel);
                     if (!raw) {
                         return raw;
                     }
                     return JSON.stringify(raw);
                 },
             })
-            .renderWith(DefaultProjectAnalysisResultRenderer),
+            .renderWith(DefaultProjectAnalysisRenderer),
 };
 
-const byDocker: ProjectAnalysisResultGrouper = ar => {
-    return !!ar.analysis.elements.docker ? "Yes" : "No";
+const byDocker: ProjectAnalysisGrouper = ar => {
+    return !!ar.elements.docker ? "Yes" : "No";
 };
 
-const groupByLoc: ProjectAnalysisResultGrouper = ar => {
-    const cm = ar.analysis.elements.codemetrics as CodeMetricsElement;
+const groupByLoc: ProjectAnalysisGrouper = ar => {
+    const cm = ar.elements.codemetrics as CodeMetricsElement;
     if (!cm) {
         return undefined;
     }
@@ -288,8 +288,8 @@ const groupByLoc: ProjectAnalysisResultGrouper = ar => {
     return "small";
 };
 
-const groupByDependencyCount: ProjectAnalysisResultGrouper = ar => {
-    const cm = ar.analysis.dependencies.length;
+const groupByDependencyCount: ProjectAnalysisGrouper = ar => {
+    const cm = ar.dependencies.length;
     if (!cm) {
         return undefined;
     }
@@ -305,10 +305,10 @@ const groupByDependencyCount: ProjectAnalysisResultGrouper = ar => {
     return "small";
 };
 
-function byElement(list: string[]): ProjectAnalysisResultGrouper {
+function byElement(list: string[]): ProjectAnalysisGrouper {
     return ar => {
         for (const element of list) {
-            if (!!_.get(ar.analysis, "elements." + element)) {
+            if (!!_.get(ar, "elements." + element)) {
                 return element;
             }
         }
@@ -316,8 +316,8 @@ function byElement(list: string[]): ProjectAnalysisResultGrouper {
     };
 }
 
-export function treeBuilderFor(name: string, params: any): TreeBuilder<ProjectAnalysisResult, ProjectAnalysisResult> {
-    const tb = treeBuilder<ProjectAnalysisResult>(name);
+export function treeBuilderFor(name: string, params: any): TreeBuilder<ProjectAnalysis, ProjectAnalysis> {
+    const tb = treeBuilder<ProjectAnalysis>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;

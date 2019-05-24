@@ -220,7 +220,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 ...req.query,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            const data = await cannedQuery.toSunburstTree(relevantRepos);
+            console.log("Build tree from " + relevantRepos.length);
+            const data = await cannedQuery.toSunburstTree(relevantRepos.map(r => r.analysis));
             res.json(data);
         });
     };

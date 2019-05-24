@@ -16,26 +16,26 @@
 
 import * as _ from "lodash";
 import * as path from "path";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { Renderer } from "../tree/TreeBuilder";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
-export type ProjectAnalysisResultGrouper = (ar: ProjectAnalysisResult) => string;
+export type ProjectAnalysisGrouper = (ar: ProjectAnalysis) => string;
 
-export const OrgGrouper: ProjectAnalysisResultGrouper = a => _.get(a, "analysis.id.owner");
+export const OrgGrouper: ProjectAnalysisGrouper = a => _.get(a, "id.owner");
 
-export const DefaultProjectAnalysisResultRenderer: Renderer<ProjectAnalysisResult> =
+export const DefaultProjectAnalysisRenderer: Renderer<ProjectAnalysis> =
     ar => {
-        const projectName = ar.analysis.id.path ?
-            ar.analysis.id.repo + path.sep + ar.analysis.id.path :
-            ar.analysis.id.repo;
-        const url = ar.analysis.id.path ?
-            ar.analysis.id.url + "/tree/" + (ar.analysis.id.sha || "master") + "/" + ar.analysis.id.path :
-            ar.analysis.id.url;
+        const projectName = ar.id.path ?
+            ar.id.repo + path.sep + ar.id.path :
+            ar.id.repo;
+        const url = ar.id.path ?
+            ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
+            ar.id.url;
 
         return {
             name: projectName,
             size: 1,
             url,
-            repoUrl: ar.analysis.id.url,
+            repoUrl: ar.id.url,
         };
     };

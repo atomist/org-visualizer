@@ -15,7 +15,7 @@
  */
 
 import { SunburstTreeEmitter } from "../tree/TreeBuilder";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 export interface QueryParams {
 
@@ -38,5 +38,4 @@ export interface QueryParams {
 /**
  * Queries we can run against features
  */
-// TODO should take HasFingerprints...but also needs to have a standard for the leaves
-export type Queries = Record<string, (params: QueryParams) => SunburstTreeEmitter<ProjectAnalysisResult>>;
+export type Queries = Record<string, (params: QueryParams) => SunburstTreeEmitter<ProjectAnalysis>>;
