@@ -20,7 +20,10 @@ import {
     FP,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
-import { ConsolidatedFingerprints, ProjectAnalysis } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+import {
+    ConsolidatedFingerprints,
+    ProjectAnalysis,
+} from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 
 export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
 
