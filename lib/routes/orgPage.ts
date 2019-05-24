@@ -26,7 +26,6 @@ import {
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
-import * as helmet from "helmet";
 import * as _ from "lodash";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -37,14 +36,6 @@ import {
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
 
-export function allowFraming(fromUrl: string): ExpressCustomizer {
-    return (express: Express, ...handlers: RequestHandler[]) => {
-        express.use(helmet.frameguard({
-            action: "allow-from",
-            domain: fromUrl,
-        }));
-    };
-}
 
 /**
  * Add the org page route to Atomist SDM Express server.

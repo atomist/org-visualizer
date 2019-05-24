@@ -20,14 +20,11 @@ import {
     configureSdm,
 } from "@atomist/sdm-core";
 import {
-    Express,
-    RequestHandler,
-} from "express";
-import {
     analysisResultStore,
     machine,
 } from "./lib/machine/machine";
-import { orgPage, allowFraming } from "./lib/routes/orgPage";
+import { allowFraming } from "./lib/routes/allowFraming";
+import { orgPage } from "./lib/routes/orgPage";
 import { projectPage } from "./lib/routes/projectPage";
 
 const machineOptions: ConfigureOptions = {
