@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
-import { astUtils, InMemoryProject, InMemoryProjectFile, } from "@atomist/automation-client";
+import {
+    astUtils,
+    InMemoryProject,
+    InMemoryProjectFile,
+} from "@atomist/automation-client";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
-import { treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
-import { DefaultProjectAnalysisRenderer, OrgGrouper, ProjectAnalysisGrouper, } from "./projectAnalysisResultUtils";
-import { Analyzed, Queries } from "../feature/queries";
+import {
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
+import {
+    DefaultProjectAnalysisRenderer,
+    OrgGrouper,
+    ProjectAnalysisGrouper,
+} from "./projectAnalysisResultUtils";
+import {
+    Analyzed,
+    Queries,
+} from "../feature/queries";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 /**
