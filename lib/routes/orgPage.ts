@@ -20,7 +20,10 @@ import {
     RequestHandler,
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager, setIdeal } from "./features";
+import {
+    featureManager,
+    setIdeal,
+} from "./features";
 import { WellKnownQueries } from "./wellKnownQueries";
 
 import { logger } from "@atomist/automation-client";
