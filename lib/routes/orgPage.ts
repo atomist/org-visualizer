@@ -15,19 +15,36 @@
  */
 
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Express, RequestHandler, } from "express";
+import { Express, RequestHandler } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager, setIdeal, } from "./features";
+import { featureManager, setIdeal } from "./features";
 import { WellKnownQueries } from "./wellKnownQueries";
 
 import { logger } from "@atomist/automation-client";
-import { FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
+import {
+    FP,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
+import * as bodyParser from "body-parser";
+import * as helmet from "helmet";
 import * as _ from "lodash";
 import { featureQueriesFrom } from "../feature/featureQueries";
-import { allManagedFingerprints, relevantFingerprints } from "../feature/support/featureUtils";
+import {
+    allManagedFingerprints,
+    relevantFingerprints,
+} from "../feature/support/featureUtils";
 
 // tslint:disable-next-line
 const serveStatic = require("serve-static");
+
+export function allowFraming(fromUrl: string): ExpressCustomizer {
+    return (express: Express, ...handlers: RequestHandler[]) => {
+        express.use(helmet.frameguard({
+            action: "allow-from",
+            domain: fromUrl,
+        }));
+    };
+}
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -37,16 +54,9 @@ const serveStatic = require("serve-static");
 export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
-        const bodyParser = require("body-parser");
         express.use(bodyParser.json());       // to support JSON-encoded bodies
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
             extended: true,
-        }));
-
-        const helmet = require("helmet");
-        express.use(helmet.frameguard({
-            action: "allow-from",
-            domain: "https://blog.atomist.com",
         }));
 
         const exphbs = require("express-handlebars");
@@ -54,8 +64,14 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.set("view engine", "handlebars");
         express.use(serveStatic("public", { index: false }));
 
-        // the org page itself
+        /* redirect / to the org page. This way we can go right here
+         * for now, and later make a higher-level page if we want.
+         */
         express.get("/", ...handlers, async (req, res) => {
+            res.redirect("/org");
+        });
+        // the org page itself
+        express.get("/org", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
             const features = await featureManager.managedFingerprints(repos);

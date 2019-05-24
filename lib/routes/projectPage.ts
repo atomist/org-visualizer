@@ -33,7 +33,7 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
         express.engine("handlebars", exphbs({ defaultLayout: "main" }));
         express.set("view engine", "handlebars");
 
-        express.get("/projects/:owner/:repo", ...handlers, async (req, res) => {
+        express.get("/projects2/:owner/:repo", ...handlers, async (req, res) => {
             const id = {
                 owner: req.params.owner,
                 repo: req.params.repo,

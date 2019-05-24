@@ -27,7 +27,7 @@ import {
     analysisResultStore,
     machine,
 } from "./lib/machine/machine";
-import { orgPage } from "./lib/routes/orgPage";
+import { orgPage, allowFraming } from "./lib/routes/orgPage";
 import { projectPage } from "./lib/routes/projectPage";
 
 const machineOptions: ConfigureOptions = {
@@ -61,6 +61,7 @@ export const configuration: Configuration = {
             cfg.http.customizers = [
                 orgPage(analysisResultStore),
                 projectPage(analysisResultStore),
+                allowFraming("https://blog.atomist.com"),
             ];
             return cfg;
         },
