@@ -36,6 +36,7 @@ import * as bodyParser from "body-parser";
 import * as _ from "lodash";
 import { ReactElement } from "react";
 import serveStatic = require("serve-static");
+import { OrgExplorer } from "../../views/org";
 import {
     ProjectForDisplay,
     ProjectList,
@@ -91,12 +92,18 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const importantFeatures = relevantFingerprints(features, fp => fp.variants > 1);
 
-            res.render("home", {
+            res.send(renderStaticReactNode(OrgExplorer({
                 actionableFingerprints,
                 repos,
                 features,
                 importantFeatures,
-            });
+            } as any)));
+            // res.render("home", {
+            //     actionableFingerprints,
+            //     repos,
+            //     features,
+            //     importantFeatures,
+            // });
         });
 
         express.get("/organization/:owner", ...handlers, async (req, res) => {
