@@ -1,9 +1,9 @@
 import * as React from "react";
 
 export function TopLevelPage(props: {
-    bodyContent: React.ReactNode,
+    bodyContent: React.ReactElement,
     pageTitle?: string,
-}): React.ReactNode {
+}): React.ReactElement {
     return <html>
         <head>
             <title>

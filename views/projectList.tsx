@@ -7,7 +7,7 @@ export interface ProjectListProps {
     projects: ProjectForDisplay[];
 }
 
-function toListItem(p: ProjectForDisplay): React.ReactNode {
+function toListItem(p: ProjectForDisplay): React.ReactElement {
     const linkToIndividualProjectPage = `/project/${p.owner}/${p.repo}`;
     return <li key={p.url}>{p.repo}:{" "}
         <a href={p.url}>
@@ -19,7 +19,7 @@ function toListItem(p: ProjectForDisplay): React.ReactNode {
     </li >;
 }
 
-export function ProjectList(props: ProjectListProps): React.ReactNode {
+export function ProjectList(props: ProjectListProps): React.ReactElement {
     return <div>
         <h2>{props.projects.length} projects</h2>
         <ul>

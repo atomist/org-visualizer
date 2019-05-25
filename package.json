@@ -39,6 +39,7 @@
     "@atomist/uhura": "^1.0.0-docker-parse.20190504213223",
     "@octokit/rest": "^16.10.0",
     "@types/react": "^16.8.18",
+    "@types/react-dom": "^16.8.4",
     "@types/yamljs": "^0.2.30",
     "app-root-path": "^2.2.1",
     "body-parser": "^1.19.0",

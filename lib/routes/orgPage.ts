@@ -34,8 +34,8 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
+import { ReactElement } from "react";
 import serveStatic = require("serve-static");
-import { HelloMessage } from "../../views/orginate";
 import { ProjectForDisplay, ProjectList } from "../../views/projectList";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
@@ -44,6 +44,13 @@ import {
     relevantFingerprints,
 } from "../feature/support/featureUtils";
 
+function renderStaticReactNode(body: ReactElement, title?: string): string {
+    return ReactDOMServer.renderToStaticMarkup(
+        TopLevelPage({
+            bodyContent: body,
+            pageTitle: "Project list",
+        })); // I don't know why the types don't agree, but it works
+}
 /**
  * Add the org page route to Atomist SDM Express server.
  * @param {ProjectAnalysisResultStore} store
@@ -106,11 +113,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ar.analysis.id);
 
-            return res.send(ReactDOMServer.renderToStaticMarkup(
-                TopLevelPage({
-                    bodyContent: ProjectList({ projects: projectsForDisplay }),
-                    pageTitle: "Project list",
-                })));
+            return res.send(renderStaticReactNode(
+                ProjectList({ projects: projectsForDisplay }),
+                "Project list"));
         });
 
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
