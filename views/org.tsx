@@ -86,53 +86,48 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
                 {props.importantFeatures.features.map(displayImportantFeature)}
             </ul>
         </div>
+        <h2>Common queries</h2>
+
+        <h3>Community</h3>
+        <ul>
+            <li key="community-1"><a href="./query?name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
+Conduct</a></li>
+        </ul>
+
+        <h3>Code</h3>
+        <ul>
+            <li key="code-1"><a href="./query?name=langs&byOrg=true">Language breakdown for all projects</a></li>
+            <li key="code-2"><a href="./query?name=loc&byOrg=true">Repo sizes</a></li>
+            <li key="code-3"><a href="./query?name=dependencyCount&byOrg=true">Number of dependencies</a></li>
+            <li key="code-4"><a href="./query?name=licenses&byOrg=true">package.json license</a></li>
+        </ul>
+
+        <h3>Docker</h3>
+        <ul>
+            <li key="docker-1"><a href="./query?name=docker&byOrg=true">Docker Yes/No</a></li>
+            <li key="docker-2"><a href="./query?name=path&path=elements.docker.dockerFile.path&unused=No+Docker">Docker file path</a></li>
+            <li key="docker-3"><a href="./query?name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
+        </ul>
+
+        <h3>Atomist Status</h3>
+        <li><a href="./query?name=uhura&byOrg=true">Uhura delivery status</a></li>
+
+        <h2>Technology identified</h2>
+        <form method="GET" action="./query?name=using">
+            Technology: <input id="what" name="list" value="node,springboot" />
+            <input type="submit" value="Search" />
+        </form>
+
+        <h2>Custom path</h2>
+
+        <form method="GET" action="./query?name=path">
+            Path: <input id="what" name="path" value="elements.node.typeScript.tslint.hasConfig" ></input>
+            <input type="checkbox" name="otherLabel" value="irrelevant"></input>
+            Show all
+            <input type="submit" value="Search" ></input>
+        </form>
+
+        <h2>Data</h2>
+        <a href="http://localhost:2866/querydata/typeScriptVersions">Example of backing JSON data</a>
     </div>;
 }
-        /*
-
-<h2>Common queries</h2>
-
-<h3>Community</h3>
-<li><a href="./query?name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
-Conduct</a></li>
-
-<h3>Code</h3>
-<li><a href="./query?name=langs&byOrg=true">Language breakdown for all projects</a></li>
-<li><a href="./query?name=loc&byOrg=true">Repo sizes</a></li>
-<li><a href="./query?name=dependencyCount&byOrg=true">Number of dependencies</a></li>
-<li><a href="./query?name=licenses&byOrg=true">package.json license</a></li>
-
-<!--<form method="GET" action="/query/libraryVersions">-->
-<!--<li>Artifact: <input id="artifact" name="artifact" value="@atomist/microgrammar" />-->
-<!--<input type="checkbox" name="otherLabel" value="unused">Show all-->
-<!--<input type="checkbox" checked="true" name="byOrg" value="true">By org-->
-<!--<input type="submit" value="Search" />-->
-<!--</form>-->
-
-<h3>Docker</h3>
-<li><a href="./query?name=docker&byOrg=true">Docker Yes/No</a></li>
-<li><a href="./query?name=path&path=elements.docker.dockerFile.path&unused=No+Docker">Docker file path</a></li>
-<li><a href="./query?name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
-
-<h3>Atomist Status</h3>
-<li><a href="./query?name=uhura&byOrg=true">Uhura delivery status</a></li>
-
-<h2>Technology identified</h2>
-<form method="GET" action="./query?name=using">
-Technology: <input id="what" name="list" value="node,springboot" />
-<input type="submit" value="Search" />
-</form>
-
-<h2>Custom path</h2>
-
-<form method="GET" action="./query?name=path">
-Path: <input id="what" name="path" size="50" value="elements.node.typeScript.tslint.hasConfig" />
-<input type="checkbox" name="otherLabel" value="irrelevant">Show all
-<input type="submit" value="Search" />
-</form>
-
-<h2>Data</h2>
-<a href="http://localhost:2866/querydata/typeScriptVersions">Example of backing JSON data</a>
-</div>
-}
-*/
