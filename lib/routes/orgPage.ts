@@ -34,6 +34,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
+import serveStatic = require("serve-static");
 import { HelloMessage } from "../../views/orginate";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -54,14 +55,10 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             extended: true,
         }));
 
-        // const exphbs = require("express-handlebars");
-        // express.engine("handlebars", exphbs({ defaultLayout: "main" }));
-        // express.set("view engine", "handlebars");
-        // express.use(serveStatic("public", { index: false }));
-
-        // express.set("views", "/Users/jessitron/code/atomist-blogs/org-visualizer/views"); // wtf??
-        // express.set("view engine", "jsx"); // wtf?
-        // express.engine("jsx", require("express-react-views").createEngine());
+        const exphbs = require("express-handlebars");
+        express.engine("handlebars", exphbs({ defaultLayout: "main" }));
+        express.set("view engine", "handlebars");
+        express.use(serveStatic("public", { index: false }));
 
         /* redirect / to the org page. This way we can go right here
          * for now, and later make a higher-level page if we want.
