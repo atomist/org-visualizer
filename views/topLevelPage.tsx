@@ -12,6 +12,7 @@ export function TopLevelPage(props: {
             <link rel="stylesheet" type="text/css" href="/styles.css"></link>
         </head>
         <body>
+            <h1>Atomist Explorer</h1>
             {props.bodyContent}
         </body>
     </html>;
