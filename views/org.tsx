@@ -1,35 +1,73 @@
 import * as React from "react";
 
-export interface ActionableFingerprintForDisplay {
-    featureName: string;
-    name: string;
-    appearsIn: number; // count of projects
-    variants: number;
-    ideal?: { ideal?: { name: string, data: string } };
-}
 export interface OrgExplorerProps {
     features: { projectsAnalyzed: number };
     actionableFingerprints: ActionableFingerprintForDisplay[];
+    importantFeatures: {
+        features: FeatureForDisplay[],
+    };
 
 }
 
+export interface MaybeAnIdeal {
+    ideal?: { ideal?: { name: string, data: string } };
+}
+export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
+    featureName: string;
+}
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
     const queryLink = `./query?name=${af.name}&byOrg=true`;
-    let idealDisplay = <span></span>;
+    return <li key={af.name}><i>{af.featureName}:
+                {af.name}</i>: {af.appearsIn} projects, {" "}
+        <a href={queryLink}>{af.variants} variants</a>
+        {idealDisplay(af)}
+    </li>;
+}
+
+function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
+    let result = <span></span>;
     if (af.ideal && af.ideal.ideal) {
         const idealQueryLink = `./query?name=${af.ideal.ideal.name}-ideal&byOrg=true`;
-        idealDisplay = <span>
+        result = <span>
             -
             <a href={idealQueryLink}> Progress toward ideal
          <b>{af.ideal.ideal.data}</b>
             </a>
         </span>;
     }
+    return result;
+}
+export interface FeatureForDisplay {
+    feature: {
+        displayName?: string,
+    };
+    fingerprints: FingerprintForDisplay[];
+}
 
-    return <li key={af.name}><i>{af.featureName}:
-                {af.name}</i>: {af.appearsIn} projects, {" "}
-        <a href={queryLink}>{af.variants} variants</a>
-        {idealDisplay}
+function displayImportantFeature(f: FeatureForDisplay): React.ReactElement {
+    return <div>
+        <h3>{f.feature.displayName}</h3>
+        <ul>
+            {f.fingerprints.map(fingerprintListItem)}
+        </ul>
+
+    </div>;
+}
+
+export interface FingerprintForDisplay extends MaybeAnIdeal {
+    displayName?: string;
+    name: string;
+    appearsIn: number; // count of projects
+    variants: number;
+}
+
+function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
+    const displayName = f.displayName || f.name;
+    const variantsQueryLink: string = `./query?name=${f.name}&byOrg=true`;
+    return <li>
+        <i>{displayName}</i>: {f.appearsIn} projects, {" "}
+        <a href={variantsQueryLink}>{f.variants} variants</a>
+        {idealDisplay(f)}
     </li>;
 }
 
@@ -42,38 +80,15 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
                 {props.actionableFingerprints.map(actionableFingerprintListItem)}
             </ul>
         </div>
+        <h2>Features</h2>
+        <div className="importantFeatures">
+            <ul>
+                {props.importantFeatures.features.map(displayImportantFeature)}
+            </ul>
+        </div>
     </div>;
 }
         /*
-
-{{#each actionableFingerprints}}
-<li><i>{{ this.featureName }}:
-{{ this.name }}</i>: {{ this.appearsIn }} projects,
-
-<a href="./query?name={{this.name}}&byOrg=true">{{ this.variants }} variants</a>
-{{#if this.ideal }}
-- <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal <b>{{ this.ideal.data }}</b></a>
-{{/if}}
-</li>
-{{/ each}}
-
-<h2>Features</h2>
-
-{{#each importantFeatures.features}}
-<h3>{{ this.feature.displayName }}</h3>
-
-{{#each this.fingerprints}}
-
-<li><i>{{#if this.displayName }}{{ this.displayName }}{{ else}}{{ this.name }}{{/if}}</i>: {{ this.appearsIn }} projects,
-
-<a href="./query?name={{this.name}}&byOrg=true">{{ this.variants }} variants</a>
-{{#if this.ideal }}
-- <a href="./query?name={{this.name}}-ideal&byOrg=true">Progress toward ideal <b>{{ this.ideal.data }}</b></a>
-{{/if}}
-</li>
-{{/ each}}
-
-{{/ each}}
 
 <h2>Common queries</h2>
 
