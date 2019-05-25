@@ -19,6 +19,7 @@ import {
     Express,
     RequestHandler,
 } from "express";
+import * as ReactDOMServer from "react-dom/server";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     featureManager,
@@ -33,7 +34,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
-import serveStatic = require("serve-static");
+import { HelloMessage } from "../../views/orginate";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
     allManagedFingerprints,
@@ -53,10 +54,14 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             extended: true,
         }));
 
-        const exphbs = require("express-handlebars");
-        express.engine("handlebars", exphbs({ defaultLayout: "main" }));
-        express.set("view engine", "handlebars");
-        express.use(serveStatic("public", { index: false }));
+        // const exphbs = require("express-handlebars");
+        // express.engine("handlebars", exphbs({ defaultLayout: "main" }));
+        // express.set("view engine", "handlebars");
+        // express.use(serveStatic("public", { index: false }));
+
+        // express.set("views", "/Users/jessitron/code/atomist-blogs/org-visualizer/views"); // wtf??
+        // express.set("view engine", "jsx"); // wtf?
+        // express.engine("jsx", require("express-react-views").createEngine());
 
         /* redirect / to the org page. This way we can go right here
          * for now, and later make a higher-level page if we want.
@@ -97,9 +102,10 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             if (relevantRepos.length === 0) {
                 return res.send(`No matching repos for organization ${req.query.owner}`);
             }
-            return res.render("projects", {
-                repos,
-            });
+            const something = ReactDOMServer.renderToStaticMarkup(HelloMessage({ name: "Federico" }));
+            console.log("I GOT A THING \n" + something);
+
+            return res.send(something);
         });
 
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {

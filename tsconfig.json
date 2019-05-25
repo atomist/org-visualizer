@@ -25,9 +25,11 @@
   "include": [
     "index.ts",
     "bin/*.ts",
+    "views/**/*.tsx",
     "lib/**/*.ts",
     "test/**/*.ts",
-    "types/**/*.ts"
+    "types/**/*.ts",
+    "views/orginate.tsx"
   ],
   "exclude": [
     ".#*"
