@@ -9,6 +9,7 @@ export function TopLevelPage(props: {
             <title>
                 {props.pageTitle || "Atomist Explorer"}
             </title>
+            <link rel="stylesheet" type="text/css" href="/styles.css"></link>
         </head>
         <body>
             {props.bodyContent}
