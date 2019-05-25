@@ -36,7 +36,10 @@ import * as bodyParser from "body-parser";
 import * as _ from "lodash";
 import { ReactElement } from "react";
 import serveStatic = require("serve-static");
-import { ProjectForDisplay, ProjectList } from "../../views/projectList";
+import {
+    ProjectForDisplay,
+    ProjectList,
+} from "../../views/projectList";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
