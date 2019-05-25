@@ -8,7 +8,15 @@ export interface ProjectListProps {
 }
 
 function toListItem(p: ProjectForDisplay): React.ReactNode {
-    return <li>{p.repo}</li>;
+    const linkToIndividualProjectPage = `/project/${p.owner}/${p.repo}`;
+    return <li key={p.url}>{p.repo}:{" "}
+        <a href={p.url}>
+            Source
+            </a>{" "}
+        <a href={linkToIndividualProjectPage}>
+            Explore
+        </a>
+    </li >;
 }
 
 export function ProjectList(props: ProjectListProps): React.ReactNode {
@@ -19,20 +27,3 @@ export function ProjectList(props: ProjectListProps): React.ReactNode {
         </ul>
     </div>;
 }
-
-/*
-<h1>Atomist Explorer</h1>
-
-{{ repos.length }} projects
-
-<br>
-
-{{#each repos }}
-
-<li>
-    <b><a href="/project/{{this.analysis.id.owner}}/{{this.analysis.id.repo}}">
-            {{this.analysis.id.repo}}</a></b>: <a href="{{this.analysis.id.url}}">{{this.analysis.id.url}}</a>
-</li>
-
-{{/each}}
-*/
