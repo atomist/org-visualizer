@@ -16,7 +16,7 @@
 
 import * as assert from "power-assert";
 import { FileSystemProjectAnalysisResultStore } from "../../lib/analysis/offline/persist/FileSystemProjectAnalysisResultStore";
-import { DefaultProjectAnalysisRenderer } from "../../lib/routes/projectAnalysisResultUtils";
+import { DefaultProjectAnalysisRenderer } from "../../lib/feature/support/groupingUtils";
 import { treeBuilder } from "../../lib/tree/TreeBuilder";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 

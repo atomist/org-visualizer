@@ -43,7 +43,7 @@ import {
     DefaultProjectAnalysisRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
-} from "./projectAnalysisResultUtils";
+} from "../feature/support/groupingUtils";
 
 /**
  * Well known queries against our repo cohort
