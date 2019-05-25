@@ -29,7 +29,7 @@
     "lib/**/*.ts",
     "test/**/*.ts",
     "types/**/*.ts",
-    "views/orginate.tsx"
+    "views/projectList.tsx"
   ],
   "exclude": [
     ".#*"

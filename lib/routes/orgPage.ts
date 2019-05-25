@@ -41,6 +41,7 @@ import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
+import { ProjectList, ProjectForDisplay } from "../../views/projectList";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -94,15 +95,18 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         });
 
         express.get("/projects", ...handlers, async (req, res) => {
-            const repos = await store.loadAll();
-            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
-            if (relevantRepos.length === 0) {
+            const allAnalysisResults = await store.loadAll();
+
+            // optional query parameter: owner
+            const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
+            if (relevantAnalysisResults.length === 0) {
                 return res.send(`No matching repos for organization ${req.query.owner}`);
             }
-            const something = ReactDOMServer.renderToStaticMarkup(HelloMessage({ name: "Federico" }));
-            console.log("I GOT A THING \n" + something);
 
-            return res.send(something);
+            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ar.analysis.id);
+
+            return res.send(ReactDOMServer.renderToStaticMarkup(
+                ProjectList({ projects: projectsForDisplay })));
         });
 
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
