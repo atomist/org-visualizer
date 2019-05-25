@@ -36,12 +36,13 @@ import * as bodyParser from "body-parser";
 import * as _ from "lodash";
 import serveStatic = require("serve-static");
 import { HelloMessage } from "../../views/orginate";
+import { ProjectForDisplay, ProjectList } from "../../views/projectList";
+import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
-import { ProjectList, ProjectForDisplay } from "../../views/projectList";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -106,7 +107,10 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ar.analysis.id);
 
             return res.send(ReactDOMServer.renderToStaticMarkup(
-                ProjectList({ projects: projectsForDisplay })));
+                TopLevelPage({
+                    bodyContent: ProjectList({ projects: projectsForDisplay }),
+                    pageTitle: "Project list",
+                })));
         });
 
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
