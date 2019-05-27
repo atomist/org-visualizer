@@ -33,8 +33,8 @@ import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import {
     Analyzed,
-    Queries,
-} from "../feature/queries";
+    Reporters,
+} from "../feature/reporters";
 import {
     treeBuilder,
     TreeBuilder,
@@ -48,7 +48,7 @@ import {
 /**
  * Well known queries against our repo cohort
  */
-export const WellKnownQueries: Queries<ProjectAnalysis> = {
+export const WellKnownQueries: Reporters<ProjectAnalysis> = {
 
     licenses: params =>
         treeBuilderFor<ProjectAnalysis>("licenses", params)

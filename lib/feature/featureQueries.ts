@@ -26,13 +26,17 @@ import {
 
 import * as _ from "lodash";
 import { allFingerprints } from "./DefaultFeatureManager";
-import { Queries } from "./queries";
+import { Reporters } from "./reporters";
 
 /**
- * Well known queries against our repo cohort
+ * Create an object exposing well-known queries against our repo cohort
+ * based on the fingerprints the given FeatureManager knows how to manage.
+ * Return 2 queries for each fingerprint name
+ * 1. <fingerprintName>: Show distribution of the fingerprint
+ * 2. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
  */
-export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[]): Queries {
-    const queries: Queries = {};
+export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[]): Reporters {
+    const queries: Reporters = {};
 
     const fingerprintNames = _.uniq(allFingerprints(repos).map(fp => fp.name));
     for (const name of fingerprintNames) {
@@ -49,6 +53,7 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
 
+        // Add a query that tells us how many repositories are on vs off the ideal, if any, for this fingerprint
         queries[name + "-ideal"] = params =>
             treeBuilderFor(name, params)
                 .group({

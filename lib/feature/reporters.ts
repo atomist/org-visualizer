@@ -16,11 +16,17 @@
 
 import { RemoteRepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { SunburstTreeEmitter } from "../tree/TreeBuilder";
+import { ReportBuilder } from "../tree/TreeBuilder";
 import { HasFingerprints } from "./FeatureManager";
 
-export interface QueryParams {
+/**
+ * Options for report generation
+ */
+export interface ReporterParams {
 
+    /**
+     * Do first layer grouping by organization?
+     */
     byOrg?: boolean;
 
     otherLabel?: string;
@@ -43,6 +49,6 @@ export interface QueryParams {
 export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 
 /**
- * Queries we can run against features
+ * Reporters we can run against features
  */
-export type Queries<A extends Analyzed = Analyzed> = Record<string, (params: QueryParams) => SunburstTreeEmitter<Analyzed>>;
+export type Reporters<A extends Analyzed = Analyzed> = Record<string, (params: ReporterParams) => ReportBuilder<Analyzed>>;

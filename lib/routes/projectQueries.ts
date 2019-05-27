@@ -18,15 +18,15 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { CodeStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import {
-    SunburstTreeEmitter,
+    ReportBuilder,
     treeBuilder,
 } from "../tree/TreeBuilder";
 
 /**
  * Languages used in this project
- * @type {SunburstTreeEmitter}
+ * @type {ReportBuilder}
  */
-export const languagesQuery: SunburstTreeEmitter<ProjectAnalysis> =
+export const languagesQuery: ReportBuilder<ProjectAnalysis> =
     treeBuilder<ProjectAnalysis>("by language")
         .split<CodeStats>({
             namer: ar => ar.id.repo,

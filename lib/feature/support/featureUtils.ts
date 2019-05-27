@@ -16,12 +16,12 @@
 
 import * as _ from "lodash";
 import {
-    ManagedFingerprint,
-    ManagedFingerprints,
+    FingerprintStatus,
+    FingerprintCensus,
 } from "../FeatureManager";
 
-export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {
-    const clone: ManagedFingerprints = _.cloneDeep(mfs);
+export function relevantFingerprints(mfs: FingerprintCensus, test: (mf: FingerprintStatus) => boolean): FingerprintCensus {
+    const clone: FingerprintCensus = _.cloneDeep(mfs);
     for (const featureAndFingerprints of clone.features) {
         featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
         if (featureAndFingerprints.feature.toDisplayableFingerprintName) {
@@ -34,6 +34,6 @@ export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: Manage
     return clone;
 }
 
-export function allManagedFingerprints(mfs: ManagedFingerprints): ManagedFingerprint[] {
+export function allManagedFingerprints(mfs: FingerprintCensus): FingerprintStatus[] {
     return _.uniqBy(_.flatMap(mfs.features, f => f.fingerprints), mf => mf.name);
 }
