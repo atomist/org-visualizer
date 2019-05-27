@@ -41,6 +41,7 @@ import {
     ProjectForDisplay,
     ProjectList,
 } from "../../views/projectList";
+import { SunburstQuery } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -224,16 +225,20 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     }
                 }
             }
-            res.render("orgViz", {
-                name: req.params.owner,
-                dataUrl,
-                query: req.params.query,
-                fingerprintName,
+            res.send(renderStaticReactNode(SunburstQuery({
                 fingerprintDisplayName,
-                possibleIdeals,
-                currentIdeal: currentIdealForDisplay,
-            });
+            })));
+            // res.render("orgViz", {
+            //     name: req.params.owner,
+            //     dataUrl,
+            //     query: req.params.query,
+            //     fingerprintName,
+            //     fingerprintDisplayName,
+            //     possibleIdeals,
+            //     currentIdeal: currentIdealForDisplay,
+            // });
         });
+
         express.get("/query.json", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
@@ -244,7 +249,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 ...req.query,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            console.log("Build tree from " + relevantRepos.length);
+            //  console.log("Build tree from " + relevantRepos.length);
             const data = await cannedQuery.toSunburstTree(relevantRepos.map(r => r.analysis));
             res.json(data);
         });
