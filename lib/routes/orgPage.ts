@@ -53,7 +53,11 @@ import {
     SunburstQuery,
 } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
-import { defaultedToDisplayableFingerprintName, MelbaFingerprintForDisplay } from "../feature/DefaultFeatureManager";
+import {
+    defaultedToDisplayableFingerprint,
+    defaultedToDisplayableFingerprintName,
+    MelbaFingerprintForDisplay,
+} from "../feature/DefaultFeatureManager";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -186,7 +190,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-            const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
             function displayIdeal(ideal: PossibleIdeal): string | undefined {
                 if (ideal === undefined) {
                     return undefined;
@@ -195,7 +198,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     return "eliminate";
                 }
                 try {
-                    return toDisplayableFingerprint(ideal.ideal);
+                    return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
                 } catch (err) {
                     logger.error("Could not display fingerprint: " + err);
                     return JSON.stringify(ideal.ideal.data);
@@ -210,7 +213,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     for (const ideal of possibleIdeals) {
                         possibleIdealsForDisplay.push({
                             ...ideal,
-                            displayValue: toDisplayableFingerprint(ideal.ideal),
+                            displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
                             stringified: JSON.stringify(ideal),
                         });
                     }
@@ -263,8 +266,7 @@ export function jsonToQueryString(json: object): string {
 
 function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedFeature): string {
     if (idealIsDifferentFromActual(fingerprint)) {
-        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
-        return toDisplayableFingerprint(fingerprint.ideal.ideal);
+        return defaultedToDisplayableFingerprint(feature)(fingerprint.ideal.ideal);
     }
     if (idealIsElimination(fingerprint)) {
         return "eliminate";

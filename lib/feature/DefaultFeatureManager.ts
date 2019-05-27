@@ -153,5 +153,5 @@ export function defaultedToDisplayableFingerprintName(feature?: ManagedFeature):
 }
 
 export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fpi: FP) => string {
-    return (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
+    return (feature && feature.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

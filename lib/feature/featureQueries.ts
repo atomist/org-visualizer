@@ -15,7 +15,6 @@
  */
 
 import { featureManager } from "../routes/features";
-import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 import {
     treeBuilderFor,
 } from "../routes/wellKnownQueries";
@@ -23,9 +22,10 @@ import {
     FeatureManager,
     HasFingerprints,
 } from "./FeatureManager";
+import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 
 import * as _ from "lodash";
-import { allFingerprints } from "./DefaultFeatureManager";
+import { allFingerprints, defaultedToDisplayableFingerprint } from "./DefaultFeatureManager";
 import { Queries } from "./queries";
 
 /**
@@ -42,9 +42,7 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                     name,
                     by: ar => {
                         const fp = ar.fingerprints[name];
-                        const feature = hm.featureFor(fp);
-                        const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
-                        return !!fp ? toDisplayableFingerprint(fp) : undefined;
+                        return !!fp ? defaultedToDisplayableFingerprint(hm.featureFor(fp))(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
@@ -63,12 +61,10 @@ export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[])
                             return undefined;
                         }
                         const feature = hm.featureFor(fp);
-                        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (fp => fp.data);
                         if (ideal && ideal.ideal) {
-                            console.log(`We have ${fp.sha} they have ${ideal.ideal.sha}`);
-                            return fp.sha === ideal.ideal.sha ? `Yes (${toDisplayableFingerprint(ideal.ideal)})` : "No";
+                            return fp.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
                         }
-                        return !!fp ? feature.toDisplayableFingerprint(fp) : undefined;
+                        return !!fp ? defaultedToDisplayableFingerprint(feature)(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
@@ -90,11 +86,10 @@ export async function fingerprintsFound(fm: FeatureManager, ar: HasFingerprints)
         const hideal = await fm.idealResolver(instance.name);
         const huck = fm.featureFor(instance);
         if (huck) {
-            const toDisplayableFingerprint = huck.toDisplayableFingerprint || (fp => fp.data);
             results.push({
                 name: instance.name,
-                readable: toDisplayableFingerprint(instance),
-                ideal: hideal.ideal ? huck.toDisplayableFingerprint(hideal.ideal) : undefined,
+                readable: defaultedToDisplayableFingerprint(huck)(instance),
+                ideal: defaultedToDisplayableFingerprint(huck)(hideal.ideal),
             });
         }
     }
