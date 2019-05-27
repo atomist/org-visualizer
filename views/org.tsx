@@ -71,9 +71,9 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     </li>;
 }
 
-export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
-    return <div>
-        <a href="./projects">{props.features.projectsAnalyzed} projects </a>
+export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
+
+    return <div>/doiv><a href="./projects">{props.features.projectsAnalyzed} projects </a>
         <h2>Action Items</h2>
         <div className="actionItemBox">
             <ul>
@@ -86,8 +86,13 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
                 {props.importantFeatures.features.map(displayImportantFeature)}
             </ul>
         </div>
-        <h2>Common queries</h2>
+    </div>;
+}
 
+export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
+    return <div>
+        {displayFeatures(props)}
+        <h2>Common queries</h2>
         <h3>Community</h3>
         <ul>
             <li key="community-1"><a href="./query?name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
