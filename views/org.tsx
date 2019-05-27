@@ -72,7 +72,12 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
 }
 
 export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
-
+    if (props.features.projectsAnalyzed === 0) {
+        return <div><h2>No projects analyzed</h2>
+            To investigate some projects, run `npm link` and then `spider --owner atomist`<br></br>
+            Substitute your GitHub user or organization for `atomist` to get results for your own projects!
+        </div>;
+    }
     return <div>/doiv><a href="./projects">{props.features.projectsAnalyzed} projects </a>
         <h2>Action Items</h2>
         <div className="actionItemBox">
