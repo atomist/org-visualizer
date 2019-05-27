@@ -29,7 +29,7 @@ Next, build with `npm run build`
 
 Next, `npm link` to create the `spider` binary.
 
-`spider --owner <github organization>` e.g. `spider --owner atomist-blogs` (not the full org URL)
+`spider --owner <github organization>` e.g. `spider --owner atomist` (not the full org URL)
 
 Now start the server with `atomist start --local` to expose the visualizations.
 

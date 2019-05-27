@@ -20,6 +20,10 @@ import {
     RequestHandler,
 } from "express";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import {
+    fingerprintsFound,
+} from "../feature/featureQueries";
+import { featureManager } from "./features";
 import { jsonToQueryString } from "./orgPage";
 import { languagesQuery } from "./projectQueries";
 
@@ -29,7 +33,7 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
         express.engine("handlebars", exphbs({ defaultLayout: "main" }));
         express.set("view engine", "handlebars");
 
-        express.get("/projects/:owner/:repo", ...handlers, async (req, res) => {
+        express.get("/projects2/:owner/:repo", ...handlers, async (req, res) => {
             const id = {
                 owner: req.params.owner,
                 repo: req.params.repo,
@@ -37,6 +41,7 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                 url: undefined,
             };
             const analyzedRepo = await analyzedRepoStore.load(id);
+
             if (!analyzedRepo) {
                 res.render("noProject", {
                     id,
@@ -51,6 +56,10 @@ export function projectPage(analyzedRepoStore: ProjectAnalysisResultStore): Expr
                     name: req.params.owner,
                     ...id,
                     dataUrl,
+                    featuresFound: await fingerprintsFound(featureManager, analyzedRepo.analysis),
+                    // possibleFeaturesNotFound: await possibleFingerprintsNotFound(featureManager, analyzedRepo),
+                    // necessaryFeaturesNotFound: await necessaryFingerprintsNotFound(featureManager, analyzedRepo),
+
                 });
             }
         });

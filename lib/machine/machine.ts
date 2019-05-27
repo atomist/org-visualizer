@@ -25,6 +25,7 @@ import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
 import {
     analyzerBuilder,
     ProjectAnalyzer,
+    Scorer,
 } from "@atomist/sdm-pack-analysis";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
@@ -34,8 +35,9 @@ import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
 import {
     logger,
 } from "@atomist/automation-client";
-import { nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
-import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
+import {
+    nodeStackSupport,
+} from "@atomist/sdm-pack-analysis-node";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
 import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persist/FileSystemProjectAnalysisResultStore";
@@ -43,6 +45,12 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { packageLockScanner } from "../element/packageLock";
+import {
+    featureManager,
+    features,
+    idealConvergenceScorer,
+} from "../routes/features";
+import { GitActivityScanner } from "./gitActivityScanner";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -53,7 +61,8 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         .withScanner(packageLockScanner)
         .withStack(nodeStackSupport(sdm))
-        .withStack(springBootStackSupport(sdm))
+        .withFeatures(features)
+        .withScanner(GitActivityScanner)
         .withScanner(new DockerScanner())
         .withScanner(travisScanner)
         .withScanner(circleScanner)
@@ -62,6 +71,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(reactScanner)
         .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
         .withScanner(CodeOfConductScanner)
+        .withScorer(idealConvergenceScorer(featureManager))
         .build();
 }
 

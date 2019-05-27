@@ -1,0 +1,37 @@
+body {
+    background-color: white;
+    font-size: 1rem;
+    line-height: 1.625rem;
+    font-weight: 400;
+    font-family: "Tofino", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica", sans-serif;
+    color: #2a2a2a;
+    margin: 0px;
+}
+
+main {
+    margin: 10px;
+}
+
+header {
+    background-color: rgb(34, 106, 106);
+    color: white;
+    padding: 0.8em;
+    border-bottom: 3px solid rgb(186, 216, 95);
+}
+
+header h1 {
+    font-weight: normal;
+    font-size: 1.5em;
+    font-size: 2rem;
+    font-weight: 500;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.actionItemBox {
+    font-size: large;
+    border: 2px solid;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: indianred;
+}

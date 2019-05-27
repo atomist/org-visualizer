@@ -1,12 +1,40 @@
 
 <h1>Project {{owner}} / {{repo}}</h1>
 
+<a href="../../">Home</a>
+<br/>
+
 <h2>Project Source</h2>
 <a href="{{analysis.id.url}}">{{analysis.id.url}}</a>
 
 <h2>Detail</h2>
 
-<i>Expose any custom data from the analysis here.</i>
+Features:
+
+<ul>
+{{#each featuresFound}}
+    <li>{{this.name}} {{this.readable}} <b><font color="red">{{this.ideal}}</b></font>
+    </li>
+{{/each}}
+</ul>
+
+<br>
+Desired other features:
+<ul>
+    {{#each necessaryFeaturesNotFound}}
+        <li>{{this.name}} <b>{{this.ideal}}</b>
+        </li>
+    {{/each}}
+</ul>
+
+<br>
+Possible other features:
+<ul>
+{{#each possibleFeaturesNotFound}}
+    <li>{{this.name}} <b>{{this.ideal}}</b>
+    </li>
+{{/each}}
+</ul>
 
 <h2>Language Breakdown</h2>
 
