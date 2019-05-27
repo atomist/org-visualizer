@@ -9,7 +9,6 @@ export interface PossibleIdealForDisplay {
     stringified: string;
 }
 
-
 export interface SunburstQueryProps {
     fingerprintDisplayName: string;
     currentIdeal: CurrentIdealForDisplay;
@@ -45,14 +44,14 @@ function displaySuggestedIdeals(possibleIdeals: PossibleIdealForDisplay[]): Reac
 
 export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
 
+    const d3ScriptCall = `<script>sunburst("${props.query || ""}", "${props.dataUrl}", window.innerWidth - 100, window.innerHeight - 100);</script>`;
+
     const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) :
         displaySuggestedIdeals(props.possibleIdeals);
     return <div>
         <h1>{props.fingerprintDisplayName}</h1>
         {idealDisplay}
-        <script>
-            sunburst({props.query}, {props.dataUrl}, window.innerWidth - 100, window.innerHeight - 100);
-</script>
+        <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
     </div>;
 
 }

@@ -35,3 +35,24 @@ header h1 {
     padding-bottom: 10px;
     background: indianred;
 }
+
+/* d3 sunburst stuff */
+
+svg .slice {
+    cursor: pointer;
+}
+
+svg .slice .main-arc {
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+svg .slice .hidden-arc {
+    fill: none;
+}
+
+svg .slice text {
+    pointer-events: none;
+    dominant-baseline: middle;
+    text-anchor: middle;
+}

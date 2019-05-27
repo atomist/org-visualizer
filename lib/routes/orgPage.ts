@@ -49,11 +49,14 @@ import {
     relevantFingerprints,
 } from "../feature/support/featureUtils";
 
-function renderStaticReactNode(body: ReactElement, title?: string): string {
+function renderStaticReactNode(body: ReactElement,
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
-            pageTitle: "Project list",
+            pageTitle: title,
+            extraScripts,
         })); // I don't know why the types don't agree, but it works
 }
 /**
@@ -227,13 +230,16 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     }
                 }
             }
-            res.send(renderStaticReactNode(SunburstQuery({
+            res.send(renderStaticReactNode(
+                SunburstQuery({
+                    fingerprintDisplayName,
+                    currentIdeal: currentIdealForDisplay,
+                    possibleIdeals: possibleIdealsForDisplay,
+                    query: req.params.query,
+                    dataUrl,
+                }),
                 fingerprintDisplayName,
-                currentIdeal: currentIdealForDisplay,
-                possibleIdeals: possibleIdealsForDisplay,
-                query: req.params.query,
-                dataUrl,
-            })));
+                ["https://d3js.org/d3.v4.min.js", "/js/sunburst.js"]));
             // res.render("orgViz", {
             //     name: req.params.owner,
             //     dataUrl,
