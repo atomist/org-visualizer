@@ -25,7 +25,10 @@ import {
 import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 
 import * as _ from "lodash";
-import { allFingerprints, defaultedToDisplayableFingerprint } from "./DefaultFeatureManager";
+import {
+    allFingerprints,
+    defaultedToDisplayableFingerprint,
+} from "./DefaultFeatureManager";
 import { Reporters } from "./reporters";
 
 /**
