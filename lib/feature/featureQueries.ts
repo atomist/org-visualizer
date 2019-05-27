@@ -15,7 +15,7 @@
  */
 
 import { featureManager } from "../routes/features";
-import { DefaultProjectAnalysisRenderer } from "../routes/projectAnalysisResultUtils";
+import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 import {
     treeBuilderFor,
 } from "../routes/wellKnownQueries";

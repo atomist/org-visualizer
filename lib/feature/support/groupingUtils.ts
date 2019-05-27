@@ -17,8 +17,8 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import * as path from "path";
-import { Analyzed } from "../feature/queries";
-import { Renderer } from "../tree/TreeBuilder";
+import { Renderer } from "../../tree/TreeBuilder";
+import { Analyzed } from "../queries";
 
 export type AnalyzedGrouper = (ar: Analyzed) => string;
 

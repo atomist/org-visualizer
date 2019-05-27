@@ -17,7 +17,7 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as assert from "power-assert";
 import { FileSystemProjectAnalysisResultStore } from "../../lib/analysis/offline/persist/FileSystemProjectAnalysisResultStore";
-import { DefaultProjectAnalysisRenderer } from "../../lib/routes/projectAnalysisResultUtils";
+import { DefaultProjectAnalysisRenderer } from "../../lib/feature/support/groupingUtils";
 import { treeBuilder } from "../../lib/tree/TreeBuilder";
 
 // Works only on spidered data
