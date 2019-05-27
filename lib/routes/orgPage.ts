@@ -231,6 +231,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 fingerprintDisplayName,
                 currentIdeal: currentIdealForDisplay,
                 possibleIdeals: possibleIdealsForDisplay,
+                query: req.params.query,
+                dataUrl,
             })));
             // res.render("orgViz", {
             //     name: req.params.owner,

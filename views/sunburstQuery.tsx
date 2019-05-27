@@ -14,6 +14,8 @@ export interface SunburstQueryProps {
     fingerprintDisplayName: string;
     currentIdeal: CurrentIdealForDisplay;
     possibleIdeals: PossibleIdealForDisplay[];
+    query: string;
+    dataUrl: string;
 }
 
 function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
@@ -26,9 +28,9 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
     return <li key={possibleIdeal.url}>
         The <a href={possibleIdeal.url}>world</a> suggests:
         <form action="/setIdeal" method="post">
-            <input hidden={true} type="text" id="stringifiedFP" name="stringifiedFP"
+            <input hidden={true} type="text" readOnly={true} id="stringifiedFP" name="stringifiedFP"
                 value={possibleIdeal.stringified} />
-            <input hidden={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
+            <input hidden={true} readOnly={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
             <input type="submit" value={possibleIdeal.displayValue} />
         </form>
     </li>;
@@ -48,37 +50,16 @@ export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
     return <div>
         <h1>{props.fingerprintDisplayName}</h1>
         {idealDisplay}
+        <script>
+            sunburst({props.query}, {props.dataUrl}, window.innerWidth - 100, window.innerHeight - 100);
+</script>
     </div>;
 
 }
 /*
  See https://bl.ocks.org/vasturiano/12da9071095fbd4df434e60d52d2d58d -->
 <!-- Display a sunburst -->
-{{#if currentIdeal}}
 
-{{ else}}
-<h2>
-Set an ideal?
-</h2>
-{{#if possibleIdeals.world}}
-<li>
-The <a href="{{possibleIdeals.world.url}}">world</a> suggests:
-<form action="/setIdeal" method="post">
-<input hidden=true type="text" id="stringifiedFP" name="stringifiedFP"
-value="{{possibleIdeals.world.stringified}}" />
-<input hidden=true type="text" id="fingerprintName" name="fingerprintName" value="{{fingerprintName}}" />
-<input type="submit" value="{{possibleIdeals.world.displayValue}}">
-</form>
-</li>
-{{ / if}}
-{{#if possibleIdeals.fromProjects}}
-<li>
-Based on existing projects, you might want:
-<button>{{ possibleIdeals.fromProjects.ideal.data }}</button>
-</li>
-{{ / if}}
-<li>Other: <input /><button type="submit">Set</button></li>
-{{ / if}}
 <script>
 sunburst('{{ query }}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
 </script>
