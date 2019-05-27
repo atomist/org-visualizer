@@ -30,8 +30,8 @@ function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
         const idealQueryLink = `./query?name=${af.ideal.ideal.name}-ideal&byOrg=true`;
         result = <span>
             -
-            <a href={idealQueryLink}> Progress toward ideal
-         <b>{af.ideal.ideal.data}</b>
+            <a href={idealQueryLink}> Progress toward ideal {" "}
+                <b>{af.ideal.ideal.data}</b>
             </a>
         </span>;
     }
