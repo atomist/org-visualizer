@@ -16,11 +16,11 @@
 
 import {
     FeatureManager,
+    FingerprintCensus,
+    FingerprintStatus,
     HasFingerprints,
     IdealResolver,
     ManagedFeature,
-    FingerprintStatus,
-    FingerprintCensus,
 } from "./FeatureManager";
 
 import {

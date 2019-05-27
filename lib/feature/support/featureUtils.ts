@@ -16,8 +16,8 @@
 
 import * as _ from "lodash";
 import {
-    FingerprintStatus,
     FingerprintCensus,
+    FingerprintStatus,
 } from "../FeatureManager";
 
 export function relevantFingerprints(mfs: FingerprintCensus, test: (mf: FingerprintStatus) => boolean): FingerprintCensus {
