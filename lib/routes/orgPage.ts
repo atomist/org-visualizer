@@ -42,7 +42,6 @@ import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
 import {
     FeatureForDisplay,
-    FingerprintForDisplay,
     ProjectExplorer,
 } from "../../views/project";
 import {
@@ -85,9 +84,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             extended: true,
         }));
 
-        const exphbs = require("express-handlebars");
-        express.engine("handlebars", exphbs({ defaultLayout: "main" }));
-        express.set("view engine", "handlebars");
         express.use(serveStatic("public", { index: false }));
 
         /* redirect / to the org page. This way we can go right here
