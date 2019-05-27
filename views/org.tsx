@@ -78,7 +78,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
             Substitute your GitHub user or organization for `atomist` to get results for your own projects!
         </div>;
     }
-    return <div>/doiv><a href="./projects">{props.features.projectsAnalyzed} projects </a>
+    return <div><a href="./projects">{props.features.projectsAnalyzed} projects </a>
         <h2>Action Items</h2>
         <div className="actionItemBox">
             <ul>
