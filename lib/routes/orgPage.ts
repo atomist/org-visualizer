@@ -34,10 +34,17 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
-import { CSSProperties, ReactElement } from "react";
+import {
+    CSSProperties,
+    ReactElement,
+} from "react";
 import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
-import { FeatureForDisplay, FingerprintForDisplay, ProjectExplorer } from "../../views/project";
+import {
+    FeatureForDisplay,
+    FingerprintForDisplay,
+    ProjectExplorer,
+} from "../../views/project";
 import {
     ProjectForDisplay,
     ProjectList,
