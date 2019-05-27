@@ -1,49 +1,85 @@
 import * as React from "react";
 
+export interface CurrentIdealForDisplay { }
+
+export interface PossibleIdealForDisplay {
+    url?: string;
+    fingerprintName: string;
+    displayValue: string;
+    stringified: string;
+}
+
+
 export interface SunburstQueryProps {
     fingerprintDisplayName: string;
+    currentIdeal: CurrentIdealForDisplay;
+    possibleIdeals: PossibleIdealForDisplay[];
+}
+
+function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
+    return <h2>
+        Current ideal: {currentIdeal}
+    </h2>;
+}
+
+function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.ReactElement {
+    return <li key={possibleIdeal.url}>
+        The <a href={possibleIdeal.url}>world</a> suggests:
+        <form action="/setIdeal" method="post">
+            <input hidden={true} type="text" id="stringifiedFP" name="stringifiedFP"
+                value={possibleIdeal.stringified} />
+            <input hidden={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
+            <input type="submit" value={possibleIdeal.displayValue} />
+        </form>
+    </li>;
+}
+
+function displaySuggestedIdeals(possibleIdeals: PossibleIdealForDisplay[]): React.ReactElement {
+    return <ul>
+        {possibleIdeals.map(suggestedIdealListItem)}
+        <li key="other">Other: <input /> <button type="submit">Set</button></li>
+    </ul>;
 }
 
 export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
+
+    const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) :
+        displaySuggestedIdeals(props.possibleIdeals);
     return <div>
         <h1>{props.fingerprintDisplayName}</h1>
+        {idealDisplay}
     </div>;
+
 }
 /*
-<!-- See https://bl.ocks.org/vasturiano/12da9071095fbd4df434e60d52d2d58d -->
+ See https://bl.ocks.org/vasturiano/12da9071095fbd4df434e60d52d2d58d -->
 <!-- Display a sunburst -->
-<h1>
-  {{fingerprintDisplayName}}
-</h1>
 {{#if currentIdeal}}
+
+{{ else}}
 <h2>
-  Current ideal:
-  {{currentIdeal}}
-</h2>
-{{else}}
-<h2>
-  Set an ideal?
+Set an ideal?
 </h2>
 {{#if possibleIdeals.world}}
 <li>
-  The <a href="{{possibleIdeals.world.url}}">world</a> suggests:
-  <form action="/setIdeal" method="post">
-    <input hidden=true type="text" id="stringifiedFP" name="stringifiedFP"
-      value="{{possibleIdeals.world.stringified}}" />
-    <input hidden=true type="text" id="fingerprintName" name="fingerprintName" value="{{fingerprintName}}" />
-    <input type="submit" value="{{possibleIdeals.world.displayValue}}">
-  </form>
+The <a href="{{possibleIdeals.world.url}}">world</a> suggests:
+<form action="/setIdeal" method="post">
+<input hidden=true type="text" id="stringifiedFP" name="stringifiedFP"
+value="{{possibleIdeals.world.stringified}}" />
+<input hidden=true type="text" id="fingerprintName" name="fingerprintName" value="{{fingerprintName}}" />
+<input type="submit" value="{{possibleIdeals.world.displayValue}}">
+</form>
 </li>
-{{/if}}
+{{ / if}}
 {{#if possibleIdeals.fromProjects}}
 <li>
-  Based on existing projects, you might want:
-  <button>{{possibleIdeals.fromProjects.ideal.data}}</button>
+Based on existing projects, you might want:
+<button>{{ possibleIdeals.fromProjects.ideal.data }}</button>
 </li>
-{{/if}}
+{{ / if}}
 <li>Other: <input /><button type="submit">Set</button></li>
-{{/if}}
+{{ / if}}
 <script>
-  sunburst('{{query}}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
+sunburst('{{ query }}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
 </script>
 */

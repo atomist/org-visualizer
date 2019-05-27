@@ -41,7 +41,7 @@ import {
     ProjectForDisplay,
     ProjectList,
 } from "../../views/projectList";
-import { SunburstQuery } from "../../views/sunburstQuery";
+import { PossibleIdealForDisplay, SunburstQuery } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -213,20 +213,24 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }
             }
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
-            let possibleIdeals: PossibleIdeal[] = [];
+            const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
                 if (feature && feature.suggestedIdeals) {
-                    possibleIdeals = await feature.suggestedIdeals(fingerprintName);
+                    const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
                     for (const ideal of possibleIdeals) {
-                        // the gui uses this
-                        (ideal as any).stringified = JSON.stringify(ideal);
-                        (ideal as any).displayValue = toDisplayableFingerprint(ideal.ideal);
+                        possibleIdealsForDisplay.push({
+                            ...ideal,
+                            displayValue: toDisplayableFingerprint(ideal.ideal),
+                            stringified: JSON.stringify(ideal),
+                        });
                     }
                 }
             }
             res.send(renderStaticReactNode(SunburstQuery({
                 fingerprintDisplayName,
+                currentIdeal: currentIdealForDisplay,
+                possibleIdeals: possibleIdealsForDisplay,
             })));
             // res.render("orgViz", {
             //     name: req.params.owner,
