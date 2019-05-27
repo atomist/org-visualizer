@@ -96,7 +96,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/", ...handlers, async (req, res) => {
             res.redirect("/org");
         });
-        // the org page itself
+        /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
@@ -117,12 +117,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             } as any)));
         });
 
-        express.get("/organization/:owner", ...handlers, async (req, res) => {
-            res.render("org", {
-                name: req.params.owner,
-            });
-        });
-
+        /* Project list page */
         express.get("/projects", ...handlers, async (req, res) => {
             const allAnalysisResults = await store.loadAll();
 
@@ -139,6 +134,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 "Project list"));
         });
 
+        /* the project page */
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
 
             const analysis = await store.load({ owner: req.params.owner, repo: req.params.repo, url: "" });
@@ -162,12 +158,14 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             })));
         });
 
+        /* the /query page calls this */
         express.post("/setIdeal", ...handlers, async (req, res) => {
             logger.info("setting ideal " + JSON.stringify(req.body));
             setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
             res.send(200);
         });
 
+        /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
@@ -245,6 +243,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             // });
         });
 
+        /* the d3 sunburst on the /query page uses this */
         express.get("/query.json", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
