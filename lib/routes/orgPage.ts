@@ -41,7 +41,10 @@ import {
     ProjectForDisplay,
     ProjectList,
 } from "../../views/projectList";
-import { PossibleIdealForDisplay, SunburstQuery } from "../../views/sunburstQuery";
+import {
+    PossibleIdealForDisplay,
+    SunburstQuery,
+} from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
