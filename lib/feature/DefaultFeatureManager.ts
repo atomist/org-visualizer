@@ -29,11 +29,24 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { CSSProperties } from "react";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     const results = Array.isArray(ar) ? ar : [ar] as any;
     return _.flatMap(results, arr => Object.getOwnPropertyNames(arr.fingerprints)
         .map(name => arr.fingerprints[name]));
+}
+
+export type MelbaFingerprintForDisplay = FP & {
+    ideal?: PossibleIdeal,
+    stringified: string,
+    displayName: string,
+    style?: CSSProperties,
+};
+
+export interface MelbaFeatureForDisplay {
+    feature: ManagedFeature,
+    fingerprints: MelbaFingerprintForDisplay[],
 }
 
 /**
@@ -81,10 +94,7 @@ export class DefaultFeatureManager implements FeatureManager {
         return result;
     }
 
-    public async projectFingerprints(par: ProjectAnalysisResult): Promise<Array<{
-        feature: ManagedFeature,
-        fingerprints: Array<FP & { ideal?: PossibleIdeal, stringified: string, displayName: string }>,
-    }>> {
+    public async projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]> {
         const result = [];
         const allFingerprintsInOneProject: FP[] = allFingerprints(par.analysis);
         for (const feature of this.features) {

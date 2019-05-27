@@ -34,9 +34,10 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import * as _ from "lodash";
-import { ReactElement } from "react";
+import { CSSProperties, ReactElement } from "react";
 import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
+import { FeatureForDisplay, FingerprintForDisplay, ProjectExplorer } from "../../views/project";
 import {
     ProjectForDisplay,
     ProjectList,
@@ -46,6 +47,8 @@ import {
     SunburstQuery,
 } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
+import { MelbaFingerprintForDisplay } from "../feature/DefaultFeatureManager";
+import { ManagedFeature } from "../feature/FeatureManager";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
     allManagedFingerprints,
@@ -53,8 +56,8 @@ import {
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -105,12 +108,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 features,
                 importantFeatures,
             } as any)));
-            // res.render("home", {
-            //     actionableFingerprints,
-            //     repos,
-            //     features,
-            //     importantFeatures,
-            // });
         });
 
         express.get("/organization/:owner", ...handlers, async (req, res) => {
@@ -142,33 +139,20 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const featuresAndFingerprints = await featureManager.projectFingerprints(analysis);
 
             // assign style based on ideal
-            for (const featureAndFingerprints of featuresAndFingerprints) {
-                for (const fp of featureAndFingerprints.fingerprints) {
-                    if (fp.ideal) {
-                        if (fp.ideal.ideal === undefined) {
-                            (fp as any).style = "color:red";
-                            (fp as any).idealDisplayString = "eliminate";
-                        } else {
-                            const idealFP = fp.ideal.ideal;
-                            if (idealFP.sha === fp.sha) {
-                                (fp as any).style = "color:green";
-                            } else {
-                                (fp as any).style = "color:red";
-                                const toDisplayableFingerprint = featureAndFingerprints.feature.toDisplayableFingerprint || (ffff => ffff.data);
-                                (fp as any).idealDisplayString = toDisplayableFingerprint(idealFP);
-                            }
-                        }
-                    } else {
-                        (fp as any).style = "";
-                    }
-                }
-            }
+            const yay: FeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
+                ...featureAndFingerprints,
+                fingerprints: featureAndFingerprints.fingerprints.map(fp => ({
+                    ...fp,
+                    idealDisplayString: displayIdeal(fp, featureAndFingerprints.feature),
+                    style: displayStyleAccordingToIdeal(fp),
+                })),
+            }));
 
-            return res.render("project", {
+            return res.send(renderStaticReactNode(ProjectExplorer({
                 owner: req.params.owner,
                 repo: req.params.repo,
-                features: featuresAndFingerprints,
-            });
+                features: yay,
+            })));
         });
 
         express.post("/setIdeal", ...handlers, async (req, res) => {
@@ -275,4 +259,43 @@ export function jsonToQueryString(json: object): string {
     return Object.keys(json).map(key =>
         encodeURIComponent(key) + "=" + encodeURIComponent(json[key]),
     ).join("&");
+}
+
+function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedFeature): string {
+    if (idealIsDifferentFromActual(fingerprint)) {
+        const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
+        return toDisplayableFingerprint(fingerprint.ideal.ideal);
+    }
+    if (idealIsElimination(fingerprint)) {
+        return "eliminate";
+    }
+    return "";
+}
+
+function idealIsElimination(fingerprint: MelbaFingerprintForDisplay): boolean {
+    return fingerprint.ideal && fingerprint.ideal.ideal === undefined;
+}
+
+function idealIsDifferentFromActual(fingerprint: MelbaFingerprintForDisplay): boolean {
+    return fingerprint.ideal && fingerprint.ideal.ideal !== undefined && fingerprint.ideal.ideal.sha !== fingerprint.sha;
+}
+
+function idealIsSameAsActual(fingerprint: MelbaFingerprintForDisplay): boolean {
+    return fingerprint.ideal && fingerprint.ideal.ideal !== undefined && fingerprint.ideal.ideal.sha === fingerprint.sha;
+}
+
+function displayStyleAccordingToIdeal(fingerprint: MelbaFingerprintForDisplay): CSSProperties {
+    const redStyle: CSSProperties = { color: "red" };
+    const greenStyle: CSSProperties = { color: "green" };
+
+    if (idealIsSameAsActual(fingerprint)) {
+        return greenStyle;
+    }
+    if (idealIsDifferentFromActual(fingerprint)) {
+        return redStyle;
+    }
+    if (idealIsElimination(fingerprint)) {
+        return redStyle;
+    }
+    return {};
 }
