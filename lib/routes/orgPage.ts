@@ -53,7 +53,7 @@ import {
     SunburstQuery,
 } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
-import { MelbaFingerprintForDisplay } from "../feature/DefaultFeatureManager";
+import { defaultedToDisplayableFingerprintName, MelbaFingerprintForDisplay } from "../feature/DefaultFeatureManager";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { featureQueriesFrom } from "../feature/featureQueries";
 import {
@@ -62,8 +62,8 @@ import {
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -184,9 +184,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const dataUrl = `/query.json?${queryString}`;
 
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
-            const fingerprintDisplayName = (feature && feature.toDisplayableFingerprintName) ?
-                feature.toDisplayableFingerprintName(fingerprintName) :
-                fingerprintName;
+            const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
             const toDisplayableFingerprint = (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
             function displayIdeal(ideal: PossibleIdeal): string | undefined {

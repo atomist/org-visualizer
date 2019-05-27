@@ -51,7 +51,6 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
         const pathObj = _.get(json, this.path, {});
         return Object.getOwnPropertyNames(pathObj)
             .map(property => {
-                console.log(`property=${property} in PathObj` + JSON.stringify(pathObj) );
                 return new TsLintProperty(
                     this.path,
                     property,
@@ -59,28 +58,7 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
             });
     }
 
-    // toDisplayableFingerprintName
-
-    // public async suggestIdeal(fingerprintName: string, cohort: TypeScriptVersion[]): Promise<PossibleIdeals<TypeScriptVersion>> {
-    //     return {
-    //         world: {
-    //             reason: "hard-coded",
-    //             url: "http://jessitron.com",
-    //             ideal: new TypeScriptVersion("3.4.57"),
-    //         },
-    //         fromProjects: {
-    //             reason: "hard-coded also",
-    //             url: "http://jessitron.com",
-    //             ideal: new TypeScriptVersion("3.4.79"),
-    //         },
-    //     };
-    // }
-
     constructor(public readonly path = "rules") {
     }
 
 }
-
-// public compare(h1: TypeScriptVersion, h2: TypeScriptVersion, by: string): number {
-//         return h1.typeScriptVersion > h2.typeScriptVersion ? 1 : -1;
-//     }

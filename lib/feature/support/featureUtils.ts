@@ -15,6 +15,7 @@
  */
 
 import * as _ from "lodash";
+import { defaultedToDisplayableFingerprintName } from "../DefaultFeatureManager";
 import {
     ManagedFingerprint,
     ManagedFingerprints,
@@ -25,10 +26,8 @@ export function relevantFingerprints(mfs: ManagedFingerprints,
     const clone: ManagedFingerprints = _.cloneDeep(mfs);
     for (const featureAndFingerprints of clone.features) {
         featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
-        if (featureAndFingerprints.feature.toDisplayableFingerprintName) {
-            for (const fp of featureAndFingerprints.fingerprints) {
-                (fp as any).displayName = featureAndFingerprints.feature.toDisplayableFingerprintName(fp.name);
-            }
+        for (const fp of featureAndFingerprints.fingerprints) {
+            (fp as any).displayName = defaultedToDisplayableFingerprintName(featureAndFingerprints.feature)(fp.name);
         }
     }
     clone.features = clone.features.filter(f => f.fingerprints.length > 0);

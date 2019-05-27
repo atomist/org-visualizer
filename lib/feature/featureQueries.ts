@@ -100,35 +100,3 @@ export async function fingerprintsFound(fm: FeatureManager, ar: HasFingerprints)
     }
     return results;
 }
-
-/*
-export async function possibleFingerprintsNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
-    const hucksFound = await fm.possibleFeaturesNotFound(ar.analysis);
-    const necessaryNotFound = await fm.necessaryFeaturesNotFound(ar.analysis);
-    const results: DisplayableFingerprint[] = [];
-    for (const huck of hucksFound.filter(h => !necessaryNotFound.some(n => n.name === h.name))) {
-        const hideal = await fm.idealResolver(huck.name);
-        results.push({
-            name: huck.name,
-            readable: "None",
-            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
-        });
-    }
-    return results;
-}
-
-export async function necessaryFingerprintsNotFound(fm: FeatureManager, ar: ProjectAnalysisResult): Promise<DisplayableFingerprint[]> {
-    const hucksFound = await fm.necessaryFeaturesNotFound(ar.analysis);
-    const results: DisplayableFingerprint[] = [];
-    for (const huck of hucksFound) {
-        const hideal = await fm.idealResolver(huck.name);
-        results.push({
-            name: huck.name,
-            readable: "None",
-            ideal: isDistinctIdeal(hideal) ? huck.toDisplayableString(hideal) : undefined,
-        });
-    }
-    return results;
-}
-
-*/

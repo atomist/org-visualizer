@@ -100,15 +100,13 @@ export class DefaultFeatureManager implements FeatureManager {
         for (const feature of this.features) {
             const originalFingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
             if (originalFingerprints.length > 0) {
-                const toDisplayableFingerprintName = feature.toDisplayableFingerprintName || (ffff => ffff);
-                const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
                 const fingerprints: MelbaFingerprintForDisplay[] = [];
                 for (const fp of originalFingerprints) {
                     fingerprints.push({
                         ...fp,
                         ideal: await this.idealResolver(fp.name),
-                        stringified: toDisplayableFingerprint(fp),
-                        displayName: toDisplayableFingerprintName(fp.name),
+                        stringified: defaultedToDisplayableFingerprint(feature)(fp),
+                        displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
                     });
                 }
                 result.push({
@@ -119,34 +117,6 @@ export class DefaultFeatureManager implements FeatureManager {
         }
         return result;
     }
-    // /**
-    //  * Commands to transform
-    //  * @return {Array<CodeTransformRegistration<{name: string}>>}
-    //  */
-    // get commands(): Array<CodeTransformRegistration<{ name: string }>> {
-    //     // Commands
-    //     return this.huckleberries
-    //         .map(huck => {
-    //             return {
-    //                 name: `add-hucklerry-${huck.name}`,
-    //                 intent: `add huckleberry ${huck.name}`,
-    //                 transform: huck.makeItSo(huck.ideal, undefined),
-    //             }
-    //         });
-    //     // TODO huck extractor command
-    // }
-    //
-    // get autofixes(): AutofixRegistration[] {
-    //     return this.huckleberries
-    //         .filter(huck => !!huck.ideal && !!huck.makeItSo)
-    //         .map(huck => {
-    //             return {
-    //                 name: `${huck.name}-autofix`,
-    //                 // TODO this is wrong because it may not exist
-    //                 transform: huck.makeItSo(huck.ideal, undefined),
-    //             }
-    //         });
-    // }
 
     /**
      * Find all the Features we can manage in this project
@@ -163,19 +133,11 @@ export class DefaultFeatureManager implements FeatureManager {
      * They may not all be present
      */
     public async possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
-        // const present = await this.featuresFound(analysis);
-        // const canGrow = await Promise.all(this.features
-        //     .map(h => (h.relevanceTest || (() => false))(analysis)));
-        // return this.features.filter((h, i) => !present[i] && canGrow[i])
-        return [];
+        throw new Error("not implemented");
     }
 
     public async necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
-        // const present = await this.featuresFound(analysis);
-        // const shouldGrow = await Promise.all(this.features
-        //     .map(h => (h.necessityTest || (() => false))(analysis)));
-        // return this.features.filter((h, i) => !present[i] && shouldGrow[i])
-        return [];
+        throw new Error("not implemented");
     }
 
     constructor(
@@ -184,4 +146,12 @@ export class DefaultFeatureManager implements FeatureManager {
     ) {
         this.features = features;
     }
+}
+
+export function defaultedToDisplayableFingerprintName(feature?: ManagedFeature): (fingerprintName: string) => string {
+    return (feature && feature.toDisplayableFingerprintName) || (name => name);
+}
+
+export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fpi: FP) => string {
+    return (feature && feature.toDisplayableFingerprint) || (fp => fp.data);
 }
