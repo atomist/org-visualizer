@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { SunburstTreeEmitter } from "../tree/TreeBuilder";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { HasFingerprints } from "./FeatureManager";
 import { RemoteRepoRef } from "@atomist/automation-client";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { SunburstTreeEmitter } from "../tree/TreeBuilder";
+import { HasFingerprints } from "./FeatureManager";
 
 export interface QueryParams {
 

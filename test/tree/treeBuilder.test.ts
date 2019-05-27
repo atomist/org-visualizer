@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as assert from "power-assert";
 import { FileSystemProjectAnalysisResultStore } from "../../lib/analysis/offline/persist/FileSystemProjectAnalysisResultStore";
 import { DefaultProjectAnalysisRenderer } from "../../lib/routes/projectAnalysisResultUtils";
 import { treeBuilder } from "../../lib/tree/TreeBuilder";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 
 // Works only on spidered data
 describe.skip("treeBuilder", () => {

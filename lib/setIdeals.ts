@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { allFingerprints } from "./feature/DefaultFeatureManager";
 import { analysisResultStore } from "./machine/machine";
 import {
     featureManager,
@@ -21,7 +22,6 @@ import {
     retrieveFromStupidLocalStorage,
     saveToStupidLocalStorage,
 } from "./routes/features";
-import { allFingerprints } from "./feature/DefaultFeatureManager";
 
 import * as _ from "lodash";
 

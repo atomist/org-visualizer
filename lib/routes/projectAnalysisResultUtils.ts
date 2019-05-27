@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import * as path from "path";
-import { Renderer } from "../tree/TreeBuilder";
 import { Analyzed } from "../feature/queries";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { Renderer } from "../tree/TreeBuilder";
 
 export type AnalyzedGrouper = (ar: Analyzed) => string;
 
