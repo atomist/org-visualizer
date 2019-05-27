@@ -25,17 +25,20 @@ import {
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 
-export type IdealResolver = (name: string) => Promise<PossibleIdeal<FP>>;
+/**
+ * Function that can return the desired ideal, if any, for a given fingerprint name
+ */
+export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<FP>>;
 
 /**
- * Report on use of a fingerprint across of cohort of projects
+ * Report on use of a fingerprint across a cohort of projects
  */
-export interface ManagedFingerprint {
+export interface FingerprintStatus {
 
     /**
      * Feature that owns this fingerprint
      */
-    featureName: string;
+    readonly featureName: string;
 
     /**
      * A nice name for display
@@ -45,34 +48,34 @@ export interface ManagedFingerprint {
     /**
      * Fingerprint name
      */
-    name: string;
+    readonly name: string;
 
     /**
      * Number of projects this fingerprint appears in
      */
-    appearsIn: number;
+    readonly appearsIn: number;
 
-    ideal: PossibleIdeal;
+    readonly ideal: PossibleIdeal;
 
     /**
      * Number of variants of this fingerprint across the cohort
      */
-    variants: number;
+    readonly variants: number;
 }
 
 /**
  * Report on feature usage in a cohort of projects
  */
-export interface ManagedFingerprints {
+export interface FingerprintCensus {
 
-    projectsAnalyzed: number;
+    readonly projectsAnalyzed: number;
 
     /**
      * Array of features with data about fingerprints they manage
      */
     features: Array<{
         feature: ManagedFeature,
-        fingerprints: ManagedFingerprint[],
+        fingerprints: FingerprintStatus[],
     }>;
 }
 
@@ -92,12 +95,12 @@ export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<Project
 export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
 
 /**
- * Features must have unique names
+ * Manage a number of features.
  */
 export interface FeatureManager {
 
     /**
-     * All the features we are manage
+     * All the features we are managing
      */
     readonly features: ManagedFeature[];
 
@@ -106,14 +109,28 @@ export interface FeatureManager {
      */
     featureFor(fp: FP): ManagedFeature | undefined;
 
-    managedFingerprintNames(results: HasFingerprints[]): string[];
-
-    managedFingerprints(results: HasFingerprints[]): Promise<ManagedFingerprints>;
-
     /**
-     * Find all the Features we can manage in this project
+     * Find all the Features relevant to this project:
+     * That is, which can manage fingerprints found in this project
      */
     featuresFound(hf: HasFingerprints): Promise<ManagedFeature[]>;
+
+    /**
+     * Names of the fingerprints found in this project for which we have features to manage them
+     */
+    managedFingerprintNames(results: HasFingerprints[]): string[];
+
+    /**
+     * Report on the feature usage identified in this cohort of projects.
+     * @param {HasFingerprints[]} results
+     * @return {Promise<FingerprintCensus>}
+     */
+    fingerprintCensus(results: HasFingerprints[]): Promise<FingerprintCensus>;
+
+    /**
+     * Function that can resolve ideal status for this feature
+     */
+    idealResolver: IdealResolver;
 
     /**
      * Which Huckleberries could grow in this project that are not already growing.
@@ -122,9 +139,4 @@ export interface FeatureManager {
     possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 
     necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
-
-    /**
-     * Function that can resolve ideal status for this feature
-     */
-    idealResolver: IdealResolver;
 }

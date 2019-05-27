@@ -22,9 +22,9 @@ import {
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst
- * from a set of repositories.
+ * or other displayable formats from a set of repositories.
  */
-export interface SunburstTreeEmitter<ROOT> {
+export interface ReportBuilder<ROOT> {
 
     toSunburstTree(array: ROOT[]): Promise<SunburstTree>;
 }
@@ -80,12 +80,12 @@ export interface TreeBuilder<ROOT, T> {
     map<Q>(mapping: (ts: T[], source: ROOT[]) => Q[]): TreeBuilder<ROOT, Q>;
 
     /**
-     * Setting the renderer for leaf nodes gives us a SunburstTreeEmitter we can
+     * Setting the renderer for leaf nodes gives us a ReportBuilder we can
      * use to transform passed in data.
      * @param {(t: T) => SunburstLeaf} renderer
      * @return {SunburstTree}
      */
-    renderWith(renderer: Renderer<T>): SunburstTreeEmitter<ROOT>;
+    renderWith(renderer: Renderer<T>): ReportBuilder<ROOT>;
 }
 
 interface GroupStep<T> {
@@ -142,7 +142,7 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
      * @param {(t: T) => SunburstLeaf} renderer
      * @return {SunburstTree}
      */
-    public renderWith(renderer: Renderer<T>): SunburstTreeEmitter<ROOT> {
+    public renderWith(renderer: Renderer<T>): ReportBuilder<ROOT> {
         return {
             toSunburstTree: async elts => {
                 return {

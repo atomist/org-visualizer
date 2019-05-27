@@ -16,11 +16,11 @@
 
 import {
     FeatureManager,
+    FingerprintCensus,
+    FingerprintStatus,
     HasFingerprints,
     IdealResolver,
     ManagedFeature,
-    ManagedFingerprint,
-    ManagedFingerprints,
 } from "./FeatureManager";
 
 import {
@@ -66,15 +66,15 @@ export class DefaultFeatureManager implements FeatureManager {
         return _.uniq(relevantFingerprints.map(fp => fp.name));
     }
 
-    public async managedFingerprints(repos: HasFingerprints[]): Promise<ManagedFingerprints> {
-        const result: ManagedFingerprints = {
+    public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
+        const result: FingerprintCensus = {
             projectsAnalyzed: repos.length,
             features: [],
         };
         const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
-            const fingerprints: ManagedFingerprint[] = [];
+            const fingerprints: FingerprintStatus[] = [];
             for (const name of names) {
                 fingerprints.push({
                     name,

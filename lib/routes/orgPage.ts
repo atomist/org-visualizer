@@ -100,7 +100,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/org", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
-            const features = await featureManager.managedFingerprints(repos.map(r => r.analysis));
+            const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
             const actionableFingerprints = allManagedFingerprints(features)
                 .filter(mf => mf.variants > features.projectsAnalyzed / 10)
