@@ -26,9 +26,6 @@ export function relevantFingerprints(mfs: ManagedFingerprints,
     const clone: ManagedFingerprints = _.cloneDeep(mfs);
     for (const featureAndFingerprints of clone.features) {
         featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
-        for (const fp of featureAndFingerprints.fingerprints) {
-            (fp as any).displayName = defaultedToDisplayableFingerprintName(featureAndFingerprints.feature)(fp.name);
-        }
     }
     clone.features = clone.features.filter(f => f.fingerprints.length > 0);
     return clone;

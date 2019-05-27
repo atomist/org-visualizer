@@ -38,6 +38,11 @@ export interface ManagedFingerprint {
     featureName: string;
 
     /**
+     * A nice name for display
+     */
+    displayName: string;
+
+    /**
      * Fingerprint name
      */
     name: string;

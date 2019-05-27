@@ -82,6 +82,7 @@ export class DefaultFeatureManager implements FeatureManager {
                     variants: _.uniq(allFingerprintsInAllProjects.filter(fp => fp.name === name).map(fp => fp.sha)).length,
                     ideal: await this.idealResolver(name),
                     featureName: feature.displayName,
+                    displayName: defaultedToDisplayableFingerprintName(feature)(name),
                 });
             }
             result.features.push({
