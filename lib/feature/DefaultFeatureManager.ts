@@ -28,8 +28,8 @@ import {
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { CSSProperties } from "react";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     const results = Array.isArray(ar) ? ar : [ar] as any;
@@ -45,8 +45,8 @@ export type MelbaFingerprintForDisplay = FP & {
 };
 
 export interface MelbaFeatureForDisplay {
-    feature: ManagedFeature,
-    fingerprints: MelbaFingerprintForDisplay[],
+    feature: ManagedFeature;
+    fingerprints: MelbaFingerprintForDisplay[];
 }
 
 /**
@@ -102,11 +102,14 @@ export class DefaultFeatureManager implements FeatureManager {
             if (originalFingerprints.length > 0) {
                 const toDisplayableFingerprintName = feature.toDisplayableFingerprintName || (ffff => ffff);
                 const toDisplayableFingerprint = feature.toDisplayableFingerprint || (ffff => ffff.data);
-                const fingerprints = _.cloneDeep(originalFingerprints);
-                for (const fp of fingerprints) {
-                    (fp as any).ideal = await this.idealResolver(fp.name);
-                    (fp as any).stringified = toDisplayableFingerprint(fp);
-                    (fp as any).displayName = toDisplayableFingerprintName(fp.name);
+                const fingerprints: MelbaFingerprintForDisplay[] = [];
+                for (const fp of originalFingerprints) {
+                    fingerprints.push({
+                        ...fp,
+                        ideal: await this.idealResolver(fp.name),
+                        stringified: toDisplayableFingerprint(fp),
+                        displayName: toDisplayableFingerprintName(fp.name),
+                    });
                 }
                 result.push({
                     feature,

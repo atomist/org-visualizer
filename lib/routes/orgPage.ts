@@ -69,7 +69,7 @@ function renderStaticReactNode(body: ReactElement,
             bodyContent: body,
             pageTitle: title,
             extraScripts,
-        })); // I don't know why the types don't agree, but it works
+        }));
 }
 /**
  * Add the org page route to Atomist SDM Express server.

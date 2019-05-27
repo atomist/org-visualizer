@@ -20,7 +20,8 @@ import {
     ManagedFingerprints,
 } from "../FeatureManager";
 
-export function relevantFingerprints(mfs: ManagedFingerprints, test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {
+export function relevantFingerprints(mfs: ManagedFingerprints,
+                                     test: (mf: ManagedFingerprint) => boolean): ManagedFingerprints {
     const clone: ManagedFingerprints = _.cloneDeep(mfs);
     for (const featureAndFingerprints of clone.features) {
         featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
