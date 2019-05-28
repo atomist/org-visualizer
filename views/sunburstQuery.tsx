@@ -1,12 +1,11 @@
 import * as React from "react";
 
-export interface CurrentIdealForDisplay { }
+export type CurrentIdealForDisplay = string;
 
 export interface PossibleIdealForDisplay {
     url?: string;
     fingerprintName: string;
     displayValue: string;
-    stringified: string;
 }
 
 export interface SunburstQueryProps {
@@ -27,8 +26,6 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
     return <li key={possibleIdeal.url}>
         The <a href={possibleIdeal.url}>world</a> suggests:
         <form action="/setIdeal" method="post">
-            <input hidden={true} type="text" readOnly={true} id="stringifiedFP" name="stringifiedFP"
-                value={possibleIdeal.stringified} />
             <input hidden={true} readOnly={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
             <input type="submit" value={possibleIdeal.displayValue} />
         </form>
