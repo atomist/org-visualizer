@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { spawnPromise } from "@atomist/sdm";
+import { LocalProject } from "@atomist/automation-client";
 import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import * as child_process from "child_process";
 import * as util from "util";
 
-const exec = util.promisify(require("child_process").exec);
+const exec = util.promisify(child_process.exec);
 
 export interface GitActivity extends TechnologyElement {
 
@@ -31,12 +32,12 @@ export interface GitActivity extends TechnologyElement {
 
 export const GitActivityScanner: TechnologyScanner<GitActivity> =
     async p => {
-    // TODO make this reusable so we can see for default branch and all others
-        const r = await exec(sinceDays(7), { cwd: (p as any).baseDir });
+        // TODO make this reusable so we can see for default branch and all others
+        const r = await exec(sinceDays(7), { cwd: (p as LocalProject).baseDir });
         if (!r.stdout) {
             return undefined;
         }
-        const last7 = parseInt(r.stdout.trim());
+        const last7 = parseInt(r.stdout.trim(), 10);
 
         return {
             tags: ["git"],
