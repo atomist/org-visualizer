@@ -111,7 +111,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             res.send(renderStaticReactNode(OrgExplorer({
                 actionableFingerprints,
-                features,
+                projectsAnalyzed: features.projectsAnalyzed,
                 importantFeatures,
             })));
         });
