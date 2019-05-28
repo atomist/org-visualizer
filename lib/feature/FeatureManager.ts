@@ -43,7 +43,7 @@ export interface FingerprintStatus {
     /**
      * A nice name for display
      */
-    displayName: string;
+    readonly displayName: string;
 
     /**
      * Fingerprint name
