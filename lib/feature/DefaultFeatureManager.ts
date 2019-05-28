@@ -33,9 +33,20 @@ import { CSSProperties } from "react";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
-    const results = Array.isArray(ar) ? ar : [ar] as any;
-    return _.flatMap(results, arr => Object.getOwnPropertyNames(arr.fingerprints)
+    return _.flatMap(toArray(ar), arr => Object.getOwnPropertyNames(arr.fingerprints)
         .map(name => arr.fingerprints[name]));
+}
+
+function toArray<T>(value: T | T[]): T[] {
+    if (!!value) {
+        if (Array.isArray(value)) {
+            return value;
+        } else {
+            return [value];
+        }
+    } else {
+        return undefined;
+    }
 }
 
 export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<HasFingerprints>): AsyncIterable<FP> {
