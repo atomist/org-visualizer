@@ -62,7 +62,6 @@ export type MelbaFingerprintForDisplay = FP & {
     ideal?: PossibleIdeal,
     stringified: string,
     displayName: string,
-    style?: CSSProperties,
 };
 
 export interface MelbaFeatureForDisplay {
