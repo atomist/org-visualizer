@@ -27,7 +27,7 @@ import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 import * as _ from "lodash";
 import {
     allFingerprints,
-    defaultedToDisplayableFingerprint,
+    defaultedToDisplayableFingerprint, fingerprintsFrom,
 } from "./DefaultFeatureManager";
 import { Reporters } from "./reporters";
 
@@ -38,11 +38,13 @@ import { Reporters } from "./reporters";
  * 1. <fingerprintName>: Show distribution of the fingerprint
  * 2. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
  */
-export async function reportersAgainst(hm: FeatureManager, repos: HasFingerprints[]): Promise<Reporters> {
+export async function reportersAgainst(hm: FeatureManager,
+                                       repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
     const queries: Reporters = {};
 
-    const fingerprintNames = _.uniq(allFingerprints(repos).map(fp => fp.name));
-    for (const name of fingerprintNames) {
+    // TODO fingerprint name needs to be unique? Will reset property many times
+    for await (const fp of await fingerprintsFrom(repos)) {
+        const name = fp.name;
         queries[name] = params =>
             treeBuilderFor(name, params)
                 .group({

@@ -19,7 +19,7 @@ import {
     FingerprintCensus,
     FingerprintStatus,
     HasFingerprints,
-    IdealResolver,
+    IdealResolver, isHasFingerprints,
     ManagedFeature,
 } from "./FeatureManager";
 
@@ -35,6 +35,15 @@ export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     const results = Array.isArray(ar) ? ar : [ar] as any;
     return _.flatMap(results, arr => Object.getOwnPropertyNames(arr.fingerprints)
         .map(name => arr.fingerprints[name]));
+}
+
+export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<HasFingerprints>): AsyncIterable<FP> {
+    for await (const hf of ar) {
+        const fingerprintNames = Object.getOwnPropertyNames(hf.fingerprints);
+        for (const name of fingerprintNames) {
+            yield hf.fingerprints[name];
+        }
+    }
 }
 
 export type MelbaFingerprintForDisplay = FP & {

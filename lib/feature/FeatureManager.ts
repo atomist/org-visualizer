@@ -87,6 +87,11 @@ export interface HasFingerprints {
     fingerprints: ConsolidatedFingerprints;
 }
 
+export function isHasFingerprints(a: any): a is HasFingerprints {
+    const maybe = a as HasFingerprints;
+    return !!maybe.fingerprints;
+}
+
 export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<ProjectAnalysis, FPI>;
 
 /**
