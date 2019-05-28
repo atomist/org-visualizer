@@ -60,7 +60,7 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
 
 export type MelbaFingerprintForDisplay = FP & {
     ideal?: PossibleIdeal,
-    stringified: string,
+    displayValue: string,
     displayName: string,
 };
 
@@ -126,7 +126,7 @@ export class DefaultFeatureManager implements FeatureManager {
                     fingerprints.push({
                         ...fp,
                         ideal: await this.idealResolver(fp.name),
-                        stringified: defaultedToDisplayableFingerprint(feature)(fp),
+                        displayValue: defaultedToDisplayableFingerprint(feature)(fp),
                         displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
                     });
                 }
