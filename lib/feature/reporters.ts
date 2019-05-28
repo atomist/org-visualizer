@@ -29,6 +29,10 @@ export interface ReporterParams {
      */
     byOrg?: boolean;
 
+    /**
+     * Label to use for a non-matching result. If this is set, we show non-matching results,
+     * for example when grouping by one of a number of possibilities.
+     */
     otherLabel?: string;
 
     /**
