@@ -38,7 +38,7 @@ import { Reporters } from "./reporters";
  * 1. <fingerprintName>: Show distribution of the fingerprint
  * 2. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
  */
-export function featureQueriesFrom(hm: FeatureManager, repos: HasFingerprints[]): Reporters {
+export async function reportersAgainst(hm: FeatureManager, repos: HasFingerprints[]): Promise<Reporters> {
     const queries: Reporters = {};
 
     const fingerprintNames = _.uniq(allFingerprints(repos).map(fp => fp.name));

@@ -59,7 +59,7 @@ import {
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
 import { ManagedFeature } from "../feature/FeatureManager";
-import { featureQueriesFrom } from "../feature/featureQueries";
+import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     allManagedFingerprints,
     relevantFingerprints,
@@ -169,7 +169,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/query", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
-            const featureQueries = featureQueriesFrom(featureManager, repos.map(r => r.analysis));
+            const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownQueries);
             const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
@@ -244,7 +244,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/query.json", ...handlers, async (req, res) => {
             const repos = await store.loadAll();
 
-            const featureQueries = featureQueriesFrom(featureManager, repos.map(r => r.analysis));
+            const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownQueries);
 
             const cannedQuery = allQueries[req.query.name]({
