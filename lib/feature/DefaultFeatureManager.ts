@@ -19,7 +19,8 @@ import {
     FingerprintCensus,
     FingerprintStatus,
     HasFingerprints,
-    IdealResolver, isHasFingerprints,
+    IdealResolver,
+    isHasFingerprints,
     ManagedFeature,
 } from "./FeatureManager";
 
