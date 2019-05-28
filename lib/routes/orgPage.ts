@@ -213,6 +213,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                         possibleIdealsForDisplay.push({
                             ...ideal,
                             displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
+                            stringified: JSON.stringify(ideal),
                         });
                     }
                 }
