@@ -66,8 +66,8 @@ import {
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -111,10 +111,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             res.send(renderStaticReactNode(OrgExplorer({
                 actionableFingerprints,
-                repos,
                 features,
                 importantFeatures,
-            } as any)));
+            })));
         });
 
         /* Project list page */
