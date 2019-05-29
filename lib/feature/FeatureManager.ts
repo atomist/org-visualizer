@@ -33,7 +33,7 @@ export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<F
 /**
  * Report on use of a fingerprint across a cohort of projects
  */
-export interface FingerprintStatus {
+export interface AggregateFingerprintStatus {
 
     /**
      * Feature that owns this fingerprint
@@ -75,7 +75,7 @@ export interface FingerprintCensus {
      */
     features: Array<{
         feature: ManagedFeature,
-        fingerprints: FingerprintStatus[],
+        fingerprints: AggregateFingerprintStatus[],
     }>;
 }
 

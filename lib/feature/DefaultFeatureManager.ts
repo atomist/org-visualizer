@@ -15,9 +15,9 @@
  */
 
 import {
+    AggregateFingerprintStatus,
     FeatureManager,
     FingerprintCensus,
-    FingerprintStatus,
     HasFingerprints,
     IdealResolver,
     isHasFingerprints,
@@ -94,7 +94,7 @@ export class DefaultFeatureManager implements FeatureManager {
         const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
-            const fingerprints: FingerprintStatus[] = [];
+            const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
                 const ideal = await this.idealResolver(name);
                 fingerprints.push({
@@ -179,7 +179,7 @@ export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fp
 }
 
 function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
-    ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
+                               ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
     if (!ideal) {
         return undefined;
     }
