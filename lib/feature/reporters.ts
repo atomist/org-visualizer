@@ -17,7 +17,10 @@
 import { RemoteRepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ReportBuilder } from "../tree/TreeBuilder";
-import { Analyzed, HasFingerprints } from "./FeatureManager";
+import {
+    Analyzed,
+    HasFingerprints,
+} from "./FeatureManager";
 
 /**
  * Options for report generation
