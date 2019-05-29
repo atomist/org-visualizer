@@ -10,6 +10,8 @@ export interface OrgExplorerProps {
 }
 
 export interface MaybeAnIdeal {
+    /* name of the finger print */
+    name: string;
     ideal?: { ideal?: { name: string, data: string } };
 }
 export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
@@ -18,7 +20,7 @@ export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
     const queryLink = `./query?name=${af.name}&byOrg=true`;
     return <li key={af.name}><i>{af.featureName}:
-                {af.name}</i>: {af.appearsIn} projects, {" "}
+                {af.displayName}</i>: {af.appearsIn} projects, {" "}
         <a href={queryLink}>{af.variants} variants</a>
         {idealDisplay(af)}
     </li>;
@@ -27,7 +29,7 @@ function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): Rea
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
     if (af.ideal && af.ideal.ideal) {
-        const idealQueryLink = `./query?name=${af.ideal.ideal.name}-ideal&byOrg=true`;
+        const idealQueryLink = `./query?name=${af.name}-ideal&byOrg=true`;
         result = <span>
             -
             <a href={idealQueryLink}> Progress toward ideal {" "}
