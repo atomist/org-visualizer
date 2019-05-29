@@ -96,11 +96,12 @@ export class DefaultFeatureManager implements FeatureManager {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: FingerprintStatus[] = [];
             for (const name of names) {
+                const ideal = await this.idealResolver(name);
                 fingerprints.push({
                     name,
                     appearsIn: allFingerprintsInAllProjects.filter(fp => fp.name === name).length,
                     variants: _.uniq(allFingerprintsInAllProjects.filter(fp => fp.name === name).map(fp => fp.sha)).length,
-                    ideal: await this.idealResolver(name),
+                    ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
                     featureName: feature.displayName,
                     displayName: defaultedToDisplayableFingerprintName(feature)(name),
                 });
@@ -175,4 +176,18 @@ export function defaultedToDisplayableFingerprintName(feature?: ManagedFeature):
 
 export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fpi: FP) => string {
     return (feature && feature.toDisplayableFingerprint) || (fp => fp && fp.data);
+}
+
+function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
+    ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
+    if (!ideal) {
+        return undefined;
+    }
+    const displayValue = ideal.ideal ?
+        displayFingerprint(ideal.ideal)
+        : "eliminate";
+    return {
+        ...ideal,
+        displayValue,
+    };
 }

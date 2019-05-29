@@ -55,7 +55,7 @@ export interface FingerprintStatus {
      */
     readonly appearsIn: number;
 
-    readonly ideal: PossibleIdeal;
+    readonly ideal: PossibleIdeal & { displayValue: string };
 
     /**
      * Number of variants of this fingerprint across the cohort
