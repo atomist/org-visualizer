@@ -32,7 +32,6 @@ import * as _ from "lodash";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import {
-    Analyzed,
     Reporters,
 } from "../feature/reporters";
 import {
@@ -44,6 +43,7 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
+import { Analyzed } from "../feature/FeatureManager";
 
 /**
  * Well known queries against our repo cohort

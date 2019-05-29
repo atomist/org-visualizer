@@ -24,6 +24,7 @@ import {
     FP,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
+import { RemoteRepoRef } from "@atomist/automation-client";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name
@@ -86,6 +87,11 @@ export interface FingerprintCensus {
 export interface HasFingerprints {
     fingerprints: ConsolidatedFingerprints;
 }
+
+/**
+ * Result of an analysis. We must always have at least fingerprints and repo identification
+ */
+export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 
 export function isHasFingerprints(a: any): a is HasFingerprints {
     const maybe = a as HasFingerprints;

@@ -17,7 +17,7 @@
 import { RemoteRepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { ReportBuilder } from "../tree/TreeBuilder";
-import { HasFingerprints } from "./FeatureManager";
+import { Analyzed, HasFingerprints } from "./FeatureManager";
 
 /**
  * Options for report generation
@@ -43,11 +43,6 @@ export interface ReporterParams {
     // tODO change to value
     artifact?: string;
 }
-
-/**
- * Result of an analysis. We must always have at least fingerprints and repo identification
- */
-export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 
 /**
  * Reporters we can run against features
