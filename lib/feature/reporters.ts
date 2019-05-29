@@ -42,9 +42,6 @@ export interface ReporterParams {
 
     // tODO change to value
     artifact?: string;
-
-    // TODO get rid of it
-    list?: string;
 }
 
 /**

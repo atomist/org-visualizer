@@ -212,12 +212,6 @@ export const WellKnownQueries: Reporters<ProjectAnalysis> = {
             })
             .renderWith(DefaultProjectAnalysisRenderer),
 
-    // TODO classifies only one or other. Should have a hierarchy of choices?
-    using: params =>
-        treeBuilderFor("Docker Y/N", params)
-            .group({ name: "docker", by: byElement(params.list.split(",")) })
-            .renderWith(DefaultProjectAnalysisRenderer),
-
     uhura: params =>
         treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
             .group({
