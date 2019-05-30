@@ -112,7 +112,7 @@ export interface CustomGroupStep<T, Q> {
  * Map all the n records in this layer to m Qs
  */
 export interface MapStep<ROOT, T, Q> {
-    mapping: (t: T[], source: ROOT[]) => Q[];
+    mapping: (t: T[], source: ROOT[]) => Promise<Q[]> | Q[];
 }
 
 /**
@@ -120,7 +120,7 @@ export interface MapStep<ROOT, T, Q> {
  */
 export interface SplitStep<T, Q> {
 
-    splitter: (t: T) => Q[];
+    splitter: (t: T) => Promise<Q[]> | Q[];
 
     namer: (t: T) => string;
 }
@@ -199,9 +199,9 @@ async function layer<ROOT, T>(originalData: ROOT[],
             if (step.kind === "customGroup") {
                 groups = await (step as CustomGroupStep<any, any>).to(currentLayerData);
             } else {
-                const evaluations: Array<{e: any, result: string}> = await Promise.all(
+                const evaluations: Array<{ e: any, result: string }> = await Promise.all(
                     currentLayerData.map(e => {
-                        return  Promise.resolve((step as GroupStep<any>).by(e)).then(result => ({e, result}));
+                        return Promise.resolve((step as GroupStep<any>).by(e)).then(result => ({ e, result }));
                     }),
                 );
                 groups = _.groupBy(currentLayerData, e => evaluations.find(ev => ev.e === e).result);
@@ -224,12 +224,14 @@ async function layer<ROOT, T>(originalData: ROOT[],
                 return {
                     name: splitStep.namer(t),
                     children: await layer(originalData,
-                        splitStep.splitter(t).filter(x => !!x),
+                        (await splitStep.splitter(t))
+                            .filter(x => !!x),
                         steps.slice(1), renderer),
                 };
             }));
         case "map":
-            const mappedThings = (step as MapStep<any, any, any>).mapping(currentLayerData, originalData).filter(x => !!x);
+            const mappedThings = (await (step as MapStep<any, any, any>).mapping(currentLayerData, originalData))
+                .filter(x => !!x);
             return layer(originalData, mappedThings, steps.slice(1), renderer);
         default:
             throw new Error(`Unknown step type '${step.kind}'`);
