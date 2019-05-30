@@ -98,18 +98,21 @@ export const WellKnownQueries: Reporters<ProjectAnalysis> = {
                 },
             })
             .map<ProjectAnalysis & { lang: string }>({
-                mapping: async (cs: CodeStats[], originalQuery: () => AsyncIterable<ProjectAnalysis>) => {
+                mapping: async function*(cs: AsyncIterable<CodeStats>, originalQuery: () => AsyncIterable<ProjectAnalysis>) {
+                    // TODO don't materialize this
                     const source: ProjectAnalysis[] = [];
                     for await (const pa of originalQuery()) {
                         source.push(pa);
                     }
-                    return _.flatMap(cs, s => {
-                        return source.filter(ar => {
+                    for await (const s of cs) {
+                        for (const r of source.filter(ar => {
                             const cm = ar.elements.codemetrics as CodeMetricsElement;
                             return cm.languages.some(l => l.language.name === s.language.name);
                         })
-                            .map(ar => ({ ...ar, lang: s.language.name }));
-                    });
+                            .map(ar => ({ ...ar, lang: s.language.name }))) {
+                            yield r;
+                        }
+                    }
                 }
             })
             .renderWith(ar => ({

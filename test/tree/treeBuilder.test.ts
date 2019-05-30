@@ -65,7 +65,8 @@ describe.skip("treeBuilder", () => {
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
-            .map<number>({ mapping: ars => ars.map(ar => ar.dependencies.length)})
+            .map<number>({ mapping:
+                    async function*(ars) { for await (const ar of ars) { yield ar.dependencies.length}}})
             .renderWith(num => ({
                 name: num + "",
                 size: num,

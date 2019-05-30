@@ -112,7 +112,7 @@ export interface CustomGroupStep<T, Q> {
  * Map all the n records in this layer to m Qs
  */
 export interface MapStep<ROOT, T, Q> {
-    mapping: (t: T[], originalQuery: () => ROOT[] | AsyncIterable<ROOT>) => Promise<Q[]> | Q[];
+    mapping: (t: AsyncIterable<T> | T[], originalQuery: () => ROOT[] | AsyncIterable<ROOT>) => AsyncIterable<Q>;
 }
 
 /**
@@ -161,13 +161,9 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
     public renderWith(renderer: Renderer<T>): ReportBuilder<ROOT> {
         return {
             toSunburstTree: async originalQuery => {
-                let elts: ROOT[] = [];
-                for await (const elt of originalQuery()) {
-                    elts.push(elt);
-                }
                 return {
                     name: this.rootName,
-                    children: await layer<ROOT, T>(originalQuery, elts, this.steps, renderer),
+                    children: await layer<ROOT, T>(originalQuery, originalQuery(), this.steps, renderer),
                 };
             },
         };
@@ -184,11 +180,15 @@ export function treeBuilder<ROOT, T = ROOT>(rootName: string): TreeBuilder<ROOT,
 }
 
 async function layer<ROOT, T>(originalQuery: () => AsyncIterable<ROOT> | ROOT[],
-                              currentLayerData: any[],
+                              currentLayerData: AsyncIterable<any> | ROOT[],
                               steps: Step[],
                               renderer: Renderer<T>): Promise<Array<SunburstTree | SunburstLeaf>> {
     if (steps.length === 0) {
-        return currentLayerData.map(renderer);
+        const results: SunburstLeaf[] = [];
+        for await (const l of currentLayerData) {
+            results.push(renderer(l));
+        }
+        return results;
     }
     const step = steps[0];
     switch (step.kind) {
@@ -198,11 +198,13 @@ async function layer<ROOT, T>(originalQuery: () => AsyncIterable<ROOT> | ROOT[],
             if (step.kind === "customGroup") {
                 groups = await (step as CustomGroupStep<any, any>).to(currentLayerData);
             } else {
-                const evaluations: Array<{ e: any, result: string }> = await Promise.all(
-                    currentLayerData.map(e => {
-                        return Promise.resolve((step as GroupStep<any>).by(e)).then(result => ({ e, result }));
-                    }),
-                );
+                const evaluations: Array<{ e: any, result: string }> = [];
+                for await (const e of currentLayerData) {
+                    evaluations.push(await Promise.resolve((step as GroupStep<any>).by(e)).then(result => ({
+                        e,
+                        result
+                    })));
+                }
                 groups = _.groupBy(currentLayerData, e => evaluations.find(ev => ev.e === e).result);
             }
             // Lodash returns the name as the string "undefined"
@@ -219,19 +221,23 @@ async function layer<ROOT, T>(originalQuery: () => AsyncIterable<ROOT> | ROOT[],
             }
         case "split":
             const splitStep = step as SplitStep<any, any>;
-            return Promise.all(currentLayerData.map(async t => {
-                return {
+            const kids: any[] = [];
+            for await (const t of currentLayerData) {
+                kids.push({
                     name: splitStep.namer(t),
                     children: await layer(originalQuery,
                         (await splitStep.splitter(t))
                             .filter(x => !!x),
                         steps.slice(1), renderer),
-                };
-            }));
+                });
+            }
+            return kids;
+
         case "map":
-            const mappedThings = (await (step as MapStep<any, any, any>).mapping(currentLayerData, originalQuery))
-                .filter(x => !!x);
-            return layer(originalQuery, mappedThings, steps.slice(1), renderer);
+            // const mappedThings = (await (step as MapStep<any, any, any>).mapping(currentLayerData, originalQuery))
+            //     .filter(x => !!x);
+            const mapStep = step as MapStep<any, any, any>;
+            return layer(originalQuery, mapStep.mapping(currentLayerData, originalQuery), steps.slice(1), renderer);
         default:
             throw new Error(`Unknown step type '${step.kind}'`);
     }
