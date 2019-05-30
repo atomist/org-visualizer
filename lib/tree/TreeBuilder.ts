@@ -26,7 +26,12 @@ import {
  */
 export interface ReportBuilder<ROOT> {
 
-    toSunburstTree(array: ROOT[]): Promise<SunburstTree>;
+    /**
+     * Construct a SunburstTree from the given data.
+     * @param {() => (ROOT[] | AsyncIterable<ROOT>)} query
+     * @return {Promise<SunburstTree>}
+     */
+    toSunburstTree(query: () => ROOT[] | AsyncIterable<ROOT>): Promise<SunburstTree>;
 }
 
 export type Renderer<T> = (t: T) => SunburstLeaf;
@@ -144,7 +149,11 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
      */
     public renderWith(renderer: Renderer<T>): ReportBuilder<ROOT> {
         return {
-            toSunburstTree: async elts => {
+            toSunburstTree: async query => {
+                let elts: ROOT[] = [];
+                for await (const elt of query()) {
+                    elts.push(elt);
+                }
                 return {
                     name: this.rootName,
                     children: await layer<ROOT, T>(elts, elts, this.steps, renderer),

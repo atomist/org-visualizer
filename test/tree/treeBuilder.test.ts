@@ -27,7 +27,7 @@ describe.skip("treeBuilder", () => {
         const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
         const builder = treeBuilder<ProjectAnalysis>("root")
             .renderWith(DefaultProjectAnalysisRenderer);
-        const t = builder.toSunburstTree(all);
+        const t = builder.toSunburstTree(() => all);
     });
 
     it("renders and groups analyses", async () => {
@@ -36,7 +36,7 @@ describe.skip("treeBuilder", () => {
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
             .renderWith(DefaultProjectAnalysisRenderer);
-        const t = builder.toSunburstTree(all);
+        const t = builder.toSunburstTree(() => all);
     });
 
     it("renders and groups not excluding other", async () => {
@@ -45,7 +45,7 @@ describe.skip("treeBuilder", () => {
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.repo.length > 8 ? "foo" : "a" })
             .renderWith(DefaultProjectAnalysisRenderer);
-        const t = await builder.toSunburstTree(all);
+        const t = await builder.toSunburstTree(() => all);
         assert.strictEqual(t.children.length, 2);
         assert.strictEqual(t.children.filter(c => c.name === "foo").length, 1);
     });
@@ -56,7 +56,7 @@ describe.skip("treeBuilder", () => {
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.repo.length > 8 ? undefined : "a" })
             .renderWith(DefaultProjectAnalysisRenderer);
-        const t = await builder.toSunburstTree(all);
+        const t = await builder.toSunburstTree(() => all);
         assert.strictEqual(t.children.length, 1);
     });
 
@@ -70,7 +70,7 @@ describe.skip("treeBuilder", () => {
                 name: num + "",
                 size: num,
             }));
-        const t = builder.toSunburstTree(all);
+        const t = builder.toSunburstTree(() => all);
     });
 
     it("transforms and renders with split", async () => {
@@ -83,7 +83,7 @@ describe.skip("treeBuilder", () => {
                 name: artifact,
                 size: 1,
             }));
-        const t = builder.toSunburstTree([all[0]]);
+        const t = builder.toSunburstTree(() => [all[0]]);
     });
 
     it("transforms and splits before grouping", async () => {
@@ -97,7 +97,7 @@ describe.skip("treeBuilder", () => {
                 name: artifact,
                 size: 1,
             }));
-        const t = builder.toSunburstTree([all[0]]);
+        const t = builder.toSunburstTree(() => [all[0]]);
     });
 
     it("adds customGroup layer", async () => {
@@ -117,17 +117,17 @@ describe.skip("treeBuilder", () => {
                 name: num + "",
                 size: num,
             }));
-        const t = builder.toSunburstTree(all);
+        const t = builder.toSunburstTree(() => all);
     });
 
     it("flattens single layer", async () => {
         const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
-            .group({ name: "thing", by: ar => "foo", flattenSingle: true })
+            .group({ name: "thing", by: () => "foo", flattenSingle: true })
             .group({ name: "foo", by: ar => ar.id.url.length + "" })
             .renderWith(DefaultProjectAnalysisRenderer);
-        const t = await builder.toSunburstTree(all);
+        const t = await builder.toSunburstTree(() => all);
         assert(t.children.length > 1);
     });
 
