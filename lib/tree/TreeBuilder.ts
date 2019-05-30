@@ -93,23 +93,23 @@ export interface TreeBuilder<ROOT, T> {
     renderWith(renderer: Renderer<T>): ReportBuilder<ROOT>;
 }
 
-interface GroupStep<T> {
+export interface GroupStep<T> {
     name: string;
     by: (t: T) => string | Promise<string>;
     flattenSingle?: boolean;
 }
 
-interface CustomGroupStep<T, Q> {
+export interface CustomGroupStep<T, Q> {
     name: string;
     to: (t: T[]) => Record<string, Q[]>;
     flattenSingle?: boolean;
 }
 
-interface MapStep<T, Q> {
+export interface MapStep<T, Q> {
     mapping: (t: T[], source: T[]) => Q[];
 }
 
-interface SplitStep<T, Q> {
+export interface SplitStep<T, Q> {
     splitter: (t: T) => Q[];
 
     namer: (t: T) => string;
