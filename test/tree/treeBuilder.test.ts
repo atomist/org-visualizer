@@ -107,7 +107,7 @@ describe.skip("treeBuilder", () => {
             .group({ name: "foo", by: ar => ar.id.owner })
             .customGroup<number>({
                 name: "thing",
-                to: ars => {
+                to: () => {
                     return {
                         name: [1, 2, 3],
                     };

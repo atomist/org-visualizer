@@ -82,10 +82,15 @@ export const WellKnownQueries: Reporters<ProjectAnalysis> = {
     langs: params =>
         treeBuilderFor<ProjectAnalysis>("languages", params)
             .customGroup<CodeStats>({
-                name: "language", to: ars => {
-                    const cms: CodeStats[] = _.flatten(ars.map(ar => ar.elements.codemetrics as CodeMetricsElement)
-                        .filter(x => !!x)
-                        .map(c => c.languages));
+                name: "language", to: async ars => {
+                    const cms: CodeStats[] = [];
+                    for await (const ar of ars) {
+                        const cm = ar.elements.codemetrics as CodeMetricsElement;
+                        if (cm) {
+                            cms.push(...cm.languages);
+                        }
+                    }
+
                     const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
                     const s: Record<string, CodeStats[]> = {};
                     distinctLanguages.forEach(lang => s[lang.name] = [consolidate(lang, cms)]);

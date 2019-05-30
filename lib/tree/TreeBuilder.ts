@@ -93,6 +93,9 @@ export interface TreeBuilder<ROOT, T> {
     renderWith(renderer: Renderer<T>): ReportBuilder<ROOT>;
 }
 
+/**
+ * Group records in this layer by a string
+ */
 export interface GroupStep<T> {
     name: string;
     by: (t: T) => string | Promise<string>;
@@ -101,20 +104,28 @@ export interface GroupStep<T> {
 
 export interface CustomGroupStep<T, Q> {
     name: string;
-    to: (t: T[]) => Record<string, Q[]>;
+    to: (t: T[] | AsyncIterable<T>) => Promise<Record<string, Q[]>> | Record<string, Q[]>;
     flattenSingle?: boolean;
 }
 
+/**
+ * Map all the n records in this layer to m Qs
+ */
 export interface MapStep<T, Q> {
     mapping: (t: T[], source: T[]) => Q[];
 }
 
+/**
+ * Split every record T in this layer into n Qs
+ */
 export interface SplitStep<T, Q> {
+
     splitter: (t: T) => Q[];
 
     namer: (t: T) => string;
 }
 
+// Add a kind field to help with type determination
 type Step = (GroupStep<any> | CustomGroupStep<any, any> | MapStep<any, any> | SplitStep<any, any>) &
     { kind: "group" | "split" | "customGroup" | "map" };
 
@@ -186,7 +197,7 @@ async function layer<ROOT, T>(originalData: ROOT[],
         case "group" :
             let groups;
             if (step.kind === "customGroup") {
-                groups = (step as CustomGroupStep<any, any>).to(currentLayerData);
+                groups = await (step as CustomGroupStep<any, any>).to(currentLayerData);
             } else {
                 const evaluations: Array<{e: any, result: string}> = await Promise.all(
                     currentLayerData.map(e => {
