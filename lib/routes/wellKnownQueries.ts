@@ -97,14 +97,16 @@ export const WellKnownQueries: Reporters<ProjectAnalysis> = {
                     return s;
                 },
             })
-            .map<ProjectAnalysis & { lang: string }>((cs: CodeStats[], source: ProjectAnalysis[]) => {
-                return _.flatMap(cs, s => {
-                    return source.filter(ar => {
-                        const cm = ar.elements.codemetrics as CodeMetricsElement;
-                        return cm.languages.some(l => l.language.name === s.language.name);
-                    })
-                        .map(ar => ({ ...ar, lang: s.language.name }));
-                });
+            .map<ProjectAnalysis & { lang: string }>({
+                mapping: (cs: CodeStats[], source: ProjectAnalysis[]) => {
+                    return _.flatMap(cs, s => {
+                        return source.filter(ar => {
+                            const cm = ar.elements.codemetrics as CodeMetricsElement;
+                            return cm.languages.some(l => l.language.name === s.language.name);
+                        })
+                            .map(ar => ({ ...ar, lang: s.language.name }));
+                    });
+                }
             })
             .renderWith(ar => ({
                 name: ar.id.repo,
@@ -314,6 +316,7 @@ function byElement(list: string[]): ProjectAnalysisGrouper {
         return "none";
     };
 }
+
 export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, params: any): TreeBuilder<A, A> {
     const tb = treeBuilder<A>(name);
     return (params.byOrg === "true") ?

@@ -82,7 +82,7 @@ export interface TreeBuilder<ROOT, T> {
      * Map or suppress values. Does not emit a layer.
      * Can be used to filter as undefined values will be excluded
      */
-    map<Q>(mapping: (ts: T[], source: ROOT[]) => Q[]): TreeBuilder<ROOT, Q>;
+    map<Q>(mapStep: MapStep<ROOT, T, Q>): TreeBuilder<ROOT, Q>;
 
     /**
      * Setting the renderer for leaf nodes gives us a ReportBuilder we can
@@ -111,8 +111,8 @@ export interface CustomGroupStep<T, Q> {
 /**
  * Map all the n records in this layer to m Qs
  */
-export interface MapStep<T, Q> {
-    mapping: (t: T[], source: T[]) => Q[];
+export interface MapStep<ROOT, T, Q> {
+    mapping: (t: T[], source: ROOT[]) => Q[];
 }
 
 /**
@@ -126,7 +126,7 @@ export interface SplitStep<T, Q> {
 }
 
 // Add a kind field to help with type determination
-type Step = (GroupStep<any> | CustomGroupStep<any, any> | MapStep<any, any> | SplitStep<any, any>) &
+type Step = (GroupStep<any> | CustomGroupStep<any, any> | MapStep<any, any, any> | SplitStep<any, any>) &
     { kind: "group" | "split" | "customGroup" | "map" };
 
 class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
@@ -148,8 +148,8 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
         return this as any;
     }
 
-    public map<Q>(mapping: (t: T[], source: ROOT[]) => Q[]): TreeBuilder<ROOT, Q> {
-        this.steps.push({ mapping, kind: "map" });
+    public map<Q>(mapStep: MapStep<ROOT, T, Q>): TreeBuilder<ROOT, Q> {
+        this.steps.push({ ...mapStep, kind: "map" });
         return this as any;
     }
 
@@ -229,7 +229,7 @@ async function layer<ROOT, T>(originalData: ROOT[],
                 };
             }));
         case "map":
-            const mappedThings = (step as MapStep<any, any>).mapping(currentLayerData, originalData).filter(x => !!x);
+            const mappedThings = (step as MapStep<any, any, any>).mapping(currentLayerData, originalData).filter(x => !!x);
             return layer(originalData, mappedThings, steps.slice(1), renderer);
         default:
             throw new Error(`Unknown step type '${step.kind}'`);
