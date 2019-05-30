@@ -18,7 +18,14 @@ export function TopLevelPage(props: {
         </head>
         {(props.extraScripts || []).map(extraScript)}
         <body>
-            <header><h1>Atomist Explorer</h1></header>
+            <header>
+                <div className="around-page-title">
+                    <img className="atomist-logo" src="/atomist-logo-small-white.png" />
+                    <span className="page-title">
+                        {props.pageTitle || "Atomist Explorer"}
+                    </span>
+                </div>
+            </header>
             <main>
                 {props.bodyContent}
             </main>

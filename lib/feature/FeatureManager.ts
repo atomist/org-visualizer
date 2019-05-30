@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { RemoteRepoRef } from "@atomist/automation-client";
 import {
     ConsolidatedFingerprints,
     ProjectAnalysis,
@@ -24,7 +25,6 @@ import {
     FP,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
-import { RemoteRepoRef } from "@atomist/automation-client";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name

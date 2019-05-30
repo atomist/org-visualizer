@@ -19,7 +19,17 @@ header {
     border-bottom: 3px solid rgb(186, 216, 95);
 }
 
-header h1 {
+header .atomist-logo {
+    width: 100px;
+}
+
+header .around-page-title {
+    display: table
+}
+
+header .page-title {
+    display: table-cell;
+    vertical-align: middle;
     font-weight: normal;
     font-size: 1.5em;
     font-size: 2rem;

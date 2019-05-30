@@ -106,7 +106,6 @@ export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
 
 export const featureManager = new DefaultFeatureManager(
     async name => {
-        console.log(`Ideal for '${name}' is ${JSON.stringify(Ideals[name])}`);
         return Ideals[name];
     },
     ...features,
