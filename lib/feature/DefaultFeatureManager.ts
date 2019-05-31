@@ -17,7 +17,7 @@
 import {
     AggregateFingerprintStatus,
     FeatureManager,
-    FingerprintCensus,
+    FingerprintCensus, Flag, Flagger,
     HasFingerprints,
     IdealResolver,
     isHasFingerprints,
@@ -74,7 +74,9 @@ export interface MelbaFeatureForDisplay {
  */
 export class DefaultFeatureManager implements FeatureManager {
 
-    public readonly features: ManagedFeature[] = [];
+    get features() {
+        return this.opts.features;
+    }
 
     public featureFor(fp: FP): ManagedFeature | undefined {
         return !!fp ? this.features.find(f => f.selector(fp)) : undefined;
@@ -96,7 +98,7 @@ export class DefaultFeatureManager implements FeatureManager {
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
-                const ideal = await this.idealResolver(name);
+                const ideal = await this.opts.idealResolver(name);
                 fingerprints.push({
                     name,
                     appearsIn: allFingerprintsInAllProjects.filter(fp => fp.name === name).length,
@@ -126,7 +128,7 @@ export class DefaultFeatureManager implements FeatureManager {
                 for (const fp of originalFingerprints) {
                     fingerprints.push({
                         ...fp,
-                        ideal: await this.idealResolver(fp.name),
+                        ideal: await this.opts.idealResolver(fp.name),
                         displayValue: defaultedToDisplayableFingerprint(feature)(fp),
                         displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
                     });
@@ -150,6 +152,10 @@ export class DefaultFeatureManager implements FeatureManager {
             ));
     }
 
+    public get flags(): Flagger {
+        return this.opts.flags;
+    }
+
     /**
      * Which features could grow in this project that are not already growing.
      * They may not all be present
@@ -162,11 +168,16 @@ export class DefaultFeatureManager implements FeatureManager {
         throw new Error("not implemented");
     }
 
-    constructor(
-        public readonly idealResolver: IdealResolver,
-        ...features: ManagedFeature[]
+    get idealResolver(): IdealResolver {
+        return this.opts.idealResolver;
+    }
+
+    constructor(private readonly opts: {
+                    idealResolver: IdealResolver,
+                    features: ManagedFeature[],
+                    flags: Flagger,
+                }
     ) {
-        this.features = features;
     }
 }
 

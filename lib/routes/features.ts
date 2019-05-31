@@ -37,7 +37,7 @@ import {
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
     FeatureManager,
-    ManagedFeature,
+    ManagedFeature, simpleFlagger,
 } from "../feature/FeatureManager";
 
 export const features: ManagedFeature[] = [
@@ -104,11 +104,13 @@ export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
     saveToStupidLocalStorage(Ideals);
 }
 
-export const featureManager = new DefaultFeatureManager(
-    async name => {
-        return Ideals[name];
-    },
-    ...features,
+export const featureManager = new DefaultFeatureManager({
+        idealResolver: async name => {
+            return Ideals[name];
+        },
+        features,
+        flags: simpleFlagger(),
+    }
 );
 
 export function idealConvergenceScorer(fm: FeatureManager): Scorer {

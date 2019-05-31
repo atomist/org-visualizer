@@ -32,6 +32,11 @@ import {
 export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<FP>>;
 
 /**
+ * Function that can flag an issue with a fingerprint
+ */
+export type Flagger = (fp: FP) => Promise<Flag[]>;
+
+/**
  * Report on use of a fingerprint across a cohort of projects
  */
 export interface AggregateFingerprintStatus {
@@ -106,6 +111,30 @@ export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<Project
 export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
 
 /**
+ * Flag for an undesirable usage
+ */
+export interface Flag {
+
+    readonly severity: "error" | "warn";
+
+    /**
+     * Authority this comes from
+     */
+    readonly authority: string;
+
+    /**
+     * Message to the user
+     */
+    readonly message: string;
+
+    /**
+     * URL associated with this if one is available.
+     * For example, a security advice.
+     */
+    readonly url?: string;
+}
+
+/**
  * Manage a number of features.
  */
 export interface FeatureManager {
@@ -144,10 +173,35 @@ export interface FeatureManager {
     idealResolver: IdealResolver;
 
     /**
+     * Is this fingerprint flagged as bad?
+     * Return the empty array if no flags are found
+     * @param {FP} fp
+     * @return {Promise<Flag>}
+     */
+    flags: Flagger;
+
+    /**
      * Which Huckleberries could grow in this project that are not already growing.
      * They may not all be present
      */
     possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 
     necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
+}
+
+/**
+ * Flagger from a list
+ * @param {(fp: FP) => Promise<Flag[]>} flaggings
+ * @return {Flagger}
+ */
+export function simpleFlagger(...flaggings: Array<(fp: FP) => Promise<Flag[]>>): Flagger {
+    return async fp => {
+        for (const f of flaggings) {
+            const flagged = await f(fp);
+            if (flagged && flagged.length > 0) {
+                return flagged;
+            }
+        }
+        return [];
+    }
 }
