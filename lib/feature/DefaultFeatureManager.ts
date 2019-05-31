@@ -17,7 +17,9 @@
 import {
     AggregateFingerprintStatus,
     FeatureManager,
-    FingerprintCensus, Flag, Flagger,
+    FingerprintCensus,
+    Flag,
+    Flagger,
     HasFingerprints,
     IdealResolver,
     isHasFingerprints,

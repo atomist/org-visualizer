@@ -37,7 +37,8 @@ import {
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
     FeatureManager,
-    ManagedFeature, simpleFlagger,
+    ManagedFeature,
+    simpleFlagger,
 } from "../feature/FeatureManager";
 
 export const features: ManagedFeature[] = [
