@@ -19,7 +19,7 @@ import {
     treeBuilderFor,
 } from "../routes/wellKnownQueries";
 import {
-    FeatureManager,
+    FeatureManager, Flag,
     HasFingerprints,
 } from "./FeatureManager";
 import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
@@ -35,6 +35,7 @@ import { Reporters } from "./reporters";
 /**
  * Create an object exposing well-known queries against our repo cohort
  * based on the fingerprints the given FeatureManager knows how to manage.
+ * Return a query named "flagged" that shows any flagged fingerprints, across all repos.
  * Return 3 queries for each fingerprint name
  * 1. <fingerprintName>: Show distribution of the fingerprint
  * 2. <fingerprintName>-present: Is this fingerprint name present in this repo? Returns for all repos
@@ -43,6 +44,34 @@ import { Reporters } from "./reporters";
 export async function reportersAgainst(hm: FeatureManager,
                                        repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
     const reporters: Reporters = {};
+
+    // Report bad fingerprints according to the FeatureManager
+    reporters.flagged = params =>
+        treeBuilderFor("flagged", params)
+            .group({
+                name: "flags",
+                by: async a => {
+                    const knownBad = (await Promise.all(
+                        allFingerprints(a).map(fp => hm.flags(fp))
+                    )).filter(f => !!f && f.length > 0);
+                    return knownBad.length === 0 ?
+                        params.otherLabel :
+                        "-" + knownBad.length;
+                },
+            })
+            .group({
+                name: "violations",
+                by: async a => {
+                    const flags = await Promise.all(
+                        allFingerprints(a).map(fp => hm.flags(fp))
+                    );
+                    const knownBad: Flag[] = _.flatten(flags.filter(f => !!f && f.length > 0));
+                    return knownBad.length === 0 ?
+                        params.otherLabel :
+                        knownBad.map(bad => bad.message).join(",");
+                }
+            })
+            .renderWith(DefaultProjectAnalysisRenderer);
 
     for await (const fp of await fingerprintsFrom(repos)) {
         const name = fp.name;

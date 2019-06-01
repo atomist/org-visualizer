@@ -33,6 +33,7 @@ import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 import {
+    TypeScriptVersion,
     TypeScriptVersionFeature,
 } from "../feature/domain/TypeScriptVersionFeature";
 import {
@@ -122,7 +123,40 @@ export const featureManager = new DefaultFeatureManager({
             return Ideals[name];
         },
         features,
-        flags: simpleFlagger(),
+        flags: simpleFlagger(
+            async fp => {
+                return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
+                    {
+                        severity: "warn",
+                        authority: "Rod",
+                        message: "Old TypeScript version",
+                    } :
+                    undefined;
+            },
+            async fp => fp.name === "npm-project-dep::axios" ?
+                {
+                    severity: "warn",
+                    authority: "Christian",
+                    message: "Don't use Axios",
+                } :
+                undefined,
+            async fp => {
+                if (fp.name === "tslintproperty::rules:max-file-line-count") {
+                    try {
+                        const obj = JSON.parse(fp.data);
+                        if (obj.options && obj.options.some(opt => parseInt(opt)) > 500) {
+                            return {
+                                severity: "warn",
+                                authority: "Rod",
+                                message: "Allow long files",
+                            }
+                        }
+                    } catch {
+                        // Do nothing
+                    }
+                }
+                return undefined;
+            }),
     }
 );
 

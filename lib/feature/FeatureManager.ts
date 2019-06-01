@@ -194,12 +194,12 @@ export interface FeatureManager {
  * @param {(fp: FP) => Promise<Flag[]>} flaggings
  * @return {Flagger}
  */
-export function simpleFlagger(...flaggings: Array<(fp: FP) => Promise<Flag[]>>): Flagger {
+export function simpleFlagger(...flaggings: Array<(fp: FP) => Promise<Flag>>): Flagger {
     return async fp => {
         for (const f of flaggings) {
             const flagged = await f(fp);
-            if (flagged && flagged.length > 0) {
-                return flagged;
+            if (flagged) {
+                return [flagged];
             }
         }
         return [];
