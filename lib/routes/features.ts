@@ -40,6 +40,17 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
+import { assembledFeature } from "../feature/domain/assembledFeature";
+
+const CiFeature = assembledFeature("ci", {
+        displayName: "CI",
+        toDisplayableFingerprint: fp => fp.data,
+        toDisplayableFingerprintName: () => "CI",
+    },
+    "elements.travis.name",
+    "elements.circle.name",
+    "elements.jenkins.name",
+    "elements.gitlab.name");
 
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
@@ -49,6 +60,7 @@ export const features: ManagedFeature[] = [
         suggestedIdeals: idealFromNpm,
     },
     new TsLintPropertyFeature(),
+    CiFeature,
 ];
 
 async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdeal<FP>>> {
