@@ -89,6 +89,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         <div className="actionItemBox">
             <ul>
                 {props.actionableFingerprints.map(actionableFingerprintListItem)}
+                <li><a href="./query?name=flagged&byOrg=true">Visualize problems</a></li>
             </ul>
         </div>
         <h2>Features</h2>
