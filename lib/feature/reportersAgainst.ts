@@ -19,7 +19,8 @@ import {
     treeBuilderFor,
 } from "../routes/wellKnownQueries";
 import {
-    FeatureManager, Flag,
+    FeatureManager,
+    Flag,
     HasFingerprints,
 } from "./FeatureManager";
 import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
