@@ -21,9 +21,11 @@ export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
 }
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
     const queryLink = `./query?name=${af.name}&byOrg=true`;
+    const existsLink = `./query?name=${af.name}-present&byOrg=true`;
     return <li key={af.name}><i>{af.featureName}:
                 {af.displayName}</i>: {af.appearsIn} projects, {" "}
         <a href={queryLink}>{af.variants} variants</a>
+        <a href={existsLink}>Exists?</a>
         {idealDisplay(af)}
     </li>;
 }

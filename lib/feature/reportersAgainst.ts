@@ -35,18 +35,23 @@ import { Reporters } from "./reporters";
 /**
  * Create an object exposing well-known queries against our repo cohort
  * based on the fingerprints the given FeatureManager knows how to manage.
- * Return 2 queries for each fingerprint name
+ * Return 3 queries for each fingerprint name
  * 1. <fingerprintName>: Show distribution of the fingerprint
- * 2. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
+ * 2. <fingerprintName>-present: Is this fingerprint name present in this repo? Returns for all repos
+ * 3. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
  */
 export async function reportersAgainst(hm: FeatureManager,
                                        repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
-    const queries: Reporters = {};
+    const reporters: Reporters = {};
 
-    // TODO fingerprint name needs to be unique? Will reset property many times
     for await (const fp of await fingerprintsFrom(repos)) {
         const name = fp.name;
-        queries[name] = params =>
+        if (reporters[fp.name]) {
+            // Don't set it again
+            continue;
+        }
+
+        reporters[name] = params =>
             treeBuilderFor(name, params)
                 .group({
                     name,
@@ -57,8 +62,19 @@ export async function reportersAgainst(hm: FeatureManager,
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
 
+        reporters[name + "-present"] = params =>
+            treeBuilderFor(name, params)
+                .group({
+                    name,
+                    by: ar => {
+                        const fp = ar.fingerprints[name];
+                        return !!fp ? "Yes" : "No";
+                    },
+                })
+                .renderWith(DefaultProjectAnalysisRenderer);
+
         // Add a query that tells us how many repositories are on vs off the ideal, if any, for this fingerprint
-        queries[name + "-ideal"] = params =>
+        reporters[name + "-ideal"] = params =>
             treeBuilderFor(name, params)
                 .group({
                     name: name + " ideal?",
@@ -81,7 +97,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 .renderWith(DefaultProjectAnalysisRenderer);
     }
 
-    return queries;
+    return reporters;
 }
 
 export interface DisplayableFingerprint {
