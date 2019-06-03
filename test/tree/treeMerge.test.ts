@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { mergeTrees, SunburstTree } from "../../lib/tree/sunburst";
+import {
+    mergeTrees,
+    SunburstTree,
+} from "../../lib/tree/sunburst";
 import * as assert from "assert";
 
 describe("treeMerge", () => {
