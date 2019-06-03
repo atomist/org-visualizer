@@ -25,7 +25,7 @@ import {
     featureManager,
     setIdeal,
 } from "./features";
-import { WellKnownQueries } from "./wellKnownQueries";
+import { WellKnownReporters } from "./wellKnownReporters";
 
 import { logger } from "@atomist/automation-client";
 import {
@@ -169,7 +169,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const repos = await store.loadAll();
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-            const allQueries = _.merge(featureQueries, WellKnownQueries);
+            const allQueries = _.merge(featureQueries, WellKnownReporters);
             const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
@@ -244,7 +244,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             const repos = await store.loadAll();
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-            const allQueries = _.merge(featureQueries, WellKnownQueries);
+            const allQueries = _.merge(featureQueries, WellKnownReporters);
 
             const cannedQuery = allQueries[req.query.name]({
                 ...req.query,

@@ -17,7 +17,7 @@
 import { featureManager } from "../routes/features";
 import {
     treeBuilderFor,
-} from "../routes/wellKnownQueries";
+} from "../routes/wellKnownReporters";
 import {
     FeatureManager,
     Flag,

@@ -46,9 +46,10 @@ import {
 import { Analyzed } from "../feature/FeatureManager";
 
 /**
- * Well known queries against our repo cohort
+ * Well known reporters against our repo cohort.
+ * Works against full analyses.
  */
-export const WellKnownQueries: Reporters<ProjectAnalysis> = {
+export const WellKnownReporters: Reporters<ProjectAnalysis> = {
 
     licenses: params =>
         treeBuilderFor<ProjectAnalysis>("licenses", params)
