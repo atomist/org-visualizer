@@ -91,30 +91,36 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
+        async function aggregateFingerprints(featureManager: FeatureManager,
+            feature: ManagedFeature,
+            fps: FP[]): Promise<AggregateFingerprintStatus> {
+            const name = fps[0].name;
+            const ideal = await featureManager.idealResolver(name);
+            return {
+                name,
+                appearsIn: fps.length,
+                variants: _.uniq(fps.map(fp => fp.sha)).length,
+                ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
+                featureName: feature.displayName,
+                displayName: defaultedToDisplayableFingerprintName(feature)(name),
+            };
+        }
         const result: FingerprintCensus = {
             projectsAnalyzed: repos.length,
             features: [],
         };
         const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
+            // TODO: Rod: There is an assumption here that all fingerprints with the same name match the same selectors.
             const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
             const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
-                const ideal = await this.opts.idealResolver(name);
-                fingerprints.push({
-                    name,
-                    appearsIn: allFingerprintsInAllProjects.filter(fp => fp.name === name).length,
-                    variants: _.uniq(allFingerprintsInAllProjects.filter(fp => fp.name === name).map(fp => fp.sha)).length,
-                    ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
-                    featureName: feature.displayName,
-                    displayName: defaultedToDisplayableFingerprintName(feature)(name),
-                });
+                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => fp.name === name);
+                fingerprints.push(await aggregateFingerprints(this, feature, theseFingerprints));
             }
             result.features.push({
                 feature,
-                fingerprints: fingerprints
-                    .sort((a, b) => b.appearsIn - a.appearsIn)
-                    .sort((a, b) => b.variants - a.variants),
+                fingerprints,
             });
         }
         return result;
@@ -175,10 +181,10 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     constructor(private readonly opts: {
-                    idealResolver: IdealResolver,
-                    features: ManagedFeature[],
-                    flags: Flagger,
-                }
+        idealResolver: IdealResolver,
+        features: ManagedFeature[],
+        flags: Flagger,
+    },
     ) {
     }
 }
@@ -192,7 +198,7 @@ export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fp
 }
 
 function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
-                               ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
+    ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
     if (!ideal) {
         return undefined;
     }

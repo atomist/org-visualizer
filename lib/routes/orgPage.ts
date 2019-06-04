@@ -98,22 +98,33 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         });
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
-            const repos = await store.loadAll();
+            try {
+                const repos = await store.loadAll();
 
-            const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
+                const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
-            const actionableFingerprints = allManagedFingerprints(features)
-                .filter(mf => mf.variants > features.projectsAnalyzed / 10)
-                .sort((a, b) => b.appearsIn - a.appearsIn)
-                .sort((a, b) => b.variants - a.variants);
+                features.features.forEach(famf => {
+                    famf.fingerprints = famf.fingerprints
+                        .sort((a, b) => b.appearsIn - a.appearsIn)
+                        .sort((a, b) => b.variants - a.variants);
+                });
 
-            const importantFeatures = relevantFingerprints(features, fp => fp.variants > 1);
+                const actionableFingerprints = allManagedFingerprints(features)
+                    .filter(mf => mf.variants > features.projectsAnalyzed / 10)
+                    .sort((a, b) => b.appearsIn - a.appearsIn)
+                    .sort((a, b) => b.variants - a.variants);
 
-            res.send(renderStaticReactNode(OrgExplorer({
-                actionableFingerprints,
-                projectsAnalyzed: features.projectsAnalyzed,
-                importantFeatures,
-            })));
+                const importantFeatures = relevantFingerprints(features, fp => fp.variants > 1);
+
+                res.send(renderStaticReactNode(OrgExplorer({
+                    actionableFingerprints,
+                    projectsAnalyzed: features.projectsAnalyzed,
+                    importantFeatures,
+                })));
+            } catch (e) {
+                logger.error(e.stack);
+                res.status(500).send("failure");
+            }
         });
 
         /* Project list page */
