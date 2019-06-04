@@ -10,6 +10,6 @@ COPY . .
 
 RUN npm link
 
-RUN spider atomist
+RUN spider --owner atomist
 
 ENV ATOMIST_MODE local
