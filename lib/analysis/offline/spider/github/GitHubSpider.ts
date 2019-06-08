@@ -86,7 +86,7 @@ export class GitHubSpider implements Spider {
                     repo: sourceData.name,
                     url: sourceData.url,
                 };
-                const found = await opts.persister.load(repo);
+                const found = await opts.persister.loadOne(repo);
                 if (found && await opts.keepExistingPersisted(found)) {
                     keepExisting.push(repo.url);
                     logger.info("Found valid record for " + JSON.stringify(repo));

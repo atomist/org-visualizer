@@ -20,6 +20,7 @@ import {
     SunburstLeaf,
     SunburstTree,
 } from "./sunburst";
+import { logger } from "@atomist/automation-client";
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst
@@ -176,7 +177,7 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
             data.push(root);
             if (data.length === this.chunkSize) {
                 trees.push(await this.treeify(data, renderer));
-                console.log(`Emitted tree of size ${this.chunkSize}`);
+                logger.info(`Emitted tree of size ${this.chunkSize}`);
                 data = [];
             }
         }

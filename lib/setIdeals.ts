@@ -26,8 +26,7 @@ import {
 import * as _ from "lodash";
 
 async function setIdeals() {
-    const repos = await analysisResultStore.loadAll();
-    // const features = await featureManager.fingerprintCensus(repos);
+    const repos = await analysisResultStore.loadWhere("");
     const names = _.uniq(allFingerprints(repos.map(r => r.analysis)).map(fp => fp.name));
     const ideals: IdealStore = retrieveFromStupidLocalStorage();
     for (const name of names) {

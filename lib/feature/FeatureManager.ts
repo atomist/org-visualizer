@@ -69,6 +69,11 @@ export interface AggregateFingerprintStatus {
     readonly variants: number;
 }
 
+export interface FingerprintsWithManagingFeature<ProcessedFingerprint> {
+    feature: ManagedFeature;
+    fingerprints: ProcessedFingerprint[];
+}
+
 /**
  * Report on feature usage in a cohort of projects
  */
@@ -79,10 +84,8 @@ export interface FingerprintCensus {
     /**
      * Array of features with data about fingerprints they manage
      */
-    features: Array<{
-        feature: ManagedFeature,
-        fingerprints: AggregateFingerprintStatus[],
-    }>;
+    features: Array<FingerprintsWithManagingFeature<AggregateFingerprintStatus>>;
+
 }
 
 /**
@@ -110,6 +113,7 @@ export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<Project
  */
 export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
 
+// TODO: Hey Rod, can we call this UndesirableUsage instead? "flag" could mean a zillion things. Flag is a verb here.
 /**
  * Flag for an undesirable usage
  */
@@ -203,5 +207,5 @@ export function simpleFlagger(...flaggings: Array<(fp: FP) => Promise<Flag>>): F
             }
         }
         return [];
-    }
+    };
 }

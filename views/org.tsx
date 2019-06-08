@@ -89,7 +89,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         <div className="actionItemBox">
             <ul>
                 {props.actionableFingerprints.map(actionableFingerprintListItem)}
-                <li><a href="./query?name=flagged&byOrg=true">Visualize problems</a></li>
+                <li><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
             </ul>
         </div>
         <h2>Features</h2>
@@ -107,41 +107,42 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         <h2>Common queries</h2>
         <h3>Community</h3>
         <ul>
-            <li key="community-1"><a href="./query?name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
+            <li key="community-1"><a href="./query?filter=true&name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
 Conduct</a></li>
         </ul>
 
         <h3>Code</h3>
         <ul>
-            <li key="code-1"><a href="./query?name=langs&byOrg=true">Language breakdown for all projects</a></li>
-            <li key="code-2"><a href="./query?name=loc&byOrg=true">Repo sizes</a></li>
-            <li key="code-3"><a href="./query?name=dependencyCount&byOrg=true">Number of dependencies</a></li>
-            <li key="code-4"><a href="./query?name=licenses&byOrg=true">package.json license</a></li>
+            <li key="code-1"><a href="./query?filter=true&name=langs&byOrg=true">Language breakdown for all projects</a></li>
+            <li key="code-2"><a href="./query?filter=true&name=loc&byOrg=true">Repo sizes</a></li>
+            <li key="code-3"><a href="./query?filter=true&name=dependencyCount&byOrg=true">Number of dependencies</a></li>
+            <li key="code-4"><a href="./query?filter=true&name=licenses&byOrg=true">package.json license</a></li>
         </ul>
 
         <h3>Docker</h3>
         <ul>
-            <li key="docker-1"><a href="./query?name=docker&byOrg=true">Docker Yes/No</a></li>
-            <li key="docker-2"><a href="./query?name=path&path=elements.docker.dockerFile.path&unused=No+Docker">Docker file path</a></li>
-            <li key="docker-3"><a href="./query?name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
+            <li key="docker-1"><a href="./query?filter=true&name=docker&byOrg=true">Docker Yes/No</a></li>
+            <li key="docker-2"><a href="./query?filter=true&name=path&path=elements.docker.dockerFile.path&unused=No+Docker">Docker file path</a></li>
+            <li key="docker-3"><a href="./query?filter=true&name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
         </ul>
 
         <h3>Atomist Status</h3>
-        <li><a href="./query?name=uhura&byOrg=true">Uhura delivery status</a></li>
+        <li><a href="./query?filter=true&name=uhura&byOrg=true">Uhura delivery status</a></li>
 
         <h2>Technology identified</h2>
-        <form method="GET" action="./query?name=using">
-            Technology: <input id="what" name="list" value="node,springboot" />
-            <input type="submit" value="Search" />
-        </form>
+
+        tbd
 
         <h2>Custom path</h2>
 
-        <form method="GET" action="./query?name=path">
-            Path: <input id="what" name="path" value="elements.node.typeScript.tslint.hasConfig" ></input>
+        <form method="GET" action="./query">
+            <input type="hidden" name="name" value="path"></input>
+
+            Path: <input id="value" name="value" value="elements.node.typeScript.tslint.hasConfig" ></input>
             <input type="checkbox" name="otherLabel" value="irrelevant"></input>
+            <input type="hidden" name="filter" value="true"></input>
             Show all
-            <input type="submit" value="Search" ></input>
+            <input type="submit" value="Search"></input>
         </form>
 
         <h2>Data</h2>

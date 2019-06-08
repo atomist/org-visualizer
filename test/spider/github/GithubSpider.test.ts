@@ -89,10 +89,10 @@ class FakePersister implements ProjectAnalysisResultStore {
     public count(): Promise<number> {
         throw new Error("Method not implemented.");
     }
-    public loadAll(): Promise<ProjectAnalysisResult[]> {
+    public loadWhere(): Promise<ProjectAnalysisResult[]> {
         throw new Error("Method not implemented.");
     }
-    public async load(repo: RepoRef): Promise<ProjectAnalysisResult> {
+    public async loadOne(repo: RepoRef): Promise<ProjectAnalysisResult> {
         return oneResult;
     }
     public async persist(repoOrRepos: ProjectAnalysisResult

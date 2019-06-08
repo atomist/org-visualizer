@@ -50,6 +50,7 @@
     "helmet": "^3.18.0",
     "lodash": "^4.17.11",
     "node-fetch": "^2.3.0",
+    "pg": "^7.11.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "recursive-readdir": "^2.2.2",

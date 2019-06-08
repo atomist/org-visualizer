@@ -24,14 +24,14 @@ import { treeBuilder } from "../../lib/tree/TreeBuilder";
 describe.skip("treeBuilder", () => {
 
     it("renders single level", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
         const builder = treeBuilder<ProjectAnalysis>("root")
             .renderWith(DefaultProjectAnalysisRenderer);
         const t = builder.toSunburstTree(() => all);
     });
 
     it("renders and groups analyses", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
@@ -40,7 +40,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("renders and groups not excluding other", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.repo.length > 8 ? "foo" : "a" })
@@ -51,7 +51,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("renders and groups excluding other", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.repo.length > 8 ? undefined : "a" })
@@ -61,7 +61,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("transforms and renders", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
@@ -75,7 +75,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("transforms and renders with split", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
@@ -88,7 +88,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("transforms and splits before grouping", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
@@ -102,7 +102,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("adds customGroup layer", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "foo", by: ar => ar.id.owner })
@@ -122,7 +122,7 @@ describe.skip("treeBuilder", () => {
     });
 
     it("flattens single layer", async () => {
-        const all = (await new FileSystemProjectAnalysisResultStore().loadAll()).map(r => r.analysis);
+        const all = (await new FileSystemProjectAnalysisResultStore().loadWhere()).map(r => r.analysis);
 
         const builder = treeBuilder<ProjectAnalysis>("root")
             .group({ name: "thing", by: () => "foo", flattenSingle: true })
