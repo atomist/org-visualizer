@@ -44,9 +44,14 @@ export interface ProjectAnalysisResultStore {
      */
     count(): Promise<number>;
 
-    loadAll(): Promise<ProjectAnalysisResult[]>;
+    /**
+     * Where e.g. workspace_id = value
+     * @param {string} where
+     * @return {Promise<ProjectAnalysisResult[]>}
+     */
+    loadWhere(where: string): Promise<ProjectAnalysisResult[]>;
 
-    load(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
+    loadOne(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
 
     persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult>;
 

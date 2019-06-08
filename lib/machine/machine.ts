@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Client } from "pg";
+
 import {
     onAnyPush,
     PushImpact,
@@ -25,7 +27,6 @@ import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
 import {
     analyzerBuilder,
     ProjectAnalyzer,
-    Scorer,
 } from "@atomist/sdm-pack-analysis";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
@@ -40,7 +41,6 @@ import {
 } from "@atomist/sdm-pack-analysis-node";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
-import { FileSystemProjectAnalysisResultStore } from "../analysis/offline/persist/FileSystemProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
@@ -51,6 +51,10 @@ import {
     idealConvergenceScorer,
 } from "../routes/features";
 import { GitActivityScanner } from "./gitActivityScanner";
+import {
+    ClientFactory,
+    PostgresProjectAnalysisResultStore,
+} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -75,7 +79,12 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .build();
 }
 
-export const analysisResultStore: ProjectAnalysisResultStore = new FileSystemProjectAnalysisResultStore();
+export const clientFactory: ClientFactory = () => new Client({
+    database: "org_viz",
+});
+
+export const analysisResultStore: ProjectAnalysisResultStore =
+    new PostgresProjectAnalysisResultStore(clientFactory);
 
 /**
  * Initialize an sdm definition, and add functionality to it.
@@ -122,7 +131,7 @@ function updatedStoredAnalysisIfNecessary(opts: {
     const maxAgeMillis = 60 * 60 * 1000;
     return async pu => {
         try {
-            const found = await opts.analyzedRepoStore.load(pu.id);
+            const found = await opts.analyzedRepoStore.loadOne(pu.id);
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
                 const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });

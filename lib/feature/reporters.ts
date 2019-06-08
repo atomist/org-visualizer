@@ -47,7 +47,9 @@ export interface ReporterParams {
     artifact?: string;
 }
 
+export type Reporter = (params: ReporterParams) => ReportBuilder<Analyzed>;
+
 /**
  * Reporters we can run against features
  */
-export type Reporters<A extends Analyzed = Analyzed> = Record<string, (params: ReporterParams) => ReportBuilder<Analyzed>>;
+export type Reporters<A extends Analyzed = Analyzed> = Record<string, Reporter>;

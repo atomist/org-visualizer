@@ -38,7 +38,6 @@ import {
     CSSProperties,
     ReactElement,
 } from "react";
-import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
 import {
     FeatureForDisplay,
@@ -58,12 +57,15 @@ import {
     defaultedToDisplayableFingerprintName,
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
-import { ManagedFeature } from "../feature/FeatureManager";
+import {
+    ManagedFeature,
+} from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
+import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
     title?: string,
@@ -99,7 +101,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
             try {
-                const repos = await store.loadAll();
+                const repos = await store.loadWhere("workspace_id = 'local'");
 
                 const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
@@ -129,7 +131,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
         /* Project list page */
         express.get("/projects", ...handlers, async (req, res) => {
-            const allAnalysisResults = await store.loadAll();
+            const allAnalysisResults = await store.loadWhere("workspace_id = 'local'");
 
             // optional query parameter: owner
             const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
@@ -147,7 +149,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the project page */
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
 
-            const analysis = await store.load({ owner: req.params.owner, repo: req.params.repo, url: "" });
+            const analysis = await store.loadOne({ owner: req.params.owner, repo: req.params.repo, url: "" });
 
             const featuresAndFingerprints = await featureManager.projectFingerprints(analysis);
 
@@ -177,16 +179,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
-            const repos = await store.loadAll();
+            const repos = await store.loadWhere(`workspace_id = 'local'`);
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownReporters);
             const fingerprintName = req.query.name.replace(/-ideal$/, "");
-
-            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            if (relevantRepos.length === 0) {
-                return res.send(`No matching repos for organization ${req.params.owner}`);
-            }
 
             const queryString = jsonToQueryString(req.query);
             const cannedQueryDefinition = allQueries[req.query.name];
@@ -195,7 +192,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     query: req.query.name,
                 });
             }
-            const dataUrl = `/query.json?${queryString}`;
+            const dataUrl = `/api/v1/${req.query.filter ? "filter" : "fingerprint"}?${queryString}`;
 
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
@@ -239,32 +236,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }),
                 fingerprintDisplayName,
                 ["https://d3js.org/d3.v4.min.js", "/js/sunburst.js"]));
-            // res.render("orgViz", {
-            //     name: req.params.owner,
-            //     dataUrl,
-            //     query: req.params.query,
-            //     fingerprintName,
-            //     fingerprintDisplayName,
-            //     possibleIdeals,
-            //     currentIdeal: currentIdealForDisplay,
-            // });
         });
 
-        /* the d3 sunburst on the /query page uses this */
-        express.get("/query.json", ...handlers, async (req, res) => {
-            const repos = await store.loadAll();
-
-            const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-            const allQueries = _.merge(featureQueries, WellKnownReporters);
-
-            const cannedQuery = allQueries[req.query.name]({
-                ...req.query,
-            });
-            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            //  console.log("Build tree from " + relevantRepos.length);
-            const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-            res.json(data);
-        });
     };
 }
 

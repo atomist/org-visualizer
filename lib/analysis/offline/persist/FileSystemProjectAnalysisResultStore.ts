@@ -63,7 +63,7 @@ export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResu
     }
 
     public async count(): Promise<number> {
-        return (await this.loadAll()).length;
+        return (await this.loadWhere()).length;
     }
 
     public async persist(what: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
@@ -87,7 +87,7 @@ export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResu
         return { attemptedCount: persisted, failed: errors, succeeded: written };
     }
 
-    public async load(repo: RepoRef): Promise<ProjectAnalysisResult | undefined> {
+    public async loadOne(repo: RepoRef): Promise<ProjectAnalysisResult | undefined> {
         const filepath = this.toFilePath(repo);
         if (!fs.existsSync(filepath)) {
             logger.info("No persisted file found for %s", filepath);
@@ -103,7 +103,7 @@ export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResu
         }
     }
 
-    public async loadAll(): Promise<ProjectAnalysisResult[]> {
+    public async loadWhere(): Promise<ProjectAnalysisResult[]> {
         const filePaths = await readdir(this.path);
         const results: ProjectAnalysisResult[] = [];
         for (const filePath of filePaths) {

@@ -31,6 +31,13 @@ export function isSunburstTree(level: SunburstLevel): level is SunburstTree {
     return !!maybe.children;
 }
 
+export function visit(t: SunburstLevel, visitor: (sl: SunburstLevel) => boolean): void {
+    const r = visitor(t);
+    if (r && isSunburstTree(t)) {
+        t.children.forEach(visitor);
+    }
+}
+
 /**
  * Merge these trees. They must have the same name.
  * Trees may be merged in memory because they may have many nodes, but don't have much data.
