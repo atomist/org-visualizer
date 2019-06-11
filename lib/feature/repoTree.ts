@@ -18,6 +18,7 @@ import { Client } from "pg";
 import {
     SunburstTree,
 } from "../tree/sunburst";
+import { doWithClient } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 
 export interface TreeQuery {
 
@@ -37,7 +38,7 @@ export function fingerprintsChildrenQuery(whereClause: string) {
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
        SELECT
-         fingerprints.name as name, fingerprints.sha as sha, fingerprints.data as data,
+         fingerprints.name as name, fingerprints.sha as sha, fingerprints.data as data, fingerprints.feature_name as type,
          (
            SELECT json_agg(row_to_json(repo))
            FROM (
@@ -62,9 +63,7 @@ FROM (
  * @return {Promise<SunburstTree>}
  */
 export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
-    const client = opts.clientFactory();
-    client.connect();
-    try {
+    return doWithClient(opts.clientFactory, async client => {
         console.log(opts.query);
         const results = await client.query(opts.query, [opts.rootName]);
         // TODO error checking
@@ -73,7 +72,5 @@ export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
             name: opts.rootName,
             children: data.row_to_json.children,
         }
-    } finally {
-        client.end();
-    }
+    });
 }

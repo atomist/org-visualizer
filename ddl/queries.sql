@@ -63,6 +63,16 @@ select name, count(*)
   group by name;
 
 
+SELECT fingerprints.name, fingerprints.sha, fingerprints.data,
+      repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url
+  FROM fingerprints, repo_fingerprints, repo_snapshots
+    WHERE repo_fingerprints.sha = fingerprints.sha
+      AND repo_fingerprints.name = fingerprints.name
+      AND repo_fingerprints.feature_name = fingerprints.feature_name
+      AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+    AND fingerprints.name = 'tsVersion'
+    ORDER by fingerprints.name ASC, sha ASC;
+
 
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
