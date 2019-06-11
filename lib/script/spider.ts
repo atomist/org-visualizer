@@ -150,5 +150,5 @@ spider(params).then(r => {
     console.log(`Successfully analyzed GitHub ${JSON.stringify(params)}. result is `
         + JSON.stringify(r, null, 2));
 }, err => {
-    console.log("Oh no! " + err.message);
+    console.log("Failure: " + err.message);
 });

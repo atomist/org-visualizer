@@ -97,11 +97,9 @@ VALUES ('local', $3, $1, $2, $3, $4, $5, current_timestamp) RETURNING id`,
         // Whack any joins
         await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
 
-        for (const fpname of Object.getOwnPropertyNames(pa.fingerprints)) {
-            // TODO this will ultimately come from the fp
-            const featureName = "unknown";
+        for (const fp of pa.fingerprints) {
+            const featureName = fp.type || "unknown";
 
-            const fp = pa.fingerprints[fpname];
             console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
             await client.query(`INSERT INTO fingerprints (name, feature_name, sha, data)

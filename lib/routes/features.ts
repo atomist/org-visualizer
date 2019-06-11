@@ -43,7 +43,8 @@ import {
 } from "../feature/FeatureManager";
 import { assembledFeature } from "../feature/domain/assembledFeature";
 
-const CiFeature = assembledFeature("ci", {
+const CiFeature = assembledFeature({
+        name: "CI",
         displayName: "CI",
         toDisplayableFingerprint: fp => fp.data,
         toDisplayableFingerprintName: () => "CI",

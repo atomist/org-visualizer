@@ -18,25 +18,18 @@ import {
     AggregateFingerprintStatus,
     FeatureManager,
     FingerprintCensus,
-    Flag,
     Flagger,
     HasFingerprints,
     IdealResolver,
-    isHasFingerprints,
     ManagedFeature,
 } from "./FeatureManager";
 
-import {
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { CSSProperties } from "react";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
-    return _.flatMap(toArray(ar), arr => Object.getOwnPropertyNames(arr.fingerprints)
-        .map(name => arr.fingerprints[name]));
+    return _.flatMap(toArray(ar), a => a.fingerprints);
 }
 
 function toArray<T>(value: T | T[]): T[] {
@@ -53,9 +46,8 @@ function toArray<T>(value: T | T[]): T[] {
 
 export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<HasFingerprints>): AsyncIterable<FP> {
     for await (const hf of ar) {
-        const fingerprintNames = Object.getOwnPropertyNames(hf.fingerprints);
-        for (const name of fingerprintNames) {
-            yield hf.fingerprints[name];
+        for (const fp of hf.fingerprints) {
+            yield fp;
         }
     }
 }

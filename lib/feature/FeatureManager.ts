@@ -16,7 +16,6 @@
 
 import { RemoteRepoRef } from "@atomist/automation-client";
 import {
-    ConsolidatedFingerprints,
     ProjectAnalysis,
 } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import {
@@ -93,7 +92,7 @@ export interface FingerprintCensus {
  * representing a repo exposing fingerprint data
  */
 export interface HasFingerprints {
-    fingerprints: ConsolidatedFingerprints;
+    fingerprints: FP[];
 }
 
 /**

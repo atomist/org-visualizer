@@ -25,8 +25,7 @@ import * as _ from "lodash";
 export type Extractor = ((pa: ProjectAnalysis) => any) | string;
 
 export function assembledFeature(
-    name: string,
-    opts: Pick<Feature, "displayName" | "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
+    opts: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
     ...extractors: Extractor[]): DerivedFeature<ProjectAnalysis> {
     return {
         ...opts,
@@ -49,7 +48,7 @@ export function assembledFeature(
                 undefined;
         },
         apply: undefined,
-        selector: fp => fp.name === name,
+        selector: fp => fp.name === opts.name,
     };
 }
 

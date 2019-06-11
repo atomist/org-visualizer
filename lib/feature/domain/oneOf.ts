@@ -25,14 +25,12 @@ import { allFingerprints } from "../DefaultFeatureManager";
  * For example, is there CI? This may be satisfied by a
  * Jenkins, Circle or Travis fingerprint.
  * Such features are not applicable.
- * @param name name of this fingerprint
  * @param opts feature fields
  * @param names fingerprint names
  * @return {Feature}
  */
 export function oneOf(
-    name: string,
-    opts: Pick<Feature, "displayName" | "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
+    opts: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
     ...names: string[]): DerivedFeature<HasFingerprints> {
     return {
         ...opts,
