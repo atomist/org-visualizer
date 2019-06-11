@@ -4,6 +4,10 @@ CREATE DATABASE org_viz;
 
 DROP TABLE IF EXISTS repo_fingerprints;
 
+DROP TABLE IF EXISTS problem_fingerprints;
+
+DROP TYPE SEVERITY;
+
 DROP TABLE IF EXISTS fingerprints;
 
 DROP TABLE IF EXISTS repo_snapshots;
@@ -38,15 +42,6 @@ CREATE TABLE repo_fingerprints (
   feature_name text NOT NULL,
   sha varchar NOT NULL,
   PRIMARY KEY (repo_snapshot_id, name, feature_name, sha),
-  FOREIGN KEY (name, feature_name, sha) REFERENCES fingerprints (name, feature_name, sha)
-);
-
--- Ideal fingerprints
-CREATE TABLE ideal_fingerprints (
-  name text NOT NULL,
-  feature_name text NOT NULL,
-  sha varchar NOT NULL,
-  PRIMARY KEY (name, feature_name),
   FOREIGN KEY (name, feature_name, sha) REFERENCES fingerprints (name, feature_name, sha)
 );
 
