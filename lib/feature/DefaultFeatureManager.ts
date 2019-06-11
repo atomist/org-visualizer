@@ -24,7 +24,10 @@ import {
     ManagedFeature,
 } from "./FeatureManager";
 
-import { FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
+import {
+    FP,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
