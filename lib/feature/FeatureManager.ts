@@ -100,11 +100,6 @@ export interface HasFingerprints {
  */
 export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 
-export function isHasFingerprints(a: any): a is HasFingerprints {
-    const maybe = a as HasFingerprints;
-    return !!maybe.fingerprints;
-}
-
 export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<ProjectAnalysis, FPI>;
 
 /**
@@ -157,11 +152,6 @@ export interface FeatureManager {
      * That is, which can manage fingerprints found in this project
      */
     featuresFound(hf: HasFingerprints): Promise<ManagedFeature[]>;
-
-    /**
-     * Names of the fingerprints found in this project for which we have features to manage them
-     */
-    managedFingerprintNames(results: HasFingerprints[]): string[];
 
     /**
      * Report on the feature usage identified in this cohort of projects.

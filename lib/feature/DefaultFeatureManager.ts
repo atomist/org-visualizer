@@ -79,12 +79,6 @@ export class DefaultFeatureManager implements FeatureManager {
         return !!fp ? this.features.find(f => f.selector(fp)) : undefined;
     }
 
-    public managedFingerprintNames(results: HasFingerprints[]): string[] {
-        const fingerprints: FP[] = _.flatMap(results, allFingerprints);
-        const relevantFingerprints = fingerprints.filter(fp => this.features.some(feature => feature.selector(fp)));
-        return _.uniq(relevantFingerprints.map(fp => fp.name));
-    }
-
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
         async function aggregateFingerprints(featureManager: FeatureManager,
             feature: ManagedFeature,
