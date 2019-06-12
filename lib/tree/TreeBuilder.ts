@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
 import * as _ from "lodash";
 import {
     mergeTrees,
     SunburstLeaf,
     SunburstTree,
 } from "./sunburst";
-import { logger } from "@atomist/automation-client";
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst
@@ -231,7 +231,7 @@ async function layer<ROOT, T>(originalQuery: () => AsyncIterable<ROOT> | ROOT[],
                 for await (const e of currentLayerData) {
                     evaluations.push(await Promise.resolve((step as GroupStep<any>).by(e)).then(result => ({
                         e,
-                        result
+                        result,
                     })));
                 }
                 groups = _.groupBy(currentLayerData, e => evaluations.find(ev => ev.e === e).result);

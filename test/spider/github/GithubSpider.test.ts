@@ -171,7 +171,7 @@ describe("GithubSpider", () => {
         assert.strictEqual(persisted.length, 1);
     });
 
-    it("persists multiple analyses with subprojects", async () => {
+    it.skip("persists multiple analyses with subprojects", async () => {
         // this function is pretty darn elaborate
 
         const subject = new GitHubSpider(async function*(t, q) { yield oneSearchResult; },

@@ -15,57 +15,51 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
+import { PushImpact } from "@atomist/sdm";
+import { configure } from "@atomist/sdm-core";
 import {
-    ConfigureOptions,
-    configureSdm,
-} from "@atomist/sdm-core";
+    DockerFrom,
+    fingerprintSupport,
+    NpmDeps,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     analysisResultStore,
     clientFactory,
-    machine,
 } from "./lib/machine/machine";
-import { allowFraming } from "./lib/routes/allowFraming";
-import { orgPage } from "./lib/routes/orgPage";
 import { api } from "./lib/routes/api";
+import { orgPage } from "./lib/routes/orgPage";
 
-const machineOptions: ConfigureOptions = {
-    /**
-     * When your SDM requires configuration that is unique to it,
-     * you can list it here.
-     */
-    requiredConfigurationValues: [],
-};
+export const configuration: Configuration = configure(async sdm => {
 
-/**
- * The starting point for building an SDM is here!
- */
-export const configuration: Configuration = {
-    /**
-     * To run in team mode, you'll need an Atomist workspace.
-     * To run in local mode, you don't. This will be ignored.
-     * See: https://docs.atomist.com/developer/architecture/#connect-your-sdm
-     */
-    workspaceIds: ["connect this SDM to your whole team with the Atomist service"],
+    const pushImpact = new PushImpact();
+
+    sdm.addExtensionPacks(fingerprintSupport({
+        pushImpactGoal: pushImpact,
+        features: [
+            NpmDeps,
+            DockerFrom,
+        ],
+        handlers: [],
+    }));
+
+    return {
+        analyze: {
+            goals: pushImpact,
+        },
+    };
+
+}, {
+    name: "Analysis Software Delivery Machine",
     postProcessors: [
-        /**
-         * This is important setup! This defines the function that will be called
-         * to configure your SDM with everything that you want it to do.
-         *
-         * Click into the first argument (the "machine" function) to personalize
-         * your SDM.
-         */
-        configureSdm(machine, machineOptions),
         async cfg => {
+
+            const staticPages = process.env.NODE_ENV !== "production" ? [orgPage(analysisResultStore)] : [];
+
             cfg.http.customizers = [
+                ...staticPages,
                 api(clientFactory, analysisResultStore),
-                orgPage(analysisResultStore),
-                allowFraming("https://blog.atomist.com"),
             ];
             return cfg;
         },
     ],
-    http: {
-        enabled: true,
-
-    },
-};
+});

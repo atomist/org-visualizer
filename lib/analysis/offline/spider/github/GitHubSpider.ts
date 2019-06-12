@@ -28,7 +28,6 @@ import {
     ProjectAnalysis,
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
-import * as HttpError from "@octokit/request/lib/http-error";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
 import * as path from "path";
@@ -109,9 +108,7 @@ export class GitHubSpider implements Spider {
             }
             await runAllPromisesInBucket();
         } catch (e) {
-            if (e instanceof HttpError) {
-                logger.error("Status %s from %j", e.status, e.request.url);
-            }
+            logger.error("Error spidering: %s", e.message);
             throw e;
         }
 
@@ -373,7 +370,8 @@ async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): Asy
 
 async function projectUnder(p: Project, pathWithin: string): Promise<Project> {
     if (isInMemoryProject(p)) {
-        return p.toSubproject(pathWithin);
+        // TODO we need latest automation-client but this isn't available
+        // return p.toSubproject(pathWithin);
     }
     if (!isLocalProject(p)) {
         throw new Error(`Cannot descend into path '${pathWithin}' of non local project`);

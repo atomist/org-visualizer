@@ -8,8 +8,4 @@ RUN npm ci \
 
 COPY . .
 
-RUN npm link
-
-RUN spider --owner atomist
-
-ENV ATOMIST_MODE local
+ENV NODE_ENV production

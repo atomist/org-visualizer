@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
+import { FP } from "@atomist/sdm-pack-fingerprints";
+import * as bodyParser from "body-parser";
 import {
     Express,
     RequestHandler,
 } from "express";
-import {
-    featureManager,
-} from "./features";
-import { WellKnownReporters } from "./wellKnownReporters";
-import {
-    FP,
-} from "@atomist/sdm-pack-fingerprints";
-import * as bodyParser from "body-parser";
 import * as _ from "lodash";
 import {
-    FeatureManager,
-} from "../feature/FeatureManager";
+    ClientFactory,
+    doWithClient,
+} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     fingerprintsChildrenQuery,
@@ -40,13 +38,13 @@ import {
     SunburstTree,
     visit,
 } from "../tree/sunburst";
-import { Client } from "pg";
 import {
-    ClientFactory,
-    doWithClient,
-} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
-import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+    authHandlers,
+    configureAuth,
+    corsHandler,
+} from "./auth";
+import { featureManager } from "./features";
+import { WellKnownReporters } from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON
@@ -59,24 +57,38 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
             extended: true,
         }));
 
-        express.get("/api/v1/fingerprints", ...handlers, async (req, res) => {
-            const workspaceId = req.query.workspace_id || "local";
-            const fps = await fingerprints(clientFactory, workspaceId);
-            console.log(JSON.stringify(fps));
-            res.json(fps);
+        configureAuth(express);
+
+        express.options("/api/v1/fingerprints", corsHandler());
+        express.get("/api/v1/fingerprints", [...handlers, corsHandler(), ...authHandlers()], async (req, res) => {
+            try {
+                const workspaceId = req.query.workspace_id || "local";
+                const fps = await fingerprints(clientFactory, workspaceId);
+                console.log(JSON.stringify(fps));
+                res.json(fps);
+            } catch (e) {
+                logger.warn("Error occurred getting fingerprints: %s", e.message);
+                res.sendStatus(500);
+            }
         });
 
         /* the d3 sunburst on the /query page uses this */
-        express.get("/api/v1/fingerprint", ...handlers, async (req, res) => {
-            const workspaceId = req.query.workspace_id || "local";
-            const tree = await repoTree({
-                clientFactory,
-                query: fingerprintsChildrenQuery(`workspace_id = '${workspaceId}'`),
-                rootName: req.query.name,
-            });
-            console.log(JSON.stringify(tree));
-            fillInFeatures(featureManager, tree);
-            res.json(tree);
+        express.options("/api/v1/fingerprint", corsHandler());
+        express.get("/api/v1/fingerprint", [...handlers, corsHandler(), ...authHandlers()], async (req, res) => {
+            try {
+                const workspaceId = req.query.workspace_id || "local";
+                const tree = await repoTree({
+                    clientFactory,
+                    query: fingerprintsChildrenQuery(`workspace_id = '${workspaceId}'`),
+                    rootName: req.query.name,
+                });
+                console.log(JSON.stringify(tree));
+                fillInFeatures(featureManager, tree);
+                res.json(tree);
+            } catch (e) {
+                logger.warn("Error occurred getting one fingerprint: %s", e.message);
+                res.sendStatus(500);
+            }
         });
 
         // In memory queries against returns
