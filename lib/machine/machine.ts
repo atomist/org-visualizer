@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import {
-    onAnyPush,
-    PushImpact,
+    Configuration,
+    logger,
+} from "@atomist/automation-client";
+import {
     PushImpactListener,
     SoftwareDeliveryMachine,
-    SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
-import { createSoftwareDeliveryMachine } from "@atomist/sdm-core";
 import {
     analyzerBuilder,
     ProjectAnalyzer,
@@ -34,6 +33,7 @@ import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiSc
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
 import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
 import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
+import * as _ from "lodash";
 import { Client } from "pg";
 import {
     ClientFactory,
@@ -74,51 +74,18 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .build();
 }
 
-export const clientFactory: ClientFactory = () => new Client({
-    database: "org_viz",
-});
-
-export const analysisResultStore: ProjectAnalysisResultStore =
-    new PostgresProjectAnalysisResultStore(clientFactory);
-
-/**
- * Initialize an sdm definition, and add functionality to it.
- *
- * @param configuration All the configuration for this service
- */
-export async function machine(
-    configuration: SoftwareDeliveryMachineConfiguration,
-): Promise<SoftwareDeliveryMachine> {
-
-    const sdm = createSoftwareDeliveryMachine({
-        name: "Analysis Software Delivery Machine",
-        configuration,
+export function clientFactory(config: Configuration): ClientFactory {
+    return () => new Client({
+        database: "org_viz",
+        ...(_.get(config, "sdm.postgres") || {}),
     });
-
-    const analyzer = createAnalyzer(sdm);
-
-    const pushImpact = new PushImpact()
-        .withListener(updatedStoredAnalysisIfNecessary({
-            analyzedRepoStore: analysisResultStore,
-            analyzer,
-            maxAgeHours: 1,
-        }));
-    sdm.withPushRules(
-        onAnyPush().setGoals(pushImpact),
-    );
-
-    sdm.addCommand({
-        name: "count",
-        intent: "count analyses",
-        listener: async ci => {
-            await ci.addressChannels(`There are ${await analysisResultStore.count()} stored analysis results...`);
-        },
-    });
-
-    return sdm;
 }
 
-function updatedStoredAnalysisIfNecessary(opts: {
+export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore {
+    return new PostgresProjectAnalysisResultStore(factory);
+}
+
+export function updatedStoredAnalysisIfNecessary(opts: {
     analyzedRepoStore: ProjectAnalysisResultStore,
     analyzer: ProjectAnalyzer,
     maxAgeHours: number,

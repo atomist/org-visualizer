@@ -17,22 +17,31 @@
 import { Configuration } from "@atomist/automation-client";
 import { PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
-import { Client } from "pg";
 import {
     DockerFrom,
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { ClientFactory } from "./lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
     analysisResultStore,
+    clientFactory,
+    createAnalyzer,
+    updatedStoredAnalysisIfNecessary,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
 
 export const configuration: Configuration = configure(async sdm => {
 
-    const pushImpact = new PushImpact();
+    const analyzer = createAnalyzer(sdm);
+
+    const pushImpact = new PushImpact()
+        // TODO do we need this here? or only for local testing?
+        .withListener(updatedStoredAnalysisIfNecessary({
+            analyzedRepoStore: analysisResultStore(clientFactory(sdm.configuration)),
+            analyzer,
+            maxAgeHours: 1,
+        }));
 
     sdm.addExtensionPacks(fingerprintSupport({
         pushImpactGoal: pushImpact,
@@ -54,16 +63,12 @@ export const configuration: Configuration = configure(async sdm => {
     postProcessors: [
         async cfg => {
 
-            const staticPages = process.env.NODE_ENV !== "production" ? [orgPage(analysisResultStore)] : [];
-
-            const clientFactory: ClientFactory = () => new Client({
-                database: "org_viz",
-                ...(cfg.sdm.postgress || {}),
-            });
+            const resultStore = analysisResultStore(clientFactory(cfg));
+            const staticPages = process.env.NODE_ENV !== "production" ? [orgPage(resultStore)] : [];
 
             cfg.http.customizers = [
                 ...staticPages,
-                api(clientFactory, analysisResultStore),
+                api(clientFactory(cfg), resultStore),
             ];
             return cfg;
         },

@@ -27,7 +27,6 @@ import {
 } from "@atomist/sdm-pack-analysis";
 import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import * as assert from "assert";
-import * as _ from "lodash";
 import {
     PersistResult,
     ProjectAnalysisResultStore,
