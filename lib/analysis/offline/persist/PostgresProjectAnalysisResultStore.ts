@@ -25,6 +25,7 @@ import {
     ProjectAnalysisResult,
 } from "../../ProjectAnalysisResult";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { SpideredRepo } from "../SpideredRepo";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
@@ -78,11 +79,11 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                     continue;
                 }
                 const ret = await client.query(`
-            INSERT INTO repo_snapshots (workspace_id, provider_id, owner, name, url, commit_sha, analysis, timestamp)
-VALUES ('local', $3, $1, $2, $3, $4, $5, current_timestamp) RETURNING id`,
+            INSERT INTO repo_snapshots (workspace_id, provider_id, owner, name, url, commit_sha, analysis, timestamp, query)
+VALUES ('local', $3, $1, $2, $3, $4, $5, current_timestamp, $6) RETURNING id`,
                     [repoRef.owner, repoRef.repo, repoRef.url,
                         !!result.analysis.gitStatus ? result.analysis.gitStatus.sha : undefined,
-                        result.analysis,
+                        result.analysis, (result as SpideredRepo).query,
                     ]);
                 const id = ret.rows[0].id;
                 await this.persistFingerprints(result.analysis, id, client);

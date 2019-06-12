@@ -23,7 +23,8 @@ CREATE TABLE repo_snapshots (
  path text,
  commit_sha varchar NOT NULL,
  analysis json,
- timestamp TIMESTAMP  NOT NULL
+ timestamp TIMESTAMP  NOT NULL,
+ query text
 );
 
 -- One instance for each fingerprint
