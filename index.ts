@@ -33,6 +33,9 @@ import { orgPage } from "./lib/routes/orgPage";
 
 export const configuration: Configuration = configure(async sdm => {
 
+    // Do not surface the single pushImpact goal set in every UI
+    sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal", value: JSON.stringify(true) }];
+
     const analyzer = createAnalyzer(sdm);
 
     const pushImpact = new PushImpact()
