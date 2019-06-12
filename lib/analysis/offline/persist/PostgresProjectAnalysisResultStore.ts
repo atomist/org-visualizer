@@ -45,15 +45,15 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         });
     }
 
-    // TODO also check for sha
+    // TODO also sha
     public async loadOne(repo: RepoId): Promise<ProjectAnalysisResult> {
         return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT (
+            const result = await client.query(`SELECT (
                 owner, name, url, commit_sha, analysis, timestamp) from repo_snapshots
-                WHERE url = $1`, [repo.url]);
-            return rows.length === 1 ? {
-                analysis: rows[0].analysis,
-                timestamp: rows[0].timestamp,
+                WHERE owner = $1 AND name = $2`, [repo.owner, repo.repo]);
+            return result.rows.length >= 1 ? {
+                analysis: result.rows[0].analysis,
+                timestamp: result.rows[0].timestamp,
             } : undefined;
         });
     }

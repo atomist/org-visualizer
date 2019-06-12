@@ -149,12 +149,16 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the project page */
         express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
 
-            const analysis = await store.loadOne({ owner: req.params.owner, repo: req.params.repo, url: "" });
+            const id = { owner: req.params.owner, repo: req.params.repo, url: "" };
+            const analysis = await store.loadOne(id);
+            if (!analysis) {
+                return res.send(`No project at ${JSON.stringify(id)}`);
+            }
 
             const featuresAndFingerprints = await featureManager.projectFingerprints(analysis);
 
             // assign style based on ideal
-            const yay: FeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
+            const ffd: FeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
                 ...featureAndFingerprints,
                 fingerprints: featureAndFingerprints.fingerprints.map(fp => ({
                     ...fp,
@@ -166,7 +170,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             return res.send(renderStaticReactNode(ProjectExplorer({
                 owner: req.params.owner,
                 repo: req.params.repo,
-                features: yay,
+                features: ffd,
             })));
         });
 
