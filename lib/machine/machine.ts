@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Client } from "pg";
-
+import { logger } from "@atomist/automation-client";
 import {
     onAnyPush,
     PushImpact,
@@ -28,20 +27,18 @@ import {
     analyzerBuilder,
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
+import { nodeScanner } from "@atomist/sdm-pack-analysis-node";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
+import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
+import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
 import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
 import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
 import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
-
+import { Client } from "pg";
 import {
-    logger,
-} from "@atomist/automation-client";
-import {
-    nodeScanner,
-    nodeStackSupport,
-} from "@atomist/sdm-pack-analysis-node";
-import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
-import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
+    ClientFactory,
+    PostgresProjectAnalysisResultStore,
+} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
@@ -52,10 +49,6 @@ import {
     idealConvergenceScorer,
 } from "../routes/features";
 import { GitActivityScanner } from "./gitActivityScanner";
-import {
-    ClientFactory,
-    PostgresProjectAnalysisResultStore,
-} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -65,7 +58,7 @@ import {
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         .withScanner(packageLockScanner)
-        //.withStack(nodeStackSupport(sdm))
+        // .withStack(nodeStackSupport(sdm))
         .withScanner(nodeScanner)
         .withFeatures(features)
         .withScanner(GitActivityScanner)

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Client } from "pg";
 import { RepoId } from "@atomist/automation-client";
-import {
-    PersistResult,
-    ProjectAnalysisResultStore,
-} from "./ProjectAnalysisResultStore";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { Client } from "pg";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
 } from "../../ProjectAnalysisResult";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { SpideredRepo } from "../SpideredRepo";
+import {
+    PersistResult,
+    ProjectAnalysisResultStore,
+} from "./ProjectAnalysisResultStore";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
@@ -117,6 +117,14 @@ values ($1, $2, $3, $4) ON CONFLICT DO NOTHING
 
 }
 
+export interface ClientOptions {
+    user?: string;
+    password?: string;
+    database?: string;
+    port?: number;
+    host?: string;
+}
+
 export type ClientFactory = () => Client;
 
 export async function doWithClient<R>(clientFactory: () => Client,
@@ -128,8 +136,7 @@ export async function doWithClient<R>(clientFactory: () => Client,
         result = await what(client);
     } catch (err) {
         console.log(err);
-    }
-    finally {
+    } finally {
         client.end();
     }
     return result;

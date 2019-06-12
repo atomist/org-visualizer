@@ -17,14 +17,15 @@
 import { Configuration } from "@atomist/automation-client";
 import { PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
+import { Client } from "pg";
 import {
     DockerFrom,
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { ClientFactory } from "./lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
     analysisResultStore,
-    clientFactory,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
@@ -54,6 +55,11 @@ export const configuration: Configuration = configure(async sdm => {
         async cfg => {
 
             const staticPages = process.env.NODE_ENV !== "production" ? [orgPage(analysisResultStore)] : [];
+
+            const clientFactory: ClientFactory = () => new Client({
+                database: "org_viz",
+                ...(cfg.sdm.postgress || {}),
+            });
 
             cfg.http.customizers = [
                 ...staticPages,
