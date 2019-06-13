@@ -11,7 +11,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 | License | Count |
 |---------|-------|
 |[AFLv2.1](#aflv21)|1|
-|[Apache-2.0](#apache-20)|34|
+|[Apache-2.0](#apache-20)|36|
 |[BSD-2-Clause](#bsd-2-clause)|12|
 |[BSD-3-Clause](#bsd-3-clause)|27|
 |[BSD](#bsd)|7|
@@ -23,7 +23,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 |[GPL-3.0](#gpl-30)|4|
 |[ISC](#isc)|84|
 |[MIT AND BSD-3-Clause](#mit-and-bsd-3-clause)|1|
-|[MIT](#mit)|946|
+|[MIT](#mit)|947|
 |[Unlicense](#unlicense)|1|
 |[WTFPL](#wtfpl)|1|
 
@@ -38,6 +38,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
+|`@atomist/automation-client-ext-humio`|`1.0.3-master.20190319172045`|Atomist|[https://github.com/atomist/automation-client-ext-humio](https://github.com/atomist/automation-client-ext-humio)|
 |`@atomist/clj-editors`|`0.7.1`||[https://github.com/atomisthq/clj-editors](https://github.com/atomisthq/clj-editors)|
 |`@atomist/sdm-core`|`1.5.3-master.20190612103515`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
 |`@atomist/sdm-pack-analysis-node`|`2.0.0-master.20190501154523`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
@@ -61,6 +62,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`detect-libc`|`1.0.3`|Lovell Fuller|[https://github.com/lovell/detect-libc](https://github.com/lovell/detect-libc)|
 |`diff-match-patch`|`1.0.4`||[https://github.com/JackuB/diff-match-patch](https://github.com/JackuB/diff-match-patch)|
 |`forever-agent`|`0.6.1`|Mikeal Rogers|[https://github.com/mikeal/forever-agent](https://github.com/mikeal/forever-agent)|
+|`humio`|`0.4.0-beta2`|Thomas Anagrius|[https://github.com/humio/humio-node](https://github.com/humio/humio-node)|
 |`json-to-pretty-yaml`|`1.2.2`||[https://github.com/alexcrist/json-to-pretty-yaml](https://github.com/alexcrist/json-to-pretty-yaml)|
 |`oauth-sign`|`0.9.0`|Mikeal Rogers|[https://github.com/mikeal/oauth-sign](https://github.com/mikeal/oauth-sign)|
 |`rc`|`1.2.8`|Dominic Tarr|[https://github.com/dominictarr/rc](https://github.com/dominictarr/rc)|
@@ -375,6 +377,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/rx-lite`|`4.0.6`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/rx`|`4.1.1`|Carl de Billy|[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/semver`|`6.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/serialize-error`|`2.1.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/serve-static`|`1.13.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/shelljs`|`0.8.5`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/sprintf-js`|`1.1.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
