@@ -15,6 +15,7 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
+import { configureHumio } from "@atomist/automation-client-ext-humio";
 import { PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
@@ -55,6 +56,7 @@ export const configuration: Configuration = configure(async sdm => {
 }, {
     name: "Analysis Software Delivery Machine",
     postProcessors: [
+        configureHumio,
         async cfg => {
 
             const resultStore = analysisResultStore(clientFactory(cfg));

@@ -25,6 +25,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/automation-client": "1.5.4-master.20190606233707",
+    "@atomist/automation-client-ext-humio": "1.0.3-master.20190319172045",
     "@atomist/clj-editors": "^0.7.1-master.20190610013419",
     "@atomist/sdm": "1.5.2-master.20190612102726",
     "@atomist/sdm-core": "1.5.3-master.20190612103515",
