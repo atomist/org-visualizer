@@ -334,21 +334,18 @@ async function analyzeProject(project: Project,
 }
 
 async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): AsyncIterable<GitHubSearchResult> {
-    const octokit = new Octokit();
-    if (!!token) {
-        octokit.authenticate({
-            type: "token",
-            token,
-        });
-    }
+    const octokit = new Octokit({
+        type: "token",
+        token,
+    });
     let results: any[] = [];
     let retrieved = 0;
     for (const q of criteria.githubQueries) {
         logger.info("Running query " + q + "...");
         const options = octokit.search.repos.endpoint.merge({ q });
         for await (const response of octokit.paginate.iterator(options)) {
-            retrieved += response.data.items.length;
-            const newResults = response.data.items
+            retrieved += response.data.length;
+            const newResults = response.data
                 .filter((r: any) => !results.some(existing => existing.full_name === r.full_name));
             newResults.forEach((r: any) => {
                 r.query = q;
