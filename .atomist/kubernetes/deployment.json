@@ -23,6 +23,10 @@
                 "value": "/opt/atm/atomist-config.json"
               },
               {
+                "name": "ATOMIST_CONFIG",
+                "value": "{\"cluster\":{\"workers\":4,\"maxConcurrentPerWorker\":10}}"
+              },
+              {
                 "name": "ATOMIST_GOAL_SCHEDULER",
                 "value": "kubernetes"
               },
