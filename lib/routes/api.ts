@@ -61,7 +61,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         configureAuth(express);
 
         express.options("/api/v1/fingerprints", corsHandler());
-        express.get("/api/v1/fingerprints", [...handlers, corsHandler(), ...authHandlers()], async (req, res) => {
+        express.get("/api/v1/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.query.workspace_id || "local";
                 const fps = await fingerprints(clientFactory, workspaceId);
@@ -75,7 +75,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 
         /* the d3 sunburst on the /query page uses this */
         express.options("/api/v1/fingerprint", corsHandler());
-        express.get("/api/v1/fingerprint", [...handlers, corsHandler(), ...authHandlers()], async (req, res) => {
+        express.get("/api/v1/fingerprint", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const tree = await repoTree({
                     clientFactory,
