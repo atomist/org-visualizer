@@ -15,10 +15,8 @@
  */
 
 import { Client } from "pg";
-import {
-    SunburstTree,
-} from "../tree/sunburst";
 import { doWithClient } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { SunburstTree } from "../tree/sunburst";
 
 export interface TreeQuery {
 
@@ -45,9 +43,7 @@ FROM (
                   SELECT
                     repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_fingerprints, repo_snapshots
-                  WHERE repo_fingerprints.sha = fingerprints.sha 
-                    AND repo_fingerprints.name = fingerprints.name 
-                    AND repo_fingerprints.feature_name = fingerprints.feature_name
+                   WHERE repo_fingerprints.fingerprint_id = fingerprints.id
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
                     AND ${whereClause}
                 ) repo
@@ -71,6 +67,6 @@ export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
         return {
             name: opts.rootName,
             children: data.row_to_json.children,
-        }
+        };
     });
 }
