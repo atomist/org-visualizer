@@ -19,6 +19,7 @@ import { configureHumio } from "@atomist/automation-client-ext-humio";
 import {
     CachingProjectLoader,
     GitHubLazyProjectLoader,
+    GoalSigningScope,
     PushImpact,
 } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
@@ -46,6 +47,10 @@ export const configuration: Configuration = configure(async sdm => {
             enabled: false,
         },
     };
+    // For safety we sign every goal
+    sdm.configuration.sdm.goalSigning = {
+        scope: GoalSigningScope.All,
+    } as any;
 
     const pushImpact = new PushImpact();
 
