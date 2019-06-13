@@ -16,10 +16,7 @@
 
 import { Configuration } from "@atomist/automation-client";
 import { PushImpact } from "@atomist/sdm";
-import {
-    configure,
-    k8sGoalSchedulingSupport,
-} from "@atomist/sdm-core";
+import { configure } from "@atomist/sdm-core";
 import {
     DockerFrom,
     fingerprintSupport,
@@ -37,10 +34,9 @@ export const configuration: Configuration = configure(async sdm => {
     // Do not surface the single pushImpact goal set in every UI
     sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal", value: JSON.stringify(true) }];
 
-    const pushImpact = new PushImpact({ isolate: true });
+    const pushImpact = new PushImpact();
 
     sdm.addExtensionPacks(
-        k8sGoalSchedulingSupport(),
         fingerprintSupport({
         pushImpactGoal: pushImpact,
         features: [
