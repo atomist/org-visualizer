@@ -131,9 +131,9 @@ export interface FingerprintData {
 
 async function fingerprints(clientFactory: ClientFactory, workspaceId: string): Promise<FingerprintData[]> {
     return doWithClient(clientFactory, async client => {
-        const sql = `SELECT distinct rf.name as fingerprintName, feature_name as featureName, count(rs.id) as appearsIn
-  from repo_fingerprints rf, repo_snapshots rs
-  WHERE rf.repo_snapshot_id = rs.id AND rs.workspace_id = $1
+        const sql = `SELECT distinct f.name as fingerprintName, feature_name as featureName, count(rs.id) as appearsIn
+  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id = $1
   GROUP by feature_name, fingerprintName`;
         const rows = await client.query(sql, [workspaceId]);
         return rows.rows;
