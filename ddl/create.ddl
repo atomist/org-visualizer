@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS repo_fingerprints;
 
 DROP TABLE IF EXISTS problem_fingerprints;
 
-DROP TYPE SEVERITY;
+DROP TYPE IF EXISTS SEVERITY;
 
 DROP TABLE IF EXISTS fingerprints;
 
@@ -37,13 +37,6 @@ CREATE TABLE fingerprints (
 );
 
 CREATE TABLE IF NOT EXISTS repo_fingerprints (
-  repo_snapshot_id varchar references repo_snapshots(id),
-  fingerprint_id varchar references fingerprints(id),
-  PRIMARY KEY (repo_snapshot_id, fingerprint_id)
-);
-
--- Join table
-CREATE TABLE repo_fingerprints ( -- the two above id changes simplify this table
   repo_snapshot_id varchar references repo_snapshots(id),
   fingerprint_id varchar references fingerprints(id),
   PRIMARY KEY (repo_snapshot_id, fingerprint_id)
