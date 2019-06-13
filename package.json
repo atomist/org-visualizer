@@ -1,6 +1,6 @@
 {
   "name": "@atomist/org-visualizer",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Organization Visualizer using Atomist project scanning",
   "author": "Atomist Inc.",
   "license": "Apache-2.0",
