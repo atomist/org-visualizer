@@ -42,6 +42,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 from repo_snapshots ` +
                 (where ? `WHERE ${where}` : "");
             const rows = await client.query(sql);
+            // TODO workspace ID
             return rows.rows;
         });
     }
@@ -55,6 +56,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
             return result.rows.length >= 1 ? {
                 analysis: result.rows[0].analysis,
                 timestamp: result.rows[0].timestamp,
+                workspaceId: result.rows[0].workspace_id,
             } : undefined;
         });
     }
@@ -80,10 +82,11 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 }
                 const ret = await client.query(`
             INSERT INTO repo_snapshots (workspace_id, provider_id, owner, name, url, commit_sha, analysis, timestamp, query)
-VALUES ('local', $3, $1, $2, $3, $4, $5, current_timestamp, $6) RETURNING id`,
+VALUES ($7, $3, $1, $2, $3, $4, $5, current_timestamp, $6) RETURNING id`,
                     [repoRef.owner, repoRef.repo, repoRef.url,
                         !!result.analysis.gitStatus ? result.analysis.gitStatus.sha : undefined,
                         result.analysis, (result as SpideredRepo).query,
+                        result.workspaceId,
                     ]);
                 const id = ret.rows[0].id;
                 await this.persistFingerprints(result.analysis, id, client);

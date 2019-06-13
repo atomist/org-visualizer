@@ -68,8 +68,8 @@ import {
 import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -77,6 +77,7 @@ function renderStaticReactNode(body: ReactElement,
             extraScripts,
         }));
 }
+
 /**
  * Add the org page route to Atomist SDM Express server.
  * @param {ProjectAnalysisResultStore} store
@@ -101,7 +102,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
             try {
-                const repos = await store.loadWhere("workspace_id = 'local'");
+                const repos = await store.loadWhere(whereFor(req));
 
                 const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
@@ -131,7 +132,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
         /* Project list page */
         express.get("/projects", ...handlers, async (req, res) => {
-            const allAnalysisResults = await store.loadWhere("workspace_id = 'local'");
+            const allAnalysisResults = await store.loadWhere(whereFor(req));
 
             // optional query parameter: owner
             const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
@@ -183,7 +184,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
-            const repos = await store.loadWhere(`workspace_id = 'local'`);
+            const repos = await store.loadWhere(whereFor(req));
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownReporters);
@@ -215,6 +216,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     return JSON.stringify(ideal.ideal.data);
                 }
             }
+
             const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
             const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
             if (!currentIdealForDisplay) {
@@ -243,6 +245,10 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         });
 
     };
+}
+
+export function whereFor(req) {
+    return req.query.workspace ? `workspace_id = '${req.query.workspace}'` : "true";
 }
 
 export function jsonToQueryString(json: object): string {

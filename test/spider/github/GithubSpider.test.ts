@@ -114,6 +114,7 @@ function opts(): SpiderOptions {
         persister: new FakePersister(),
         keepExistingPersisted: async r => false,
         poolSize: 3,
+        workspaceId: "local",
     };
 }
 

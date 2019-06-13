@@ -29,6 +29,8 @@ export interface SubprojectDescription {
  */
 export interface ProjectAnalysisResult {
 
+    readonly workspaceId: string;
+
     readonly analysis: ProjectAnalysis;
 
     /**

@@ -44,6 +44,7 @@ process.on('uncaughtException', function (err) {
 });
 
 interface SpiderOptions {
+
     owner: string;
 
     /**
@@ -55,6 +56,8 @@ interface SpiderOptions {
      * If this is supplied, run a custom GitHub query
      */
     query?: string;
+
+    workspaceId: string;
 }
 
 /**
@@ -102,6 +105,7 @@ async function spider(params: SpiderOptions) {
             },
             // Controls promise usage inNode
             poolSize: 40,
+            workspaceId,
         });
     return result;
 }
@@ -124,12 +128,19 @@ yargs
             description: "GitHub query"
         }
     )
+    .option("workspace", {
+            required: false,
+            alias: 'w',
+            description: "Workspace"
+        }
+    )
     .usage("spider --owner <GitHub user or org> OR --query <GitHub query>");
 
 const commandLineParameters = yargs.argv as any;
 const owner = commandLineParameters.owner;
 const search = commandLineParameters.search;
 const query = commandLineParameters.query;
+const workspaceId = commandLineParameters.workspace || commandLineParameters.owner || "local";
 
 if (!owner && !query) {
     console.log(`Please specify owner or query`);
@@ -139,12 +150,12 @@ if (search) {
     console.log(`Limiting to repositories in organization ${owner} with '${search}' in the name`);
 }
 if (query) {
-    console.log(`Running GitHub query '${query}'...`);
+    console.log(`Running GitHub query '${query}' for workspace '${workspaceId}'...`);
 } else {
-    console.log(`Spidering GitHub organization ${owner}...`);
+    console.log(`Spidering GitHub organization ${owner} for workspace '${workspaceId}'...`);
 }
 
-const params = { owner, search, query };
+const params = { owner, search, query, workspaceId };
 
 spider(params).then(r => {
     console.log(`Successfully analyzed GitHub ${JSON.stringify(params)}. result is `

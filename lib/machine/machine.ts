@@ -89,6 +89,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
     analyzedRepoStore: ProjectAnalysisResultStore,
     analyzer: ProjectAnalyzer,
     maxAgeHours: number,
+    workspaceId: string,
 }): PushImpactListener<any> {
     const maxAgeMillis = 60 * 60 * 1000;
     return async pu => {
@@ -102,6 +103,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
                     analysis,
                     timestamp: now,
                     subproject: found.subproject,
+                    workspaceId: opts.workspaceId,
                 });
             } else {
                 logger.info("Stored analysis of project at %s is up to date", pu.id.url);

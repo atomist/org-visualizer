@@ -45,6 +45,7 @@ import {
 } from "./auth";
 import { featureManager } from "./features";
 import { WellKnownReporters } from "./wellKnownReporters";
+import { whereFor } from "./orgPage";
 
 /**
  * Public API routes, returning JSON
@@ -76,10 +77,9 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         express.options("/api/v1/fingerprint", corsHandler());
         express.get("/api/v1/fingerprint", [...handlers, corsHandler(), ...authHandlers()], async (req, res) => {
             try {
-                const workspaceId = req.query.workspace_id || "local";
                 const tree = await repoTree({
                     clientFactory,
-                    query: fingerprintsChildrenQuery(`workspace_id = '${workspaceId}'`),
+                    query: fingerprintsChildrenQuery(whereFor(req)),
                     rootName: req.query.name,
                 });
                 console.log(JSON.stringify(tree));
@@ -93,7 +93,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 
         // In memory queries against returns
         express.get("/api/v1/filter", ...handlers, async (req, res) => {
-            const repos = await store.loadWhere("workspace_id = 'local'");
+            const repos = await store.loadWhere(whereFor(req));
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownReporters);

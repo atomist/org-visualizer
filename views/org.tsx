@@ -126,9 +126,6 @@ Conduct</a></li>
             <li key="docker-3"><a href="./query?filter=true&name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
         </ul>
 
-        <h3>Atomist Status</h3>
-        <li><a href="./query?filter=true&name=uhura&byOrg=true">Uhura delivery status</a></li>
-
         <h2>Technology identified</h2>
 
         tbd

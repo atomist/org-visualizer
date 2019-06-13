@@ -27,6 +27,8 @@ export type ProjectAnalysisResultFilter = (pa: ProjectAnalysisResult) => Promise
  */
 export interface SpiderOptions {
 
+    workspaceId: string;
+
     persister: ProjectAnalysisResultStore;
 
     poolSize: number;

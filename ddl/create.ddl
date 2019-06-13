@@ -63,4 +63,3 @@ CREATE INDEX ON repo_snapshots (workspace_id);
 
 CREATE INDEX ON fingerprints (name);
 CREATE INDEX ON fingerprints (feature_name);
-

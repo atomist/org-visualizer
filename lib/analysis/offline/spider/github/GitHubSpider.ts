@@ -223,6 +223,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
     for (const repoInfo of analyzeResults.repoInfos) {
         if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
             const toPersist: SpideredRepo = {
+                workspaceId: opts.workspaceId,
                 analysis: {
                     // Use a spread as url has a getter and otherwise disappears
                     ...repoInfo.analysis,
