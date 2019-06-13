@@ -49,8 +49,9 @@ export const configuration: Configuration = configure(async sdm => {
     };
     // For safety we sign every goal
     sdm.configuration.sdm.goalSigning = {
+        ...sdm.configuration.sdm.goalSigning,
         scope: GoalSigningScope.All,
-    } as any;
+    };
 
     const pushImpact = new PushImpact();
 
