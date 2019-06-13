@@ -63,15 +63,16 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
         const existing = mergedChildren.find(n => n.name === child.name);
         if (existing) {
             if (!isSunburstTree(existing)) {
-                throw new Error(`Cannot add child to non-tree ${JSON.stringify(existing)}`);
+                if (isSunburstTree(child)) {
+                    throw new Error(`Cannot add tree child to non-tree ${JSON.stringify(existing)}`);
+                }
+                // TODO what about label?
+                existing.size += child.size;
+            } else {
+                const merged = mergeTrees(existing, child as SunburstTree);
+                const index = mergedChildren.indexOf(existing);
+                mergedChildren[index] = merged;
             }
-            if (!isSunburstTree(child)) {
-                throw new Error(`Cannot add non-tree child ${JSON.stringify(child)}`);
-            }
-            //existing.children.push(...child.children);
-            const merged = mergeTrees(existing, child);
-            const index = mergedChildren.indexOf(existing);
-            mergedChildren[index] = merged;
         } else {
             mergedChildren.push(child);
         }
