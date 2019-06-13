@@ -16,7 +16,11 @@
 
 import { Configuration } from "@atomist/automation-client";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
-import { PushImpact } from "@atomist/sdm";
+import {
+    CachingProjectLoader,
+    GitHubLazyProjectLoader,
+    PushImpact,
+} from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
     DockerFrom,
@@ -34,18 +38,20 @@ export const configuration: Configuration = configure(async sdm => {
 
     // Do not surface the single pushImpact goal set in every UI
     sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal", value: JSON.stringify(true) }];
+    // Use lazy project loader for this SDM
+    sdm.configuration.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 
     const pushImpact = new PushImpact();
 
     sdm.addExtensionPacks(
         fingerprintSupport({
-        pushImpactGoal: pushImpact,
-        features: [
-            NpmDeps,
-            DockerFrom,
-        ],
-        handlers: [],
-    }));
+            pushImpactGoal: pushImpact,
+            features: [
+                NpmDeps,
+                DockerFrom,
+            ],
+            handlers: [],
+        }));
 
     return {
         analyze: {
