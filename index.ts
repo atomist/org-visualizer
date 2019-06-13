@@ -40,6 +40,12 @@ export const configuration: Configuration = configure(async sdm => {
     sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
     // Use lazy project loader for this SDM
     sdm.configuration.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
+    // Disable goal hooks from repos
+    sdm.configuration.sdm.goal = {
+        hooks: {
+            enabled: false,
+        },
+    };
 
     const pushImpact = new PushImpact();
 
