@@ -29,6 +29,7 @@ import {
     deconstructNpmDepsFingerprintName,
     getNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
+import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
@@ -42,6 +43,7 @@ import {
     simpleFlagger,
 } from "../feature/FeatureManager";
 import { assembledFeature } from "../feature/domain/assembledFeature";
+import { conditionalize } from "../feature/domain/oneOf";
 
 const CiFeature = assembledFeature({
         name: "CI",
@@ -63,6 +65,15 @@ export const features: ManagedFeature[] = [
     },
     new TsLintPropertyFeature(),
     CiFeature,
+    conditionalize(filesFeature({
+        displayName: "git ignore",
+        type: "gitignore",
+        canonicalize: c => c,
+    }, ".gitignore",
+    ), {
+        name: "node-git-ignore",
+        displayName: "Node git ignore",
+    }, async p => p.hasFile("package.json")),
 ];
 
 async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdeal<FP>>> {
