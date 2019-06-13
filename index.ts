@@ -37,7 +37,7 @@ import { orgPage } from "./lib/routes/orgPage";
 export const configuration: Configuration = configure(async sdm => {
 
     // Do not surface the single pushImpact goal set in every UI
-    sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal", value: JSON.stringify(true) }];
+    sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal" }];
     // Use lazy project loader for this SDM
     sdm.configuration.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 

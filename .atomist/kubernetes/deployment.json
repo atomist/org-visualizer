@@ -10,21 +10,12 @@
                 "value": "1"
               },
               {
-                "name": "ATOMIST_CONFIG",
-                "valueFrom": {
-                  "secretKeyRef": {
-                    "name": "atm-global",
-                    "key": "config"
-                  }
-                }
-              },
-              {
                 "name": "ATOMIST_CONFIG_PATH",
                 "value": "/opt/atm/atomist-config.json"
               },
               {
                 "name": "ATOMIST_CONFIG",
-                "value": "{\"cluster\":{\"workers\":4,\"maxConcurrentPerWorker\":10}}"
+                "value": "{\"groups\":[\"all\"],\"workspaceIds\":[],\"cluster\":{\"workers\":4,\"maxConcurrentPerWorker\":10}}"
               },
               {
                 "name": "ATOMIST_GOAL_SCHEDULER",
