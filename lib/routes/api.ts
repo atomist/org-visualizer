@@ -16,6 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
+import { workspaceId } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
@@ -60,12 +61,12 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 
         configureAuth(express);
 
-        express.options("/api/v1/fingerprints", corsHandler());
-        express.get("/api/v1/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.options("/v1/api/:workspace_id/fingerprints", corsHandler());
+        express.get("/v1/api/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
-                const workspaceId = req.query.workspace_id || "local";
+                const workspaceId = req.params.workspace_id || "local";
                 const fps = await fingerprints(clientFactory, workspaceId);
-                console.log(JSON.stringify(fps));
+                logger.info("Returning fingerprints for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
                 logger.warn("Error occurred getting fingerprints: %s", e.message);
@@ -74,15 +75,15 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         });
 
         /* the d3 sunburst on the /query page uses this */
-        express.options("/api/v1/fingerprint", corsHandler());
-        express.get("/api/v1/fingerprint", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.options("/v1/api/:workspace_id/fingerprint/:name", corsHandler());
+        express.get("/v1/api/:workspace_id/fingerprint/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const tree = await repoTree({
                     clientFactory,
                     query: fingerprintsChildrenQuery(whereFor(req)),
-                    rootName: req.query.name,
+                    rootName: req.params.name,
                 });
-                console.log(JSON.stringify(tree));
+                logger.info("Returning fingerprint '%s' for '%s': %j", req.params.name, workspaceId, tree);
                 fillInFeatures(featureManager, tree);
                 res.json(tree);
             } catch (e) {
@@ -92,7 +93,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         });
 
         // In memory queries against returns
-        express.get("/api/v1/filter", ...handlers, async (req, res) => {
+        express.get("/v1/api/filter", ...handlers, async (req, res) => {
             const repos = await store.loadWhere(whereFor(req));
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));

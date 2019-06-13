@@ -248,7 +248,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 }
 
 export function whereFor(req): string {
-    return req.query.workspace ? `workspace_id = '${req.query.workspace}'` : (req.query.workspace_id ? `workspace_id = '${req.query.workspace_id}'` : "true");
+    return req.query.workspace ? `workspace_id = '${req.query.workspace}'` : (req.params.workspace_id ? `workspace_id = '${req.params.workspace_id}'` : "true");
 }
 
 export function jsonToQueryString(json: object): string {
