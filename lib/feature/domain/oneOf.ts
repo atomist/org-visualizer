@@ -17,6 +17,7 @@
 import { DerivedFeature, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { HasFingerprints } from "../FeatureManager";
 import { allFingerprints } from "../DefaultFeatureManager";
+import { Project } from "@atomist/automation-client";
 
 // TODO move to fingerprints pack
 
@@ -53,5 +54,27 @@ export function oneOf(
         },
         apply: undefined,
         selector: fp => fp.name === name,
+    };
+}
+
+/**
+ * Make this feature conditional
+ * @param {Feature} f
+ * @param {Pick<Feature, "name" | "displayName">} details
+ * @param {(p: Project) => Promise<boolean>} test
+ * @return {Feature}
+ */
+export function conditionalize(f: Feature,
+                               details: Pick<Feature, "name" | "displayName">,
+                               test: (p: Project) => Promise<boolean>): Feature {
+    return {
+        ...f,
+        ...details,
+        extract: async p => {
+            const testResult = await test(p);
+            return testResult ?
+                f.extract(p) :
+                undefined;
+        },
     };
 }
