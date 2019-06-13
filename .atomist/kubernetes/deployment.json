@@ -1,0 +1,93 @@
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "FORCE_COLOR",
+                "value": "1"
+              },
+              {
+                "name": "ATOMIST_CONFIG",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "atm-global",
+                    "key": "config"
+                  }
+                }
+              },
+              {
+                "name": "ATOMIST_CONFIG_PATH",
+                "value": "/opt/atm/atomist-config.json"
+              },
+              {
+                "name": "ATOMIST_GOAL_SCHEDULER",
+                "value": "kubernetes"
+              },
+              {
+                "name": "ATOMIST_POD_NAMESPACE",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.namespace"
+                  }
+                }
+              }
+            ],
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "initialDelaySeconds": 20,
+              "timeoutSeconds": 3,
+              "periodSeconds": 20,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "initialDelaySeconds": 20,
+              "timeoutSeconds": 3,
+              "periodSeconds": 20,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "resources": {
+              "limits": {
+                "cpu": "2000m",
+                "memory": "1000Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "500Mi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "automation",
+                "mountPath": "/opt/atm",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "automation",
+            "secret": {
+              "secretName": "automation"
+            }
+          }
+        ],
+        "terminationGracePeriodSeconds": 600
+      }
+    }
+  }
+}

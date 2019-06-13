@@ -16,7 +16,10 @@
 
 import { Configuration } from "@atomist/automation-client";
 import { PushImpact } from "@atomist/sdm";
-import { configure } from "@atomist/sdm-core";
+import {
+    configure,
+    k8sGoalSchedulingSupport,
+} from "@atomist/sdm-core";
 import {
     DockerFrom,
     fingerprintSupport,
@@ -25,8 +28,6 @@ import {
 import {
     analysisResultStore,
     clientFactory,
-    createAnalyzer,
-    updatedStoredAnalysisIfNecessary,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
@@ -36,17 +37,11 @@ export const configuration: Configuration = configure(async sdm => {
     // Do not surface the single pushImpact goal set in every UI
     sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/atomist/internal", value: JSON.stringify(true) }];
 
-    const analyzer = createAnalyzer(sdm);
+    const pushImpact = new PushImpact({ isolate: true });
 
-    const pushImpact = new PushImpact()
-        // TODO do we need this here? or only for local testing?
-        .withListener(updatedStoredAnalysisIfNecessary({
-            analyzedRepoStore: analysisResultStore(clientFactory(sdm.configuration)),
-            analyzer,
-            maxAgeHours: 1,
-        }));
-
-    sdm.addExtensionPacks(fingerprintSupport({
+    sdm.addExtensionPacks(
+        k8sGoalSchedulingSupport(),
+        fingerprintSupport({
         pushImpactGoal: pushImpact,
         features: [
             NpmDeps,
@@ -67,7 +62,7 @@ export const configuration: Configuration = configure(async sdm => {
         async cfg => {
 
             const resultStore = analysisResultStore(clientFactory(cfg));
-            const staticPages = process.env.NODE_ENV !== "production" ? [orgPage(resultStore)] : [];
+            const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [orgPage(resultStore)] : [];
 
             cfg.http.customizers = [
                 ...staticPages,
