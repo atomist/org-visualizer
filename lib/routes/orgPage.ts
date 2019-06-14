@@ -197,7 +197,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     query: req.query.name,
                 });
             }
-            const dataUrl = `/api/v1/${req.query.filter ? "filter" : "fingerprint"}?${queryString}`;
+            const workspaceId = req.query.workspaceId || "*";
+            const dataUrl = `/api/v1/${workspaceId}/${req.query.filter ? "filter" : "fingerprint"}/${req.query.name}?${queryString}`;
 
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
@@ -248,7 +249,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 }
 
 export function whereFor(req): string {
-    return req.query.workspace ? `workspace_id = '${req.query.workspace}'` : (req.params.workspace_id ? `workspace_id = '${req.params.workspace_id}'` : "true");
+    const wsid = req.query.workspace || req.params.workspace_id;
+    if (wsid === "*") {
+        return "true";
+    }
+    return wsid ? `workspace_id = '${wsid}'` : "true";
 }
 
 export function jsonToQueryString(json: object): string {

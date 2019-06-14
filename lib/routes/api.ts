@@ -84,7 +84,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                     rootName: req.params.name,
                 });
                 logger.info("Returning fingerprint '%s' for '%s': %j", req.params.name, workspaceId, tree);
-                fillInFeatures(featureManager, tree);
+                resolveFeatureNames(featureManager, tree);
                 res.json(tree);
             } catch (e) {
                 logger.warn("Error occurred getting one fingerprint: %s", e.message);
@@ -110,7 +110,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 }
 
 // Use Features to find names of features
-function fillInFeatures(fm: FeatureManager, t: SunburstTree) {
+function resolveFeatureNames(fm: FeatureManager, t: SunburstTree) {
     visit(t, l => {
         if ((l as any).sha) {
             const fp = l as any as FP;
