@@ -83,7 +83,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                     query: fingerprintsChildrenQuery(whereFor(req)),
                     rootName: req.params.name,
                 });
-                logger.info("Returning fingerprint '%s' for '%s': %j", req.params.name, workspaceId, tree);
+                logger.info("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
                 res.json(tree);
             } catch (e) {
