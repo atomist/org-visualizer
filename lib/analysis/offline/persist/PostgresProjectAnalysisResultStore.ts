@@ -50,8 +50,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     // TODO also sha
     public async loadOne(repo: RepoId): Promise<ProjectAnalysisResult> {
         return doWithClient(this.clientFactory, async client => {
-            const result = await client.query(`SELECT (
-                owner, name, url, commit_sha, analysis, timestamp) from repo_snapshots
+            const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp 
+                FROM repo_snapshots
                 WHERE owner = $1 AND name = $2`, [repo.owner, repo.repo]);
             return result.rows.length >= 1 ? {
                 analysis: result.rows[0].analysis,
@@ -75,20 +75,37 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         return doWithClient(this.clientFactory, async client => {
             let persisted = 0;
             for await (const result of results) {
+                if (!result.analysis) {
+                    throw new Error("Analysis is undefined!");
+                }
                 const repoRef = result.analysis.id;
+                if (!repoRef) {
+                    console.log("Ignoring repo w/o id: " + repoRef.repo);
+                    continue;
+                }
                 if (!repoRef.url) {
                     console.log("Ignoring repo w/o url: " + repoRef.repo);
                     continue;
                 }
-                const ret = await client.query(`
-            INSERT INTO repo_snapshots (workspace_id, provider_id, owner, name, url, commit_sha, analysis, timestamp, query)
-VALUES ($7, $3, $1, $2, $3, $4, $5, current_timestamp, $6) RETURNING id`,
-                    [repoRef.owner, repoRef.repo, repoRef.url,
-                        !!result.analysis.gitStatus ? result.analysis.gitStatus.sha : undefined,
-                        result.analysis, (result as SpideredRepo).query,
+                const id = repoRef.url;
+
+                // Whack any joins
+                await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
+                await client.query(`DELETE from repo_snapshots WHERE id = $1`, [id]);
+
+                await client.query(`
+            INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
+                    [id,
                         result.workspaceId,
+                        "github",
+                        repoRef.owner,
+                        repoRef.repo,
+                        repoRef.url,
+                        !!result.analysis.gitStatus ? result.analysis.gitStatus.sha : undefined,
+                        result.analysis,
+                        (result as SpideredRepo).query,
                     ]);
-                const id = ret.rows[0].id;
                 await this.persistFingerprints(result.analysis, id, client);
                 ++persisted;
             }
@@ -97,21 +114,18 @@ VALUES ($7, $3, $1, $2, $3, $4, $5, current_timestamp, $6) RETURNING id`,
     }
 
     // Persist the fingerprints for this analysis
-    private async persistFingerprints(pa: ProjectAnalysis, id: number, client: Client): Promise<void> {
-        // Whack any joins
-        await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
-
+    private async persistFingerprints(pa: ProjectAnalysis, id: string, client: Client): Promise<void> {
         for (const fp of pa.fingerprints) {
             const featureName = fp.type || "unknown";
-
+            const fingerprintId = featureName + "_" + fp.name + "_" + fp.sha;
             console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
-            await client.query(`INSERT INTO fingerprints (name, feature_name, sha, data)
-values ($1, $2, $3, $4) ON CONFLICT DO NOTHING
-`, [fp.name, featureName, fp.sha, JSON.stringify(fp.data)]);
-            await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, name, feature_name, sha)
-values ($1, $2, $3, $4) ON CONFLICT DO NOTHING
-`, [id, fp.name, featureName, fp.sha]);
+            await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
+values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+`, [fingerprintId, fp.name, featureName, fp.sha, JSON.stringify(fp.data)]);
+            await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
+values ($1, $2) ON CONFLICT DO NOTHING
+`, [id, fingerprintId]);
         }
     }
 
