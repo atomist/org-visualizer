@@ -86,6 +86,7 @@ export class DefaultFeatureManager implements FeatureManager {
             const name = fps[0].name;
             const ideal = await featureManager.idealResolver(name);
             return {
+                type: fps[0].type,
                 name,
                 appearsIn: fps.length,
                 variants: _.uniq(fps.map(fp => fp.sha)).length,

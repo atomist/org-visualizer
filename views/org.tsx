@@ -18,10 +18,12 @@ export interface MaybeAnIdeal {
 }
 export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
     featureName: string;
+    type: string;
 }
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
-    const queryLink = `./query?name=${af.name}&byOrg=true`;
-    const existsLink = `./query?name=${af.name}-present&byOrg=true`;
+    const queryLink = `./query?type=${af.type}&name=${af.name}&byOrg=true`;
+    const existsLink = `./query?type=${af.type}&name=${af.name}-present&byOrg=true`;
+    console.log("QueryLink=" + queryLink);
     return <li key={af.name}><i>{af.featureName}:
                 {af.displayName}</i>: {af.appearsIn} projects, {" "}
         <a href={queryLink}>{af.variants} variants</a>
@@ -63,13 +65,14 @@ function displayImportantFeature(f: FeatureForDisplay): React.ReactElement {
 export interface FingerprintForDisplay extends MaybeAnIdeal {
     displayName?: string;
     name: string;
+    featureName: string;
     appearsIn: number; // count of projects
     variants: number;
 }
 
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
-    const variantsQueryLink: string = `./query?name=${f.name}&byOrg=true`;
+    const variantsQueryLink: string = `./query?type=${f.featureName}&name=${f.name}&byOrg=true`;
     return <li>
         <i>{displayName}</i>: {f.appearsIn} projects, {" "}
         <a href={variantsQueryLink}>{f.variants} variants</a>

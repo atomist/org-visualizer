@@ -46,6 +46,11 @@ export interface AggregateFingerprintStatus {
     readonly featureName: string;
 
     /**
+     * Feature type (featureName)
+     */
+    readonly type: string;
+
+    /**
      * A nice name for display
      */
     readonly displayName: string;

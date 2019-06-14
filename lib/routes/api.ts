@@ -75,13 +75,14 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         });
 
         /* the d3 sunburst on the /query page uses this */
-        express.options("/api/v1/:workspace_id/fingerprint/:name", corsHandler());
-        express.get("/api/v1/:workspace_id/fingerprint/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
+        express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const tree = await repoTree({
                     clientFactory,
                     query: fingerprintsChildrenQuery(whereFor(req)),
                     rootName: req.params.name,
+                    featureName: req.params.type,
                 });
                 logger.info("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);

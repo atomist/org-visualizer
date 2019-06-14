@@ -22,6 +22,8 @@ export interface TreeQuery {
 
     clientFactory: () => Client;
 
+    featureName: string;
+
     rootName: string;
 
     /**
@@ -48,7 +50,7 @@ FROM (
                     AND ${whereClause}
                 ) repo
          ) children
-       FROM fingerprints WHERE fingerprints.name = $1
+       FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2
 ) fp) as fingerprint_groups
 `;
 }
@@ -61,7 +63,7 @@ FROM (
 export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
     return doWithClient(opts.clientFactory, async client => {
         console.log(opts.query);
-        const results = await client.query(opts.query, [opts.rootName]);
+        const results = await client.query(opts.query, [opts.featureName, opts.rootName]);
         // TODO error checking
         const data = results.rows[0];
         return {

@@ -198,7 +198,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 });
             }
             const workspaceId = req.query.workspaceId || "*";
-            const dataUrl = `/api/v1/${workspaceId}/${req.query.filter ? "filter" : "fingerprint"}/${req.query.name}?${queryString}`;
+            const dataUrl = `/api/v1/${workspaceId}/${req.query.filter ? "filter" : "fingerprint"}/${req.query.type}/${req.query.name}?${queryString}`;
 
             console.log("Data url=" + dataUrl);
 
