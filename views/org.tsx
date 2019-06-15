@@ -63,6 +63,7 @@ function displayImportantFeature(f: FeatureForDisplay): React.ReactElement {
 }
 
 export interface FingerprintForDisplay extends MaybeAnIdeal {
+    type: string;
     displayName?: string;
     name: string;
     featureName: string;
@@ -72,7 +73,7 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
 
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
-    const variantsQueryLink: string = `./query?type=${f.featureName}&name=${f.name}&byOrg=true`;
+    const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
     return <li>
         <i>{displayName}</i>: {f.appearsIn} projects, {" "}
         <a href={variantsQueryLink}>{f.variants} variants</a>
