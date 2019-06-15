@@ -94,13 +94,13 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         });
 
         // In memory queries against returns
-        express.get("/api/v1/filter", ...handlers, async (req, res) => {
+        express.get("/api/v1/:workspace/filter/:name", ...handlers, async (req, res) => {
             const repos = await store.loadWhere(whereFor(req));
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownReporters);
 
-            const cannedQuery = allQueries[req.query.name]({
+            const cannedQuery = allQueries[req.params.name]({
                 ...req.query,
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
