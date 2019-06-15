@@ -32,8 +32,30 @@ export interface TreeQuery {
     query: string;
 }
 
+/**
+ * Without fingerprints
+ * @param {string} whereClause
+ * @return {string}
+ */
+function without(whereClause: string) {
+    return `UNION ALL
+            SELECT  $1 as name, null as sha, null as data, $1 as type,
+            (
+           SELECT json_agg(row_to_json(repo))
+           FROM (
+                  SELECT
+                    repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
+                  FROM repo_snapshots
+                   WHERE ${whereClause} AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id 
+                    FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in 
+                        (SELECT id from fingerprints where fingerprints.feature_name = $1 and fingerprints.name = $2))
+                ) repo
+         )
+         children`;
+}
+
 // Returns children
-export function fingerprintsChildrenQuery(whereClause: string) {
+export function fingerprintsChildrenQuery(whereClause: string, includeWithout: boolean) {
     return `
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
@@ -49,8 +71,8 @@ FROM (
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
                     AND ${whereClause}
                 ) repo
-         ) children
-       FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2
+         ) children FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2 
+         ${includeWithout ? without(whereClause) : ""}
 ) fp) as fingerprint_groups
 `;
 }

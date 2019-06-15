@@ -80,7 +80,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
             try {
                 const tree = await repoTree({
                     clientFactory,
-                    query: fingerprintsChildrenQuery(whereFor(req)),
+                    query: fingerprintsChildrenQuery(whereFor(req), req.query.otherLabel),
                     rootName: req.params.name,
                     featureName: req.params.type,
                 });
