@@ -68,7 +68,10 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(jenkinsScanner)
         .withScanner(gitlabCiScanner)
         .withScanner(reactScanner)
-        .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
+
+            // This one is crazy expensive so skip it
+       // .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
+
         .withScanner(CodeOfConductScanner)
         .withScorer(idealConvergenceScorer(featureManager))
         .build();
