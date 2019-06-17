@@ -48,7 +48,7 @@ export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScri
         if (!n) {
             return undefined;
         }
-        return !!n.typeScript ?
+        return !!n.typeScript && !!n.typeScript.version ?
             new TypeScriptVersion(n.typeScript.version) :
             undefined;
     }

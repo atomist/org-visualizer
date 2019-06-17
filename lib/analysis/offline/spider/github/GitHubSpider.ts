@@ -340,8 +340,7 @@ async function analyzeProject(project: Project,
 
 async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): AsyncIterable<GitHubSearchResult> {
     const octokit = new Octokit({
-        type: "token",
-        token,
+        auth: "token " + token,
         baseUrl: "https://api.github.com",
     });
     let results: any[] = [];
