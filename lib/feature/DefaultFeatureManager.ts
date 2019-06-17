@@ -174,8 +174,7 @@ export class DefaultFeatureManager implements FeatureManager {
         idealResolver: IdealResolver,
         features: ManagedFeature[],
         flags: Flagger,
-    },
-    ) {
+    }) {
     }
 }
 

@@ -39,8 +39,8 @@ export function assembledFeature(
             }
             return qualifyingPathValues.length > 0 ?
                 {
-                    name,
-                    abbreviation: name,
+                    name: opts.name,
+                    abbreviation: opts.name,
                     version: "0.1.0",
                     data: qualifyingPathValues,
                     sha: sha256(JSON.stringify(qualifyingPathValues)),

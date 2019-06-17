@@ -18,7 +18,6 @@ import { AbstractFingerprint } from "@atomist/sdm";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { NodeStack } from "@atomist/sdm-pack-analysis-node";
 import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
-import { CodeOwnershipElement } from "../../element/codeOwnership";
 import { AnalysisDerivedFeature } from "../FeatureManager";
 
 export class TypeScriptVersion extends AbstractFingerprint {
