@@ -29,6 +29,13 @@ Next, build with `npm run build`
 
 Next, `npm link` to create the `spider` binary.
 
+### Database setup
+
+Data about each repository is stored in Postgres.
+Please start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database.
+
+### Analyze your repositories
+
 `spider --owner <github organization>` e.g. `spider --owner atomist` (not the full org URL)
 
 Now start the server with `atomist start --local` to expose the visualizations.
