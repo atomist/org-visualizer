@@ -16,7 +16,12 @@
 
 import { Project } from "@atomist/automation-client";
 import { AbstractFingerprint } from "@atomist/sdm";
-import { AnalysisDerivedFeature, ProjectAnalysis, TechnologyElement, TechnologyScanner } from "@atomist/sdm-pack-analysis";
+import {
+    AnalysisDerivedFeature,
+    ProjectAnalysis,
+    TechnologyElement,
+    TechnologyScanner,
+} from "@atomist/sdm-pack-analysis";
 import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 
 export interface CodeOwnershipElement extends TechnologyElement {
