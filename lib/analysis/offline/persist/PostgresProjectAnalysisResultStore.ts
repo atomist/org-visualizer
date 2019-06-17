@@ -145,10 +145,14 @@ export interface ClientOptions {
 export type ClientFactory = () => Client;
 
 export async function doWithClient<R>(clientFactory: () => Client,
-                                      what: (c: Client) => Promise<R>): Promise<R> {
+    what: (c: Client) => Promise<R>): Promise<R> {
     const client = clientFactory();
     let result: R;
-    await client.connect();
+    try {
+        await client.connect();
+    } catch (err) {
+        throw new Error("Could not connect to Postgres. Please start it up. Message: " + err.message);
+    }
     try {
         result = await what(client);
     } catch (err) {
