@@ -109,6 +109,7 @@ export class GitHubSpider implements Spider {
             await runAllPromisesInBucket();
         } catch (e) {
             logger.error("Error spidering: %s", e.message);
+            e.printStackTrace();
             throw e;
         }
 
