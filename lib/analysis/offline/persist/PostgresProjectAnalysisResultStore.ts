@@ -38,7 +38,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
 
     public loadWhere(where: string): Promise<ProjectAnalysisResult[]> {
         return doWithClient(this.clientFactory, async client => {
-            const sql = `SELECT owner, name, url, commit_sha, analysis, timestamp 
+            const sql = `SELECT owner, name, url, commit_sha, analysis, timestamp
                 from repo_snapshots ` +
                 (where ? `WHERE ${where}` : "");
             const rows = await client.query(sql);
@@ -50,7 +50,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     // TODO also sha
     public async loadOne(repo: RepoId): Promise<ProjectAnalysisResult> {
         return doWithClient(this.clientFactory, async client => {
-            const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp 
+            const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp
                 FROM repo_snapshots
                 WHERE owner = $1 AND name = $2`, [repo.owner, repo.repo]);
             return result.rows.length >= 1 ? {
@@ -145,7 +145,7 @@ export interface ClientOptions {
 export type ClientFactory = () => Client;
 
 export async function doWithClient<R>(clientFactory: () => Client,
-    what: (c: Client) => Promise<R>): Promise<R> {
+                                      what: (c: Client) => Promise<R>): Promise<R> {
     const client = clientFactory();
     let result: R;
     try {

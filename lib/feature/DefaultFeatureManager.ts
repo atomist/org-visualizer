@@ -81,8 +81,8 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
         async function aggregateFingerprints(featureManager: FeatureManager,
-            feature: ManagedFeature,
-            fps: FP[]): Promise<AggregateFingerprintStatus> {
+                                             feature: ManagedFeature,
+                                             fps: FP[]): Promise<AggregateFingerprintStatus> {
             const name = fps[0].name;
             const ideal = await featureManager.idealResolver(name);
             return {
@@ -188,7 +188,7 @@ export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fp
 }
 
 function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
-    ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
+                               ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
     if (!ideal) {
         return undefined;
     }

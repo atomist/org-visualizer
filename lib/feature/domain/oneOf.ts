@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { DerivedFeature, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { HasFingerprints } from "../FeatureManager";
-import { allFingerprints } from "../DefaultFeatureManager";
 import { Project } from "@atomist/automation-client";
+import { DerivedFeature, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { allFingerprints } from "../DefaultFeatureManager";
+import { HasFingerprints } from "../FeatureManager";
 
 // TODO move to fingerprints pack
 

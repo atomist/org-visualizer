@@ -38,6 +38,7 @@ import {
     CSSProperties,
     ReactElement,
 } from "react";
+import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
 import {
     FeatureForDisplay,
@@ -65,7 +66,6 @@ import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
-import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,

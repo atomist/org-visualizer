@@ -45,8 +45,8 @@ import {
     corsHandler,
 } from "./auth";
 import { featureManager } from "./features";
-import { WellKnownReporters } from "./wellKnownReporters";
 import { whereFor } from "./orgPage";
+import { WellKnownReporters } from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON

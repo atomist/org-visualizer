@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DerivedFeature, Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { DerivedFeature, Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 
 import * as _ from "lodash";
 

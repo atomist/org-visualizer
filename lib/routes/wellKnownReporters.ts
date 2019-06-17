@@ -31,19 +31,19 @@ import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
+import { Analyzed } from "../feature/FeatureManager";
 import {
     Reporters,
 } from "../feature/reporters";
-import {
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
 import {
     DefaultProjectAnalysisRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
-import { Analyzed } from "../feature/FeatureManager";
+import {
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -99,7 +99,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                 },
             })
             .map<ProjectAnalysis & { lang: string }>({
-                mapping: async function*(cs: AsyncIterable<CodeStats>, originalQuery: () => AsyncIterable<ProjectAnalysis>) {
+                async *mapping(cs: AsyncIterable<CodeStats>, originalQuery: () => AsyncIterable<ProjectAnalysis>) {
                     // TODO don't materialize this
                     const source: ProjectAnalysis[] = [];
                     for await (const pa of originalQuery()) {
@@ -114,7 +114,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             yield r;
                         }
                     }
-                }
+                },
             })
             .renderWith(ar => ({
                 name: ar.id.repo,

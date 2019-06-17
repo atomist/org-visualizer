@@ -25,13 +25,15 @@ import {
     NpmDeps,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
+import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import {
     deconstructNpmDepsFingerprintName,
     getNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
-import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
+import { assembledFeature } from "../feature/domain/assembledFeature";
+import { conditionalize } from "../feature/domain/oneOf";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 import {
     TypeScriptVersion,
@@ -42,8 +44,6 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
-import { assembledFeature } from "../feature/domain/assembledFeature";
-import { conditionalize } from "../feature/domain/oneOf";
 
 const CiFeature = assembledFeature({
         name: "CI",
@@ -156,12 +156,12 @@ export const featureManager = new DefaultFeatureManager({
                 if (fp.name === "tslintproperty::rules:max-file-line-count") {
                     try {
                         const obj = JSON.parse(fp.data);
-                        if (obj.options && obj.options.some(opt => parseInt(opt)) > 500) {
+                        if (obj.options && obj.options.some(parseInt) > 500) {
                             return {
                                 severity: "warn",
                                 authority: "Rod",
                                 message: "Allow long files",
-                            }
+                            };
                         }
                     } catch {
                         // Do nothing
@@ -169,7 +169,7 @@ export const featureManager = new DefaultFeatureManager({
                 }
                 return undefined;
             }),
-    }
+    },
 );
 
 export function idealConvergenceScorer(fm: FeatureManager): Scorer {

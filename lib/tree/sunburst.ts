@@ -50,7 +50,7 @@ export function mergeTrees(...trees: SunburstTree[]): SunburstTree {
     if (trees.length === 1) {
         return trees[0];
     }
-    return trees.reduce((a, b) => merge2Trees(a, b));
+    return trees.reduce(merge2Trees);
 }
 
 function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
@@ -83,6 +83,6 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
         children: mergedChildren,
     };
 
-    //console.log(JSON.stringify(result));
+    // console.log(JSON.stringify(result));
     return result;
 }

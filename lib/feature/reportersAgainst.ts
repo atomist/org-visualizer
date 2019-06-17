@@ -53,7 +53,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 name: "flags",
                 by: async a => {
                     const knownBad = (await Promise.all(
-                        allFingerprints(a).map(fp => hm.flags(fp))
+                        allFingerprints(a).map(fp => hm.flags(fp)),
                     )).filter(f => !!f && f.length > 0);
                     return knownBad.length === 0 ?
                         params.otherLabel :
@@ -64,13 +64,13 @@ export async function reportersAgainst(hm: FeatureManager,
                 name: "violations",
                 by: async a => {
                     const flags = await Promise.all(
-                        allFingerprints(a).map(fp => hm.flags(fp))
+                        allFingerprints(a).map(fp => hm.flags(fp)),
                     );
                     const knownBad: Flag[] = _.flatten(flags.filter(f => !!f && f.length > 0));
                     return knownBad.length === 0 ?
                         params.otherLabel :
                         knownBad.map(bad => bad.message).join(",");
-                }
+                },
             })
             .renderWith(DefaultProjectAnalysisRenderer);
 

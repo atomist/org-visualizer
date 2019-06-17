@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import * as assert from "assert";
 import {
     mergeTrees,
     SunburstTree,
 } from "../../lib/tree/sunburst";
-import * as assert from "assert";
 
 describe("treeMerge", () => {
 
@@ -34,7 +34,6 @@ describe("treeMerge", () => {
         assert.deepStrictEqual(mergeTrees(t1, t2), t1);
     });
 
-
     it("should merge trees with single node each", () => {
         const t1: SunburstTree = {
             name: "name",
@@ -42,7 +41,7 @@ describe("treeMerge", () => {
                 {
                     name: "tony",
                     size: 1,
-                }
+                },
             ],
         };
         const t2: SunburstTree = {
@@ -51,7 +50,7 @@ describe("treeMerge", () => {
                 {
                     name: "gordon",
                     size: 1,
-                }
+                },
             ],
         };
         assert.deepStrictEqual(mergeTrees(t1, t2), {
@@ -64,7 +63,7 @@ describe("treeMerge", () => {
                 {
                     name: "gordon",
                     size: 1,
-                }
+                },
             ],
         });
     });
@@ -79,7 +78,7 @@ describe("treeMerge", () => {
                         {
                             name: "tony",
                             size: 1,
-                        }
+                        },
                     ],
                 },
                 {
@@ -88,10 +87,10 @@ describe("treeMerge", () => {
                         {
                             name: "david",
                             size: 1,
-                        }
+                        },
                     ],
-                }
-            ]
+                },
+            ],
         };
         const t2: SunburstTree = {
             name: "name",
@@ -102,7 +101,7 @@ describe("treeMerge", () => {
                         {
                             name: "gordon",
                             size: 1,
-                        }
+                        },
                     ],
                 },
                 {
@@ -111,9 +110,9 @@ describe("treeMerge", () => {
                         {
                             name: "theresa",
                             size: 1,
-                        }
+                        },
                     ],
-                }]
+                }],
         };
         const mt = mergeTrees(t1, t2);
         assert.deepStrictEqual(mt, {
@@ -129,7 +128,7 @@ describe("treeMerge", () => {
                         {
                             name: "gordon",
                             size: 1,
-                        }
+                        },
                     ],
                 },
                 {
@@ -142,9 +141,9 @@ describe("treeMerge", () => {
                         {
                             name: "theresa",
                             size: 1,
-                        }
+                        },
                     ],
-                }]
+                }],
         });
     });
 

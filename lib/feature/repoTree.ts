@@ -46,8 +46,8 @@ function without(whereClause: string) {
                   SELECT
                     repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_snapshots
-                   WHERE ${whereClause} AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id 
-                    FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in 
+                   WHERE ${whereClause} AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id
+                    FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in
                         (SELECT id from fingerprints where fingerprints.feature_name = $1 and fingerprints.name = $2))
                 ) repo
          )
@@ -71,7 +71,7 @@ FROM (
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
                     AND ${whereClause}
                 ) repo
-         ) children FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2 
+         ) children FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2
          ${includeWithout ? without(whereClause) : ""}
 ) fp) as fingerprint_groups
 `;
