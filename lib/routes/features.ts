@@ -31,6 +31,7 @@ import {
     getNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import * as fs from "fs";
+import { CodeOwnershipFeature } from "../element/codeOwnership";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { assembledFeature } from "../feature/domain/assembledFeature";
 import { conditionalize } from "../feature/domain/oneOf";
@@ -58,6 +59,7 @@ const CiFeature = assembledFeature({
 
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
+    new CodeOwnershipFeature(),
     DockerFrom,
     {
         ...NpmDeps,

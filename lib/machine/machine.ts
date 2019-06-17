@@ -40,8 +40,8 @@ import {
     PostgresProjectAnalysisResultStore,
 } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
+import { CodeOwnerScanner } from "../element/codeOwnership";
 import { packageLockScanner } from "../element/packageLock";
 import {
     featureManager,
@@ -69,10 +69,11 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(gitlabCiScanner)
         .withScanner(reactScanner)
 
-            // This one is crazy expensive so skip it
-       // .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
+        // This one is crazy expensive so skip it
+        // .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
 
         .withScanner(CodeOfConductScanner)
+        .withScanner(CodeOwnerScanner)
         .withScorer(idealConvergenceScorer(featureManager))
         .build();
 }
