@@ -118,7 +118,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
         for (const fp of pa.fingerprints) {
             const featureName = fp.type || "unknown";
             const fingerprintId = featureName + "_" + fp.name + "_" + fp.sha;
-            console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
+            //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
             await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING

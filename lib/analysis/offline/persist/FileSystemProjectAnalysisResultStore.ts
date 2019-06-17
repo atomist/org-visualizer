@@ -124,7 +124,6 @@ export class FileSystemProjectAnalysisResultStore implements ProjectAnalysisResu
         //     base += "::" + path;
         // }
         const absPath = base + ".json";
-        console.log(`Absolute path='${absPath}'`);
         return absPath;
     }
 
