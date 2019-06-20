@@ -40,7 +40,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |------|---------|-----------|------------|
 |`@atomist/automation-client-ext-humio`|`1.0.3-master.20190319172045`|Atomist|[https://github.com/atomist/automation-client-ext-humio](https://github.com/atomist/automation-client-ext-humio)|
 |`@atomist/clj-editors`|`0.7.1`||[https://github.com/atomisthq/clj-editors](https://github.com/atomisthq/clj-editors)|
-|`@atomist/sdm-core`|`1.5.3-job-support.20190619160730`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-core`|`1.5.3-job-support.20190620150522`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
 |`@atomist/sdm-pack-analysis-node`|`2.0.0-master.20190501154523`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
 |`@atomist/sdm-pack-analysis-spring`|`2.0.0-master.20190428091941`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
 |`@atomist/sdm-pack-analysis`|`1.1.0-master.20190610233255`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
@@ -51,7 +51,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-sloc`|`1.0.3-master.20190502175705`|Atomist|[https://github.com/atomist/sdm-pack-sloc](https://github.com/atomist/sdm-pack-sloc)|
 |`@atomist/sdm-pack-spring`|`2.0.0-master.20190429120158`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
 |`@atomist/sdm`|`1.5.2-master.20190612123215`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
-|`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
+|`@atomist/slack-messages`|`1.1.1`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/uhura`|`1.0.0-master.20190511162233`|Atomist|[https://github.com/atomist/uhura](https://github.com/atomist/uhura)|
 |`@kubernetes/client-node`|`0.8.2`|Kubernetes Authors|[https://github.com/kubernetes-client/javascript](https://github.com/kubernetes-client/javascript)|
 |`JSONStream`|`1.3.5`|Dominic Tarr|[https://github.com/dominictarr/JSONStream](https://github.com/dominictarr/JSONStream)|
