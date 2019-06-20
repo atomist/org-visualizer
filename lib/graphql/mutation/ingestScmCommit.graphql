@@ -1,4 +1,4 @@
-mutation ingestScmCommit($providerId: String!, $commit: SCMCommitInput!) {
+mutation IngestScmCommit($providerId: String!, $commit: SCMCommitInput!) {
     ingestSCMCommit(scmProviderId: $providerId, scmCommitInput: $commit) {
         id
     }
