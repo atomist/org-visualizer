@@ -70,7 +70,7 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
                     providerId: ci.parameters.providerId,
                 },
                 options: QueryNoCacheOptions,
-            }), "SCMProvider[0]") as ScmProviderById.ScmProvider;
+            }), "SCMProvider[0]");
 
             if (!provider || !provider.credential || !provider.credential.secret) {
                 return;
