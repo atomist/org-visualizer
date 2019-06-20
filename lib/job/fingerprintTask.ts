@@ -92,7 +92,7 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
 
                 // git rev-parse HEAD = sha
                 const sha = (await execPromise("git", ["rev-parse", "HEAD"], { cwd: p.baseDir })).stdout.trim();
-                const author = (await execPromise("git", ["show", "-s", "--format=%an"], { cwd: p.baseDir })).stdout.trim();
+                // const author = (await execPromise("git", ["show", "-s", "--format=%an"], { cwd: p.baseDir })).stdout.trim();
                 const email = (await execPromise("git", ["show", "-s", "--format=%ae"], { cwd: p.baseDir })).stdout.trim();
                 const ts = (await execPromise("git", ["show", "-s", "--format=%at"], { cwd: p.baseDir })).stdout.trim();
                 const message = (await execPromise("git", ["show", "-s", "--format=%B"], { cwd: p.baseDir })).stdout.trim();
@@ -102,12 +102,8 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
                     repoId: ci.parameters.repoId,
                     branchName: ci.parameters.branch,
                     timestamp: new Date(+ts * 1000).toISOString(),
-                    author: {
-                        name: author,
-                        email: {
-                            address: email,
-                        },
-                        login: author,
+                    email: {
+                        address: email,
                     },
                     sha,
                     message,
