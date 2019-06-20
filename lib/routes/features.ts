@@ -26,8 +26,8 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import {
-    deconstructNpmDepsFingerprintName,
     createNpmDepFingerprint,
+    deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import * as fs from "fs";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
