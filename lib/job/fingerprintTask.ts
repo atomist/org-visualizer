@@ -70,7 +70,7 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
                     providerId: ci.parameters.providerId,
                 },
                 options: QueryNoCacheOptions,
-            }), "SCMProvider[0]");
+            }), "SCMProvider[0]") as ScmProviderById.ScmProvider;
 
             if (!provider || !provider.credential || !provider.credential.secret) {
                 return;
@@ -116,7 +116,7 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
                 await ci.context.graphClient.mutate<IngestScmCommit.Mutation, IngestScmCommit.Variables>({
                     name: "IngestScmCommit",
                     variables: {
-                        providerId: ci.parameters.providerId,
+                        providerId: provider.id,
                         commit,
                     },
                 });
