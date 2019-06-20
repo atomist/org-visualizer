@@ -1,0 +1,15 @@
+query ReposByProvider($providerId: String) {
+    Org {
+        owner
+        repos {
+            id
+            owner
+            name
+            defaultBranch
+        }
+        scmProvider(providerId: $providerId) @required {
+            id
+            providerId
+        }
+    }
+}

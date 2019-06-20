@@ -1,0 +1,7 @@
+subscription OnDiscoveryJob {
+    AtmJob(owner: "@atomist/lifecycle-automation") {
+        name
+        data
+        state
+    }
+}

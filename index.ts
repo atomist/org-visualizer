@@ -28,6 +28,8 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
+import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
     analysisResultStore,
     clientFactory,
@@ -55,15 +57,21 @@ export const configuration: Configuration = configure(async sdm => {
 
     const pushImpact = new PushImpact();
 
+    const features = [
+        NpmDeps,
+        DockerFrom,
+    ];
+    const handlers = [];
+
     sdm.addExtensionPacks(
         fingerprintSupport({
             pushImpactGoal: pushImpact,
-            features: [
-                NpmDeps,
-                DockerFrom,
-            ],
-            handlers: [],
+            features,
+            handlers,
         }));
+
+    sdm.addEvent(CreateFingerprintJob);
+    sdm.addCommand(calculateFingerprintTask(features, handlers));
 
     return {
         analyze: {
