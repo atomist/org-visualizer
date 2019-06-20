@@ -24,7 +24,6 @@ import {
 } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
-    DockerFrom,
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
@@ -59,7 +58,6 @@ export const configuration: Configuration = configure(async sdm => {
 
     const features = [
         NpmDeps,
-        DockerFrom,
     ];
     const handlers = [];
 

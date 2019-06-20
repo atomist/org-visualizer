@@ -20,7 +20,6 @@ import {
     Scorer,
 } from "@atomist/sdm-pack-analysis";
 import {
-    DockerFrom,
     FP,
     NpmDeps,
     PossibleIdeal,
@@ -28,7 +27,7 @@ import {
 import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import {
     deconstructNpmDepsFingerprintName,
-    getNpmDepFingerprint,
+    createNpmDepFingerprint,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import * as fs from "fs";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
@@ -60,7 +59,6 @@ const CiFeature = assembledFeature({
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
     new CodeOwnershipFeature(),
-    DockerFrom,
     {
         ...NpmDeps,
         suggestedIdeals: idealFromNpm,
@@ -85,7 +83,7 @@ async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdea
         logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
         return [{
             fingerprintName,
-            ideal: getNpmDepFingerprint(libraryName, result.stdout.trim()),
+            ideal: createNpmDepFingerprint(libraryName, result.stdout.trim()),
             reason: "latest from NPM",
         }];
     } catch (err) {
