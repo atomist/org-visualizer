@@ -15,12 +15,18 @@
  */
 
 import {
+    configurationValue,
     GraphQL,
     logger,
     QueryNoCacheOptions,
     Success,
 } from "@atomist/automation-client";
-import { EventHandlerRegistration } from "@atomist/sdm";
+import {
+    EventHandlerRegistration,
+    PreferenceScope,
+    PreferenceStore,
+    PreferenceStoreFactory,
+} from "@atomist/sdm";
 import { createJob } from "@atomist/sdm-core";
 import { bold } from "@atomist/slack-messages";
 import {
@@ -68,20 +74,30 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
                 };
             });
 
+            const prefs: PreferenceStore = configurationValue<PreferenceStoreFactory>("sdm.preferenceStoreFactory")(ctx);
+
             for (const org of orgs) {
-                try {
-                    await createJob<CalculateFingerprintTaskParameters>({
-                            command: calculateFingerprintTask([], []),
-                            parameters: org.tasks,
-                            name: `OrganizationAnalysis/${org.providerId}/${org.name}`,
-                            description: `Analyzing repositories in ${bold(org.name)}`,
-                        },
-                        ctx);
-                } catch (e) {
-                    logger.warn("Failed to create job for org '%s': %s", org.name, e.message);
+                const analyzed = await prefs.get<boolean>(preferenceKey(org.name), { scope: PreferenceScope.Sdm, defaultValue: false });
+                if (!analyzed) {
+                    try {
+                        await createJob<CalculateFingerprintTaskParameters>({
+                                command: calculateFingerprintTask([], []),
+                                parameters: org.tasks,
+                                name: `OrganizationAnalysis/${org.providerId}/${org.name}`,
+                                description: `Analyzing repositories in ${bold(org.name)}`,
+                            },
+                            ctx);
+                        await prefs.put<boolean>(preferenceKey(org.name), true, { scope: PreferenceScope.Sdm });
+                    } catch (e) {
+                        logger.warn("Failed to create job for org '%s': %s", org.name, e.message);
+                    }
                 }
             }
         }
         return Success;
     },
 };
+
+function preferenceKey(org: string): string {
+    return `analyzed/${org}`;
+}
