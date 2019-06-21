@@ -41,7 +41,7 @@ export const mavenDependenciesFeature: Feature = {
                 direct: pomContent.includes(`<group>${dep.group}</group>`) &&
                 pomContent.includes(`<artifact>${dep.group}</artifact>`),
             }))
-            .map(dep => gavToFingerprint(dep));
+            .map(gavToFingerprint);
     },
     apply: async (p, fp) => {
         // TODO unimplemented

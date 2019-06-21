@@ -35,7 +35,7 @@ export const springBootVersionFeature: Feature = {
             version: "0.1.0",
             data: versions,
             sha: sha256(JSON.stringify(versions)),
-        }
+        };
     },
     apply: async (p, fp) => {
         if (fp.data.length !== 1) {

@@ -44,8 +44,8 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
-import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
+import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 
 const CiFeature = assembledFeature({
         name: "CI",
