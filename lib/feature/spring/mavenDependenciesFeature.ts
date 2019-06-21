@@ -15,7 +15,10 @@
  */
 
 import { Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { findDependenciesFromEffectivePom, VersionedArtifact } from "@atomist/sdm-pack-spring";
+import {
+    findDependenciesFromEffectivePom,
+    VersionedArtifact,
+} from "@atomist/sdm-pack-spring";
 
 const MavenDirectDepType = "maven-direct-dep";
 

@@ -15,7 +15,10 @@
  */
 
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { setSpringBootVersionTransform, SpringBootVersionInspection } from "@atomist/sdm-pack-spring";
+import {
+    setSpringBootVersionTransform,
+    SpringBootVersionInspection,
+} from "@atomist/sdm-pack-spring";
 
 const SpringBootVersionType = "spring-boot-version";
 
