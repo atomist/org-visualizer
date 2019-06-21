@@ -20,9 +20,10 @@ import {
     Scorer,
 } from "@atomist/sdm-pack-analysis";
 import {
+    Feature,
     FP,
     NpmDeps,
-    PossibleIdeal,
+    PossibleIdeal, sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import { filesFeature } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -44,8 +45,9 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
-import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
+import { ciFeature, javaBuildFeature, stackFeature } from "../feature/domain/stackFeature";
 
 const CiFeature = assembledFeature({
         name: "CI",
@@ -58,6 +60,22 @@ const CiFeature = assembledFeature({
     "elements.jenkins.name",
     "elements.gitlab.name");
 
+const sizeFeature: Feature = {
+    name: "size",
+    displayName: "size",
+    extract: async p => {
+        const data = await p.totalFileCount() + "";
+        return {
+            name: "size",
+            data,
+            sha: sha256(data),
+        };
+    },
+    toDisplayableFingerprint: fp => fp.data,
+    toDisplayableFingerprintName: () => "size",
+    selector: fp => fp.name === "size",
+};
+
 export const features: ManagedFeature[] = [
     new TypeScriptVersionFeature(),
     new CodeOwnershipFeature(),
@@ -66,12 +84,15 @@ export const features: ManagedFeature[] = [
         suggestedIdeals: idealFromNpm,
     },
     new TsLintPropertyFeature(),
-    CiFeature,
+    sizeFeature,
+    stackFeature,
+    ciFeature,
+    javaBuildFeature,
     conditionalize(filesFeature({
-        displayName: "git ignore",
-        type: "gitignore",
-        canonicalize: c => c,
-    }, ".gitignore",
+            displayName: "git ignore",
+            type: "gitignore",
+            canonicalize: c => c,
+        }, ".gitignore",
     ), {
         name: "node-git-ignore",
         displayName: "Node git ignore",
