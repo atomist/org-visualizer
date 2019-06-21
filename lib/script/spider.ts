@@ -104,10 +104,9 @@ async function spider(params: SpiderAppOptions) {
         {
             persister,
             keepExistingPersisted: async existing => {
-                console.log(`\tAnalyzing ${existing.analysis.id.url}`);
-
+                console.log(`\tFound analysis for ${existing.analysis.id.url}`);
                 // Perform a computation here to return true if an existing analysis seems valid
-                return false;
+                return true;
             },
             // Controls promise usage inNode
             poolSize: 40,

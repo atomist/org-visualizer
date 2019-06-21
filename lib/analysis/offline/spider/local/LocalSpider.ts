@@ -24,6 +24,7 @@ import {
 
 import {
     GitCommandGitProject,
+    logger,
     NodeFsLocalProject,
     RepoId,
     RepoRef,
@@ -149,13 +150,14 @@ async function spiderOneLocalRepo(opts: SpiderOptions,
 
 async function* findRepositoriesUnder(dir: string): AsyncIterable<string> {
     try {
-        const stat = await fs.stat(dir);
+        const stat = await fs.stat(await fs.realpath(dir));
         if (!stat.isDirectory()) {
             // nothing interesting
             return;
         }
     } catch (err) {
-        throw new Error("Error opening " + dir + ": " + err.message);
+        logger.error("Error opening " + dir + ": " + err.message);
+        return;
     }
 
     const dirContents = await fs.readdir(dir);
@@ -181,7 +183,7 @@ async function repoRefFromLocalRepo(repoDir: string): Promise<RepoRef> {
         .then(execHappened => repoIdFromOriginUrl(execHappened.stdout))
         .catch(oops => inventRepoId(repoDir));
 
-    const sha = await execPromise("git", ["rev-parse", "HEAD", "origin"], { cwd: repoDir })
+    const sha = await execPromise("git", ["rev-parse", "HEAD"], { cwd: repoDir })
         .then(execHappened => execHappened.stdout)
         .catch(oops => "unknown");
 
