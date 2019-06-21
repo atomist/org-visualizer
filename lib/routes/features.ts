@@ -44,6 +44,8 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
+import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 
 const CiFeature = assembledFeature({
         name: "CI",
@@ -74,6 +76,17 @@ export const features: ManagedFeature[] = [
         name: "node-git-ignore",
         displayName: "Node git ignore",
     }, async p => p.hasFile("package.json")),
+    conditionalize(filesFeature({
+            displayName: "git ignore",
+            type: "gitignore",
+            canonicalize: c => c,
+        }, ".gitignore",
+    ), {
+        name: "spring-git-ignore",
+        displayName: "Spring git ignore",
+    }, async p => p.hasFile("pom.xml")),
+    springBootVersionFeature,
+    mavenDependenciesFeature,
 ];
 
 async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdeal<FP>>> {

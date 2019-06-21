@@ -39,7 +39,7 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
         };
     }
 
-    public selector = fp => fp.name.startsWith("tslintproperty::");
+    public selector = fp => fp.name && fp.name.startsWith("tslintproperty::");
 
     public extract = async p => {
         const tslint = await p.getFile("tslint.json");

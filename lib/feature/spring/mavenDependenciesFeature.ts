@@ -32,8 +32,11 @@ export const mavenDependenciesFeature: Feature = {
         return false;
     },
     selector: fp => [MavenDirectDepType, MavenTransitiveDepType].includes(fp.type),
-    toDisplayableFingerprintName: fp => "Maven dependency",
-    toDisplayableFingerprint: fp => fp.data,
+    toDisplayableFingerprintName: name => name,
+    toDisplayableFingerprint: fp => {
+        const version = JSON.parse(fp.data).version;
+        return version;
+    },
 };
 
 function gavToFingerprint(gav: VersionedArtifact & { direct: boolean }): FP {
