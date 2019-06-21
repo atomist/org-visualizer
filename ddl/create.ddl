@@ -4,8 +4,6 @@ CREATE DATABASE org_viz;
 
 DROP TABLE IF EXISTS repo_fingerprints;
 
-DROP TABLE IF EXISTS problem_fingerprints;
-
 DROP TYPE IF EXISTS SEVERITY;
 
 DROP TABLE IF EXISTS fingerprints;
@@ -40,19 +38,6 @@ CREATE TABLE IF NOT EXISTS repo_fingerprints (
   repo_snapshot_id varchar references repo_snapshots(id),
   fingerprint_id varchar references fingerprints(id),
   PRIMARY KEY (repo_snapshot_id, fingerprint_id)
-);
-
-CREATE TYPE severity AS ENUM ('error', 'warn');
-
-CREATE TABLE problem_fingerprints (
-  name text NOT NULL,
-  feature_name text NOT NULL,
-  sha varchar NOT NULL,
-  severity severity NOT NULL,
-  message text,
-  url text,
-  PRIMARY KEY (name, feature_name, sha),
-  FOREIGN KEY (name, feature_name, sha) REFERENCES fingerprints (name, feature_name, sha)
 );
 
 CREATE INDEX ON repo_snapshots (workspace_id);
