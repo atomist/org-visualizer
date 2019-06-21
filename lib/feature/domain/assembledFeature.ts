@@ -57,3 +57,34 @@ function applyExtractor(extractor: Extractor, pa: ProjectAnalysis): any {
         _.get(pa, extractor) :
         extractor(pa);
 }
+
+/**
+ * Composite feature
+ */
+export function featureOf(
+    opts: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
+    ...features: Feature[]): Feature {
+    return {
+        ...opts,
+        extract: async p => {
+            const qualifyingPathValues = [];
+            for (const feature of features) {
+                const value = feature.extract(p);
+                if (!!value) {
+                    qualifyingPathValues.push(value);
+                }
+            }
+            return qualifyingPathValues.length > 0 ?
+                {
+                    name,
+                    abbreviation: name,
+                    version: "0.1.0",
+                    data: qualifyingPathValues,
+                    sha: sha256(JSON.stringify(qualifyingPathValues)),
+                } :
+                undefined;
+        },
+        apply: undefined,
+        selector: fp => fp.name === opts.name,
+    };
+}
