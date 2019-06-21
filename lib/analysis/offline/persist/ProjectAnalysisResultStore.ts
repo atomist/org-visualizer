@@ -31,6 +31,20 @@ export interface PersistResult {
     succeeded: PersistenceResult[];
 }
 
+export function combinePersistResults(r1: PersistResult, r2: PersistResult): PersistResult {
+    return {
+        attemptedCount: r1.attemptedCount + r2.attemptedCount,
+        failed: [...r1.failed, ...r2.failed],
+        succeeded: [...r1.succeeded, ...r2.succeeded],
+    };
+}
+
+export const emptyPersistResult: PersistResult = {
+    attemptedCount: 0,
+    failed: [],
+    succeeded: [],
+};
+
 /**
  * Interface for basic persistence operations.
  * Implementations can provide additional querying options,

@@ -32,20 +32,26 @@ import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
 import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
 import * as yargs from "yargs";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
-
+import * as path from "path";
 import { Client } from "pg";
+import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(MinimalLogging);
 
 process.on('uncaughtException', function (err) {
     console.log(err);
+    console.log(err.stack);
     process.exit(1);
 });
 
-interface SpiderOptions {
+interface SpiderAppOptions {
 
-    owner: string;
+    source: "GitHub" | "local"
+
+    localDirectory?: string;
+
+    owner?: string;
 
     /**
      * Refine name in GitHub search if searching for repos
@@ -63,12 +69,12 @@ interface SpiderOptions {
 /**
  * Spider a GitHub.com org
  */
-async function spider(params: SpiderOptions) {
+async function spider(params: SpiderAppOptions) {
     const analyzer = createAnalyzer(undefined);
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
-    const spider: Spider = new GitHubSpider();
+    const spider: Spider = params.source === "GitHub" ? new GitHubSpider() : new LocalSpider(params.localDirectory);
     const persister = //new FileSystemProjectAnalysisResultStore();
         new PostgresProjectAnalysisResultStore(() => new Client({
             database: "org_viz",
@@ -76,24 +82,24 @@ async function spider(params: SpiderOptions) {
     const query = params.query || `org:${org}` + searchInRepoName;
 
     const result = await spider.spider({
-            // See the GitHub search API documentation at
-            // https://developer.github.com/v3/search/
-            // You can query for many other things here, beyond org
-            githubQueries: [query],
+        // See the GitHub search API documentation at
+        // https://developer.github.com/v3/search/
+        // You can query for many other things here, beyond org
+        githubQueries: [query],
 
-            maxRetrieved: 1500,
-            maxReturned: 1500,
-            projectTest: async p => {
-                // Perform a computation here to return false if a project should not
-                // be analyzed and persisted, based on its contents. For example,
-                // this enables you to analyze only projects containing a particular file
-                // through calling getFile()
-                return true;
-            },
-            subprojectFinder: firstSubprojectFinderOf(
-                fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
-            ),
+        maxRetrieved: 1500,
+        maxReturned: 1500,
+        projectTest: async p => {
+            // Perform a computation here to return false if a project should not
+            // be analyzed and persisted, based on its contents. For example,
+            // this enables you to analyze only projects containing a particular file
+            // through calling getFile()
+            return true;
         },
+        subprojectFinder: firstSubprojectFinderOf(
+            fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
+        ),
+    },
         analyzer,
         {
             persister,
@@ -114,51 +120,69 @@ yargs
     .option("owner", {
         required: false,
         alias: 'o',
+        requiresArg: true,
         description: "GitHub user or organization",
     })
     .option("search", {
-            required: false,
-            alias: 's',
-            description: "Search within repository names"
-        }
+        required: false,
+        alias: 's',
+        requiresArg: true,
+        description: "Search within repository names"
+    }
     )
     .option("query", {
-            required: false,
-            alias: 'q',
-            description: "GitHub query"
-        }
+        required: false,
+        alias: 'q',
+        requiresArg: true,
+        description: "GitHub query"
+    }
     )
     .option("workspace", {
-            required: false,
-            alias: 'w',
-            description: "Workspace"
-        }
+        required: false,
+        requiresArg: true,
+        alias: 'w',
+        description: "Name of Atomist workspace to store results under"
+    }
     )
-    .usage("spider --owner <GitHub user or org> OR --query <GitHub query>");
+    .option("localDirectory", {
+        required: false,
+        alias: "l",
+        requiresArg: true,
+        description: "local directory to search for repositories (instead of GitHub)",
+    })
+    .strict()
+    .usage("spider <GitHub criteria: supply owner or query>\nspider --localDirectory <directory containing repositories>");
 
 const commandLineParameters = yargs.argv as any;
 const owner = commandLineParameters.owner;
 const search = commandLineParameters.search;
 const query = commandLineParameters.query;
 const workspaceId = commandLineParameters.workspace || commandLineParameters.owner || "local";
+const source: "local" | "GitHub" = commandLineParameters.localDirectory ? "local" : "GitHub";
+const localDirectory = commandLineParameters.localDirectory ? path.resolve(commandLineParameters.localDirectory) : "";
 
-if (!owner && !query) {
-    console.log(`Please specify owner or query`);
+
+if (!owner && !query && !localDirectory) {
+    console.log(`Please specify owner, query, or local directory`);
     process.exit(1);
 }
-if (search) {
-    console.log(`Limiting to repositories in organization ${owner} with '${search}' in the name`);
-}
-if (query) {
-    console.log(`Running GitHub query '${query}' for workspace '${workspaceId}'...`);
+if (localDirectory) {
+    console.log(`Spidering repositories under ${localDirectory}...`)
 } else {
-    console.log(`Spidering GitHub organization ${owner} for workspace '${workspaceId}'...`);
+    if (search) {
+        console.log(`Spidering GitHub repositories in organization ${owner} with '${search}' in the name...`);
+    }
+    if (query) {
+        console.log(`Running GitHub query '${query}' for workspace '${workspaceId}'...`);
+    } else {
+        console.log(`Spidering GitHub organization ${owner} for workspace '${workspaceId}'...`);
+    }
 }
 
-const params = { owner, search, query, workspaceId };
+const params: SpiderAppOptions = { owner, search, query, workspaceId, source, localDirectory };
 
 spider(params).then(r => {
-    console.log(`Successfully analyzed GitHub ${JSON.stringify(params)}. result is `
+    console.log(`Successfully analyzed ${JSON.stringify(params)}. result is `
         + JSON.stringify(r, null, 2));
 }, err => {
     console.log("Failure: " + err.message);

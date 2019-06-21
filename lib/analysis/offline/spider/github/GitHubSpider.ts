@@ -16,28 +16,26 @@
 
 import {
     GitCommandGitProject,
-    isLocalProject,
     logger,
     Project,
-    RemoteRepoRef,
 } from "@atomist/automation-client";
 import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
-import { isInMemoryProject } from "@atomist/automation-client/lib/project/mem/InMemoryProject";
 import {
-    Interpretation,
-    ProjectAnalysis,
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
-import * as path from "path";
-import { SubprojectDescription } from "../../../ProjectAnalysisResult";
-import { SubprojectStatus } from "../../../subprojectFinder";
 import {
     PersistResult,
-    ProjectUrl,
 } from "../../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../../SpideredRepo";
+import {
+    analyze,
+    AnalyzeResults,
+    keepExistingPersisted,
+    persistRepoInfo,
+    RepoInfo,
+} from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
     PersistenceResult,
@@ -77,22 +75,25 @@ export class GitHubSpider implements Spider {
                 bucket = [];
             }
 
-            for await (const tooMuchSourceData of it) {
-                const sourceData = dropIrrelevantFields(tooMuchSourceData);
+            for await (const sourceData of it) {
                 ++repoCount;
                 const repo = {
                     owner: sourceData.owner.login,
                     repo: sourceData.name,
                     url: sourceData.url,
                 };
-                const found = await opts.persister.loadOne(repo);
-                if (found && await opts.keepExistingPersisted(found)) {
+                if (await keepExistingPersisted(opts, repo)) {
                     keepExisting.push(repo.url);
                     logger.info("Found valid record for " + JSON.stringify(repo));
                 } else {
                     logger.info("Performing fresh analysis of " + JSON.stringify(repo));
                     try {
-                        bucket.push(analyzeAndPersist(this.cloneFunction, sourceData, criteria, analyzer, opts));
+                        bucket.push(
+                            analyzeAndPersist(this.cloneFunction,
+                                dropIrrelevantFields(sourceData),
+                                criteria,
+                                analyzer,
+                                opts));
                         if (bucket.length >= opts.poolSize) {
                             // Run all promises together. Effectively promise pooling
                             await runAllPromisesInBucket();
@@ -227,32 +228,12 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
     const persistResults: PersistResult[] = [];
     for (const repoInfo of analyzeResults.repoInfos) {
         if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
-            const toPersist: SpideredRepo = {
-                workspaceId: opts.workspaceId,
-                analysis: {
-                    // Use a spread as url has a getter and otherwise disappears
-                    ...repoInfo.analysis,
-                    id: {
-                        ...repoInfo.analysis.id,
-                        url: sourceData.html_url,
-                    },
-                },
-                topics: [], // enriched.interpretation.keywords,
+            const persistResult = await persistRepoInfo(opts, repoInfo, {
                 sourceData,
+                url: sourceData.html_url,
                 timestamp: sourceData.timestamp,
                 query: sourceData.query,
-                readme: repoInfo.readme,
-                subproject: repoInfo.subproject,
-            };
-            const persistResult = await opts.persister.persist(toPersist);
-            if (opts.onPersisted) {
-                try {
-                    await opts.onPersisted(toPersist);
-                } catch (err) {
-                    logger.warn("Failed to action after persist repo %j: %s",
-                        toPersist.analysis.id, err.message);
-                }
-            }
+            });
             persistResults.push(persistResult);
         }
     }
@@ -275,67 +256,6 @@ export interface GitHubSearchResult {
     html_url: string;
     timestamp: Date;
     query: string;
-}
-
-interface RepoInfo {
-    readme: string;
-    totalFileCount: number;
-    interpretation: Interpretation;
-    analysis: ProjectAnalysis;
-    subproject: SubprojectDescription;
-}
-
-interface AnalyzeResults {
-    repoInfos: RepoInfo[];
-    projectsDetected: number;
-}
-
-/**
- * Find project or subprojects
- */
-async function analyze(project: Project,
-                       analyzer: ProjectAnalyzer,
-                       criteria: ScmSearchCriteria): Promise<AnalyzeResults> {
-
-    const subprojectResults = criteria.subprojectFinder ?
-        await criteria.subprojectFinder.findSubprojects(project) :
-        { status: SubprojectStatus.Unknown };
-    if (!!subprojectResults.subprojects && subprojectResults.subprojects.length > 0) {
-        const repoInfos = await Promise.all(subprojectResults.subprojects.map(subproject => {
-            return projectUnder(project, subproject.path).then(p =>
-                analyzeProject(
-                    p,
-                    analyzer,
-                    { ...subproject, parentRepoRef: project.id as RemoteRepoRef }));
-        })).then(results => results.filter(x => !!x));
-        return {
-            projectsDetected: subprojectResults.subprojects.length,
-            repoInfos,
-        };
-    }
-    return { projectsDetected: 1, repoInfos: [await analyzeProject(project, analyzer, undefined)] };
-}
-
-/**
- * Analyze a project. May be a virtual project, within a bigger project.
- */
-async function analyzeProject(project: Project,
-                              analyzer: ProjectAnalyzer,
-                              subproject?: SubprojectDescription): Promise<RepoInfo> {
-    const readmeFile = await project.getFile("README.md");
-    const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
-    const totalFileCount = await project.totalFileCount();
-
-    const analysis = await analyzer.analyze(project, undefined, { full: true });
-    const interpretation = await analyzer.interpret(analysis, undefined);
-
-    return {
-        readme,
-        totalFileCount,
-        interpretation,
-        analysis,
-        subproject,
-    };
 }
 
 async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): AsyncIterable<GitHubSearchResult> {
@@ -369,25 +289,4 @@ async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): Asy
             }
         }
     }
-}
-
-async function projectUnder(p: Project, pathWithin: string): Promise<Project> {
-    if (isInMemoryProject(p)) {
-        // TODO we need latest automation-client but this isn't available
-        // return p.toSubproject(pathWithin);
-    }
-    if (!isLocalProject(p)) {
-        throw new Error(`Cannot descend into path '${pathWithin}' of non local project`);
-    }
-    const rid = p.id as RemoteRepoRef;
-    const newId: RemoteRepoRef = {
-        ...rid,
-        path: pathWithin,
-    };
-    return GitCommandGitProject.fromBaseDir(
-        newId,
-        path.join(p.baseDir, pathWithin),
-        (p as any).credentials,
-        p.release,
-    );
 }

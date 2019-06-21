@@ -23,6 +23,8 @@ import {
 } from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
 import {
+    combinePersistResults,
+    emptyPersistResult,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
@@ -62,55 +64,85 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     }
 
     public async persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
-        const persisted = await this.persistAnalysisResults(isProjectAnalysisResult(repos) ? [repos] : repos);
-        return {
-            // TODO fix this
-            succeeded: [],
-            failed: [],
-            attemptedCount: persisted,
-        };
+        return this.persistAnalysisResults(isProjectAnalysisResult(repos) ? [repos] : repos);
     }
 
-    private async persistAnalysisResults(results: AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<number> {
+    private async persistAnalysisResults(
+        analysisResultIterator: AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
+        const persistResults: PersistResult[] = [];
         return doWithClient(this.clientFactory, async client => {
-            let persisted = 0;
-            for await (const result of results) {
-                if (!result.analysis) {
+            for await (const analysisResult of analysisResultIterator) {
+                if (!analysisResult.analysis) {
                     throw new Error("Analysis is undefined!");
                 }
-                const repoRef = result.analysis.id;
-                if (!repoRef) {
-                    console.log("Ignoring repo w/o id: " + repoRef.repo);
-                    continue;
-                }
-                if (!repoRef.url) {
-                    console.log("Ignoring repo w/o url: " + repoRef.repo);
-                    continue;
-                }
-                const id = repoRef.url;
+                persistResults.push(await this.persistOne(client, analysisResult));
+            }
+            return persistResults.reduce(combinePersistResults, emptyPersistResult);
+        });
+    }
 
-                // Whack any joins
-                await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
-                await client.query(`DELETE from repo_snapshots WHERE id = $1`, [id]);
+    private async persistOne(client: Client, analysisResult: ProjectAnalysisResult): Promise<PersistResult> {
+        const repoRef = analysisResult.analysis.id;
+        if (!repoRef) {
+            return {
+                attemptedCount: 1,
+                succeeded: [],
+                failed: [{
+                    repoUrl: "missing repoRef",
+                    whileTryingTo: "build object to persist",
+                    message: "What is this even, there is no RepoRef",
+                }],
+            };
+        }
+        if (!repoRef.url) {
+            return {
+                attemptedCount: 1,
+                succeeded: [],
+                failed: [{
+                    repoUrl: "missing repoUrl. Repo is named " + repoRef.repo,
+                    whileTryingTo: "build object to persist",
+                    message: "What is this even, there is no RepoRef",
+                }],
+            };
+        }
+        const id = repoRef.url;
 
-                await client.query(`
+        try {
+            // Whack any joins
+            await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
+            await client.query(`DELETE from repo_snapshots WHERE id = $1`, [id]);
+
+            await client.query(`
             INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
-                    [id,
-                        result.workspaceId,
-                        "github",
-                        repoRef.owner,
-                        repoRef.repo,
-                        repoRef.url,
-                        !!result.analysis.gitStatus ? result.analysis.gitStatus.sha : undefined,
-                        result.analysis,
-                        (result as SpideredRepo).query,
-                    ]);
-                await this.persistFingerprints(result.analysis, id, client);
-                ++persisted;
-            }
-            return persisted;
-        });
+                [id,
+                    analysisResult.workspaceId,
+                    "github",
+                    repoRef.owner,
+                    repoRef.repo,
+                    repoRef.url,
+                    !!analysisResult.analysis.gitStatus ? analysisResult.analysis.gitStatus.sha : repoRef.sha,
+                    analysisResult.analysis,
+                    (analysisResult as SpideredRepo).query,
+                ]);
+            await this.persistFingerprints(analysisResult.analysis, id, client);
+
+            return {
+                succeeded: [id],
+                attemptedCount: 1,
+                failed: [],
+            };
+        } catch (err) {
+            return {
+                attemptedCount: 1,
+                succeeded: [],
+                failed: [{
+                    repoUrl: repoRef.url,
+                    whileTryingTo: "persist in DB",
+                    message: err.message,
+                }],
+            };
+        }
     }
 
     // Persist the fingerprints for this analysis
