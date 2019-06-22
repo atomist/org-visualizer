@@ -5,8 +5,6 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         height = pHeight || window.innerHeight,
         maxRadius = (Math.min(width, height) / 2) - 5;
 
-    console.log("Width=" + width);
-
     const formatNumber = d3.format(',d');
 
     const x = d3.scaleLinear()

@@ -247,7 +247,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     dataUrl,
                 }),
                 fingerprintDisplayName,
-                ["https://d3js.org/d3.v4.min.js", "/js/sunburst.js"]));
+                ["/lib/d3.v4.min.js", "/js/sunburst.js"]));
         });
 
     };
