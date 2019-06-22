@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
-import { execPromise } from "@atomist/sdm";
+import { GitProject, isLocalProject, LocalProject, logger } from "@atomist/automation-client";
+import { execPromise, spawnPromise } from "@atomist/sdm";
 import {
     Scorer,
 } from "@atomist/sdm-pack-analysis";
@@ -60,11 +60,36 @@ const CiFeature = assembledFeature({
     "elements.jenkins.name",
     "elements.gitlab.name");
 
-const sizeFeature: Feature = {
+/**
+ * Size in terms of files
+ * @type {{name: string; displayName: string; extract: (p) => Promise<{name: string; data: string; sha: string}>; toDisplayableFingerprint: (fp) => any; toDisplayableFingerprintName: () => string; selector: (fp) => boolean}}
+ */
+const fileCountFeature: Feature = {
     name: "size",
     displayName: "size",
     extract: async p => {
         const data = await p.totalFileCount() + "";
+        return {
+            name: "size",
+            data,
+            sha: sha256(data),
+        };
+    },
+    toDisplayableFingerprint: fp => fp.data,
+    toDisplayableFingerprintName: () => "size",
+    selector: fp => fp.name === "size",
+};
+
+const branchCount: Feature = {
+    name: "branches",
+    displayName: "branches",
+    extract: async p => {
+        const lp = p as LocalProject;
+        const bp = await execPromise("git", ["branch", "-a"], {
+            cwd: lp.baseDir,
+        });
+        const branchCount = bp.stdout.split("\n").length;
+        const data = branchCount + "";
         return {
             name: "size",
             data,
@@ -84,7 +109,8 @@ export const features: ManagedFeature[] = [
         suggestedIdeals: idealFromNpm,
     },
     new TsLintPropertyFeature(),
-    sizeFeature,
+    fileCountFeature,
+    branchCount,
     stackFeature,
     ciFeature,
     javaBuildFeature,
