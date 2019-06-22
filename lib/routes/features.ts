@@ -91,7 +91,7 @@ const branchCount: Feature = {
         const branchCount = bp.stdout.split("\n").length;
         const data = branchCount + "";
         return {
-            name: "size",
+            name: "branches",
             data,
             sha: sha256(data),
         };

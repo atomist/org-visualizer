@@ -76,7 +76,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
         branchCount: params =>
             treeBuilderFor<Analyzed>("branchCount", params)
                 .renderWith(ar => {
-                    const sizeFp = ar.fingerprints.find(fp => fp.name === "branchCount");
+                    const sizeFp = ar.fingerprints.find(fp => fp.name === "branches");
                     const size = sizeFp ? parseInt(sizeFp.data) : 1;
                     const projectName = ar.id.path ?
                         ar.id.repo + path.sep + ar.id.path :
