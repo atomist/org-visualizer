@@ -52,16 +52,12 @@ export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScri
             undefined;
     }
 
-    public get relevanceTest() {
-        return pa => !!pa.elements.node;
+    public toDisplayableFingerprint(fpi: TypeScriptVersion): string {
+        return fpi.data;
     }
 
-    public get necessityTest() {
-        return pa => !!pa.elements.node;
-    }
-
-    public toDisplayableString(h: TypeScriptVersion): string {
-        return h.typeScriptVersion;
+    public toDisplayableFingerprintName(fingerprintName: string) {
+        return "TypeScript version";
     }
 
     public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<TypeScriptVersion>>> {

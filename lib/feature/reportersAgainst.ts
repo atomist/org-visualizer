@@ -97,7 +97,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 .group({
                     name,
                     by: ar => {
-                        const fp = ar.fingerprints[name];
+                        const fp = ar.fingerprints.find(fp => fp.name === name);
                         return !!fp ? "Yes" : "No";
                     },
                 })
@@ -109,7 +109,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 .group({
                     name: name + " ideal?",
                     by: async ar => {
-                        const fp = ar.fingerprints[name];
+                        const fp = ar.fingerprints.find(fp => fp.name === name);
                         const ideal = await featureManager.idealResolver(name);
                         if (!ideal.ideal) {
                             return !fp ? `Yes (gone)` : "No (present)";

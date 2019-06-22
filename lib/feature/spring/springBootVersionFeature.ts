@@ -24,7 +24,7 @@ const SpringBootVersionType = "spring-boot-version";
 
 export const springBootVersionFeature: Feature = {
     name: "springVersion",
-    displayName: "Spring Version",
+    displayName: "Spring Boot Version",
 
     extract: async p => {
         const versions = await SpringBootVersionInspection(p, undefined);
@@ -49,5 +49,5 @@ export const springBootVersionFeature: Feature = {
     },
     selector: fp => fp.type === SpringBootVersionType,
     toDisplayableFingerprintName: () => "Spring Boot version",
-    toDisplayableFingerprint: fp => `Spring Boot v ${fp.data.versions.map(v => v.version).join(",")}`,
+    toDisplayableFingerprint: fp => fp.data.versions.map(v => v.version).join(","),
 };

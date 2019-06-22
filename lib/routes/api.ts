@@ -88,7 +88,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                 resolveFeatureNames(featureManager, tree);
                 res.json(tree);
             } catch (e) {
-                logger.warn("Error occurred getting one fingerprint: %s", e.message);
+                logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);
                 res.sendStatus(500);
             }
         });
