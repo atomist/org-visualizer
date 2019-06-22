@@ -35,6 +35,7 @@ import { CodeOwnershipFeature } from "../element/codeOwnership";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { assembledFeature } from "../feature/domain/assembledFeature";
 import { conditionalize } from "../feature/domain/oneOf";
+import { ciFeature, javaBuildFeature, stackFeature } from "../feature/domain/stackFeature";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 import {
     TypeScriptVersion,
@@ -45,9 +46,8 @@ import {
     ManagedFeature,
     simpleFlagger,
 } from "../feature/FeatureManager";
-import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
-import { ciFeature, javaBuildFeature, stackFeature } from "../feature/domain/stackFeature";
+import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 
 const CiFeature = assembledFeature({
         name: "CI",

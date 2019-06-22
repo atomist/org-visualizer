@@ -29,6 +29,7 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
+import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import { Analyzed, HasFingerprints } from "../feature/FeatureManager";
@@ -44,7 +45,6 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import * as path from "path";
 
 /**
  * Well known reporters against our repo cohort.

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Project } from "@atomist/automation-client";
+import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 
 export interface Classifier {
     classification: string;
