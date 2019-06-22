@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { GitProject, isLocalProject, LocalProject, logger } from "@atomist/automation-client";
-import { execPromise, spawnPromise } from "@atomist/sdm";
+import {
+    GitProject,
+    isLocalProject,
+    LocalProject,
+    logger,
+} from "@atomist/automation-client";
+import {
+    execPromise,
+    spawnPromise,
+} from "@atomist/sdm";
 import {
     Scorer,
 } from "@atomist/sdm-pack-analysis";
@@ -35,7 +43,11 @@ import { CodeOwnershipFeature } from "../element/codeOwnership";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { assembledFeature } from "../feature/domain/assembledFeature";
 import { conditionalize } from "../feature/domain/oneOf";
-import { ciFeature, javaBuildFeature, stackFeature } from "../feature/domain/stackFeature";
+import {
+    ciFeature,
+    javaBuildFeature,
+    stackFeature,
+} from "../feature/domain/stackFeature";
 import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
 import {
     TypeScriptVersion,

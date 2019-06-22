@@ -32,7 +32,10 @@ import * as _ from "lodash";
 import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
-import { Analyzed, HasFingerprints } from "../feature/FeatureManager";
+import {
+    Analyzed,
+    HasFingerprints,
+} from "../feature/FeatureManager";
 import {
     Reporters,
 } from "../feature/reporters";
