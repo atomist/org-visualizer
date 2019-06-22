@@ -35,7 +35,7 @@ function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): Rea
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
     if (af.ideal) {
-        const idealQueryLink = `./query?name=${af.name}-ideal&byOrg=true`;
+        const idealQueryLink = `./query?name=${af.name}-ideal&filter=true&byOrg=true`;
         result = <span>
             -
             <a href={idealQueryLink}> Progress toward ideal {" "}
