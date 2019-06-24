@@ -38,7 +38,22 @@ Data about each repository is stored locally in Postgres.
 Please start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database. You can do this within the `psql` shell, or use the Postgres admin tool to create a database named `org-viz` and run all commands in that script after the line beginning with `\connect`.
 
 #### Connecting to the Database
-tbd
+
+Configure the Postgres database details in `client.confjg.json` in your `~/.atomist`:
+
+```json
+{
+  "sdm": {
+    "postgres": {
+      "user": "<postgres user>",
+      "password": "<postgres password",
+      "host": "<postgres host>,",
+      "port": "<postgres port>",
+      "database": "org_wiz"
+    }
+  }
+}
+```
 
 ### Other Dependencies
 
