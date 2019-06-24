@@ -83,24 +83,28 @@ async function spider(params: SpiderAppOptions) {
     const query = params.query || `org:${org}` + searchInRepoName;
 
     const result = await spider.spider({
-        // See the GitHub search API documentation at
-        // https://developer.github.com/v3/search/
-        // You can query for many other things here, beyond org
-        githubQueries: [query],
+            // See the GitHub search API documentation at
+            // https://developer.github.com/v3/search/
+            // You can query for many other things here, beyond org
+            githubQueries: [query],
 
-        maxRetrieved: 1500,
-        maxReturned: 1500,
-        projectTest: async p => {
-            // Perform a computation here to return false if a project should not
-            // be analyzed and persisted, based on its contents. For example,
-            // this enables you to analyze only projects containing a particular file
-            // through calling getFile()
-            return true;
+            maxRetrieved: 1500,
+            maxReturned: 1500,
+            projectTest: async p => {
+                // Perform a computation here to return false if a project should not
+                // be analyzed and persisted, based on its contents. For example,
+                // this enables you to analyze only projects containing a particular file
+                // through calling getFile()
+                return true;
+            },
+            subprojectFinder: firstSubprojectFinderOf(
+                fileNamesSubprojectFinder(
+                    "pom.xml",
+                    "build.gradle",
+                    "package.json",
+                    "requirements.txt"),
+            ),
         },
-        subprojectFinder: firstSubprojectFinderOf(
-            fileNamesSubprojectFinder("pom.xml", "build.gradle", "package.json"),
-        ),
-    },
         analyzer,
         {
             persister,
@@ -124,25 +128,25 @@ yargs
         description: "GitHub user or organization",
     })
     .option("search", {
-        required: false,
-        alias: 's',
-        requiresArg: true,
-        description: "Search within repository names"
-    }
+            required: false,
+            alias: 's',
+            requiresArg: true,
+            description: "Search within repository names"
+        }
     )
     .option("query", {
-        required: false,
-        alias: 'q',
-        requiresArg: true,
-        description: "GitHub query"
-    }
+            required: false,
+            alias: 'q',
+            requiresArg: true,
+            description: "GitHub query"
+        }
     )
     .option("workspace", {
-        required: false,
-        requiresArg: true,
-        alias: 'w',
-        description: "Name of Atomist workspace to store results under"
-    }
+            required: false,
+            requiresArg: true,
+            alias: 'w',
+            description: "Name of Atomist workspace to store results under"
+        }
     )
     .option("localDirectory", {
         required: false,
@@ -160,7 +164,6 @@ const query = commandLineParameters.query;
 const workspaceId = commandLineParameters.workspace || commandLineParameters.owner || "local";
 const source: "local" | "GitHub" = commandLineParameters.localDirectory ? "local" : "GitHub";
 const localDirectory = commandLineParameters.localDirectory ? path.resolve(commandLineParameters.localDirectory) : "";
-
 
 if (!owner && !query && !localDirectory) {
     console.log(`Please specify owner, query, or local directory`);

@@ -26,7 +26,8 @@ import {
 
 /**
  * Return a SubprojectFinder that infers a directory from filenames that may be
- * anywhere
+ * anywhere. E.g. every directory that contains a Maven pom.xml might be
+ * considered a subproject.
  */
 export function fileNamesSubprojectFinder(...filenames: string[]): SubprojectFinder {
     return {
