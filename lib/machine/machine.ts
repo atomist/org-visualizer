@@ -40,6 +40,7 @@ import {
     PostgresProjectAnalysisResultStore,
 } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { CodeOwnerScanner } from "../element/codeOwnership";
 import { packageLockScanner } from "../element/packageLock";
@@ -49,7 +50,6 @@ import {
     idealConvergenceScorer,
 } from "../routes/features";
 import { GitActivityScanner } from "./gitActivityScanner";
-import { codeMetricsScanner } from "../element/codeMetricsElement";
 
 /**
  * Add scanners to the analyzer to extract data

@@ -27,6 +27,7 @@ import {
 import {
     Scorer,
 } from "@atomist/sdm-pack-analysis";
+import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
 import {
     Feature,
     FP,
@@ -60,7 +61,6 @@ import {
 } from "../feature/FeatureManager";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
-import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
 
 const CiFeature = assembledFeature({
         name: "CI",
