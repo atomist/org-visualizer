@@ -22,6 +22,8 @@ import { AnalysisDerivedFeature } from "../FeatureManager";
 
 export class TypeScriptVersion extends AbstractFingerprint {
 
+    public type = "language";
+
     constructor(public readonly typeScriptVersion: string) {
         super("tsVersion", "tsv", "1.0.0", typeScriptVersion);
     }
