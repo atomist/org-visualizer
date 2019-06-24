@@ -23,7 +23,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 |[GPL-3.0](#gpl-30)|4|
 |[ISC](#isc)|84|
 |[MIT AND BSD-3-Clause](#mit-and-bsd-3-clause)|1|
-|[MIT](#mit)|946|
+|[MIT](#mit)|945|
 |[Unlicense](#unlicense)|1|
 |[WTFPL](#wtfpl)|1|
 
@@ -45,7 +45,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-analysis-spring`|`2.0.0-master.20190428091941`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
 |`@atomist/sdm-pack-analysis`|`1.1.0-master.20190610233255`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
 |`@atomist/sdm-pack-build`|`1.0.4`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
-|`@atomist/sdm-pack-docker`|`2.0.0-master.20190605141613`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
+|`@atomist/sdm-pack-docker`|`2.0.0-fingerprint.20190623010411`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
 |`@atomist/sdm-pack-fingerprints`|`3.1.2-master.20190619162646`|Atomist|[https://github.com/atomist/sdm-pack-fingerprints](https://github.com/atomist/sdm-pack-fingerprints)|
 |`@atomist/sdm-pack-node`|`1.1.0-master.20190523212312`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-sloc`|`1.0.3-master.20190502175705`|Atomist|[https://github.com/atomist/sdm-pack-sloc](https://github.com/atomist/sdm-pack-sloc)|
@@ -603,7 +603,6 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`detective`|`4.7.1`|James Halliday|[https://github.com/browserify/detective](https://github.com/browserify/detective)|
 |`diagnostics`|`1.1.1`|Arnout Kazemier|[https://github.com/bigpipe/diagnostics](https://github.com/bigpipe/diagnostics)|
 |`dns-prefetch-control`|`0.1.0`|Evan Hahn|[https://github.com/helmetjs/dns-prefetch-control](https://github.com/helmetjs/dns-prefetch-control)|
-|`dockerfile-ast`|`0.0.13`|Remy Suen|[https://github.com/rcjsuen/dockerfile-ast](https://github.com/rcjsuen/dockerfile-ast)|
 |`dockerfile-ast`|`0.0.14`|Remy Suen|[https://github.com/rcjsuen/dockerfile-ast](https://github.com/rcjsuen/dockerfile-ast)|
 |`dockerfile-ast`|`0.0.16`|Remy Suen|[https://github.com/rcjsuen/dockerfile-ast](https://github.com/rcjsuen/dockerfile-ast)|
 |`dont-sniff-mimetype`|`1.0.0`|Adam Baldwin|[https://github.com/helmetjs/dont-sniff-mimetype](https://github.com/helmetjs/dont-sniff-mimetype)|
