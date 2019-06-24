@@ -62,7 +62,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         // .withStack(nodeStackSupport(sdm))
         .withScanner(nodeScanner)
         .withFeatures(features)
-        //.withScanner(GitActivityScanner)
+        // .withScanner(GitActivityScanner)
         .withScanner(new DockerScanner())
         .withScanner(travisScanner)
         .withScanner(circleScanner)
