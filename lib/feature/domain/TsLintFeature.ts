@@ -58,7 +58,7 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
                     property,
                     pathObj[property] || "");
             });
-    };
+    }
 
     constructor(public readonly path = "rules") {
     }
