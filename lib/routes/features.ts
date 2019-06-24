@@ -75,11 +75,11 @@ const CiFeature = assembledFeature({
 
 /**
  * Size in terms of files
- * @type {{name: string; displayName: string; extract: (p) => Promise<{name: string; data: string; sha: string}>; toDisplayableFingerprint: (fp) => any; toDisplayableFingerprintName: () => string; selector: (fp) => boolean}}
  */
 const fileCountFeature: Feature = {
     name: "size",
-    displayName: "size",
+    // Display name is undefined to prevent display
+    displayName: undefined,
     extract: async p => {
         const data = await p.totalFileCount() + "";
         return {
@@ -95,7 +95,7 @@ const fileCountFeature: Feature = {
 
 const branchCount: Feature = {
     name: "branches",
-    displayName: "branches",
+    displayName: undefined,
     extract: async p => {
         const lp = p as LocalProject;
         const bp = await execPromise("git", ["branch", "-a"], {

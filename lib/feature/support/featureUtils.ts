@@ -25,7 +25,10 @@ export function relevantFingerprints(mfs: FingerprintCensus, test: (mf: Aggregat
     for (const featureAndFingerprints of clone.features) {
         featureAndFingerprints.fingerprints = featureAndFingerprints.fingerprints.filter(test);
     }
-    clone.features = clone.features.filter(f => f.fingerprints.length > 0);
+    clone.features = clone.features
+        // Only display features with a display name
+        .filter(f => !!f.feature.displayName)
+        .filter(f => f.fingerprints.length > 0);
     return clone;
 }
 
