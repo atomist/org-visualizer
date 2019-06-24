@@ -133,10 +133,6 @@ Conduct</a></li>
             <li key="docker-3"><a href="./query?filter=true&name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
         </ul>
 
-        <h2>Technology identified</h2>
-
-        tbd
-
         <h2>Custom path</h2>
 
         <form method="GET" action="./query">
@@ -150,6 +146,6 @@ Conduct</a></li>
         </form>
 
         <h2>Data</h2>
-        <a href="http://localhost:2866/querydata/typeScriptVersions">Example of backing JSON data</a>
+        <a href="./api/v1/*/fingerprint/npm-project-deps/tslint?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a>
     </div>;
 }
