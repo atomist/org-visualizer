@@ -107,7 +107,7 @@ async function spider(params: SpiderAppOptions) {
             keepExistingPersisted: async existing => {
                 console.log(`\tFound analysis for ${existing.analysis.id.url}`);
                 // Perform a computation here to return true if an existing analysis seems valid
-                return true;
+                return !existing.analysis.id.url.includes("docs");
             },
             // Controls promise usage inNode
             poolSize: 40,
