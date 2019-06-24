@@ -52,14 +52,20 @@ export interface FeatureForDisplay {
     fingerprints: FingerprintForDisplay[];
 }
 
-function displayImportantFeature(f: FeatureForDisplay): React.ReactElement {
-    return <div>
-        <h3>{f.feature.displayName}</h3>
-        <ul>
-            {f.fingerprints.map(fingerprintListItem)}
-        </ul>
+function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactElement {
 
-    </div>;
+    const key = "collapsible" + i;
+    const expandByDefault = f.fingerprints.length <= 1;
+
+    return <div className="wrap-collabsible">
+        <input id={key} className="sneaky toggle" type="checkbox" checked={expandByDefault}></input>
+        <label htmlFor={key} className="lbl-toggle">{f.feature.displayName} ({f.fingerprints.length})</label>
+        <div className="collapsible-content">
+            <div className="content-inner">
+                <ul>
+                    {f.fingerprints.map(fingerprintListItem)}
+                </ul>
+            </div></div></div>;
 }
 
 export interface FingerprintForDisplay extends MaybeAnIdeal {

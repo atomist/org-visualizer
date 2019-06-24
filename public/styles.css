@@ -43,7 +43,7 @@ header .page-title {
     padding-left: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
-    background: indianred;
+    background: rgba(34, 106, 106, 0.2);
 }
 
 /* d3 sunburst stuff */
@@ -65,4 +65,74 @@ svg .slice text {
     pointer-events: none;
     dominant-baseline: middle;
     text-anchor: middle;
+}
+
+/* Collabsible content stuff 
+ * https://alligator.io/css/collapsible/
+ */
+
+.wrap-collabsible {
+    margin-bottom: 1.2rem 0;
+    padding-bottom: 1rem;
+}
+
+input[type='checkbox'].sneaky {
+    display: none;
+}
+
+.lbl-toggle {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 1rem;
+    color: #2a2a2a;
+    background: rgb(186, 216, 95);
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.25s ease-out;
+}
+
+.lbl-toggle:hover {
+    color: rgb(34, 106, 106);
+}
+
+.lbl-toggle::before {
+    content: ' ';
+    display: inline-block;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid currentColor;
+    vertical-align: middle;
+    margin-right: .7rem;
+    transform: translateY(-2px);
+    transition: transform .2s ease-out;
+}
+
+.toggle:checked+.lbl-toggle::before {
+    transform: rotate(90deg) translateX(-3px);
+}
+
+.collapsible-content {
+    max-height: 0px;
+    overflow: hidden;
+    transition: max-height .25s ease-in-out;
+}
+
+.toggle:checked+.lbl-toggle+.collapsible-content {
+    max-height: 5000px;
+}
+
+.toggle:checked+.lbl-toggle {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.collapsible-content .content-inner {
+    background: rgba(186, 216, 95, 0.75);
+    border-bottom: 1px solid rgba(186, 216, 95, .45);
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    padding: .5rem 1rem;
 }
