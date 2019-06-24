@@ -95,13 +95,13 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         </div>;
     }
     return <div><a href="./projects">{props.projectsAnalyzed} projects </a>
-        <h2>Action Items</h2>
-        <div className="actionItemBox">
-            <ul>
-                {props.actionableFingerprints.map(actionableFingerprintListItem)}
-                <li><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
-            </ul>
-        </div>
+        {/*<h2>Action Items</h2>*/}
+        {/*<div className="actionItemBox">*/}
+            {/*<ul>*/}
+                {/*{props.actionableFingerprints.map(actionableFingerprintListItem)}*/}
+                {/*<li><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>*/}
+            {/*</ul>*/}
+        {/*</div>*/}
         <h2>Features</h2>
         <div className="importantFeatures">
             <ul>
