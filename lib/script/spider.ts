@@ -21,20 +21,23 @@
  * Main entry point script. Added as a binary in package.json
  */
 
-import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
-import { Spider } from "../analysis/offline/spider/Spider";
-import { createAnalyzer } from "../machine/machine";
 import {
     configureLogging,
     MinimalLogging,
 } from "@atomist/automation-client";
-import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
-import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
-import * as yargs from "yargs";
-import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import * as path from "path";
-import { Client } from "pg";
+import * as yargs from "yargs";
+import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
+import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
+import { Spider } from "../analysis/offline/spider/Spider";
+import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
+import {
+    clientFactory,
+    createAnalyzer,
+} from "../machine/machine";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(MinimalLogging);
@@ -76,9 +79,7 @@ async function spider(params: SpiderAppOptions) {
 
     const spider: Spider = params.source === "GitHub" ? new GitHubSpider() : new LocalSpider(params.localDirectory);
     const persister = //new FileSystemProjectAnalysisResultStore();
-        new PostgresProjectAnalysisResultStore(() => new Client({
-            database: "org_viz",
-        }));
+        new PostgresProjectAnalysisResultStore(clientFactory(loadUserConfiguration()));
     const query = params.query || `org:${org}` + searchInRepoName;
 
     const result = await spider.spider({
