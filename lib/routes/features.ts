@@ -60,6 +60,7 @@ import {
 } from "../feature/FeatureManager";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
 
 const CiFeature = assembledFeature({
         name: "CI",
@@ -114,6 +115,7 @@ const branchCount: Feature = {
 };
 
 export const features: ManagedFeature[] = [
+    DockerFrom,
     new TypeScriptVersionFeature(),
     new CodeOwnershipFeature(),
     {

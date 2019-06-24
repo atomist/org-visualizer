@@ -49,6 +49,7 @@ import {
     idealConvergenceScorer,
 } from "../routes/features";
 import { GitActivityScanner } from "./gitActivityScanner";
+import { codeMetricsScanner } from "../element/codeMetricsElement";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -70,7 +71,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .withScanner(reactScanner)
 
         // This one is crazy expensive so skip it
-        // .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
+         .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
 
         .withScanner(CodeOfConductScanner)
         .withScanner(CodeOwnerScanner)
