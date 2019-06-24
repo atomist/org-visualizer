@@ -22,7 +22,7 @@ import { AnalysisDerivedFeature } from "../FeatureManager";
 
 export class TypeScriptVersion extends AbstractFingerprint {
 
-    public type = "language";
+    public readonly type = "TypeScript";
 
     constructor(public readonly typeScriptVersion: string) {
         super("tsVersion", "tsv", "1.0.0", typeScriptVersion);
@@ -32,7 +32,7 @@ export class TypeScriptVersion extends AbstractFingerprint {
 
 export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScriptVersion> {
 
-    public displayName = "TypeScript version";
+    public readonly displayName = "TypeScript version";
 
     public readonly name = "tsVersion";
 

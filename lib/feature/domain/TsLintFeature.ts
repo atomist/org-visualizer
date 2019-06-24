@@ -21,6 +21,8 @@ import * as _ from "lodash";
 
 export class TsLintProperty extends AbstractFingerprint {
 
+    public readonly type = "TypeScript";
+
     constructor(public readonly path: string, public readonly property: string, data: any) {
         super(`tslintproperty::${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
     }
@@ -29,13 +31,13 @@ export class TsLintProperty extends AbstractFingerprint {
 
 export class TsLintPropertyFeature implements Feature<TsLintProperty> {
 
-    public displayName = "TsLint";
+    public readonly displayName = "TSLint";
 
-    public readonly name = "tsVersion";
+    public readonly name = "tslint";
 
     get apply() {
         return async (p, tsi) => {
-            throw new Error(`Applying tslint version ${tsi.typeScriptVersion} not yet supported`);
+            throw new Error(`Applying TSlint version ${tsi.typeScriptVersion} not yet supported`);
         };
     }
 
@@ -56,7 +58,7 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
                     property,
                     pathObj[property] || "");
             });
-    }
+    };
 
     constructor(public readonly path = "rules") {
     }

@@ -29,7 +29,8 @@ export interface Classifier {
  * @param {Classifier} classifiers
  * @return {Feature}
  */
-export function classifyFeature(id: Pick<Feature, "name" | "displayName"> & { fallbackClassification: string },
+export function classifyFeature(id: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprint" |
+                                    "toDisplayableFingerprintName"> & { fallbackClassification: string },
                                 ...classifiers: Classifier[]): Feature {
     return {
         ...id,
@@ -50,6 +51,5 @@ export function classifyFeature(id: Pick<Feature, "name" | "displayName"> & { fa
                 undefined;
         },
         selector: fp => fp.name === id.name,
-
     };
 }

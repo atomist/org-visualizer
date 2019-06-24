@@ -21,8 +21,9 @@ const StackName = "stack";
 
 export const stackFeature: Feature = classifyFeature({
         name: StackName,
-        displayName: "stack",
+        displayName: "Technology stack",
         fallbackClassification: "unknown",
+        toDisplayableFingerprintName: () => "Technology stack",
     },
     { classification: "jvm", predicate: async p => p.hasFile("pom.xml") },
     { classification: "jvm", predicate: async p => p.hasFile("build.gradle") },
@@ -32,8 +33,9 @@ export const stackFeature: Feature = classifyFeature({
 
 export const javaBuildFeature: Feature = classifyFeature({
         name: "javaBuild",
-        displayName: "javaBuild",
-        fallbackClassification: "non-Java",
+        displayName: "Java build tool",
+        fallbackClassification: "not Java",
+        toDisplayableFingerprintName: () => "Java build tool",
     },
     { classification: "maven", predicate: async p => p.hasFile("pom.xml") },
     { classification: "gradle", predicate: async p => p.hasFile("build.gradle") },
@@ -41,8 +43,9 @@ export const javaBuildFeature: Feature = classifyFeature({
 
 export const ciFeature: Feature = classifyFeature({
         name: "ci",
-        displayName: "ci",
+        displayName: "CI tool",
         fallbackClassification: undefined,
+        toDisplayableFingerprintName: () => "CI tool",
     },
     { classification: "travis", predicate: async p => p.hasFile(".travis.yml") },
     { classification: "jenkins", predicate: async p => p.hasFile("Jenkinsfile") },
