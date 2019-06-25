@@ -142,16 +142,15 @@ Conduct</a></li>
             <li key="docker-3"><a href="./query?filter=true&name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
         </ul>
 
-        <h2>Custom path</h2>
+        <h2>Custom fingerprint</h2>
 
         <form method="GET" action="./query">
-            <input type="hidden" name="name" value="path" readOnly={true}></input>
+            Feature name: <input id="type" name="type" value="spring-boot-version"></input>
 
-            Path: <input id="value" name="value" value="elements.node.typeScript.tslint.hasConfig" readOnly={true}></input>
+            Fingerprint name: <input id="name" name="name" value="spring-boot-version"></input>
             <input type="checkbox" name="otherLabel" value="irrelevant"></input>
-            <input type="hidden" name="filter" value="true"></input>
             Show all
-            <input type="submit" value="Search"></input>
+            <input type="submit" value="Visualize"></input>
         </form>
 
         <h2>Data</h2>
