@@ -31,7 +31,7 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
             <input hidden={true} type="text" readOnly={true} id="stringifiedFP" name="stringifiedFP"
                 value={possibleIdeal.stringified} />
             <input hidden={true} readOnly={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
-            <input type="submit" value={possibleIdeal.displayValue} />
+            <input type="submit" defaultValue={possibleIdeal.displayValue} />
         </form>
     </li>;
 }
@@ -39,7 +39,7 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
 function displaySuggestedIdeals(possibleIdeals: PossibleIdealForDisplay[]): React.ReactElement {
     return <ul>
         {possibleIdeals.map(suggestedIdealListItem)}
-        <li key="other">Other: <input /> <button type="submit">Set</button></li>
+        <li key="other">Other: <input defaultValue="" /> <button type="submit">Set</button></li>
     </ul>;
 }
 

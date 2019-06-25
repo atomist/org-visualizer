@@ -57,7 +57,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
     const expandByDefault = f.fingerprints.length <= 1;
 
     return <div className="wrap-collabsible">
-        <input id={key} className="sneaky toggle" type="checkbox" checked={expandByDefault}></input>
+        <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
         <label htmlFor={key} className="lbl-toggle">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">
             <div className="content-inner">
@@ -79,7 +79,7 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
-    return <li>
+    return <li key={displayName}>
         <i>{displayName}</i>: {f.appearsIn} projects, {" "}
         <a href={variantsQueryLink}>{f.variants} variants</a>
         {idealDisplay(f)}
@@ -93,14 +93,16 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
             Substitute your GitHub user or organization for `atomist` to get results for your own projects!
         </div>;
     }
+
+    const actionItems = <div><h2>Action Items</h2>
+        <div className="actionItemBox">
+            <ul>
+                {props.actionableFingerprints.map(actionableFingerprintListItem)}
+                <li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
+            </ul>
+        </div></div>;
     return <div><a href="./projects">{props.projectsAnalyzed} projects </a>
-        {/*<h2>Action Items</h2>*/}
-        {/*<div className="actionItemBox">*/}
-            {/*<ul>*/}
-                {/*{props.actionableFingerprints.map(actionableFingerprintListItem)}*/}
-                {/*<li><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>*/}
-            {/*</ul>*/}
-        {/*</div>*/}
+        {/*actionItems*/}
         <h2>Features</h2>
         <div className="importantFeatures">
             <ul>
@@ -143,9 +145,9 @@ Conduct</a></li>
         <h2>Custom path</h2>
 
         <form method="GET" action="./query">
-            <input type="hidden" name="name" value="path"></input>
+            <input type="hidden" name="name" value="path" readOnly={true}></input>
 
-            Path: <input id="value" name="value" value="elements.node.typeScript.tslint.hasConfig" ></input>
+            Path: <input id="value" name="value" value="elements.node.typeScript.tslint.hasConfig" readOnly={true}></input>
             <input type="checkbox" name="otherLabel" value="irrelevant"></input>
             <input type="hidden" name="filter" value="true"></input>
             Show all

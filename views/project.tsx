@@ -24,11 +24,11 @@ export function ProjectExplorer(props: ProjectExplorerProps): React.ReactElement
     return <div>
         <h1>Project {props.owner}:{props.repo}</h1>
 
-        This is a good project
+        This is a good project.
 
-        <h2>Features</h2>
+        <h2>Architectural Concerns</h2>
 
-        {props.features.map(displayFeature)};
+        {props.features.map(displayFeature)}
     </div>;
 }
 
@@ -42,7 +42,7 @@ function displayFeature(feature: FeatureForDisplay): React.ReactElement {
 }
 
 function displayFingerprint(fingerprint: FingerprintForDisplay): React.ReactElement {
-    return <li style={fingerprint.style}>
+    return <li style={fingerprint.style} key={fingerprint.displayName}>
         <i>{fingerprint.displayName}</i>: {fingerprint.displayValue}
         {" "} (Ideal: {fingerprint.idealDisplayString || "none"})
     </li>;
