@@ -48,9 +48,9 @@ export async function reportersAgainst(featureManager: FeatureManager,
         treeBuilderFor("flagged", params)
             .group({
                 name: "flags",
-                by: async a => {
+                by: async hf => {
                     const knownBad = (await Promise.all(
-                        allFingerprints(a).map(fp => featureManager.flags(fp)),
+                        allFingerprints(hf).map(fp => featureManager.flags(fp)),
                     )).filter(f => !!f && f.length > 0);
                     return knownBad.length === 0 ?
                         params.otherLabel :
@@ -59,9 +59,9 @@ export async function reportersAgainst(featureManager: FeatureManager,
             })
             .group({
                 name: "violations",
-                by: async a => {
+                by: async hf => {
                     const flags = await Promise.all(
-                        allFingerprints(a).map(fp => featureManager.flags(fp)),
+                        allFingerprints(hf).map(fp => featureManager.flags(fp)),
                     );
                     const knownBad: Flag[] = _.flatten(flags.filter(f => !!f && f.length > 0));
                     return knownBad.length === 0 ?
@@ -82,8 +82,8 @@ export async function reportersAgainst(featureManager: FeatureManager,
             treeBuilderFor(name, params)
                 .group({
                     name,
-                    by: ar => {
-                        const fp = ar.fingerprints[name];
+                    by: hf => {
+                        const fp = hf.fingerprints[name];
                         return !!fp ? defaultedToDisplayableFingerprint(featureManager.featureFor(fp))(fp) : undefined;
                     },
                 })
@@ -93,9 +93,9 @@ export async function reportersAgainst(featureManager: FeatureManager,
             treeBuilderFor(name, params)
                 .group({
                     name,
-                    by: ar => {
-                        const fp = ar.fingerprints.find(fp => fp.name === name);
-                        return !!fp ? "Yes" : "No";
+                    by: hf => {
+                        const found = hf.fingerprints.find(fp => fp.name === name);
+                        return !!found ? "Yes" : "No";
                     },
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
@@ -105,20 +105,20 @@ export async function reportersAgainst(featureManager: FeatureManager,
             treeBuilderFor(name, params)
                 .group({
                     name: name + " ideal?",
-                    by: async ar => {
-                        const fp = ar.fingerprints.find(fp => fp.name === name);
+                    by: async hf => {
+                        const found = hf.fingerprints.find(fp => fp.name === name);
                         const ideal = await featureManager.idealResolver(name);
                         if (!ideal.ideal) {
-                            return !fp ? `Yes (gone)` : "No (present)";
+                            return !found ? `Yes (gone)` : "No (present)";
                         }
-                        if (!fp) {
+                        if (!found) {
                             return undefined;
                         }
-                        const feature = featureManager.featureFor(fp);
+                        const feature = featureManager.featureFor(found);
                         if (ideal && ideal.ideal) {
-                            return fp.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
+                            return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
                         }
-                        return !!fp ? defaultedToDisplayableFingerprint(feature)(fp) : undefined;
+                        return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
