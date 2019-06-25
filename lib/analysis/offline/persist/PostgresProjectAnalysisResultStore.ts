@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    logger,
-    RepoId,
-} from "@atomist/automation-client";
+import { RepoRef, } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
-import {
-    isProjectAnalysisResult,
-    ProjectAnalysisResult,
-} from "../../ProjectAnalysisResult";
+import { isProjectAnalysisResult, ProjectAnalysisResult, } from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
 import {
     combinePersistResults,
@@ -31,6 +25,7 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
+import { ClientFactory, doWithClient } from "./pgUtils";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
@@ -52,12 +47,11 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         });
     }
 
-    // TODO also sha
-    public async loadOne(repo: RepoId): Promise<ProjectAnalysisResult> {
+    public async loadOne(repo: RepoRef): Promise<ProjectAnalysisResult> {
         return doWithClient(this.clientFactory, async client => {
             const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp
                 FROM repo_snapshots
-                WHERE owner = $1 AND name = $2`, [repo.owner, repo.repo]);
+                WHERE owner = $1 AND name = $2 AND commit_sha = $3`, [repo.owner, repo.repo, repo.sha]);
             return result.rows.length >= 1 ? {
                 analysis: result.rows[0].analysis,
                 timestamp: result.rows[0].timestamp,
@@ -93,7 +87,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 failed: [{
                     repoUrl: "missing repoRef",
                     whileTryingTo: "build object to persist",
-                    message: "What is this even, there is no RepoRef",
+                    message: "No RepoRef",
                 }],
             };
         }
@@ -104,11 +98,22 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 failed: [{
                     repoUrl: "missing repoUrl. Repo is named " + repoRef.repo,
                     whileTryingTo: "build object to persist",
-                    message: "What is this even, there is no RepoRef",
+                    message: "No url on RepoRef",
                 }],
             };
         }
-        const id = repoRef.url;
+        if (!repoRef.sha) {
+            return {
+                attemptedCount: 1,
+                succeeded: [],
+                failed: [{
+                    repoUrl: repoRef.url,
+                    whileTryingTo: "build object to persist",
+                    message: "No sha on RepoRef",
+                }],
+            };
+        }
+        const id = repoRef.url + "_" + repoRef.sha;
 
         try {
             // Whack any joins
@@ -167,33 +172,4 @@ values ($1, $2) ON CONFLICT DO NOTHING
     constructor(public readonly clientFactory: ClientFactory) {
     }
 
-}
-
-export interface ClientOptions {
-    user?: string;
-    password?: string;
-    database?: string;
-    port?: number;
-    host?: string;
-}
-
-export type ClientFactory = () => Client;
-
-export async function doWithClient<R>(clientFactory: () => Client,
-                                      what: (c: Client) => Promise<R>): Promise<R> {
-    const client = clientFactory();
-    let result: R;
-    try {
-        await client.connect();
-    } catch (err) {
-        throw new Error("Could not connect to Postgres. Please start it up. Message: " + err.message);
-    }
-    try {
-        result = await what(client);
-    } catch (err) {
-        logger.warn(err);
-    } finally {
-        client.end();
-    }
-    return result;
 }

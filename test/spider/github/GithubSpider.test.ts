@@ -82,7 +82,8 @@ const analyzer: ProjectAnalyzer = {
 
 } as ProjectAnalyzer;
 const hardCodedPlace = "place.json";
-class FakePersister implements ProjectAnalysisResultStore {
+
+class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
     public persisted: ProjectAnalysisResult[] = [];
     public count(): Promise<number> {
@@ -111,7 +112,7 @@ class FakePersister implements ProjectAnalysisResultStore {
 function opts(): SpiderOptions {
     return {
         // tslint:disable-next-line:no-object-literal-type-assertion
-        persister: new FakePersister(),
+        persister: new FakeProjectAnalysisResultStore(),
         keepExistingPersisted: async r => false,
         poolSize: 3,
         workspaceId: "local",
@@ -166,7 +167,7 @@ describe("GithubSpider", () => {
 
         assert.deepStrictEqual(result, expected);
 
-        const persisted = (myOpts.persister as FakePersister).persisted;
+        const persisted = (myOpts.persister as FakeProjectAnalysisResultStore).persisted;
 
         assert.strictEqual(persisted.length, 1);
     });
@@ -204,7 +205,7 @@ describe("GithubSpider", () => {
 
         assert.deepStrictEqual(result, expected);
 
-        const persisted = (myOpts.persister as FakePersister).persisted;
+        const persisted = (myOpts.persister as FakeProjectAnalysisResultStore).persisted;
 
         persisted.forEach(pa => {
             assert(!!pa.subproject, "should have a subproject");

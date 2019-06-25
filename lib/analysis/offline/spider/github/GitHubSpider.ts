@@ -53,12 +53,6 @@ type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
  */
 export class GitHubSpider implements Spider {
 
-    constructor(
-        private readonly queryFunction: (token: string, criteria: ScmSearchCriteria)
-            => AsyncIterable<GitHubSearchResult>
-            = queryByCriteria,
-        private readonly cloneFunction: CloneFunction = cloneWithCredentialsFromEnv) { }
-
     public async spider(criteria: ScmSearchCriteria,
                         analyzer: ProjectAnalyzer,
                         opts: SpiderOptions): Promise<SpiderResult> {
@@ -69,6 +63,7 @@ export class GitHubSpider implements Spider {
         try {
             const it = this.queryFunction(process.env.GITHUB_TOKEN, criteria);
             let bucket: Array<Promise<AnalyzeAndPersistResult>> = [];
+
             async function runAllPromisesInBucket(): Promise<void> {
                 const results = await Promise.all(bucket);
                 results.forEach(r => analyzeAndPersistResults.push(r));
@@ -121,11 +116,18 @@ export class GitHubSpider implements Spider {
             projectsDetected: analyzeResults.projectCount,
             failed:
                 [...errors,
-                ...analyzeResults.failedToPersist,
-                ...analyzeResults.failedToCloneOrAnalyze],
+                    ...analyzeResults.failedToPersist,
+                    ...analyzeResults.failedToCloneOrAnalyze],
             keptExisting: keepExisting,
             persistedAnalyses: analyzeResults.persisted,
         };
+    }
+
+    public constructor(
+        private readonly queryFunction: (token: string, criteria: ScmSearchCriteria)
+            => AsyncIterable<GitHubSearchResult>
+            = queryByCriteria,
+        private readonly cloneFunction: CloneFunction = cloneWithCredentialsFromEnv) {
     }
 
 }

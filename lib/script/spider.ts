@@ -22,8 +22,8 @@
  */
 
 import {
-    configureLogging,
-    MinimalLogging,
+    configureLogging, logger,
+    MinimalLogging, PlainLogging,
 } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import * as path from "path";
@@ -38,9 +38,10 @@ import {
     clientFactory,
     createAnalyzer,
 } from "../machine/machine";
+import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
 
 // Ensure we see console logging, and send info to the console
-configureLogging(MinimalLogging);
+configureLogging(PlainLogging);
 
 process.on('uncaughtException', function (err) {
     console.log(err);
@@ -78,40 +79,45 @@ async function spider(params: SpiderAppOptions) {
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
     const spider: Spider = params.source === "GitHub" ? new GitHubSpider() : new LocalSpider(params.localDirectory);
-    const persister = //new FileSystemProjectAnalysisResultStore();
-        new PostgresProjectAnalysisResultStore(clientFactory(loadUserConfiguration()));
+    const persister = new PostgresProjectAnalysisResultStore(clientFactory(loadUserConfiguration()));
     const query = params.query || `org:${org}` + searchInRepoName;
 
-    const result = await spider.spider({
-            // See the GitHub search API documentation at
-            // https://developer.github.com/v3/search/
-            // You can query for many other things here, beyond org
-            githubQueries: [query],
+    const criteria: ScmSearchCriteria = {
+        // See the GitHub search API documentation at
+        // https://developer.github.com/v3/search/
+        // You can query for many other things here, beyond org
+        githubQueries: [query],
 
-            maxRetrieved: 1500,
-            maxReturned: 1500,
-            projectTest: async p => {
-                // Perform a computation here to return false if a project should not
-                // be analyzed and persisted, based on its contents. For example,
-                // this enables you to analyze only projects containing a particular file
-                // through calling getFile()
-                return true;
-            },
-            subprojectFinder: firstSubprojectFinderOf(
-                fileNamesSubprojectFinder(
-                    "pom.xml",
-                    "build.gradle",
-                    "package.json",
-                    "requirements.txt"),
-            ),
+        maxRetrieved: 1500,
+        maxReturned: 1500,
+        projectTest: async p => {
+            // Perform a computation here to return false if a project should not
+            // be analyzed and persisted, based on its contents. For example,
+            // this enables you to analyze only projects containing a particular file
+            // through calling getFile()
+            return true;
         },
+        subprojectFinder: firstSubprojectFinderOf(
+            fileNamesSubprojectFinder(
+                "pom.xml",
+                "build.gradle",
+                "package.json",
+                "requirements.txt"),
+        ),
+    };
+
+    logger.info("Spider criteria are %j", criteria);
+    const result = await spider.spider(criteria,
         analyzer,
         {
             persister,
             keepExistingPersisted: async existing => {
-                console.log(`\tFound analysis for ${existing.analysis.id.url}`);
                 // Perform a computation here to return true if an existing analysis seems valid
-                return !existing.analysis.id.url.includes("docs");
+                const keep = false;
+                logger.info(keep ?
+                    `Retaining existing analysis for ${existing.analysis.id.url}` :
+                    `Recomputing analysis for ${existing.analysis.id.url}`);
+                return keep;
             },
             // Controls promise usage inNode
             poolSize: 40,
