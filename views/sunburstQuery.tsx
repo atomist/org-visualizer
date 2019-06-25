@@ -51,16 +51,9 @@ export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
         displaySuggestedIdeals(props.possibleIdeals);
     return <div>
         <h1>{props.fingerprintDisplayName}</h1>
-        {idealDisplay}
+        {/*{idealDisplay}*/}
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
     </div>;
 
 }
-/*
- See https://bl.ocks.org/vasturiano/12da9071095fbd4df434e60d52d2d58d -->
-<!-- Display a sunburst -->
 
-<script>
-sunburst('{{ query }}', `{{{dataUrl}}}`, window.innerWidth - 100, window.innerHeight - 100);
-</script>
-*/
