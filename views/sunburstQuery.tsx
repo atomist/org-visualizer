@@ -56,4 +56,3 @@ export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
     </div>;
 
 }
-
