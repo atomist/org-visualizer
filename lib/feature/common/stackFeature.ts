@@ -16,15 +16,15 @@
 
 import { projectUtils } from "@atomist/automation-client";
 import { Feature } from "@atomist/sdm-pack-fingerprints";
-import { classifyFeature } from "../compose/classifyFeature";
+import { classificationFeature } from "../compose/classificationFeature";
 
 const StackName = "stack";
 
-export const stackFeature: Feature = classifyFeature({
+export const stackFeature: Feature = classificationFeature({
         name: StackName,
         displayName: "Technology stack",
-        fallbackClassification: "unknown",
         toDisplayableFingerprintName: () => "Technology stack",
+        allowMulti: true,
     },
     { classification: "jvm", reason: "has Maven POM", predicate: async p => p.hasFile("pom.xml") },
     { classification: "jvm", reason: "has build.gradle", predicate: async p => p.hasFile("build.gradle") },
@@ -35,26 +35,32 @@ export const stackFeature: Feature = classifyFeature({
         reason: "has Python files in root",
         predicate: async p => await projectUtils.countFiles(p, "*.py", async () => true) > 0,
     },
+    {
+        classification: ["aws", "lambda"], reason: "has Lambda template",
+        predicate: async p => p.hasFile("template.yml")
+    },
 );
 
-export const javaBuildFeature: Feature = classifyFeature({
+export const javaBuildFeature: Feature = classificationFeature({
         name: "javaBuild",
         displayName: "Java build tool",
-        fallbackClassification: "not Java",
         toDisplayableFingerprintName: () => "Java build tool",
     },
     { classification: "maven", reason: "has Maven POM", predicate: async p => p.hasFile("pom.xml") },
     { classification: "gradle", reason: "has build.gradle", predicate: async p => p.hasFile("build.gradle") },
 );
 
-export const ciFeature: Feature = classifyFeature({
+export const ciFeature: Feature = classificationFeature({
         name: "ci",
         displayName: "CI tool",
-        fallbackClassification: undefined,
         toDisplayableFingerprintName: () => "CI tool",
     },
     { classification: "travis", reason: "has .travis.yml", predicate: async p => p.hasFile(".travis.yml") },
     { classification: "jenkins", reason: "has JenkinsFile", predicate: async p => p.hasFile("Jenkinsfile") },
-    { classification: "circle", reason: "has .circleci/config.yml", predicate: async p => p.hasFile(".circleci/config.yml") },
+    {
+        classification: "circle",
+        reason: "has .circleci/config.yml",
+        predicate: async p => p.hasFile(".circleci/config.yml")
+    },
     { classification: "concourse", reason: "has pipeline.yml", predicate: async p => p.hasFile("pipeline.yml") },
 );

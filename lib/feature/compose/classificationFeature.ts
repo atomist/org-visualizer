@@ -16,6 +16,8 @@
 
 import { Project } from "@atomist/automation-client";
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 
 /**
  * Knows how to classify projects into a unique String
@@ -30,7 +32,7 @@ export interface Classifier {
     /**
      * Classification this instance will return
      */
-    readonly classification: string;
+    readonly classification: string | string[];
 
     /**
      * Test for whether the given project meets this classification
@@ -39,26 +41,26 @@ export interface Classifier {
 }
 
 /**
- *
- * @param {Pick<Feature, "reason" | "displayName"> & {fallbackClassification?: string}} id Fallback classification can be
+ * Classify the project uniquely or otherwise
  * undefined to return no fingerprint
- * @param {Classifier} classifiers
  * @return {Feature}
  */
-export function classifyFeature(id: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprint" |
-                                    "toDisplayableFingerprintName"> & { fallbackClassification: string },
-                                ...classifiers: Classifier[]): Feature {
+export function classificationFeature(id: Pick<Feature, "name" | "displayName" | "toDisplayableFingerprintName"> & { allowMulti?: boolean },
+                                      ...classifiers: Classifier[]): Feature {
     return {
         ...id,
         extract: async p => {
-            let data = id.fallbackClassification;
+            const tags: string[] = [];
             for (const classifier of classifiers) {
                 if (await classifier.predicate(p)) {
-                    data = classifier.classification;
-                    break;
+                    tags.push(...toArray(classifier.classification));
+                    if (!id.allowMulti) {
+                        break;
+                    }
                 }
             }
-            return !!data ? {
+            const data = JSON.stringify(_.uniq(tags).sort());
+            return !!tags ? {
                     name: id.name,
                     type: id.name,
                     data,
@@ -67,5 +69,6 @@ export function classifyFeature(id: Pick<Feature, "name" | "displayName" | "toDi
                 undefined;
         },
         selector: fp => fp.name === id.name,
+        toDisplayableFingerprint: fp => JSON.parse(fp.data).join() || "unknown",
     };
 }
