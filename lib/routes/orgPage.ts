@@ -68,8 +68,8 @@ import {
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -123,6 +123,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     actionableFingerprints,
                     projectsAnalyzed: features.projectsAnalyzed,
                     importantFeatures,
+                    projects: repos.map(r => r.analysis.id),
                 })));
             } catch (e) {
                 logger.error(e.stack);

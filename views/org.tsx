@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ProjectForDisplay, ProjectList } from "./projectList";
 
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
@@ -6,7 +7,7 @@ export interface OrgExplorerProps {
     importantFeatures: {
         features: FeatureForDisplay[],
     };
-
+    projects: ProjectForDisplay[];
 }
 
 export interface MaybeAnIdeal {
@@ -58,7 +59,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
 
     return <div className="wrap-collabsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
-        <label htmlFor={key} className="lbl-toggle">{f.feature.displayName} ({f.fingerprints.length})</label>
+        <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">
             <div className="content-inner">
                 <ul>
@@ -101,7 +102,12 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
                 <li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
             </ul>
         </div></div>;
-    return <div><a href="./projects">{props.projectsAnalyzed} projects </a>
+
+    const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
+    return <div>
+
+        {projectSummary}
+
         {/*actionItems*/}
         <h2>Features</h2>
         <div className="importantFeatures">
@@ -145,12 +151,12 @@ Conduct</a></li>
         <h2>Custom fingerprint</h2>
 
         <form method="GET" action="./query">
-            Feature name: <input id="type" name="type" value="spring-boot-version"></input>
+            Feature name: <input id="type" name="type" value="spring-boot-version" readOnly={true}></input>
 
-            Fingerprint name: <input id="name" name="name" value="spring-boot-version"></input>
-            <input type="checkbox" name="otherLabel" value="irrelevant"></input>
+            Fingerprint name: <input id="name" name="name" value="spring-boot-version" readOnly={true}></input>
+            <input type="checkbox" name="otherLabel" value="irrelevant" readOnly={true}></input>
             Show all
-            <input type="submit" value="Visualize"></input>
+            <input type="submit" defaultValue="Visualize"></input>
         </form>
 
         <h2>Data</h2>

@@ -21,18 +21,30 @@ function toListItem(p: ProjectForDisplay): React.ReactElement {
 }
 
 function displayOrgProjects(owner: string, projects: ProjectForDisplay[]): React.ReactElement {
-    return <div>
-        <h3>{owner}</h3>
+    return collapsible(owner, `${owner} (${projects.length} projects)`,
         <ul>
             {projects.map(toListItem)}
-        </ul>
-    </div>;
+        </ul>,
+        projects.length === 1,
+    );
 }
 
 export function ProjectList(props: ProjectListProps): React.ReactElement {
     const projectsByOrg = _.groupBy(props.projects, p => p.owner);
     return <div>
         <h2>{props.projects.length} projects</h2>
-        {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
+        <ul>
+            {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
+        </ul>
     </div>;
+}
+
+function collapsible(key: string, title: string, content: React.ReactElement, startOpen: boolean): React.ReactElement {
+    return <div className="wrap-collabsible project-list">
+        <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={startOpen}></input>
+        <label htmlFor={key} className="lbl-toggle project-list">{title}</label>
+        <div className="collapsible-content project-list">
+            <div className="content-inner project-list">
+                {content}
+            </div></div></div>;
 }
