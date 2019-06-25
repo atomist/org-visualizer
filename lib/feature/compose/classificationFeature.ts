@@ -15,9 +15,9 @@
  */
 
 import { Project } from "@atomist/automation-client";
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 
 /**
  * Knows how to classify projects into a unique String

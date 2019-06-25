@@ -37,7 +37,7 @@ export const stackFeature: Feature = classificationFeature({
     },
     {
         classification: ["aws", "lambda"], reason: "has Lambda template",
-        predicate: async p => p.hasFile("template.yml")
+        predicate: async p => p.hasFile("template.yml"),
     },
 );
 
@@ -60,7 +60,7 @@ export const ciFeature: Feature = classificationFeature({
     {
         classification: "circle",
         reason: "has .circleci/config.yml",
-        predicate: async p => p.hasFile(".circleci/config.yml")
+        predicate: async p => p.hasFile(".circleci/config.yml"),
     },
     { classification: "concourse", reason: "has pipeline.yml", predicate: async p => p.hasFile("pipeline.yml") },
 );
