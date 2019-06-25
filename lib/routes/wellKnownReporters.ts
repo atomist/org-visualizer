@@ -59,7 +59,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
         treeBuilderFor<Analyzed>("fileCount", params)
             .renderWith(ar => {
                 const sizeFp = ar.fingerprints.find(fp => fp.name === "size");
-                const size = sizeFp ? parseInt(sizeFp.data) : 1;
+                const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
                 const projectName = ar.id.path ?
                     ar.id.repo + path.sep + ar.id.path :
                     ar.id.repo;
@@ -75,12 +75,12 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                 };
             }),
 
-    // TODO this could be more generic for size things
+    // TODO this could be more generic for sized things
         branchCount: params =>
             treeBuilderFor<Analyzed>("branchCount", params)
                 .renderWith(ar => {
                     const sizeFp = ar.fingerprints.find(fp => fp.name === "branches");
-                    const size = sizeFp ? parseInt(sizeFp.data) : 1;
+                    const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
                     const projectName = ar.id.path ?
                         ar.id.repo + path.sep + ar.id.path :
                         ar.id.repo;

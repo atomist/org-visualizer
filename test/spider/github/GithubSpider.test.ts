@@ -47,7 +47,7 @@ import {
     GitHubSpider,
 } from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
 
-// tslint:disable-next-line:no-object-literal-type-assertion
+// tslint:disable
 const oneSearchResult: GitHubSearchResult = {
     owner: { login: "owner" },
     name: "reponame",

@@ -35,9 +35,8 @@ export const pythonDependenciesFeature: Feature = {
             return undefined;
         }
         const requirementsFileContent = await requirementsFile.getContent();
-        const allDeps = await findDependenciesFromRequirements(requirementsFileContent);
-        return allDeps
-            .map(depToFingerprint);
+        const allDeps = findDependenciesFromRequirements(requirementsFileContent);
+        return allDeps.map(depToFingerprint);
     },
     selector: fp => PythonDirectDepType === fp.type,
     toDisplayableFingerprintName: name => name,
@@ -48,9 +47,7 @@ export const pythonDependenciesFeature: Feature = {
 };
 
 export function findDependenciesFromRequirements(requirementsTxt: string): PythonDependency[] {
-
     const r = /^([a-zA-Z0-9][A-Za-z0-9._-]*).*$/mg;
-
     const results: PythonDependency[] = [];
 
     let v: string[];

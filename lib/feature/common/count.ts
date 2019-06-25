@@ -46,8 +46,8 @@ export const branchCount: Feature = {
         const bp = await execPromise("git", ["branch", "-a"], {
             cwd: lp.baseDir,
         });
-        const branchCount = bp.stdout.split("\n").length;
-        const data = branchCount + "";
+        const brCount = bp.stdout.split("\n").length;
+        const data = brCount + "";
         return {
             name: "branches",
             data,

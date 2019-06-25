@@ -44,8 +44,8 @@ async function setIdeals() {
             }
         }
     }
-    await saveToStupidLocalStorage(ideals);
-
+    saveToStupidLocalStorage(ideals);
 }
 
+// tslint:disable
 setIdeals();

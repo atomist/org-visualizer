@@ -205,10 +205,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             logger.info("Data url=%s", dataUrl);
 
+            // tslint:disable-next-line
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-            function displayIdeal(ideal: PossibleIdeal): string | undefined {
+            function idealDisplayValue(ideal: PossibleIdeal): string | undefined {
                 if (ideal === undefined) {
                     return undefined;
                 }
@@ -223,7 +224,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }
             }
 
-            const currentIdealForDisplay = displayIdeal(await featureManager.idealResolver(fingerprintName));
+            const currentIdealForDisplay = idealDisplayValue(await featureManager.idealResolver(fingerprintName));
             const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
             if (!currentIdealForDisplay) {
                 // TODO: this sucks
