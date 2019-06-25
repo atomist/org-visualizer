@@ -15,11 +15,19 @@
  */
 
 import { treeBuilderFor } from "../routes/wellKnownReporters";
-import { FeatureManager, Flag, HasFingerprints } from "./FeatureManager";
+import {
+    FeatureManager,
+    Flag,
+    HasFingerprints,
+} from "./FeatureManager";
 import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 
 import * as _ from "lodash";
-import { allFingerprints, defaultedToDisplayableFingerprint, fingerprintsFrom } from "./DefaultFeatureManager";
+import {
+    allFingerprints,
+    defaultedToDisplayableFingerprint,
+    fingerprintsFrom,
+} from "./DefaultFeatureManager";
 import { Reporters } from "./reporters";
 
 /**

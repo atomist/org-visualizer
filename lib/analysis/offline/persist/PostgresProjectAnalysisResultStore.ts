@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { logger, RepoId } from "@atomist/automation-client";
+import {
+    logger,
+    RepoId,
+} from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
 import {
