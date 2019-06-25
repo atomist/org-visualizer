@@ -17,14 +17,30 @@
 import { Project } from "@atomist/automation-client";
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 
+/**
+ * Knows how to classify projects into a unique String
+ */
 export interface Classifier {
-    classification: string;
+
+    /**
+     * Name of this classifier
+     */
+    readonly reason: string;
+
+    /**
+     * Classification this instance will return
+     */
+    readonly classification: string;
+
+    /**
+     * Test for whether the given project meets this classification
+     */
     predicate: (p: Project) => Promise<boolean>;
 }
 
 /**
  *
- * @param {Pick<Feature, "name" | "displayName"> & {fallbackClassification?: string}} id Fallback classification can be
+ * @param {Pick<Feature, "reason" | "displayName"> & {fallbackClassification?: string}} id Fallback classification can be
  * undefined to return no fingerprint
  * @param {Classifier} classifiers
  * @return {Feature}

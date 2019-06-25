@@ -16,6 +16,7 @@
 
 import { Feature } from "@atomist/sdm-pack-fingerprints";
 import { classifyFeature } from "../compose/classifyFeature";
+import { projectUtils } from "@atomist/automation-client";
 
 const StackName = "stack";
 
@@ -25,10 +26,15 @@ export const stackFeature: Feature = classifyFeature({
         fallbackClassification: "unknown",
         toDisplayableFingerprintName: () => "Technology stack",
     },
-    { classification: "jvm", predicate: async p => p.hasFile("pom.xml") },
-    { classification: "jvm", predicate: async p => p.hasFile("build.gradle") },
-    { classification: "node", predicate: async p => p.hasFile("package.json") },
-    { classification: "python", predicate: async p => p.hasFile("requirements.txt") },
+    { classification: "jvm", reason: "has Maven POM", predicate: async p => p.hasFile("pom.xml") },
+    { classification: "jvm", reason: "has build.gradle", predicate: async p => p.hasFile("build.gradle") },
+    { classification: "node", reason: "has package.json", predicate: async p => p.hasFile("package.json") },
+    { classification: "python", reason: "has requirements.txt", predicate: async p => p.hasFile("requirements.txt") },
+    {
+        classification: "python",
+        reason: "has Python files in root",
+        predicate: async p => await projectUtils.countFiles(p, "*.py", async () => true) > 0
+    },
 );
 
 export const javaBuildFeature: Feature = classifyFeature({
@@ -37,8 +43,8 @@ export const javaBuildFeature: Feature = classifyFeature({
         fallbackClassification: "not Java",
         toDisplayableFingerprintName: () => "Java build tool",
     },
-    { classification: "maven", predicate: async p => p.hasFile("pom.xml") },
-    { classification: "gradle", predicate: async p => p.hasFile("build.gradle") },
+    { classification: "maven", reason: "has Maven POM", predicate: async p => p.hasFile("pom.xml") },
+    { classification: "gradle", reason: "has build.gradle", predicate: async p => p.hasFile("build.gradle") },
 );
 
 export const ciFeature: Feature = classifyFeature({
@@ -47,8 +53,8 @@ export const ciFeature: Feature = classifyFeature({
         fallbackClassification: undefined,
         toDisplayableFingerprintName: () => "CI tool",
     },
-    { classification: "travis", predicate: async p => p.hasFile(".travis.yml") },
-    { classification: "jenkins", predicate: async p => p.hasFile("Jenkinsfile") },
-    { classification: "circle", predicate: async p => p.hasFile(".circleci/config.yml") },
-    { classification: "concourse", predicate: async p => p.hasFile("pipeline.yml") },
+    { classification: "travis", reason: "has .travis.yml", predicate: async p => p.hasFile(".travis.yml") },
+    { classification: "jenkins", reason: "has JenkinsFile", predicate: async p => p.hasFile("Jenkinsfile") },
+    { classification: "circle", reason: "has .circleci/config.yml", predicate: async p => p.hasFile(".circleci/config.yml") },
+    { classification: "concourse", reason: "has pipeline.yml", predicate: async p => p.hasFile("pipeline.yml") },
 );

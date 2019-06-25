@@ -55,6 +55,10 @@ import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesF
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 
+/**
+ * The features managed by this SDM
+ * @type {(Feature | TypeScriptVersionFeature | CodeOwnershipFeature | {extract: ExtractFingerprint<FPI extends FP>; displayName: string; name: string; selector: FingerprintSelector; apply?: ApplyFingerprint<FPI extends FP>; summary?: DiffSummaryFingerprint; comparators?: Array<FingerprintComparator<FPI extends FP>>; toDisplayableFingerprint?(fpi: FPI): string; toDisplayableFingerprintName?(fingerprintName: string): string; validate?(fpi: FPI): Promise<ReviewComment[]>; suggestedIdeals: {(fingerprintName: string): Promise<Array<PossibleIdeal<FPI extends FP>>>; (fingerprintName: string): Promise<Array<PossibleIdeal<FP>>>}} | TsLintPropertyFeature)[]}
+ */
 export const features: ManagedFeature[] = [
     DockerFrom,
     new TypeScriptVersionFeature(),
@@ -70,23 +74,25 @@ export const features: ManagedFeature[] = [
     ciFeature,
     javaBuildFeature,
     conditionalize(filesFeature({
-        displayName: "git ignore",
-        type: "gitignore",
-        canonicalize: c => c,
-    }, ".gitignore",
-    ), {
-            name: "node-git-ignore",
             displayName: "Node git ignore",
-        }, async p => p.hasFile("package.json")),
-    conditionalize(filesFeature({
-        displayName: "git ignore",
-        type: "gitignore",
-        canonicalize: c => c,
-    }, ".gitignore",
+            type: "gitignore",
+            canonicalize: c => c,
+        }, ".gitignore",
     ), {
-            name: "spring-git-ignore",
-            displayName: "Spring git ignore",
-        }, async p => p.hasFile("pom.xml")),
+        name: "node-git-ignore",
+        displayName: "Node git ignore",
+        toDisplayableFingerprintName: () => "Node git ignore",
+    }, async p => p.hasFile("package.json")),
+    conditionalize(filesFeature({
+            displayName: "git ignore",
+            type: "gitignore",
+            canonicalize: c => c,
+        }, ".gitignore",
+    ), {
+        name: "spring-git-ignore",
+        displayName: "Spring git ignore",
+        toDisplayableFingerprintName: () => "Spring git ignore",
+    }, async p => p.hasFile("pom.xml")),
     springBootVersionFeature,
     mavenDependenciesFeature,
     pythonDependenciesFeature,
@@ -110,17 +116,6 @@ async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdea
 }
 
 export type IdealStore = Record<string, PossibleIdeal>;
-
-const DefaultIdeals: IdealStore = {
-    "npm-project-dep::axios": {
-        fingerprintName: "npm-project-dep::axios",
-        ideal: undefined,
-        reason: "Proxying errors",
-    },
-    // "npm-project-dep::lodash": getNpmDepFingerprint("lodash", "^4.17.11"),
-    // "npm-project-dep::atomist::sdm": getNpmDepFingerprint("@atomist/sdm", "1.5.0"),
-    // "tsVersion": new TypeScriptVersion("^3.4.5"),
-};
 
 const stupidStorageFilename = "ideals.json";
 const Ideals: IdealStore = retrieveFromStupidLocalStorage();
@@ -147,45 +142,45 @@ export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
 }
 
 export const featureManager = new DefaultFeatureManager({
-    idealResolver: async name => {
-        return Ideals[name];
-    },
-    features,
-    flags: simpleFlagger(
-        async fp => {
-            return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
+        idealResolver: async name => {
+            return Ideals[name];
+        },
+        features,
+        flags: simpleFlagger(
+            async fp => {
+                return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
+                    {
+                        severity: "warn",
+                        authority: "Rod",
+                        message: "Old TypeScript version",
+                    } :
+                    undefined;
+            },
+            async fp => fp.name === "npm-project-dep::axios" ?
                 {
                     severity: "warn",
-                    authority: "Rod",
-                    message: "Old TypeScript version",
+                    authority: "Christian",
+                    message: "Don't use Axios",
                 } :
-                undefined;
-        },
-        async fp => fp.name === "npm-project-dep::axios" ?
-            {
-                severity: "warn",
-                authority: "Christian",
-                message: "Don't use Axios",
-            } :
-            undefined,
-        async fp => {
-            if (fp.name === "tslintproperty::rules:max-file-line-count") {
-                try {
-                    const obj = JSON.parse(fp.data);
-                    if (obj.options && obj.options.some(parseInt) > 500) {
-                        return {
-                            severity: "warn",
-                            authority: "Rod",
-                            message: "Allow long files",
-                        };
+                undefined,
+            async fp => {
+                if (fp.name === "tslintproperty::rules:max-file-line-count") {
+                    try {
+                        const obj = JSON.parse(fp.data);
+                        if (obj.options && obj.options.some(parseInt) > 500) {
+                            return {
+                                severity: "warn",
+                                authority: "Rod",
+                                message: "Allow long files",
+                            };
+                        }
+                    } catch {
+                        // Do nothing
                     }
-                } catch {
-                    // Do nothing
                 }
-            }
-            return undefined;
-        }),
-},
+                return undefined;
+            }),
+    },
 );
 
 export function idealConvergenceScorer(fm: FeatureManager): Scorer {
