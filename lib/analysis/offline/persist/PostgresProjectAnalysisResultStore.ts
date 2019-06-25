@@ -17,9 +17,15 @@
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
-import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../ProjectAnalysisResult";
+import {
+    isProjectAnalysisResult,
+    ProjectAnalysisResult,
+} from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
-import { ClientFactory, doWithClient } from "./pgUtils";
+import {
+    ClientFactory,
+    doWithClient,
+} from "./pgUtils";
 import {
     combinePersistResults,
     emptyPersistResult,

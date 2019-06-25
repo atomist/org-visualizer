@@ -22,8 +22,10 @@
  */
 
 import {
-    configureLogging, logger,
-    MinimalLogging, PlainLogging,
+    configureLogging,
+    logger,
+    MinimalLogging,
+    PlainLogging,
 } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import * as path from "path";
