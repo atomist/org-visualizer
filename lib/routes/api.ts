@@ -16,34 +16,17 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { workspaceId } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler } from "express";
 import * as _ from "lodash";
-import {
-    ClientFactory,
-    doWithClient,
-} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { ClientFactory, doWithClient } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
-import {
-    fingerprintsChildrenQuery,
-    repoTree,
-} from "../feature/repoTree";
-import {
-    SunburstTree,
-    visit,
-} from "../tree/sunburst";
-import {
-    authHandlers,
-    configureAuth,
-    corsHandler,
-} from "./auth";
+import { fingerprintsChildrenQuery, repoTree } from "../feature/repoTree";
+import { SunburstTree, visit } from "../tree/sunburst";
+import { authHandlers, configureAuth, corsHandler } from "./auth";
 import { featureManager } from "./features";
 import { whereFor } from "./orgPage";
 import { WellKnownReporters } from "./wellKnownReporters";

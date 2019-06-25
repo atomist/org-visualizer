@@ -44,7 +44,7 @@ export const springBootVersionFeature: Feature = {
         if (fp.data.length !== 1) {
             return false;
         }
-        await setSpringBootVersionTransform(fp.data[0]);
+        await setSpringBootVersionTransform(fp.data[0])(p, undefined, undefined);
         return true;
     },
     selector: fp => fp.type === SpringBootVersionType,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RepoId } from "@atomist/automation-client";
+import { logger, RepoId } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
 import {
@@ -188,7 +188,7 @@ export async function doWithClient<R>(clientFactory: () => Client,
     try {
         result = await what(client);
     } catch (err) {
-        console.log(err);
+        logger.warn(err);
     } finally {
         client.end();
     }

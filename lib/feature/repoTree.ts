@@ -84,7 +84,6 @@ FROM (
  */
 export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
     return doWithClient(opts.clientFactory, async client => {
-        console.log(opts.query);
         const results = await client.query(opts.query, [opts.featureName, opts.rootName]);
         // TODO error checking
         const data = results.rows[0];

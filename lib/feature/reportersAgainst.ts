@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-import { featureManager } from "../routes/features";
-import {
-    treeBuilderFor,
-} from "../routes/wellKnownReporters";
-import {
-    FeatureManager,
-    Flag,
-    HasFingerprints,
-} from "./FeatureManager";
+import { treeBuilderFor } from "../routes/wellKnownReporters";
+import { FeatureManager, Flag, HasFingerprints } from "./FeatureManager";
 import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
 
 import * as _ from "lodash";
-import {
-    allFingerprints,
-    defaultedToDisplayableFingerprint,
-    fingerprintsFrom,
-} from "./DefaultFeatureManager";
+import { allFingerprints, defaultedToDisplayableFingerprint, fingerprintsFrom } from "./DefaultFeatureManager";
 import { Reporters } from "./reporters";
 
 /**
@@ -42,7 +31,7 @@ import { Reporters } from "./reporters";
  * 2. <fingerprintName>-present: Is this fingerprint name present in this repo? Returns for all repos
  * 3. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
  */
-export async function reportersAgainst(hm: FeatureManager,
+export async function reportersAgainst(featureManager: FeatureManager,
                                        repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
     const reporters: Reporters = {};
 
@@ -53,7 +42,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 name: "flags",
                 by: async a => {
                     const knownBad = (await Promise.all(
-                        allFingerprints(a).map(fp => hm.flags(fp)),
+                        allFingerprints(a).map(fp => featureManager.flags(fp)),
                     )).filter(f => !!f && f.length > 0);
                     return knownBad.length === 0 ?
                         params.otherLabel :
@@ -64,7 +53,7 @@ export async function reportersAgainst(hm: FeatureManager,
                 name: "violations",
                 by: async a => {
                     const flags = await Promise.all(
-                        allFingerprints(a).map(fp => hm.flags(fp)),
+                        allFingerprints(a).map(fp => featureManager.flags(fp)),
                     );
                     const knownBad: Flag[] = _.flatten(flags.filter(f => !!f && f.length > 0));
                     return knownBad.length === 0 ?
@@ -74,9 +63,9 @@ export async function reportersAgainst(hm: FeatureManager,
             })
             .renderWith(DefaultProjectAnalysisRenderer);
 
-    for await (const fp of await fingerprintsFrom(repos)) {
-        const name = fp.name;
-        if (reporters[fp.name]) {
+    for await (const fingerprint of fingerprintsFrom(repos)) {
+        const name = fingerprint.name;
+        if (reporters[fingerprint.name]) {
             // Don't set it again
             continue;
         }
@@ -87,7 +76,7 @@ export async function reportersAgainst(hm: FeatureManager,
                     name,
                     by: ar => {
                         const fp = ar.fingerprints[name];
-                        return !!fp ? defaultedToDisplayableFingerprint(hm.featureFor(fp))(fp) : undefined;
+                        return !!fp ? defaultedToDisplayableFingerprint(featureManager.featureFor(fp))(fp) : undefined;
                     },
                 })
                 .renderWith(DefaultProjectAnalysisRenderer);
@@ -117,7 +106,7 @@ export async function reportersAgainst(hm: FeatureManager,
                         if (!fp) {
                             return undefined;
                         }
-                        const feature = hm.featureFor(fp);
+                        const feature = featureManager.featureFor(fp);
                         if (ideal && ideal.ideal) {
                             return fp.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
                         }
@@ -128,27 +117,4 @@ export async function reportersAgainst(hm: FeatureManager,
     }
 
     return reporters;
-}
-
-export interface DisplayableFingerprint {
-    name: string;
-    readable: string;
-    ideal?: string;
-}
-
-export async function fingerprintsFound(fm: FeatureManager, ar: HasFingerprints): Promise<DisplayableFingerprint[]> {
-    const results: DisplayableFingerprint[] = [];
-    const fingerprints = allFingerprints(ar);
-    for (const instance of fingerprints) {
-        const hideal = await fm.idealResolver(instance.name);
-        const huck = fm.featureFor(instance);
-        if (huck) {
-            results.push({
-                name: instance.name,
-                readable: defaultedToDisplayableFingerprint(huck)(instance),
-                ideal: defaultedToDisplayableFingerprint(huck)(hideal.ideal),
-            });
-        }
-    }
-    return results;
 }

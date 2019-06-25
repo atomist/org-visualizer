@@ -203,7 +203,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
                 `/api/v1/${workspaceId}/fingerprint/${req.query.type}/${req.query.name}?${queryString}`;
 
-            console.log("Data url=" + dataUrl);
+            logger.info("Data url=%s", dataUrl);
 
             const feature = featureManager.featureFor({ name: fingerprintName } as FP);
             const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);

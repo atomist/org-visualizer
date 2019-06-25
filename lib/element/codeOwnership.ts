@@ -66,9 +66,9 @@ export class CodeOwnership extends AbstractFingerprint {
 }
 export class CodeOwnershipFeature implements AnalysisDerivedFeature<CodeOwnership> {
 
-    public displayName = "Code Ownership";
+    public readonly displayName: string = "Code Ownership";
 
-    public readonly name = "codeOwnership";
+    public readonly name: string = "codeOwnership";
 
     get apply() {
         return async (p, tsi) => {

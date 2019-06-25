@@ -44,7 +44,6 @@ import {
 } from "../common";
 
 export class LocalSpider implements Spider {
-    constructor(public readonly localDirectory: string) { }
 
     public async spider(criteria: ScmSearchCriteria,
                         analyzer: ProjectAnalyzer,
@@ -55,12 +54,15 @@ export class LocalSpider implements Spider {
         const results: SpiderResult[] = [];
 
         for await (const repoDir of repoIterator) {
-            console.log(repoDir);
+            logger.info("Spidering local repo at %s", repoDir);
             results.push(await spiderOneLocalRepo(opts, criteria, analyzer, repoDir));
         }
 
         return results.reduce(combineSpiderResults, emptySpiderResult);
     }
+
+    constructor(public readonly localDirectory: string) { }
+
 }
 
 function combineSpiderResults(r1: SpiderResult, r2: SpiderResult): SpiderResult {

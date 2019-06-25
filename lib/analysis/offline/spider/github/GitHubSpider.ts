@@ -110,7 +110,6 @@ export class GitHubSpider implements Spider {
             await runAllPromisesInBucket();
         } catch (e) {
             logger.error("Error spidering: %s", e.message);
-            console.log((e as Error).stack);
             throw e;
         }
 

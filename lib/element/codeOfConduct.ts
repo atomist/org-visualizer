@@ -61,7 +61,7 @@ const markdownTitleRegex = /^# (.*)\n/;
  */
 function titleOf(mdString: string): string | undefined {
     const match = markdownTitleRegex.exec(mdString);
-    return (match && match.length == 2) ?
+    return (match && match.length === 2) ?
         match[1] :
         undefined;
 }

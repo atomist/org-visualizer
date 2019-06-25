@@ -23,7 +23,6 @@ export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
     const queryLink = `./query?type=${af.type}&name=${af.name}&byOrg=true`;
     const existsLink = `./query?type=${af.type}&name=${af.name}-present&filter=true&byOrg=true`;
-    console.log("QueryLink=" + queryLink);
     return <li key={af.name}><i>{af.featureName}:
                 {af.displayName}</i>: {af.appearsIn} projects, {" "}
         <a href={queryLink}>{af.variants} variants</a> -
@@ -110,6 +109,8 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         </div>
     </div>;
 }
+
+// tslint:disable:max-line-length
 
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>

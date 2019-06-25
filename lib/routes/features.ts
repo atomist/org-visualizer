@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { logger, } from "@atomist/automation-client";
-import { execPromise, } from "@atomist/sdm";
-import { Scorer, } from "@atomist/sdm-pack-analysis";
+import { logger } from "@atomist/automation-client";
+import { execPromise } from "@atomist/sdm";
+import { Scorer } from "@atomist/sdm-pack-analysis";
 import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
-import { filesFeature, FP, NpmDeps, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
+import { filesFeature, FP, NpmDeps, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
     deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import * as fs from "fs";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
+import { branchCount, fileCountFeature } from "../feature/common/count";
+import { ciFeature, javaBuildFeature, stackFeature } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
-import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
-import { ciFeature, javaBuildFeature, stackFeature, } from "../feature/common/stackFeature";
+import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
+import { FeatureManager, ManagedFeature, simpleFlagger } from "../feature/FeatureManager";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
-import { TypeScriptVersion, TypeScriptVersionFeature, } from "../feature/node/TypeScriptVersionFeature";
-import { FeatureManager, ManagedFeature, simpleFlagger, } from "../feature/FeatureManager";
+import { TypeScriptVersion, TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
+import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
-import { branchCount, fileCountFeature } from "../feature/common/count";
 
 export const features: ManagedFeature[] = [
     DockerFrom,
