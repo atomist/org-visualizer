@@ -15,7 +15,7 @@
  */
 
 import { Feature } from "@atomist/sdm-pack-fingerprints";
-import { classifyFeature } from "./classifyFeature";
+import { classifyFeature } from "../compose/classifyFeature";
 
 const StackName = "stack";
 

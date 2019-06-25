@@ -25,7 +25,6 @@ import {
 import {
     GitCommandGitProject,
     logger,
-    NodeFsLocalProject,
     RepoId,
     RepoRef,
 } from "@atomist/automation-client";

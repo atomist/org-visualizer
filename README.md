@@ -60,7 +60,9 @@ Configure the Postgres database details in `client.confjg.json` in your `~/.atom
 You will need the following installed on your machine to run this SDM:
 
 - The `git` binary
-- Maven
+- Java
+	- A JDK (*not* a JRE)
+	- 	Maven - `mvn` must be on the path
 - Node
 - npm
 

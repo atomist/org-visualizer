@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    GitProject,
-    isLocalProject,
-    LocalProject,
-    logger,
-} from "@atomist/automation-client";
-import {
-    execPromise,
-    spawnPromise,
-} from "@atomist/sdm";
-import {
-    Scorer,
-} from "@atomist/sdm-pack-analysis";
+import { logger, } from "@atomist/automation-client";
+import { execPromise, } from "@atomist/sdm";
+import { Scorer, } from "@atomist/sdm-pack-analysis";
 import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
-import {
-    Feature,
-    FP,
-    NpmDeps,
-    PossibleIdeal, sha256,
-} from "@atomist/sdm-pack-fingerprints";
-import { filesFeature } from "@atomist/sdm-pack-fingerprints";
+import { filesFeature, FP, NpmDeps, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
     deconstructNpmDepsFingerprintName,
@@ -42,78 +26,15 @@ import {
 import * as fs from "fs";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { assembledFeature } from "../feature/domain/assembledFeature";
-import { conditionalize } from "../feature/domain/oneOf";
-import { pythonDependenciesFeature } from "../feature/domain/pythonDependenciesFeature";
-import {
-    ciFeature,
-    javaBuildFeature,
-    stackFeature,
-} from "../feature/domain/stackFeature";
-import { TsLintPropertyFeature } from "../feature/domain/TsLintFeature";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/domain/TypeScriptVersionFeature";
-import {
-    FeatureManager,
-    ManagedFeature,
-    simpleFlagger,
-} from "../feature/FeatureManager";
+import { conditionalize } from "../feature/compose/oneOf";
+import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
+import { ciFeature, javaBuildFeature, stackFeature, } from "../feature/common/stackFeature";
+import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
+import { TypeScriptVersion, TypeScriptVersionFeature, } from "../feature/node/TypeScriptVersionFeature";
+import { FeatureManager, ManagedFeature, simpleFlagger, } from "../feature/FeatureManager";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
-
-const CiFeature = assembledFeature({
-    name: "CI",
-    displayName: "CI",
-    toDisplayableFingerprint: fp => fp.data,
-    toDisplayableFingerprintName: () => "CI",
-},
-    "elements.travis.name",
-    "elements.circle.name",
-    "elements.jenkins.name",
-    "elements.gitlab.name");
-
-/**
- * Size in terms of files
- */
-const fileCountFeature: Feature = {
-    name: "size",
-    // Display name is undefined to prevent display
-    displayName: undefined,
-    extract: async p => {
-        const data = await p.totalFileCount() + "";
-        return {
-            name: "size",
-            data,
-            sha: sha256(data),
-        };
-    },
-    toDisplayableFingerprint: fp => fp.data,
-    toDisplayableFingerprintName: () => "size",
-    selector: fp => fp.name === "size",
-};
-
-const branchCount: Feature = {
-    name: "branches",
-    displayName: undefined,
-    extract: async p => {
-        const lp = p as LocalProject;
-        const bp = await execPromise("git", ["branch", "-a"], {
-            cwd: lp.baseDir,
-        });
-        const branchCount = bp.stdout.split("\n").length;
-        const data = branchCount + "";
-        return {
-            name: "branches",
-            data,
-            sha: sha256(data),
-        };
-    },
-    toDisplayableFingerprint: fp => fp.data,
-    toDisplayableFingerprintName: () => "size",
-    selector: fp => fp.name === "size",
-};
+import { branchCount, fileCountFeature } from "../feature/common/count";
 
 export const features: ManagedFeature[] = [
     DockerFrom,
