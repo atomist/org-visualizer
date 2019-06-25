@@ -23,7 +23,10 @@ import {
     RequestHandler,
 } from "express";
 import * as _ from "lodash";
-import { ClientFactory, doWithClient } from "../analysis/offline/persist/pgUtils";
+import {
+    ClientFactory,
+    doWithClient,
+} from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";

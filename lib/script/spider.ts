@@ -37,8 +37,8 @@ import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
 import { Spider } from "../analysis/offline/spider/Spider";
 import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
 import {
-    sdmConfigClientFactory,
     createAnalyzer,
+    sdmConfigClientFactory,
 } from "../machine/machine";
 import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
 
