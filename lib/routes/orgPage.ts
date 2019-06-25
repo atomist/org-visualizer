@@ -68,8 +68,8 @@ import {
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
