@@ -17,7 +17,7 @@
 import { allFingerprints } from "./feature/DefaultFeatureManager";
 import {
     analysisResultStore,
-    clientFactory,
+    sdmConfigClientFactory,
 } from "./machine/machine";
 import {
     featureManager,
@@ -29,7 +29,7 @@ import {
 import * as _ from "lodash";
 
 async function setIdeals() {
-    const repos = await analysisResultStore(clientFactory({})).loadWhere("");
+    const repos = await analysisResultStore(sdmConfigClientFactory({})).loadWhere("");
     const names = _.uniq(allFingerprints(repos.map(r => r.analysis)).map(fp => fp.name));
     const ideals: IdealStore = retrieveFromStupidLocalStorage();
     for (const name of names) {

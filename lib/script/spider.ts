@@ -37,7 +37,7 @@ import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
 import { Spider } from "../analysis/offline/spider/Spider";
 import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
 import {
-    clientFactory,
+    sdmConfigClientFactory,
     createAnalyzer,
 } from "../machine/machine";
 import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
@@ -81,7 +81,7 @@ async function spider(params: SpiderAppOptions) {
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
     const spider: Spider = params.source === "GitHub" ? new GitHubSpider() : new LocalSpider(params.localDirectory);
-    const persister = new PostgresProjectAnalysisResultStore(clientFactory(loadUserConfiguration()));
+    const persister = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
     const query = params.query || `org:${org}` + searchInRepoName;
 
     const criteria: ScmSearchCriteria = {

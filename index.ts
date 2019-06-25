@@ -31,7 +31,7 @@ import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
     analysisResultStore,
-    clientFactory,
+    sdmConfigClientFactory,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
@@ -83,12 +83,12 @@ export const configuration: Configuration = configure(async sdm => {
         configureHumio,
         async cfg => {
 
-            const resultStore = analysisResultStore(clientFactory(cfg));
+            const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
             const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [orgPage(resultStore)] : [];
 
             cfg.http.customizers = [
                 ...staticPages,
-                api(clientFactory(cfg), resultStore),
+                api(sdmConfigClientFactory(cfg), resultStore),
             ];
             return cfg;
         },

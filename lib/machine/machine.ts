@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import {
-    Configuration,
-    logger,
-} from "@atomist/automation-client";
-import {
-    PushImpactListener,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { Configuration, logger, } from "@atomist/automation-client";
+import { PushImpactListener, SoftwareDeliveryMachine, } from "@atomist/sdm";
+import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
 import { nodeScanner } from "@atomist/sdm-pack-analysis-node";
 import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
 import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
@@ -35,21 +26,14 @@ import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
 import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
 import * as _ from "lodash";
 import { Client } from "pg";
-import {
-    ClientFactory,
-    PostgresProjectAnalysisResultStore,
-} from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { PostgresProjectAnalysisResultStore, } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { CodeOwnerScanner } from "../element/codeOwnership";
 import { packageLockScanner } from "../element/packageLock";
-import {
-    featureManager,
-    features,
-    idealConvergenceScorer,
-} from "../routes/features";
-import { GitActivityScanner } from "./gitActivityScanner";
+import { featureManager, features, idealConvergenceScorer, } from "../routes/features";
+import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -79,7 +63,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .build();
 }
 
-export function clientFactory(config: Configuration): ClientFactory {
+export function sdmConfigClientFactory(config: Configuration): ClientFactory {
     return () => new Client({
         database: "org_viz",
         ...(_.get(config, "sdm.postgres") || {}),
