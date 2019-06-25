@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { projectUtils } from "@atomist/automation-client";
 import { Feature } from "@atomist/sdm-pack-fingerprints";
 import { classifyFeature } from "../compose/classifyFeature";
-import { projectUtils } from "@atomist/automation-client";
 
 const StackName = "stack";
 
@@ -33,7 +33,7 @@ export const stackFeature: Feature = classifyFeature({
     {
         classification: "python",
         reason: "has Python files in root",
-        predicate: async p => await projectUtils.countFiles(p, "*.py", async () => true) > 0
+        predicate: async p => await projectUtils.countFiles(p, "*.py", async () => true) > 0,
     },
 );
 
