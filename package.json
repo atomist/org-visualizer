@@ -29,7 +29,7 @@
     "@atomist/clj-editors": "^0.7.1-master.20190610013419",
     "@atomist/sdm": "1.5.2-master.20190616203852",
     "@atomist/sdm-core": "1.5.3-master.20190621123648",
-    "@atomist/sdm-pack-analysis": "^1.1.0-master.20190621012001",
+    "@atomist/sdm-pack-analysis": "^1.1.0-master.20190625175337",
     "@atomist/sdm-pack-analysis-node": "2.0.0-master.20190501154523",
     "@atomist/sdm-pack-analysis-spring": "2.0.0-master.20190428091941",
     "@atomist/sdm-pack-build": "^1.0.3",
