@@ -15,8 +15,8 @@
  */
 
 import { Client } from "pg";
-import { SunburstTree } from "../tree/sunburst";
 import { doWithClient } from "../analysis/offline/persist/pgUtils";
+import { SunburstTree } from "../tree/sunburst";
 
 export interface TreeQuery {
 
