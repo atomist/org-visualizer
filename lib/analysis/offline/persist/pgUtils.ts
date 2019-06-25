@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Client } from "pg";
 import { logger } from "@atomist/automation-client";
+import { Client } from "pg";
 
 export type ClientFactory = () => Client;
 

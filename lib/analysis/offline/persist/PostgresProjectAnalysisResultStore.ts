@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { RepoRef, } from "@atomist/automation-client";
+import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
-import { isProjectAnalysisResult, ProjectAnalysisResult, } from "../../ProjectAnalysisResult";
+import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
+import { ClientFactory, doWithClient } from "./pgUtils";
 import {
     combinePersistResults,
     emptyPersistResult,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
-import { ClientFactory, doWithClient } from "./pgUtils";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
