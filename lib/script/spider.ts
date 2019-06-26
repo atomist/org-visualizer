@@ -105,7 +105,7 @@ async function spider(params: SpiderAppOptions) {
             // be analyzed and persisted, based on its contents. For example,
             // this enables you to analyze only projects containing a particular file
             // through calling getFile()
-            return !!params.update;
+            return true;
         },
         subprojectFinder: firstSubprojectFinderOf(
             fileNamesSubprojectFinder(
