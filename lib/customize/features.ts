@@ -17,14 +17,26 @@
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
-import { filesFeature, FP, NpmDeps, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    filesFeature,
+    FP,
+    NpmDeps,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
     deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import { branchCount, fileCountFeature } from "../feature/common/count";
-import { ciFeature, javaBuildFeature, stackFeature } from "../feature/common/stackFeature";
+import {
+    branchCount,
+    fileCountFeature,
+} from "../feature/common/count";
+import {
+    ciFeature,
+    javaBuildFeature,
+    stackFeature,
+} from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
