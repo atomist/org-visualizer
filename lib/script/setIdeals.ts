@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { allFingerprints } from "./feature/DefaultFeatureManager";
+import { allFingerprints } from "../feature/DefaultFeatureManager";
 import {
     analysisResultStore,
     sdmConfigClientFactory,
-} from "./machine/machine";
+} from "../machine/machine";
 import {
     featureManager,
     IdealStore,
     retrieveFromStupidLocalStorage,
     saveToStupidLocalStorage,
-} from "./routes/features";
+} from "../routes/features";
 
 import * as _ from "lodash";
 

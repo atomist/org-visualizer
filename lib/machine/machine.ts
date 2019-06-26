@@ -45,8 +45,8 @@ import { packageLockScanner } from "../element/packageLock";
 import {
     featureManager,
     features,
-    idealConvergenceScorer,
 } from "../routes/features";
+import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
 
 /**
  * Add scanners to the analyzer to extract data
