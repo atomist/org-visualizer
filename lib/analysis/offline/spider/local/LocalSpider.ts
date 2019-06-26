@@ -54,7 +54,7 @@ export class LocalSpider implements Spider {
         const results: SpiderResult[] = [];
 
         for await (const repoDir of repoIterator) {
-            logger.info("Spidering local repo at %s", repoDir);
+            logger.info("Analyzing local repo at %s", repoDir);
             results.push(await spiderOneLocalRepo(opts, criteria, analyzer, repoDir));
         }
 

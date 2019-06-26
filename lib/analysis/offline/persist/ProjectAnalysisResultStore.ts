@@ -53,7 +53,7 @@ export const emptyPersistResult: PersistResult = {
 export interface ProjectAnalysisResultStore {
 
     /**
-     * How many analyses we have stored
+     * How many analyses we have stored. This includes multiple analyses of the same repo.
      * @return {Promise<number>}
      */
     count(): Promise<number>;

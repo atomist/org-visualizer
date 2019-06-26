@@ -48,7 +48,6 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 from repo_snapshots ` +
                 (where ? `WHERE ${where}` : "");
             const rows = await client.query(sql);
-            // TODO workspace ID
             return rows.rows;
         });
     }
@@ -119,6 +118,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 }],
             };
         }
+
+        // Use this as unique database id
         const id = repoRef.url + "_" + repoRef.sha;
 
         try {
