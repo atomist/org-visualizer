@@ -1,5 +1,5 @@
-import * as React from "react";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import * as React from "react";
 
 type DisplayName = string;
 
