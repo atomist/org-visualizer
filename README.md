@@ -35,7 +35,7 @@ Next, `npm link` to create the `spider` binary.
 
 Data about each repository is stored locally in Postgres.
 
-Please start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database. You can do this within the `psql` shell, or use the Postgres admin tool to create a database named `org-viz` and run all commands in that script after the line beginning with `\connect`.
+Start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database. You can do this within the `psql` shell, or use the Postgres admin tool to create a database named `org-viz` and run all commands in that script after the line beginning with `\connect`.
 
 #### Connecting to the Database
 
@@ -62,13 +62,17 @@ You will need the following installed on your machine to run this SDM:
 - The `git` binary
 - Java
 	- A JDK (*not* a JRE)
-	- 	Maven - `mvn` must be on the path
+	- 	Maven - `mvn` must be on the path. 
 - Node
 - npm
+
+ _All artifacts referenced in Maven or Node projects must be accessible when the spider runs_. Check by running `mvn` or `npm` on the relevant projects.
 
 ### Analyze your repositories
 
 `spider --owner <github organization>` e.g. `spider --owner atomist` (not the full org URL)
+
+>Use the `--u` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
 
 Now start the server with `atomist start --local` to expose the visualizations.
 
@@ -87,6 +91,21 @@ There are three architectural layers:
 3. Simple **UI** using React and d3 exposing Sunburst charts.
 
 All three layers are extensible and customizable.
+
+## Extending
+
+This project includes some well known features but it is intended for you to add your own.
+
+Do this by updating the `features` constant defined in the `features.ts` file. Simply add features to this array:
+
+```typescript
+export const features: ManagedFeature[] = [
+    DockerFrom,
+    new TypeScriptVersionFeature(),
+    //... add your features here
+```
+
+>After updating your code you will need to rerun existing analyses. Run the spider again with the `--u` flag to force updates on existing data.
 
 -----
 
