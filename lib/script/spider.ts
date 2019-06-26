@@ -70,6 +70,12 @@ interface SpiderAppOptions {
     query?: string;
 
     workspaceId: string;
+
+    /**
+     * Update existing analyses for the same sha?
+     * Take care to set this to false if the spider code has been updated
+     */
+    update?: boolean;
 }
 
 /**
@@ -93,11 +99,11 @@ async function spider(params: SpiderAppOptions) {
         maxRetrieved: 1500,
         maxReturned: 1500,
         projectTest: async p => {
-            // Perform a computation here to return false if a project should not
+            // You can also perform a computation here to return false if a project should not
             // be analyzed and persisted, based on its contents. For example,
             // this enables you to analyze only projects containing a particular file
             // through calling getFile()
-            return true;
+            return !!params.update;
         },
         subprojectFinder: firstSubprojectFinderOf(
             fileNamesSubprojectFinder(
@@ -108,17 +114,17 @@ async function spider(params: SpiderAppOptions) {
         ),
     };
 
-    logger.info("Spider criteria are %j", criteria);
+    logger.info("Options are %j\nSpider criteria are %j", params, criteria);
     const result = await spider.spider(criteria,
         analyzer,
         {
             persister,
             keepExistingPersisted: async existing => {
                 // Perform a computation here to return true if an existing analysis seems valid
-                const keep = false;
+                const keep = !params.update;
                 logger.info(keep ?
-                    `Retaining existing analysis for ${existing.analysis.id.url}` :
-                    `Recomputing analysis for ${existing.analysis.id.url}`);
+                    `Retaining existing analysis for ${existing.analysis.id.url}:${existing.analysis.id.sha}` :
+                    `Recomputing analysis for ${existing.analysis.id.url}:${existing.analysis.id.sha}`);
                 return keep;
             },
             // Controls promise usage inNode
@@ -162,6 +168,13 @@ yargs
         requiresArg: true,
         description: "local directory to search for repositories (instead of GitHub)",
     })
+    .option("update", {
+        type: "boolean",
+        required: false,
+        default: false,
+        alias: "u",
+        description: "always update existing analyses for same commit sha",
+    })
     .strict()
     .usage("spider <GitHub criteria: supply owner or query>\nspider --localDirectory <directory containing repositories>");
 
@@ -190,7 +203,10 @@ if (localDirectory) {
     }
 }
 
-const params: SpiderAppOptions = { owner, search, query, workspaceId, source, localDirectory };
+const params: SpiderAppOptions = {
+    owner, search, query, workspaceId, source,
+    localDirectory, update: commandLineParameters.update
+};
 
 spider(params).then(r => {
     console.log(`Successfully analyzed ${JSON.stringify(params)}. result is `
