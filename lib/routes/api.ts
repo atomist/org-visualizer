@@ -28,6 +28,7 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { featureManager } from "../customize/featureManager";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
@@ -43,7 +44,6 @@ import {
     configureAuth,
     corsHandler,
 } from "./auth";
-import { featureManager } from "./features";
 import { whereFor } from "./orgPage";
 import { WellKnownReporters } from "./wellKnownReporters";
 

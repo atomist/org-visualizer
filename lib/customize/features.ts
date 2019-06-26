@@ -16,41 +16,19 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { Scorer } from "@atomist/sdm-pack-analysis";
 import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
-import {
-    filesFeature,
-    FP,
-    NpmDeps,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { filesFeature, FP, NpmDeps, PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
     deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
-import * as fs from "fs";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import {
-    branchCount,
-    fileCountFeature,
-} from "../feature/common/count";
-import {
-    ciFeature,
-    javaBuildFeature,
-    stackFeature,
-} from "../feature/common/stackFeature";
+import { branchCount, fileCountFeature } from "../feature/common/count";
+import { ciFeature, javaBuildFeature, stackFeature } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
-import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import {
-    FeatureManager,
-    ManagedFeature,
-    simpleFlagger,
-} from "../feature/FeatureManager";
+import { ManagedFeature } from "../feature/FeatureManager";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionFeature,
-} from "../feature/node/TypeScriptVersionFeature";
+import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
@@ -114,72 +92,3 @@ async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdea
 
     return undefined;
 }
-
-export type IdealStore = Record<string, PossibleIdeal>;
-
-const stupidStorageFilename = "ideals.json";
-const Ideals: IdealStore = retrieveFromStupidLocalStorage();
-
-export function retrieveFromStupidLocalStorage(): IdealStore {
-    try {
-        logger.info("Retrieving ideals from %s", stupidStorageFilename);
-        const ideals = JSON.parse(fs.readFileSync(stupidStorageFilename).toString());
-        logger.info("Found %d ideals", Object.getOwnPropertyNames(ideals).length);
-        return ideals;
-    } catch (err) {
-        logger.info("Did not retrieve from " + stupidStorageFilename + ": " + err.message);
-        return {};
-    }
-}
-
-export function saveToStupidLocalStorage(value: IdealStore): void {
-    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, undefined, 2));
-}
-
-export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
-    Ideals[fingerprintName] = ideal;
-    saveToStupidLocalStorage(Ideals);
-}
-
-export const featureManager = new DefaultFeatureManager({
-        idealResolver: async name => {
-            return Ideals[name];
-        },
-        features,
-        flags: simpleFlagger(
-            async fp => {
-                return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
-                    {
-                        severity: "warn",
-                        authority: "Rod",
-                        message: "Old TypeScript version",
-                    } :
-                    undefined;
-            },
-            async fp => fp.name === "npm-project-dep::axios" ?
-                {
-                    severity: "warn",
-                    authority: "Christian",
-                    message: "Don't use Axios",
-                } :
-                undefined,
-            async fp => {
-                if (fp.name === "tslintproperty::rules:max-file-line-count") {
-                    try {
-                        const obj = JSON.parse(fp.data);
-                        if (obj.options && obj.options.some(parseInt) > 500) {
-                            return {
-                                severity: "warn",
-                                authority: "Rod",
-                                message: "Allow long files",
-                            };
-                        }
-                    } catch {
-                        // Do nothing
-                    }
-                }
-                return undefined;
-            }),
-    },
-);
-

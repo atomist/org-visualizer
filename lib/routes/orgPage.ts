@@ -24,7 +24,7 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import {
     featureManager,
     setIdeal,
-} from "./features";
+} from "../customize/featureManager";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 import { logger } from "@atomist/automation-client";

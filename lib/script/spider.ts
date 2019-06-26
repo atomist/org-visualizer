@@ -119,7 +119,7 @@ async function spider(params: SpiderAppOptions) {
     const arr = new Array<string>(JSON.stringify(criteria).length + 20);
     _.fill(arr, "-");
     const sep = arr.join("");
-    logger.info("%s\nOptions: %j\nSpider criteria: %j\n%s\n\n", sep, params, criteria, sep);
+    logger.info("%s\nOptions: %j\nSpider criteria: %j\n%s\n", sep, params, criteria, sep);
     return spider.spider(criteria,
         analyzer,
         {
