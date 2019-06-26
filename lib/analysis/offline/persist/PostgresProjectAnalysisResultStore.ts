@@ -44,7 +44,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
 
     public loadWhere(where: string): Promise<ProjectAnalysisResult[]> {
         return doWithClient(this.clientFactory, async client => {
-            const sql = `SELECT owner, name, url, commit_sha, analysis, timestamp
+            const sql = `SELECT id, owner, name, url, commit_sha, analysis, timestamp
                 from repo_snapshots ` +
                 (where ? `WHERE ${where}` : "");
             const rows = await client.query(sql);
@@ -52,12 +52,27 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         });
     }
 
-    public async loadOne(repo: RepoRef): Promise<ProjectAnalysisResult> {
+    public async loadById(id: string): Promise<ProjectAnalysisResult> {
         return doWithClient(this.clientFactory, async client => {
             const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp
                 FROM repo_snapshots
+                WHERE id = $1`, [id]);
+            return result.rows.length === 1 ? {
+                id,
+                analysis: result.rows[0].analysis,
+                timestamp: result.rows[0].timestamp,
+                workspaceId: result.rows[0].workspace_id,
+            } : undefined;
+        });
+    }
+
+    public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult> {
+        return doWithClient(this.clientFactory, async client => {
+            const result = await client.query(`SELECT id, owner, name, url, commit_sha, analysis, timestamp
+                FROM repo_snapshots
                 WHERE owner = $1 AND name = $2 AND commit_sha = $3`, [repo.owner, repo.repo, repo.sha]);
             return result.rows.length >= 1 ? {
+                id: result.rows[0].id,
                 analysis: result.rows[0].analysis,
                 timestamp: result.rows[0].timestamp,
                 workspaceId: result.rows[0].workspace_id,
@@ -120,7 +135,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         }
 
         // Use this as unique database id
-        const id = repoRef.url + "_" + repoRef.sha;
+        const id = repoRef.url.replace("/", "") + "_" + repoRef.sha;
 
         try {
             // Whack any joins

@@ -65,7 +65,14 @@ export interface ProjectAnalysisResultStore {
      */
     loadWhere(where: string): Promise<ProjectAnalysisResult[]>;
 
-    loadOne(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
+    loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
+
+    /**
+     * Load by our database id
+     * @param {string} id
+     * @return {Promise<ProjectAnalysisResult | undefined>}
+     */
+    loadById(id: string): Promise<ProjectAnalysisResult | undefined>;
 
     persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult>;
 

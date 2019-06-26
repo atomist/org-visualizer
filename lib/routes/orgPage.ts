@@ -123,7 +123,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     actionableFingerprints,
                     projectsAnalyzed: features.projectsAnalyzed,
                     importantFeatures,
-                    projects: repos.map(r => r.analysis.id),
+                    projects: repos.map(r => ({ ...r.analysis.id, id: r.id })),
                 })));
             } catch (e) {
                 logger.error(e.stack);
@@ -141,7 +141,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return res.send(`No matching repos for organization ${req.query.owner}`);
             }
 
-            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ar.analysis.id);
+            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id}));
 
             return res.send(renderStaticReactNode(
                 ProjectList({ projects: projectsForDisplay }),
@@ -149,15 +149,14 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         });
 
         /* the project page */
-        express.get("/project/:owner/:repo", ...handlers, async (req, res) => {
-
-            const id = { owner: req.params.owner, repo: req.params.repo, url: "" };
-            const analysis = await store.loadOne(id);
-            if (!analysis) {
+        express.get("/project", ...handlers, async (req, res) => {
+            const id = req.query.id;
+            const analysisResult = await store.loadById(id);
+            if (!analysisResult) {
                 return res.send(`No project at ${JSON.stringify(id)}`);
             }
 
-            const featuresAndFingerprints = await featureManager.projectFingerprints(analysis);
+            const featuresAndFingerprints = await featureManager.projectFingerprints(analysisResult);
 
             // assign style based on ideal
             const ffd: FeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
@@ -170,8 +169,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             }));
 
             return res.send(renderStaticReactNode(ProjectExplorer({
-                owner: req.params.owner,
-                repo: req.params.repo,
+                analysis: analysisResult.analysis,
                 features: ffd,
             })));
         });

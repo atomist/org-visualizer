@@ -65,7 +65,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
             try {
                 const workspaceId = req.params.workspace_id || "local";
                 const fps = await fingerprints(clientFactory, workspaceId);
-                logger.info("Returning fingerprints for '%s': %j", workspaceId, fps);
+                logger.debug("Returning fingerprints for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
                 logger.warn("Error occurred getting fingerprints: %s", e.message);
@@ -83,7 +83,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                     rootName: req.params.name,
                     featureName: req.params.type,
                 });
-                logger.info("Returning fingerprint '%s': %j", req.params.name, tree);
+                logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
                 res.json(tree);
             } catch (e) {

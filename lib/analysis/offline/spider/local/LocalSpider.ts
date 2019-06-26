@@ -48,9 +48,7 @@ export class LocalSpider implements Spider {
     public async spider(criteria: ScmSearchCriteria,
                         analyzer: ProjectAnalyzer,
                         opts: SpiderOptions): Promise<SpiderResult> {
-
         const repoIterator = findRepositoriesUnder(this.localDirectory);
-
         const results: SpiderResult[] = [];
 
         for await (const repoDir of repoIterator) {
@@ -62,7 +60,6 @@ export class LocalSpider implements Spider {
     }
 
     constructor(public readonly localDirectory: string) { }
-
 }
 
 function combineSpiderResults(r1: SpiderResult, r2: SpiderResult): SpiderResult {
@@ -105,7 +102,6 @@ async function spiderOneLocalRepo(opts: SpiderOptions,
     }
 
     const project = await GitCommandGitProject.fromExistingDirectory(localRepoRef, repoDir);
-
     if (criteria.projectTest && !await criteria.projectTest(project)) {
         return {
             ...oneSpiderResult,

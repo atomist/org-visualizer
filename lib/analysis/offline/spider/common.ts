@@ -48,7 +48,7 @@ export async function keepExistingPersisted(
         keepExistingPersisted: ProjectAnalysisResultFilter,
     },
     repoId: RepoId): Promise<boolean> {
-    const found = await opts.persister.loadOne(repoId);
+    const found = await opts.persister.loadByRepoRef(repoId);
     if (!found) {
         return false;
     }

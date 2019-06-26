@@ -92,8 +92,11 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
     public loadWhere(): Promise<ProjectAnalysisResult[]> {
         throw new Error("Method not implemented.");
     }
-    public async loadOne(repo: RepoRef): Promise<ProjectAnalysisResult> {
+    public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult> {
         return oneResult;
+    }
+    public loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
+        throw new Error("Method not implemented.");
     }
     public async persist(repoOrRepos: ProjectAnalysisResult
         | ProjectAnalysisResult[] | AsyncIterable<ProjectAnalysisResult>): Promise<PersistResult> {

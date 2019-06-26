@@ -2,20 +2,20 @@ import { RepoRef } from "@atomist/automation-client";
 import * as _ from "lodash";
 import * as React from "react";
 
-export type ProjectForDisplay = RepoRef; // will likely add more data later
+export type ProjectForDisplay = RepoRef & { id: string}; // will likely add more data later
 
 export interface ProjectListProps {
     projects: ProjectForDisplay[];
 }
 
 function toListItem(p: ProjectForDisplay): React.ReactElement {
-    const linkToIndividualProjectPage = `/project/${p.owner}/${p.repo}`;
+    const linkToIndividualProjectPage = `/project?id=${encodeURI(p.id)}`;
     return <li key={p.url}>{p.repo}:{" "}
         <a href={p.url}>
             Source
             </a>{" "}
         <a href={linkToIndividualProjectPage}>
-            Explore
+            Insights
         </a>
     </li >;
 }

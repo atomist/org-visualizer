@@ -29,6 +29,11 @@ export interface SubprojectDescription {
  */
 export interface ProjectAnalysisResult {
 
+    /**
+     * Unique id. Available after persistence.
+     */
+    readonly id?: string;
+
     readonly workspaceId: string;
 
     readonly analysis: ProjectAnalysis;
