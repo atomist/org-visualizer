@@ -42,6 +42,8 @@ import {
 } from "../machine/machine";
 import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
 
+import * as _ from "lodash";
+
 // Ensure we see console logging, and send info to the console
 configureLogging(PlainLogging);
 
@@ -114,8 +116,11 @@ async function spider(params: SpiderAppOptions) {
         ),
     };
 
-    logger.info("Options are %j\nSpider criteria are %j", params, criteria);
-    const result = await spider.spider(criteria,
+    const arr = new Array<string>(JSON.stringify(criteria).length + 20);
+    _.fill(arr, "-");
+    const sep = arr.join("");
+    logger.info("%s\nOptions: %j\nSpider criteria: %j\n%s\n\n", sep, params, criteria, sep);
+    return spider.spider(criteria,
         analyzer,
         {
             persister,
@@ -131,7 +136,6 @@ async function spider(params: SpiderAppOptions) {
             poolSize: 40,
             workspaceId,
         });
-    return result;
 }
 
 yargs
