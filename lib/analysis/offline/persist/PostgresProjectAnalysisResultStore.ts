@@ -111,25 +111,14 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 }],
             };
         }
-        if (!repoRef.url) {
+        if (!repoRef.url || !repoRef.sha) {
             return {
                 attemptedCount: 1,
                 succeeded: [],
                 failed: [{
                     repoUrl: "missing repoUrl. Repo is named " + repoRef.repo,
                     whileTryingTo: "build object to persist",
-                    message: "No url on RepoRef",
-                }],
-            };
-        }
-        if (!repoRef.sha) {
-            return {
-                attemptedCount: 1,
-                succeeded: [],
-                failed: [{
-                    repoUrl: repoRef.url,
-                    whileTryingTo: "build object to persist",
-                    message: "No sha on RepoRef",
+                    message: `Incomplete RepoRef ${JSON.stringify(repoRef)}`,
                 }],
             };
         }
