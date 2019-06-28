@@ -15,7 +15,8 @@
  */
 
 import {
-    GitCommandGitProject, LocalProject,
+    GitCommandGitProject,
+    LocalProject,
     logger,
     Project,
 } from "@atomist/automation-client";
