@@ -20,6 +20,7 @@ import {
     Project,
 } from "@atomist/automation-client";
 import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
+import { execPromise } from "@atomist/sdm";
 import {
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
@@ -45,7 +46,6 @@ import {
     SpiderOptions,
     SpiderResult,
 } from "../Spider";
-import { execPromise } from "@atomist/sdm";
 
 type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
 
