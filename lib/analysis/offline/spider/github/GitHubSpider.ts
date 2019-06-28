@@ -15,7 +15,7 @@
  */
 
 import {
-    GitCommandGitProject,
+    GitCommandGitProject, LocalProject,
     logger,
     Project,
 } from "@atomist/automation-client";
@@ -45,6 +45,7 @@ import {
     SpiderOptions,
     SpiderResult,
 } from "../Spider";
+import { execPromise } from "@atomist/sdm";
 
 type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
 
@@ -194,6 +195,13 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
     let project;
     try {
         project = await cloneFunction(sourceData);
+        if (!project.id.sha) {
+            const sha = await execPromise("git", ["rev-parse", "HEAD"], {
+                cwd: (project as LocalProject).baseDir,
+            });
+            project.id.sha = sha.stdout.trim();
+            logger.debug(`Set sha to ${project.id.sha}`);
+        }
     } catch (err) {
         return {
             failedToCloneOrAnalyze: [{ repoUrl: sourceData.url, whileTryingTo: "clone", message: err.message }],
