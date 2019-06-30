@@ -170,7 +170,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             return res.send(renderStaticReactNode(ProjectExplorer({
                 analysis: analysisResult.analysis,
-                features: ffd,
+                features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName)
             })));
         });
 
