@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
+
+import * as _ from "lodash";
+
 export interface SunburstTree {
     name: string;
     children: Array<SunburstTree | SunburstLeaf>;
@@ -31,11 +35,47 @@ export function isSunburstTree(level: SunburstLevel): level is SunburstTree {
     return !!maybe.children;
 }
 
-export function visit(t: SunburstLevel, visitor: (sl: SunburstLevel) => boolean): void {
-    const r = visitor(t);
+export function visit(t: SunburstLevel, visitor: (sl: SunburstLevel, depth: number) => boolean, depth: number = 0): void {
+    const r = visitor(t, depth);
     if (r && isSunburstTree(t)) {
-        t.children.forEach(visitor);
+        t.children.forEach(c => visit(c, visitor, depth + 1));
     }
+}
+
+/**
+ * Introduce a new level split by by the given classifier for terminals
+ */
+export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLeaf & T) => string, targetDepth: number): void {
+    visit(t, (l, depth) => {
+        if (depth === targetDepth && isSunburstTree(l)) {
+            // Split children
+            const leaves = leavesUnder(l);
+            logger.info("Found %d leaves for %s", leaves.length, t.name);
+            // Introduce a new level for each classification
+            const distinctNames = _.uniq(leaves.map(l => leafClassifier(l as any)));
+            const oldKids = l.children;
+            l.children = [];
+            for (const name of distinctNames) {
+                const children = oldKids.filter(k => leavesUnder(k).some(l => leafClassifier(l as any) === name));
+                if (children.length > 0) {
+                    l.children.push({name, children});
+                }
+            }
+            return false;
+        }
+        return true;
+    });
+}
+
+export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
+    const leaves: SunburstLeaf[] = [];
+    visit(t, l => {
+        if (!isSunburstTree(l)) {
+            leaves.push(l);
+        }
+        return true;
+    });
+    return leaves;
 }
 
 /**

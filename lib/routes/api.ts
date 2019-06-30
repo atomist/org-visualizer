@@ -36,6 +36,7 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
+    splitBy,
     SunburstTree,
     visit,
 } from "../tree/sunburst";
@@ -85,6 +86,12 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                 });
                 logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
+                if (req.query.byOrg) {
+                    splitBy<{owner: string}>(tree, l => l.owner, 0);
+                } else if (req.query.byThing) {
+                    splitBy<{owner: string}>(tree, l => l.owner, 1);
+                }
+
                 res.json(tree);
             } catch (e) {
                 logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);
@@ -110,7 +117,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 }
 
 // Use Features to find names of features
-function resolveFeatureNames(fm: FeatureManager, t: SunburstTree) {
+function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
     visit(t, l => {
         if ((l as any).sha) {
             const fp = l as any as FP;
