@@ -2,7 +2,7 @@ import { RepoRef } from "@atomist/automation-client";
 import * as _ from "lodash";
 import * as React from "react";
 
-export type ProjectForDisplay = RepoRef & { id: string}; // will likely add more data later
+export type ProjectForDisplay = RepoRef & { id: string }; // will likely add more data later
 
 export interface ProjectListProps {
     projects: ProjectForDisplay[];
@@ -32,7 +32,7 @@ function displayOrgProjects(owner: string, projects: ProjectForDisplay[]): React
 export function ProjectList(props: ProjectListProps): React.ReactElement {
     const projectsByOrg = _.groupBy(props.projects, p => p.owner);
     return <div>
-        <h2>{props.projects.length} projects</h2>
+        <h2>Projects ({props.projects.length})</h2>
         <ul>
             {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
         </ul>
@@ -40,11 +40,11 @@ export function ProjectList(props: ProjectListProps): React.ReactElement {
 }
 
 function collapsible(key: string, title: string, content: React.ReactElement, startOpen: boolean): React.ReactElement {
-    return <div className="wrap-collabsible project-list">
+    return <div className="wrap-collabsible owner-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={startOpen}></input>
-        <label htmlFor={key} className="lbl-toggle project-list">{title}</label>
-        <div className="collapsible-content project-list">
-            <div className="content-inner project-list">
+        <label htmlFor={key} className="lbl-toggle">{title}</label>
+        <div className="collapsible-content">
+            <div className="content-inner">
                 {content}
             </div></div></div>;
 }

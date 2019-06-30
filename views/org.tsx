@@ -57,7 +57,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length <= 1;
 
-    return <div className="wrap-collabsible">
+    return <div className="wrap-collabsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
         <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">

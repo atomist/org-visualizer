@@ -136,3 +136,25 @@ input[type='checkbox'].sneaky {
     border-bottom-right-radius: 7px;
     padding: .5rem 1rem;
 }
+
+.owner-collapsible .collapsible-content .content-inner {
+    background: rgba(195, 204, 233, 0.75);
+    border-bottom: 1px solid rgb(180, 181, 230, 0.45);
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    padding: .5rem 1rem;
+}
+
+.owner-collapsible .lbl-toggle {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 1rem;
+    color: #2a2a2a;
+    background: rgb(180, 181, 230);
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.25s ease-out;
+}
