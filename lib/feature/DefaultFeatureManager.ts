@@ -120,7 +120,8 @@ export class DefaultFeatureManager implements FeatureManager {
         const result = [];
         const allFingerprintsInOneProject: FP[] = allFingerprints(par.analysis);
         for (const feature of this.features) {
-            const originalFingerprints = allFingerprintsInOneProject.filter(fp => feature.selector(fp));
+            const originalFingerprints =
+                _.sortBy(allFingerprintsInOneProject.filter(fp => feature.selector(fp)), fp => fp.name);
             if (originalFingerprints.length > 0) {
                 const fingerprints: MelbaFingerprintForDisplay[] = [];
                 for (const fp of originalFingerprints) {
