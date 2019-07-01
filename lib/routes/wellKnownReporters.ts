@@ -14,40 +14,27 @@
  * limitations under the License.
  */
 
-import {
-    astUtils,
-    InMemoryProject,
-    InMemoryProjectFile,
-} from "@atomist/automation-client";
+import { astUtils, InMemoryProject, InMemoryProjectFile, } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
 import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
+import { Analyzed, } from "../feature/FeatureManager";
+import { Reporters, } from "../feature/reporters";
 import {
-    Analyzed,
-    HasFingerprints,
-} from "../feature/FeatureManager";
-import {
-    Reporters,
-} from "../feature/reporters";
-import {
-    DefaultProjectAnalysisRenderer,
+    AnalyzedGrouper,
+    DefaultAnalyzedRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
-import {
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
+import { BaseFeature, NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 
 /**
  * Well known reporters against our repo cohort.
@@ -107,7 +94,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         return _.get(ar, "elements.node.packageJson.license", "No license");
                     },
                 })
-                .renderWith(DefaultProjectAnalysisRenderer),
+                .renderWith(DefaultAnalyzedRenderer),
 
         typeScriptVersions:
             params =>
@@ -116,7 +103,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         name: "version",
                         by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
         springVersions: params =>
             treeBuilderFor("Spring Boot version", params)
@@ -124,7 +111,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     name: "version",
                     by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
                 })
-                .renderWith(DefaultProjectAnalysisRenderer),
+                .renderWith(DefaultAnalyzedRenderer),
 
         langs:
             params =>
@@ -191,20 +178,13 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             return pl.packageLock.dependencies[params.artifact].version;
                         },
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
-        dependencyCount:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("dependency count", params)
-                    .group({ name: "size", by: groupByDependencyCount })
-                    .renderWith(ar => {
-                        const size = ar.dependencies.length;
-                        return {
-                            name: `${ar.id.repo} (${size})`,
-                            url: ar.id.url,
-                            size,
-                        };
-                    }),
+        npmDependencyCount:
+            params => featureGroup("Maven dependency count", params, NpmDeps),
+
+        mavenDependencyCount:
+            params => featureGroup("Maven dependency count", params, mavenDependenciesFeature),
         loc:
             params =>
                 treeBuilderFor<ProjectAnalysis>("loc", params)
@@ -228,7 +208,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
             params =>
                 treeBuilderFor("Docker Y/N", params)
                     .group({ name: "docker", by: byDocker })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
         dockerPorts:
             params =>
@@ -247,7 +227,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             return ports || "none";
                         },
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
         dockerImages:
             params =>
@@ -278,7 +258,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             return images.map(i => i.split(":")[1]).join(",");
                         },
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
         uhura:
             params =>
@@ -312,7 +292,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                                 .join(",");
                         },
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
 
         // Generic path
         path:
@@ -328,7 +308,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             return typeof raw === "string" ? raw : JSON.stringify(raw);
                         },
                     })
-                    .renderWith(DefaultProjectAnalysisRenderer),
+                    .renderWith(DefaultAnalyzedRenderer),
     }
 ;
 
@@ -353,22 +333,42 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-const groupByDependencyCount: ProjectAnalysisGrouper = ar => {
-    const cm = ar.dependencies.length;
-    if (!cm) {
-        return undefined;
-    }
-    if (cm > 100) {
-        return "venti";
-    }
-    if (cm > 50) {
-        return "grande";
-    }
-    if (cm > 15) {
-        return "tall";
-    }
-    return "small";
-};
+function featureGroup(name: string, params: any, feature: BaseFeature) {
+    return treeBuilderFor<ProjectAnalysis>(name, params)
+        .group({ name: "size", by: groupByFingerprintCount(feature) })
+        .renderWith(ar => {
+            const size = ar.fingerprints.filter(feature.selector).length;
+            return {
+                name: `${ar.id.repo} (${size})`,
+                url: ar.id.url,
+                size,
+            };
+        });
+}
+
+/**
+ * Group by the number of fingerprints from this feature
+ * @param {BaseFeature} feature
+ * @return {AnalyzedGrouper}
+ */
+function groupByFingerprintCount(feature: BaseFeature): AnalyzedGrouper {
+    return ar => {
+        const cm = ar.fingerprints.filter(feature.selector).length;
+        if (!cm) {
+            return undefined;
+        }
+        if (cm > 100) {
+            return "venti";
+        }
+        if (cm > 50) {
+            return "grande";
+        }
+        if (cm > 15) {
+            return "tall";
+        }
+        return "small";
+    };
+}
 
 function byElement(list: string[]): ProjectAnalysisGrouper {
     return ar => {

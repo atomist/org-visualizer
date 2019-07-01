@@ -20,7 +20,7 @@ import {
     Flag,
     HasFingerprints,
 } from "./FeatureManager";
-import { DefaultProjectAnalysisRenderer } from "./support/groupingUtils";
+import { DefaultAnalyzedRenderer } from "./support/groupingUtils";
 
 import * as _ from "lodash";
 import {
@@ -69,7 +69,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         knownBad.map(bad => bad.message).join(",");
                 },
             })
-            .renderWith(DefaultProjectAnalysisRenderer);
+            .renderWith(DefaultAnalyzedRenderer);
 
     for await (const fingerprint of fingerprintsFrom(repos)) {
         const name = fingerprint.name;
@@ -87,7 +87,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         return !!fp ? defaultedToDisplayableFingerprint(featureManager.featureFor(fp))(fp) : undefined;
                     },
                 })
-                .renderWith(DefaultProjectAnalysisRenderer);
+                .renderWith(DefaultAnalyzedRenderer);
 
         reporters[name + "-present"] = params =>
             treeBuilderFor(name, params)
@@ -98,7 +98,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         return !!found ? "Yes" : "No";
                     },
                 })
-                .renderWith(DefaultProjectAnalysisRenderer);
+                .renderWith(DefaultAnalyzedRenderer);
 
         // Add a query that tells us how many repositories are on vs off the ideal, if any, for this fingerprint
         reporters[name + "-ideal"] = params =>
@@ -121,7 +121,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
                     },
                 })
-                .renderWith(DefaultProjectAnalysisRenderer);
+                .renderWith(DefaultAnalyzedRenderer);
     }
 
     return reporters;

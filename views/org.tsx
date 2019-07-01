@@ -137,7 +137,9 @@ Conduct</a></li>
 
             <li key="code-3"><a href="./query?filter=true&name=langs&byOrg=true">Language breakdown for all projects</a></li>
             <li key="code-4"><a href="./query?filter=true&name=loc&byOrg=true">Repo sizes</a></li>
-            <li key="code-5"><a href="./query?filter=true&name=dependencyCount&byOrg=true">Number of dependencies</a></li>
+            <li key="code-5"><a href="./query?filter=true&name=mavenDependencyCount&byOrg=true">Number of Maven dependencies</a></li>
+            <li key="code-5"><a href="./query?filter=true&name=npmDependencyCount&byOrg=true">Number of npm dependencies</a></li>
+
             <li key="code-6"><a href="./query?filter=true&name=licenses&byOrg=true">package.json license</a></li>
         </ul>
 

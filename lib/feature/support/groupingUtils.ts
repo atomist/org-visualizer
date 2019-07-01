@@ -26,7 +26,7 @@ export type ProjectAnalysisGrouper = (ar: ProjectAnalysis) => string;
 
 export const OrgGrouper: AnalyzedGrouper = a => _.get(a, "id.owner");
 
-export const DefaultProjectAnalysisRenderer: Renderer<Analyzed> =
+export const DefaultAnalyzedRenderer: Renderer<Analyzed> =
     ar => {
         const projectName = ar.id.path ?
             ar.id.repo + path.sep + ar.id.path :
