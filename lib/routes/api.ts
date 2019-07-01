@@ -46,7 +46,8 @@ import {
     corsHandler,
 } from "./auth";
 import { whereFor } from "./orgPage";
-import { WellKnownReporters } from "./wellKnownReporters";
+import { skewReport, WellKnownReporters } from "./wellKnownReporters";
+import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 
 /**
  * Public API routes, returning JSON
@@ -103,6 +104,17 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         express.get("/api/v1/:workspace/filter/:name", ...handlers, async (req, res) => {
             const repos = await store.loadWhere(whereFor(req));
 
+            if (req.params.name === "skew") {
+                const fingerprints: FP[] = [];
+                for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
+                    if (!fingerprints.some(f => f.sha === fp.sha)) {
+                        fingerprints.push(fp);
+                    }
+                }
+                const data = await skewReport().toSunburstTree(() => fingerprints);
+                return res.json(data);
+            }
+
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
             const allQueries = _.merge(featureQueries, WellKnownReporters);
 
@@ -111,7 +123,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
             });
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-            res.json(data);
+            return res.json(data);
         });
     };
 }

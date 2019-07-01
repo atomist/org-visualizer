@@ -122,6 +122,9 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
 
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
+
+        <a href="./query?skew=true">Skew</a>
+
         {displayFeatures(props)}
         <h2>Common queries</h2>
         <h3>Community</h3>

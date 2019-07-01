@@ -23,7 +23,7 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
 import {
-    BaseFeature,
+    BaseFeature, FP,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -46,9 +46,11 @@ import {
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
 import {
+    ReportBuilder,
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
+import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 
 /**
  * Well known reporters against our repo cohort.
@@ -109,6 +111,36 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     },
                 })
                 .renderWith(DefaultAnalyzedRenderer),
+
+        skew:
+            params => {
+                return {
+                    toSunburstTree: async originalQuery => {
+                        const fingerprints: FP[] = [];
+                        for await (const fp of fingerprintsFrom(originalQuery())) {
+                            if (!fingerprints.some(f => f.sha === fp.sha)) {
+                                fingerprints.push(fp);
+                            }
+                        }
+                        const grouped = _.groupBy(fingerprints, fp => fp.type);
+
+                        return {
+                            name: "skew",
+                            children: Object.getOwnPropertyNames(grouped).map(name => {
+                                return {
+                                    name,
+                                    children: grouped[name].map(g => {
+                                        return {
+                                            name: g.name,
+                                            size: 1,
+                                        }
+                                    }),
+                                }
+                            }),
+                        }
+                    }
+                }
+            },
 
         typeScriptVersions:
             params =>
@@ -384,20 +416,27 @@ function groupByFingerprintCount(feature: BaseFeature): AnalyzedGrouper {
     };
 }
 
-function byElement(list: string[]): ProjectAnalysisGrouper {
-    return ar => {
-        for (const element of list) {
-            if (!!_.get(ar, "elements." + element)) {
-                return element;
-            }
-        }
-        return "none";
-    };
-}
-
 export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, params: any): TreeBuilder<A, A> {
     const tb = treeBuilder<A>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;
+}
+
+export function skewReport(): ReportBuilder<FP> {
+    return treeBuilder<FP>("skew")
+        .group({
+            name: "type",
+            by: fp => fp.type,
+        })
+        .group({
+            name: "name",
+            by: fp => fp.name,
+        })
+        .renderWith(fp => {
+            return {
+                name: fp.sha,
+                size: 1,
+            }
+        });
 }

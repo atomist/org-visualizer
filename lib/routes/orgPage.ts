@@ -141,7 +141,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 return res.send(`No matching repos for organization ${req.query.owner}`);
             }
 
-            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id}));
+            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id }));
 
             return res.send(renderStaticReactNode(
                 ProjectList({ projects: projectsForDisplay }),
@@ -183,61 +183,73 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
-            const repos = await store.loadWhere(whereFor(req));
 
-            const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-            const allQueries = _.merge(featureQueries, WellKnownReporters);
-            const fingerprintName = req.query.name.replace(/-ideal$/, "");
+            let dataUrl: string;
+            let currentIdealForDisplay;
+            let possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
-            const queryString = jsonToQueryString(req.query);
-            const cannedQueryDefinition = allQueries[req.query.name];
-            if (!cannedQueryDefinition) {
-                return res.render("noQuery", {
-                    query: req.query.name,
-                });
-            }
+            let fingerprintDisplayName: string = "";
             const workspaceId = req.query.workspaceId || "*";
 
-            const dataUrl = !!req.query.filter ?
-                `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
-                `/api/v1/${workspaceId}/fingerprint/${req.query.type}/${req.query.name}?${queryString}`;
+            if (req.query.skew) {
+                dataUrl = `/api/v1/${workspaceId}/filter/skew`;
+            } else {
 
-            logger.info("Data url=%s", dataUrl);
+                const repos = await store.loadWhere(whereFor(req));
 
-            // tslint:disable-next-line
-            const feature = featureManager.featureFor({ name: fingerprintName } as FP);
-            const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
+                const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
+                const allQueries = _.merge(featureQueries, WellKnownReporters);
+                const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
-            function idealDisplayValue(ideal: PossibleIdeal): string | undefined {
-                if (ideal === undefined) {
-                    return undefined;
+                const queryString = jsonToQueryString(req.query);
+                const cannedQueryDefinition = allQueries[req.query.name];
+                if (!cannedQueryDefinition) {
+                    return res.render("noQuery", {
+                        query: req.query.name,
+                    });
                 }
-                if (ideal.ideal === undefined) {
-                    return "eliminate";
-                }
-                try {
-                    return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
-                } catch (err) {
-                    logger.error("Could not display fingerprint: " + err);
-                    return JSON.stringify(ideal.ideal.data);
-                }
-            }
 
-            const currentIdealForDisplay = idealDisplayValue(await featureManager.idealResolver(fingerprintName));
-            const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
-            if (!currentIdealForDisplay) {
-                // TODO: this sucks
-                if (feature && feature.suggestedIdeals) {
-                    const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
-                    for (const ideal of possibleIdeals) {
-                        possibleIdealsForDisplay.push({
-                            ...ideal,
-                            displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
-                            stringified: JSON.stringify(ideal),
-                        });
+                dataUrl = !!req.query.filter ?
+                    `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
+                    `/api/v1/${workspaceId}/fingerprint/${req.query.type}/${req.query.name}?${queryString}`;
+
+                // tslint:disable-next-line
+                const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+                fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
+
+                function idealDisplayValue(ideal: PossibleIdeal): string | undefined {
+                    if (ideal === undefined) {
+                        return undefined;
+                    }
+                    if (ideal.ideal === undefined) {
+                        return "eliminate";
+                    }
+                    try {
+                        return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
+                    } catch (err) {
+                        logger.error("Could not display fingerprint: " + err);
+                        return JSON.stringify(ideal.ideal.data);
                     }
                 }
+
+                currentIdealForDisplay = idealDisplayValue(await featureManager.idealResolver(fingerprintName));
+                if (!currentIdealForDisplay) {
+                    // TODO: this sucks
+                    if (feature && feature.suggestedIdeals) {
+                        const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
+                        for (const ideal of possibleIdeals) {
+                            possibleIdealsForDisplay.push({
+                                ...ideal,
+                                displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
+                                stringified: JSON.stringify(ideal),
+                            });
+                        }
+                    }
+                }
+
             }
+            logger.info("Data url=%s", dataUrl);
+
             res.send(renderStaticReactNode(
                 SunburstQuery({
                     fingerprintDisplayName,
