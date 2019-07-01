@@ -23,7 +23,8 @@ function toListItem(p: ProjectForDisplay): React.ReactElement {
 function displayOrgProjects(owner: string, projects: ProjectForDisplay[]): React.ReactElement {
     return collapsible(owner, `${owner} (${projects.length} projects)`,
         <ul>
-            {projects.map(toListItem)}
+            {_.sortBy(projects, p => p.repo.toLowerCase())
+                .map(toListItem)}
         </ul>,
         projects.length === 1,
     );
