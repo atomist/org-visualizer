@@ -83,7 +83,7 @@ Node processes via a `GITHUB_TOKEN` environment variable. (This will
 never be sent to Atomist.)_
 
 #### Local directories
-To analyze local directories, wherever they were cloned from, use the `-l` flag and specify the full path of the parent directory of the repositories, as follows: 
+To analyze local directories, wherever they were cloned from, use the `--l` flag and specify the full path of the parent directory of the repositories, as follows: 
 
 ```
 spider --l /Users/rodjohnson/atomist/projects/spring-team/ --u

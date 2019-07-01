@@ -64,6 +64,7 @@ export const features: ManagedFeature[] = [
     ciFeature,
     javaBuildFeature,
     conditionalize(filesFeature({
+            name: "node-git-ignore",
             displayName: "Node git ignore",
             type: "gitignore",
             canonicalize: c => c,
@@ -74,6 +75,7 @@ export const features: ManagedFeature[] = [
         toDisplayableFingerprintName: () => "Node git ignore",
     }, async p => p.hasFile("package.json")),
     conditionalize(filesFeature({
+            name: "spring-git-ignore",
             displayName: "git ignore",
             type: "gitignore",
             canonicalize: c => c,
