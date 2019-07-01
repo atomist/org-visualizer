@@ -33,7 +33,6 @@ import {
     javaBuildFeature,
     stackFeature,
 } from "./lib/feature/common/stackFeature";
-import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
 import { springBootVersionFeature } from "./lib/feature/spring/springBootVersionFeature";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
@@ -52,9 +51,7 @@ export const configuration: Configuration = configure(async sdm => {
     sdm.configuration.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
     // Disable goal hooks from repos
     sdm.configuration.sdm.goal = {
-        hooks: {
-            enabled: false,
-        },
+        hooks: false,
     };
     // For safety we sign every goal
     sdm.configuration.sdm.goalSigning = {
