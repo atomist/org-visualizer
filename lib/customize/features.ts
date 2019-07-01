@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { DockerFrom } from "@atomist/sdm-pack-docker/lib/fingerprints/docker";
+import { DockerFrom } from "@atomist/sdm-pack-docker";
 import {
     filesFeature,
     FP,

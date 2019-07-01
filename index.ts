@@ -23,10 +23,18 @@ import {
     PushImpact,
 } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
+import { DockerFrom } from "@atomist/sdm-pack-docker";
 import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import {
+    ciFeature,
+    javaBuildFeature,
+    stackFeature,
+} from "./lib/feature/common/stackFeature";
+import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
+import { springBootVersionFeature } from "./lib/feature/spring/springBootVersionFeature";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
@@ -58,6 +66,11 @@ export const configuration: Configuration = configure(async sdm => {
 
     const features = [
         NpmDeps,
+        DockerFrom,
+        springBootVersionFeature,
+        stackFeature,
+        ciFeature,
+        javaBuildFeature,
     ];
     const handlers = [];
 
