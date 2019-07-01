@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint } from "@atomist/sdm";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { NodeStack } from "@atomist/sdm-pack-analysis-node";
-import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
-import { AnalysisDerivedFeature } from "../FeatureManager";
+import { AtomicFeature, FP, NpmDeps, PossibleIdeal, sha256 } from "@atomist/sdm-pack-fingerprints";
 
-export class TypeScriptVersion extends AbstractFingerprint {
+export type TypeScriptVersionName = "tsVersion";
+export const TypeScriptVersionName = "tsVersion";
 
-    public readonly type = "TypeScript";
 
-    constructor(public readonly typeScriptVersion: string) {
-        super("tsVersion", "tsv", "1.0.0", typeScriptVersion);
-    }
+export interface TypeScriptVersion extends FP {
+
+    name: TypeScriptVersionName,
+    data: string;
 
 }
 
-export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScriptVersion> {
+
+export class TypeScriptVersionFeature implements AtomicFeature<TypeScriptVersion> {
 
     public readonly displayName = "TypeScript version";
 
-    public readonly name = "tsVersion";
+    public readonly name = TypeScriptVersionName;
 
     get apply() {
         return async (p, tsi) => {
@@ -42,35 +40,37 @@ export class TypeScriptVersionFeature implements AnalysisDerivedFeature<TypeScri
         };
     }
 
-    public selector = fp => fp.name === "tsVersion";
+    public selector = fp => fp.name === TypeScriptVersionName;
 
-    public async derive(analysis: ProjectAnalysis) {
-        const n = analysis.elements.node as NodeStack;
-        if (!n) {
-            return undefined;
-        }
-        return !!n.typeScript && n.typeScript.hasDependency ?
-            new TypeScriptVersion(n.typeScript.version) :
-            undefined;
+    public async consolidate(fps: FP[]): Promise<TypeScriptVersion> {
+        const target = fps
+            .filter(fp => NpmDeps.selector(fp))
+            .find(fp => fp.name === "typescript");
+        return !!target ? {
+            name: TypeScriptVersionName,
+            type: "TypeScript",
+            data: target.data[1],
+            sha: sha256(target.data[1]),
+        } : undefined;
+    }
+
+    public toDisplayableFingerprintName(): string {
+        return "TypeScript version";
     }
 
     public toDisplayableFingerprint(fpi: TypeScriptVersion): string {
         return fpi.data;
     }
 
-    public toDisplayableFingerprintName(fingerprintName: string) {
-        return "TypeScript version";
-    }
-
-    public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<TypeScriptVersion>>> {
-        const ideal = new TypeScriptVersion("3.4.57");
-        return [{
-            fingerprintName,
-            reason: "hard-coded",
-            url: "http://jessitron.com",
-            ideal,
-        }];
-    }
+    // public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<TypeScriptVersion>>> {
+    //     const ideal = new TypeScriptVersion("3.4.57");
+    //     return [{
+    //         fingerprintName,
+    //         reason: "hard-coded",
+    //         url: "http://jessitron.com",
+    //         ideal,
+    //     }];
+    // }
 
 }
 

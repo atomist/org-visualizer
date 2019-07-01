@@ -53,6 +53,8 @@ export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
         <h1>{props.fingerprintDisplayName}</h1>
         {/*{idealDisplay}*/}
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
+
+        <a href={"." + props.dataUrl}>Raw data</a>
     </div>;
 
 }

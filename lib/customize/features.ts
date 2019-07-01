@@ -67,6 +67,7 @@ export const features: ManagedFeature[] = [
             name: "node-git-ignore",
             displayName: "Node git ignore",
             type: "gitignore",
+            toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",
     ), {
@@ -78,6 +79,7 @@ export const features: ManagedFeature[] = [
             name: "spring-git-ignore",
             displayName: "git ignore",
             type: "gitignore",
+            toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",
     ), {

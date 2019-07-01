@@ -125,9 +125,3 @@ SELECT distinct rf.name as fingerprintName, feature_name as featureName, count(r
   from repo_fingerprints rf, repo_snapshots rs
   WHERE rf.repo_snapshot_id = rs.id AND rs.workspace_id = 'local'
   GROUP by feature_name, fingerprintName;
-
-
-
-delete from repo_fingerprints;
-delete from repo_snapshots;
-delete from fingerprints;

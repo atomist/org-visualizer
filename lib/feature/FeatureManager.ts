@@ -19,6 +19,7 @@ import {
     ProjectAnalysis,
 } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import {
+    AtomicFeature,
     DerivedFeature,
     Feature,
     FP,
@@ -110,7 +111,7 @@ export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<Project
 /**
  * Type of feature we can manage
  */
-export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AnalysisDerivedFeature<FPI>;
+export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI> | AnalysisDerivedFeature<FPI>;
 
 // TODO: Hey Rod, can we call this UndesirableUsage instead? "flag" could mean a zillion things. Flag is a verb here.
 /**

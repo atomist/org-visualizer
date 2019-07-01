@@ -29,15 +29,15 @@ export const featureManager = new DefaultFeatureManager({
         },
         features,
         flags: simpleFlagger(
-            async fp => {
-                return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
-                    {
-                        severity: "warn",
-                        authority: "Rod",
-                        message: "Old TypeScript version",
-                    } :
-                    undefined;
-            },
+            //async fp => {
+            //     return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
+            //         {
+            //             severity: "warn",
+            //             authority: "Rod",
+            //             message: "Old TypeScript version",
+            //         } :
+            //         undefined;
+            // },
             async fp => fp.name === "npm-project-dep::axios" ?
                 {
                     severity: "warn",
