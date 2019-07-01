@@ -1,7 +1,7 @@
-import { IdealStore } from "../customize/featureManager";
-import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import { logger } from "@atomist/automation-client";
+import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as fs from "fs";
+import { IdealStore } from "../customize/featureManager";
 
 const stupidStorageFilename = "ideals.json";
 export const Ideals: IdealStore = retrieveFromLocalStorage();

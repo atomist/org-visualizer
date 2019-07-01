@@ -60,12 +60,12 @@ import {
 import {
     ManagedFeature,
 } from "../feature/FeatureManager";
+import { setIdeal } from "../feature/localStorage";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
-import { setIdeal } from "../feature/localStorage";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -170,7 +170,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             return res.send(renderStaticReactNode(ProjectExplorer({
                 analysis: analysisResult.analysis,
-                features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName)
+                features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName),
             })));
         });
 

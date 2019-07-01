@@ -52,11 +52,11 @@ export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLea
             const leaves = leavesUnder(l);
             logger.info("Found %d leaves for %s", leaves.length, t.name);
             // Introduce a new level for each classification
-            const distinctNames = _.uniq(leaves.map(l => leafClassifier(l as any)));
+            const distinctNames = _.uniq(leaves.map(leaf => leafClassifier(leaf as any)));
             const oldKids = l.children;
             l.children = [];
             for (const name of distinctNames) {
-                const children = oldKids.filter(k => leavesUnder(k).some(l => leafClassifier(l as any) === name));
+                const children = oldKids.filter(k => leavesUnder(k).some(leaf => leafClassifier(leaf as any) === name));
                 if (children.length > 0) {
                     l.children.push({name, children});
                 }

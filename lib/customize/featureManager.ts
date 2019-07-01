@@ -17,9 +17,9 @@
 import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { simpleFlagger } from "../feature/FeatureManager";
+import { Ideals } from "../feature/localStorage";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersionFeature";
 import { features } from "./features";
-import { Ideals } from "../feature/localStorage";
 
 export type IdealStore = Record<string, PossibleIdeal>;
 
