@@ -147,4 +147,48 @@ describe("treeMerge", () => {
         });
     });
 
+    it("should add sizes in trees with single node each", () => {
+        const t1: SunburstTree = {
+            name: "votes",
+            children: [
+                {
+                    name: "Labour",
+                    size: 1,
+                },
+            ],
+        };
+        const t2: SunburstTree = {
+            name: "votes",
+            children: [
+                {
+                    name: "Labour",
+                    size: 2,
+                },
+            ],
+        };
+        const t3: SunburstTree = {
+            name: "votes",
+            children: [
+                {
+                    name: "Conservative",
+                    size: 2,
+                },
+            ],
+        };
+
+        assert.deepStrictEqual(mergeTrees(t1, t2, t3), {
+            name: "votes",
+            children: [
+                {
+                    name: "Labour",
+                    size: 3,
+                },
+                {
+                    name: "Conservative",
+                    size: 2,
+                },
+            ],
+        });
+    });
+
 });

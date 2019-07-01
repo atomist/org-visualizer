@@ -84,9 +84,6 @@ export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
  * @return {SunburstTree}
  */
 export function mergeTrees(...trees: SunburstTree[]): SunburstTree {
-    // if (trees.length === 0) {
-    //     throw "fu"
-    // }
     if (trees.length === 1) {
         return trees[0];
     }
