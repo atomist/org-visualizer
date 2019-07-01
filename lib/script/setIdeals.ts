@@ -25,7 +25,10 @@ import {
 } from "../machine/machine";
 
 import * as _ from "lodash";
-import { retrieveFromLocalStorage, saveToLocalStorage } from "../feature/localStorage";
+import {
+    retrieveFromLocalStorage,
+    saveToLocalStorage,
+} from "../feature/localStorage";
 
 async function setIdeals() {
     const repos = await analysisResultStore(sdmConfigClientFactory({})).loadWhere("");

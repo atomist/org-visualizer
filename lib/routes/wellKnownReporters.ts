@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import { astUtils, InMemoryProject, InMemoryProjectFile } from "@atomist/automation-client";
+import {
+    astUtils,
+    InMemoryProject,
+    InMemoryProjectFile,
+} from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import { BaseFeature, NpmDeps } from "@atomist/sdm-pack-fingerprints";
-import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    BaseFeature,
+    NpmDeps,
+} from "@atomist/sdm-pack-fingerprints";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
 import * as _ from "lodash";
 import * as path from "path";
@@ -34,7 +45,10 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
-import { treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
+import {
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
