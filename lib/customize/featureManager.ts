@@ -14,39 +14,14 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
-import * as fs from "fs";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { simpleFlagger } from "../feature/FeatureManager";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersionFeature";
 import { features } from "./features";
+import { Ideals } from "../feature/localStorage";
 
 export type IdealStore = Record<string, PossibleIdeal>;
-
-const stupidStorageFilename = "ideals.json";
-const Ideals: IdealStore = retrieveFromStupidLocalStorage();
-
-export function retrieveFromStupidLocalStorage(): IdealStore {
-    try {
-        logger.info("Retrieving ideals from %s", stupidStorageFilename);
-        const ideals = JSON.parse(fs.readFileSync(stupidStorageFilename).toString());
-        logger.info("Found %d ideals", Object.getOwnPropertyNames(ideals).length);
-        return ideals;
-    } catch (err) {
-        logger.info("Did not retrieve from " + stupidStorageFilename + ": " + err.message);
-        return {};
-    }
-}
-
-export function saveToStupidLocalStorage(value: IdealStore): void {
-    fs.writeFileSync(stupidStorageFilename, JSON.stringify(value, undefined, 2));
-}
-
-export function setIdeal(fingerprintName: string, ideal: PossibleIdeal): void {
-    Ideals[fingerprintName] = ideal;
-    saveToStupidLocalStorage(Ideals);
-}
 
 export const featureManager = new DefaultFeatureManager({
         idealResolver: async name => {

@@ -17,8 +17,6 @@
 import {
     featureManager,
     IdealStore,
-    retrieveFromStupidLocalStorage,
-    saveToStupidLocalStorage,
 } from "../customize/featureManager";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
 import {
@@ -27,11 +25,12 @@ import {
 } from "../machine/machine";
 
 import * as _ from "lodash";
+import { retrieveFromLocalStorage, saveToLocalStorage } from "../feature/localStorage";
 
 async function setIdeals() {
     const repos = await analysisResultStore(sdmConfigClientFactory({})).loadWhere("");
     const names = _.uniq(allFingerprints(repos.map(r => r.analysis)).map(fp => fp.name));
-    const ideals: IdealStore = retrieveFromStupidLocalStorage();
+    const ideals: IdealStore = retrieveFromLocalStorage();
     for (const name of names) {
         if (!ideals[name]) {
             // TODO dirty
@@ -44,7 +43,7 @@ async function setIdeals() {
             }
         }
     }
-    saveToStupidLocalStorage(ideals);
+    await saveToLocalStorage(ideals);
 }
 
 // tslint:disable

@@ -23,7 +23,6 @@ import * as ReactDOMServer from "react-dom/server";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     featureManager,
-    setIdeal,
 } from "../customize/featureManager";
 import { WellKnownReporters } from "./wellKnownReporters";
 
@@ -66,6 +65,7 @@ import {
     allManagedFingerprints,
     relevantFingerprints,
 } from "../feature/support/featureUtils";
+import { setIdeal } from "../feature/localStorage";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -177,7 +177,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the /query page calls this */
         express.post("/setIdeal", ...handlers, async (req, res) => {
             logger.info("setting ideal " + JSON.stringify(req.body));
-            setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
+            await setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
             res.send(200);
         });
 
