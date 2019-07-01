@@ -325,7 +325,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             if (!raw) {
                                 return raw;
                             }
-                            return JSON.stringify(raw);
+                            return typeof raw === "string" ? raw : JSON.stringify(raw);
                         },
                     })
                     .renderWith(DefaultProjectAnalysisRenderer),
