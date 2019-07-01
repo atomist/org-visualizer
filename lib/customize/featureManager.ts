@@ -29,7 +29,7 @@ export const featureManager = new DefaultFeatureManager({
         },
         features,
         flags: simpleFlagger(
-            //async fp => {
+            // async fp => {
             //     return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
             //         {
             //             severity: "warn",

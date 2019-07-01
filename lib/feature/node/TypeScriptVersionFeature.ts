@@ -19,14 +19,12 @@ import { AtomicFeature, FP, NpmDeps, PossibleIdeal, sha256 } from "@atomist/sdm-
 export type TypeScriptVersionName = "tsVersion";
 export const TypeScriptVersionName = "tsVersion";
 
-
 export interface TypeScriptVersion extends FP {
 
-    name: TypeScriptVersionName,
+    name: TypeScriptVersionName;
     data: string;
 
 }
-
 
 export class TypeScriptVersionFeature implements AtomicFeature<TypeScriptVersion> {
 
