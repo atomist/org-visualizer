@@ -22,12 +22,12 @@ import {
     Success,
 } from "@atomist/automation-client";
 import {
+    createJob,
     EventHandlerRegistration,
     PreferenceScope,
     PreferenceStore,
     PreferenceStoreFactory,
 } from "@atomist/sdm";
-import { createJob } from "@atomist/sdm-core";
 import { bold } from "@atomist/slack-messages";
 import {
     OnDiscoveryJob,
