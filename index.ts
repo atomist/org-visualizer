@@ -91,7 +91,7 @@ export const configuration: Configuration = configure(async sdm => {
         sdm.configuration.name = `${sdm.configuration.name}-job`;
         sdm.addEvent(CreateFingerprintJob);
         sdm.addCommand(calculateFingerprintTask(features, handlers));
-        return {};
+        return undefined;
     }
 
 }, {
