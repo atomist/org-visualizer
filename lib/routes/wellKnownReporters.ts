@@ -23,7 +23,8 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import { DockerFileParser } from "@atomist/sdm-pack-docker";
 import {
-    BaseFeature, FP,
+    BaseFeature,
+    FP,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import {

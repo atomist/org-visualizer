@@ -47,7 +47,10 @@ import {
     corsHandler,
 } from "./auth";
 import { whereFor } from "./orgPage";
-import { skewReport, WellKnownReporters } from "./wellKnownReporters";
+import {
+    skewReport,
+    WellKnownReporters,
+} from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON
