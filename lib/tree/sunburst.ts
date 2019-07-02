@@ -43,6 +43,24 @@ export function visit(t: SunburstLevel, visitor: (sl: SunburstLevel, depth: numb
 }
 
 /**
+ * Suppress branches that meet a condition
+ */
+export function killChildren(t: SunburstTree, toTerminate: (tl: SunburstTree, depth: number) => boolean): void {
+    visit(t, (l, depth) => {
+        if (isSunburstTree(l)) {
+            l.children = l.children.filter(isSunburstTree).filter(c => {
+                const kill = toTerminate(c, depth + 1);
+                logger.info("Kill = %s for %s of depth %d", kill, c.name, depth);
+                return !kill;
+            });
+            // TODO why can't we make this true
+            return false;
+        }
+        return true;
+    });
+}
+
+/**
  * Introduce a new level split by by the given classifier for terminals
  */
 export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLeaf & T) => string, targetDepth: number): void {
@@ -58,7 +76,7 @@ export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLea
             for (const name of distinctNames) {
                 const children = oldKids.filter(k => leavesUnder(k).some(leaf => leafClassifier(leaf as any) === name));
                 if (children.length > 0) {
-                    l.children.push({name, children});
+                    l.children.push({ name, children });
                 }
             }
             return false;

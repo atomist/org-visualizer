@@ -37,6 +37,7 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
+    killChildren, leavesUnder,
     splitBy,
     SunburstTree,
     visit,
@@ -91,9 +92,9 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                 logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
                 if (req.query.byOrg) {
-                    splitBy<{owner: string}>(tree, l => l.owner, 0);
+                    splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
-                    splitBy<{owner: string}>(tree, l => l.owner, 1);
+                    splitBy<{ owner: string }>(tree, l => l.owner, 1);
                 }
 
                 res.json(tree);
@@ -114,7 +115,13 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                         fingerprints.push(fp);
                     }
                 }
+                logger.info("Found %d fingerprints", fingerprints.length);
                 const data = await skewReport().toSunburstTree(() => fingerprints);
+                killChildren(data, (c, depth) => {
+                    const leaves = leavesUnder(c);
+                    logger.info("Found %d leaves under %s", leaves.length, c.name);
+                    return leaves.length < 6;
+                });
                 return res.json(data);
             }
 
