@@ -30,7 +30,6 @@ import {
 import { createJob } from "@atomist/sdm-core";
 import { bold } from "@atomist/slack-messages";
 import {
-    AtmJobState,
     OnDiscoveryJob,
     ReposByProvider,
 } from "../typings/types";
@@ -46,7 +45,7 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
     listener: async (e, ctx) => {
         const job = e.data.AtmJob[0];
 
-        if (job.state === AtmJobState.completed && job.name === "RepositoryDiscovery") {
+        if (job.name === "RepositoryDiscovery") {
 
             // Query all orgs and repos and create a Fingerprint command for each
             const result = await ctx.graphClient.query<ReposByProvider.Query, ReposByProvider.Variables>({
