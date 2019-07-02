@@ -15,7 +15,7 @@
               },
               {
                 "name": "ATOMIST_CONFIG",
-                "value": "{\"groups\":[\"all\"],\"workspaceIds\":[],\"cluster\":{\"workers\":4,\"maxConcurrentPerWorker\":10}}"
+                "value": "{\"groups\":[\"all\"],\"workspaceIds\":[],\"cluster\":{\"workers\":2,\"maxConcurrentPerWorker\":5}}"
               },
               {
                 "name": "ATOMIST_GOAL_SCHEDULER",
