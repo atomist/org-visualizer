@@ -186,7 +186,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
             let dataUrl: string;
             let currentIdealForDisplay;
-            let possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
+            const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
             let fingerprintDisplayName: string = "";
             const workspaceId = req.query.workspaceId || "*";

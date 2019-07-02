@@ -29,6 +29,7 @@ import {
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { featureManager } from "../customize/featureManager";
+import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
@@ -47,7 +48,6 @@ import {
 } from "./auth";
 import { whereFor } from "./orgPage";
 import { skewReport, WellKnownReporters } from "./wellKnownReporters";
-import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 
 /**
  * Public API routes, returning JSON

@@ -36,6 +36,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
+import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { Analyzed } from "../feature/FeatureManager";
 import { Reporters } from "../feature/reporters";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
@@ -50,7 +51,6 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 
 /**
  * Well known reporters against our repo cohort.
@@ -133,13 +133,13 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                                         return {
                                             name: g.name,
                                             size: 1,
-                                        }
+                                        };
                                     }),
-                                }
+                                };
                             }),
-                        }
-                    }
-                }
+                        };
+                    },
+                };
             },
 
         typeScriptVersions:
@@ -437,6 +437,6 @@ export function skewReport(): ReportBuilder<FP> {
             return {
                 name: fp.sha,
                 size: 1,
-            }
+            };
         });
 }
