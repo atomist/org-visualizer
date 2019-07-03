@@ -49,6 +49,7 @@ import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesF
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 
 /**
  * The features managed by this SDM
@@ -58,6 +59,7 @@ export const features: ManagedFeature[] = [
     DockerFrom,
     DockerfilePath,
     DockerPorts,
+    SpringBootStarterFeature,
     new TypeScriptVersionFeature(),
     new CodeOwnershipFeature(),
     {
