@@ -33,6 +33,9 @@ export const TravisScriptsFeature: Feature = {
     displayName: "Travis scripts",
     extract: async p => {
         const travis = await travisScanner(p);
+        if (!travis) {
+            return undefined;
+        }
         const data = travis.scripts;
         return (!!travis) ? {
             type: TravisScriptsType,
