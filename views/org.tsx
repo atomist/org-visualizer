@@ -122,9 +122,6 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
 
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
-
-        <a href="./query?skew=true">Skew</a>
-
         {displayFeatures(props)}
         <h2>Common queries</h2>
         <h3>Community</h3>
@@ -135,6 +132,8 @@ Conduct</a></li>
 
         <h3>Code</h3>
         <ul>
+            <li key="code-1"><a href="./query?skew=true">Feature drift</a></li>
+
             <li key="code-1"><a href="./query?filter=true&name=fileCount&byOrg=true">Repo filecount</a></li>
             <li key="code-2"><a href="./query?filter=true&name=branchCount&byOrg=true">Branch count</a></li>
 

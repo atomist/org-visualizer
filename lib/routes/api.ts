@@ -39,7 +39,7 @@ import {
 import {
     killChildren, leavesUnder,
     splitBy,
-    SunburstTree,
+    SunburstTree, trimOuterRim,
     visit,
 } from "../tree/sunburst";
 import {
@@ -122,6 +122,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                     logger.info("Found %d leaves under %s", leaves.length, c.name);
                     return leaves.length < 6;
                 });
+                trimOuterRim(data);
                 return res.json(data);
             }
 

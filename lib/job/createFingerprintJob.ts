@@ -45,7 +45,7 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
     listener: async (e, ctx) => {
         const job = e.data.AtmJob[0];
 
-        if (job.name === "RepositoryDiscovery") {
+        if (job.name.startsWith("RepositoryDiscovery/zjlmxjzwhurspem")) {
 
             // Query all orgs and repos and create a Fingerprint command for each
             const result = await ctx.graphClient.query<ReposByProvider.Query, ReposByProvider.Variables>({

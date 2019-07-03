@@ -61,6 +61,20 @@ export function killChildren(t: SunburstTree, toTerminate: (tl: SunburstTree, de
 }
 
 /**
+ * Trim the outer rim, replacing the next one with sized leaves
+ * @param {SunburstTree} t
+ */
+export function trimOuterRim(t: SunburstTree): void {
+    visit(t, l => {
+        if (isSunburstTree(l) && !l.children.some(c => leavesUnder(c).length > 1)) {
+            (l as any as SunburstLeaf).size = l.children.length;
+            l.children = undefined;
+        }
+        return true;
+    });
+}
+
+/**
  * Introduce a new level split by by the given classifier for terminals
  */
 export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLeaf & T) => string, targetDepth: number): void {
