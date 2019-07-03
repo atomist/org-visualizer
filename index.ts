@@ -100,7 +100,7 @@ export const configuration: Configuration = configure(async sdm => {
         if (mode === "job") {
             cfg.ame = `${cfg.name}-job`;
         }
-        
+
         return cfg;
     },
     postProcessors: [
