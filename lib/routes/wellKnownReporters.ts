@@ -16,8 +16,8 @@
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
-import { BaseFeature, FP, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
-import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { BaseFeature, FP, NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
@@ -32,7 +32,7 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
-import { ReportBuilder, treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
+import { ReportBuilder, treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
