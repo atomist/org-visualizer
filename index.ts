@@ -45,6 +45,9 @@ import { orgPage } from "./lib/routes/orgPage";
 
 export const configuration: Configuration = configure(async sdm => {
 
+    // Mode can be online or mode
+    const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
+
     // Do not surface the single pushImpact goal set in every UI
     sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
     // Use lazy project loader for this SDM
@@ -59,8 +62,6 @@ export const configuration: Configuration = configure(async sdm => {
         scope: GoalSigningScope.All,
     };
 
-    const pushImpact = new PushImpact();
-
     const features = [
         NpmDeps,
         DockerFrom,
@@ -71,21 +72,27 @@ export const configuration: Configuration = configure(async sdm => {
     ];
     const handlers = [];
 
-    sdm.addExtensionPacks(
-        fingerprintSupport({
-            pushImpactGoal: pushImpact,
-            features,
-            handlers,
-        }));
+    if (mode === "online") {
+        const pushImpact = new PushImpact();
 
-    sdm.addEvent(CreateFingerprintJob);
-    sdm.addCommand(calculateFingerprintTask(features, handlers));
+        sdm.addExtensionPacks(
+            fingerprintSupport({
+                pushImpactGoal: pushImpact,
+                features,
+                handlers,
+            }));
 
-    return {
-        analyze: {
-            goals: pushImpact,
-        },
-    };
+        return {
+            analyze: {
+                goals: pushImpact,
+            },
+        };
+    } else {
+        sdm.configuration.name = `${sdm.configuration.name}-job`;
+        sdm.addEvent(CreateFingerprintJob);
+        sdm.addCommand(calculateFingerprintTask(features, handlers));
+        return undefined;
+    }
 
 }, {
     name: "Analysis Software Delivery Machine",
