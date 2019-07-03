@@ -1,6 +1,21 @@
 import * as React from "react";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 
+export interface FingerprintForDisplay extends MaybeAnIdeal {
+    type: string;
+    displayName?: string;
+    name: string;
+    featureName: string;
+    appearsIn: number; // count of projects
+    variants: number;
+}
+
+export interface FeatureForDisplay {
+    feature: {
+        displayName?: string,
+    };
+    fingerprints: FingerprintForDisplay[];
+}
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
@@ -22,7 +37,7 @@ export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
     type: string;
 }
 function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
-    const queryLink = `./query?type=${af.type}&name=${af.name}&byOrg=true`;
+    const queryLink = `./query?featureName=${af.type}&name=${af.name}&byOrg=true`;
     const existsLink = `./query?type=${af.type}&name=${af.name}-present&filter=true&byOrg=true`;
     return <li key={af.name}><i>{af.featureName}:
                 {af.displayName}</i>: {af.appearsIn} projects, {" "}
@@ -45,12 +60,6 @@ function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     }
     return result;
 }
-export interface FeatureForDisplay {
-    feature: {
-        displayName?: string,
-    };
-    fingerprints: FingerprintForDisplay[];
-}
 
 function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactElement {
 
@@ -66,15 +75,6 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
                     {f.fingerprints.map(fingerprintListItem)}
                 </ul>
             </div></div></div>;
-}
-
-export interface FingerprintForDisplay extends MaybeAnIdeal {
-    type: string;
-    displayName?: string;
-    name: string;
-    featureName: string;
-    appearsIn: number; // count of projects
-    variants: number;
 }
 
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
