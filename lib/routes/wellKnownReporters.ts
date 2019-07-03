@@ -225,24 +225,32 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
 
         mavenDependencyCount:
             params => featureGroup("Maven dependency count", params, mavenDependenciesFeature),
-        loc:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("loc", params)
-                    .group({ name: "size", by: groupByLoc })
-                    .split<CodeStats>({
-                        splitter: ar => {
-                            const cm = ar.elements.codemetrics as CodeMetricsElement;
-                            return cm.languages;
-                        },
-                        namer: a => a.id.repo,
-                    })
-                    .renderWith(cs => {
-                        return {
-                            name: `${cs.language.name} (${cs.source})`,
-                            // url: ar.analysis.id.url,
-                            size: cs.source,
-                        };
-                    }),
+
+        loc: params =>
+            treeBuilderFor<ProjectAnalysis>("loc", params)
+                .group({ name: "size", by: groupByLoc })
+                .split<CodeStats>({
+                    splitter: ar => {
+                        const cm = ar.elements.codemetrics as CodeMetricsElement;
+                        return cm.languages;
+                    },
+                    namer: a => a.id.repo,
+                })
+                .renderWith(cs => {
+                    return {
+                        name: `${cs.language.name} (${cs.source})`,
+                        // url: ar.analysis.id.url,
+                        size: cs.source,
+                    };
+                }),
+
+        featureCount: params =>
+            treeBuilderFor<ProjectAnalysis>("featureCount", params)
+                .renderWith(ar => {
+                    const rendered = DefaultAnalyzedRenderer(ar);
+                    rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
+                    return rendered;
+                }),
 
         uhura:
             params =>
