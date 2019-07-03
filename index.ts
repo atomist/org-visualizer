@@ -43,24 +43,10 @@ import {
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
 
+// Mode can be online or mode
+const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
+
 export const configuration: Configuration = configure(async sdm => {
-
-    // Mode can be online or mode
-    const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
-
-    // Do not surface the single pushImpact goal set in every UI
-    sdm.configuration.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
-    // Use lazy project loader for this SDM
-    sdm.configuration.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
-    // Disable goal hooks from repos
-    sdm.configuration.sdm.goal = {
-        hooks: false,
-    };
-    // For safety we sign every goal
-    sdm.configuration.sdm.goalSigning = {
-        ...sdm.configuration.sdm.goalSigning,
-        scope: GoalSigningScope.All,
-    };
 
     const features = [
         NpmDeps,
@@ -88,14 +74,35 @@ export const configuration: Configuration = configure(async sdm => {
             },
         };
     } else {
-        sdm.configuration.name = `${sdm.configuration.name}-job`;
         sdm.addEvent(CreateFingerprintJob);
         sdm.addCommand(calculateFingerprintTask(features, handlers));
-        return undefined;
+        return {};
     }
 
 }, {
     name: "Analysis Software Delivery Machine",
+    preProcessors: async cfg => {
+
+        // Do not surface the single pushImpact goal set in every UI
+        cfg.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
+        // Use lazy project loader for this SDM
+        cfg.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
+        // Disable goal hooks from repos
+        cfg.sdm.goal = {
+            hooks: false,
+        };
+        // For safety we sign every goal
+        cfg.sdm.goalSigning = {
+            ...cfg.sdm.goalSigning,
+            scope: GoalSigningScope.All,
+        };
+
+        if (mode === "job") {
+            cfg.ame = `${cfg.name}-job`;
+        }
+        
+        return cfg;
+    },
     postProcessors: [
         configureHumio,
         async cfg => {
