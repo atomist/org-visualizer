@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { DockerFrom } from "@atomist/sdm-pack-docker";
+import { DockerFrom, DockerPorts, DockerfilePath } from "@atomist/sdm-pack-docker";
 import {
     filesFeature,
     FP,
@@ -51,6 +51,8 @@ import { springBootVersionFeature } from "../feature/spring/springBootVersionFea
  */
 export const features: ManagedFeature[] = [
     DockerFrom,
+    DockerfilePath,
+    DockerPorts,
     new TypeScriptVersionFeature(),
     new CodeOwnershipFeature(),
     {

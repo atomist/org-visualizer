@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    astUtils,
-    InMemoryProject,
-    InMemoryProjectFile,
-} from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
-import { DockerFileParser } from "@atomist/sdm-pack-docker";
-import {
-    BaseFeature,
-    FP,
-    NpmDeps,
-} from "@atomist/sdm-pack-fingerprints";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
-import { DockerStack } from "@atomist/uhura/lib/element/docker/dockerScanner";
+import { BaseFeature, FP, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
+import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
@@ -47,11 +32,7 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
-import {
-    ReportBuilder,
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { ReportBuilder, treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -251,62 +232,6 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         };
                     }),
 
-        docker:
-            params =>
-                treeBuilderFor("Docker Y/N", params)
-                    .group({ name: "docker", by: byDocker })
-                    .renderWith(DefaultAnalyzedRenderer),
-
-        dockerPorts:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("Docker ports", params)
-                    .group({
-                        name: "docker",
-                        by: async ar => {
-                            const docker = ar.elements.docker as DockerStack;
-                            if (!docker || !docker.dockerFile) {
-                                return undefined;
-                            }
-                            const file = new InMemoryProjectFile(docker.dockerFile.path, docker.dockerFile.content);
-                            const exposes = await astUtils.findValues(InMemoryProject.of(file), DockerFileParser, "**/Dockerfile",
-                                "//EXPOSE");
-                            const ports = exposes.map(e => e.replace("EXPOSE ", "")).join(",");
-                            return ports || "none";
-                        },
-                    })
-                    .renderWith(DefaultAnalyzedRenderer),
-
-        dockerImages:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("Docker images", params)
-                    .group({
-                        name: "docker",
-                        by: async ar => {
-                            const docker = ar.elements.docker as DockerStack;
-                            if (!docker || !docker.dockerFile) {
-                                return undefined;
-                            }
-                            const file = new InMemoryProjectFile(docker.dockerFile.path, docker.dockerFile.content);
-                            const images = await astUtils.findValues(InMemoryProject.of(file), DockerFileParser, "**/Dockerfile",
-                                "//FROM/image");
-                            return images.map(i => i.split(":")[0]).join(",");
-                        },
-                    })
-                    .group({
-                        name: "version",
-                        by: async ar => {
-                            const docker = ar.elements.docker as DockerStack;
-                            if (!docker || !docker.dockerFile) {
-                                return undefined;
-                            }
-                            const file = new InMemoryProjectFile(docker.dockerFile.path, docker.dockerFile.content);
-                            const images = await astUtils.findValues(InMemoryProject.of(file), DockerFileParser, "**/Dockerfile",
-                                "//FROM/image");
-                            return images.map(i => i.split(":")[1]).join(",");
-                        },
-                    })
-                    .renderWith(DefaultAnalyzedRenderer),
-
         uhura:
             params =>
                 treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
@@ -342,20 +267,19 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     .renderWith(DefaultAnalyzedRenderer),
 
         // Generic path
-        path:
-            params =>
-                treeBuilderFor(`Path ${params.path}`, params)
-                    .group({
-                        name: params.path,
-                        by: ar => {
-                            const raw = _.get(ar, params.path, params.otherLabel);
-                            if (!raw) {
-                                return raw;
-                            }
-                            return typeof raw === "string" ? raw : JSON.stringify(raw);
-                        },
-                    })
-                    .renderWith(DefaultAnalyzedRenderer),
+        path: params =>
+            treeBuilderFor(`Path ${params.path}`, params)
+                .group({
+                    name: params.path,
+                    by: ar => {
+                        const raw = _.get(ar, params.path, params.otherLabel);
+                        if (!raw) {
+                            return raw;
+                        }
+                        return typeof raw === "string" ? raw : JSON.stringify(raw);
+                    },
+                })
+                .renderWith(DefaultAnalyzedRenderer),
     }
 ;
 

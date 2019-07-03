@@ -145,13 +145,6 @@ Conduct</a></li>
             <li key="code-6"><a href="./query?filter=true&name=licenses&byOrg=true">package.json license</a></li>
         </ul>
 
-        <h3>Docker</h3>
-        <ul>
-            <li key="docker-1"><a href="./query?filter=true&name=docker&byOrg=true">Docker Yes/No</a></li>
-            <li key="docker-2"><a href="./query?filter=true&name=path&path=elements.docker.dockerFile.path&unused=No+Docker">Docker file path</a></li>
-            <li key="docker-3"><a href="./query?filter=true&name=dockerPorts&byOrg=true">Exposed Docker ports</a></li>
-        </ul>
-
         <h2>Custom fingerprint</h2>
 
         <form method="GET" action="./query">
