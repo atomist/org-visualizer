@@ -158,3 +158,16 @@ input[type='checkbox'].sneaky {
     border-radius: 7px;
     transition: all 0.25s ease-out;
 }
+
+/* Sunburst page */
+
+.sunburst .sunburstData {
+    width: 180px;
+    padding: 1em;
+    display: inline-block;
+    vertical-align: top
+}
+
+.sunburst .sunburstSvg {
+    display: inline-block;
+}

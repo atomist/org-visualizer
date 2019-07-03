@@ -1,9 +1,11 @@
 
 function sunburst(name, dataUrl, pWidth, pHeight) {
+    const minDiameterInPixels = 100;
 
-    const width = pWidth || window.innerWidth,
-        height = pHeight || window.innerHeight,
+    const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
+        height = Math.max(pHeight || window.innerHeight, minDiameterInPixels),
         maxRadius = (Math.min(width, height) / 2) - 5;
+    const viewBoxSide = maxRadius * 2 + 10;
 
     const formatNumber = d3.format(',d');
 
@@ -50,10 +52,11 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         return d.data.name.length * CHAR_SPACE < perimeter;
     };
 
-    const svg = d3.select('body').append('svg')
-        .style('width', '100vw')
-        .style('height', '100vh')
-        .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
+    const dataDiv = d3.select("#dataAboutWhatYouClicked");
+
+    const svg = d3.select('#putSvgHere').append('svg')
+        .style('width', viewBoxSide + "px")
+        .attr('viewBox', `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
         .on('click', () => focusOn()); // Reset zoom on canvas click
 
     d3.json(dataUrl, (error, root) => {
@@ -78,10 +81,15 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .append('g').attr('class', 'slice')
             .on('click', d => {
                 d3.event.stopPropagation();
+                var descriptionOfWhereYouClicked = `${d.data.name}`;
+                for (let place = d; place = place.parent; !!place) {
+                    descriptionOfWhereYouClicked = place.data.name + "<br />" + descriptionOfWhereYouClicked;
+                }
                 console.log("Clicked on " + d.data.name);
                 if (d.data.size === 1) {
-                    window.open(d.data.url, "_blank");
+                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked + `<br /><a href="${d.data.url}">${d.data.url}</a>`
                 }
+                dataDiv.html(descriptionOfWhereYouClicked);
                 focusOn(d);
             });
 
@@ -117,7 +125,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .text(d => d.data.name);
     });
 
-    function focusOn(d = {x0: 0, x1: 1, y0: 0, y1: 1}) {
+    function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
         // Reset to top-level if no data point specified
 
         const transition = svg.transition()

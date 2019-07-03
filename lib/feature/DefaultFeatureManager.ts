@@ -176,6 +176,11 @@ export class DefaultFeatureManager implements FeatureManager {
         features: ManagedFeature[],
         flags: Flagger,
     }) {
+        opts.features.forEach(f => {
+            if (!f) {
+                throw new Error("A null feature was passed in");
+            }
+        });
     }
 }
 

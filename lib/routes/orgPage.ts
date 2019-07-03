@@ -64,7 +64,6 @@ import { setIdeal } from "../feature/localStorage";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     allManagedFingerprints,
-    relevantFingerprints,
 } from "../feature/support/featureUtils";
 
 function renderStaticReactNode(body: ReactElement,
@@ -120,7 +119,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 features.features = features.features.filter(f => !!f.feature.displayName);
                 const importantFeatures = features;
                 // const importantFeatures = features;
-                    // relevantFingerprints(features, fp => fp.variants > 1);
+                // relevantFingerprints(features, fp => fp.variants > 1);
 
                 res.send(renderStaticReactNode(OrgExplorer({
                     actionableFingerprints,
@@ -260,7 +259,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     query: req.params.query,
                     dataUrl,
                 }),
-                fingerprintDisplayName,
+                "Atomist Aspect",
                 ["/lib/d3.v4.min.js", "/js/sunburst.js"]));
         });
 

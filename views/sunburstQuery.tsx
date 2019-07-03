@@ -45,15 +45,18 @@ function displaySuggestedIdeals(possibleIdeals: PossibleIdealForDisplay[]): Reac
 
 export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
 
-    const d3ScriptCall = `<script>sunburst("${props.query || ""}", "${props.dataUrl}", window.innerWidth - 100, window.innerHeight - 100);</script>`;
+    const d3ScriptCall = `<script>sunburst("${props.query || ""}", "${props.dataUrl}", window.innerWidth - 250, window.innerHeight - 100);</script>`;
 
     const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) :
         displaySuggestedIdeals(props.possibleIdeals);
-    return <div>
+    return <div className="sunburst">
         <h1>{props.fingerprintDisplayName}</h1>
         {/*{idealDisplay}*/}
+        <div className="wrapper">
+            <div id="putSvgHere" className="sunburstSvg"></div>
+            <div id="dataAboutWhatYouClicked" className="sunburstData">put stuff here</div>
+        </div>
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
-
         <a href={"." + props.dataUrl}>Raw data</a>
     </div>;
 
