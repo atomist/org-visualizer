@@ -16,7 +16,11 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
 import {
     filesFeature,
     FP,
