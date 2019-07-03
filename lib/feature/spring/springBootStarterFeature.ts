@@ -15,8 +15,8 @@
  */
 
 import { Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
+import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 
 const SpringBootStarterType = "spring-boot-starter";
 
@@ -45,6 +45,6 @@ function createSpringBootStarterFingerprint(data: VersionedArtifact): SpringBoot
         type: SpringBootStarterType,
         name: `${data.group}:${data.artifact}`,
         data,
-        sha: sha256(JSON.stringify(data))
-    }
+        sha: sha256(JSON.stringify(data)),
+    };
 }

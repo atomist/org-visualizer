@@ -47,9 +47,9 @@ import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
+import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 
 /**
  * The features managed by this SDM
