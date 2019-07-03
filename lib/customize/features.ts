@@ -48,6 +48,7 @@ import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeatu
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
 import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
 
 /**
  * The features managed by this SDM
@@ -64,6 +65,7 @@ export const features: ManagedFeature[] = [
         suggestedIdeals: idealFromNpm,
     },
     new TsLintPropertyFeature(),
+    TravisScriptsFeature,
     fileCountFeature,
     branchCount,
     stackFeature,

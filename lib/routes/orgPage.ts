@@ -194,7 +194,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             if (req.query.skew) {
                 dataUrl = `/api/v1/${workspaceId}/filter/skew`;
             } else {
-
                 const repos = await store.loadWhere(whereFor(req));
 
                 const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
