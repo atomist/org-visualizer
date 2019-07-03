@@ -37,9 +37,11 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
-    killChildren, leavesUnder,
+    killChildren,
+    leavesUnder,
     splitBy,
-    SunburstTree, trimOuterRim,
+    SunburstTree,
+    trimOuterRim,
     visit,
 } from "../tree/sunburst";
 import {
