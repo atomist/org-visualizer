@@ -23,8 +23,8 @@ import {
     TechnologyScanner,
     TechnologyStack,
 } from "@atomist/sdm-pack-analysis";
-import * as yaml from "yamljs";
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
+import * as yaml from "yamljs";
 
 const TravisScriptsType = "travis-scripts";
 
