@@ -210,8 +210,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }
 
                 dataUrl = !!req.query.filter ?
-                    `/api/v1/${workspaceId}/filter/${req.query.name}` :
-                    `/api/v1/${workspaceId}/fingerprint?type=${req.query.type}&name=${encodeURI(req.query.name)}`;
+                    `/api/v1/${workspaceId}/filter/${req.query.name}?byOrg=${req.query.byOrg}` :
+                    `/api/v1/${workspaceId}/fingerprint?type=${req.query.type}&name=${encodeURI(req.query.name)}&byOrg=${req.query.byOrg === "true"}`;
 
                 // tslint:disable-next-line
                 const feature = featureManager.featureFor({ name: fingerprintName } as FP);

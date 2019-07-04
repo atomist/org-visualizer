@@ -93,7 +93,7 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                 });
                 logger.info("Returning fingerprint type=%s, name='%s': %j", req.query.type, req.query.name, tree);
                 resolveFeatureNames(featureManager, tree);
-                if (req.query.byOrg) {
+                if (req.query.byOrg === "true") {
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
                     splitBy<{ owner: string }>(tree, l => l.owner, 1);
