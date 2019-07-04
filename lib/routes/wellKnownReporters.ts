@@ -33,7 +33,7 @@ import { PackageLock } from "../element/packageLock";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { Analyzed } from "../feature/FeatureManager";
 import { Reporters } from "../feature/reporters";
-import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
+import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
     AnalyzedGrouper,
     DefaultAnalyzedRenderer,
@@ -224,7 +224,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
             params => featureGroup("Maven dependency count", params, NpmDeps),
 
         mavenDependencyCount:
-            params => featureGroup("Maven dependency count", params, mavenDependenciesFeature),
+            params => featureGroup("Maven dependency count", params, allMavenDependenciesFeature),
 
         loc: params =>
             treeBuilderFor<ProjectAnalysis>("loc", params)

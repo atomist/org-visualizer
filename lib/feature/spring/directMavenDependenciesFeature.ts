@@ -19,38 +19,25 @@ import {
     findDependenciesFromEffectivePom,
     VersionedArtifact,
 } from "@atomist/sdm-pack-spring";
+import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 
-const MavenDirectDepType = "maven-direct-dep";
-
-const MavenTransitiveDepType = "maven-transitive-dep";
+const MavenDirectDep = "maven-direct-dep";
 
 /**
- * Emits direct and transitive dependencies
+ * Emits direct dependencies only
  */
-export const mavenDependenciesFeature: Feature = {
-    name: "maven-deps",
-    displayName: "Maven dependencies",
+export const directMavenDependenciesFeature: Feature = {
+    name: "maven-direct-deps",
+    displayName: "Direct Maven dependencies",
     extract: async p => {
-        const pom = await p.getFile("pom.xml");
-        if (!pom) {
-            return undefined;
-        }
-        const pomContent = await pom.getContent();
-        const allDeps = await findDependenciesFromEffectivePom(p);
-        return allDeps
-            .map(dep => ({
-                ...dep,
-                // TODO this is probably wrong
-                direct: pomContent.includes(`<group>${dep.group}</group>`) &&
-                pomContent.includes(`<artifact>${dep.group}</artifact>`),
-            }))
-            .map(gavToFingerprint);
+        const deps = await findDeclaredDependencies(p);
+        return deps.dependencies.map(gavToFingerprint);
     },
     apply: async (p, fp) => {
-        // TODO unimplemented
+        // TODO implement this
         return false;
     },
-    selector: fp => [MavenDirectDepType, MavenTransitiveDepType].includes(fp.type),
+    selector: fp => [MavenDirectDep].includes(fp.type),
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => {
         const version = JSON.parse(fp.data).version;
@@ -58,10 +45,10 @@ export const mavenDependenciesFeature: Feature = {
     },
 };
 
-function gavToFingerprint(gav: VersionedArtifact & { direct: boolean }): FP {
+function gavToFingerprint(gav: VersionedArtifact): FP {
     const data = JSON.stringify(gav);
     return {
-        type: gav.direct ? MavenDirectDepType : MavenTransitiveDepType,
+        type: MavenDirectDep,
         name: `${gav.group}:${gav.artifact}`,
         abbreviation: "mvn",
         version: "0.1.0",

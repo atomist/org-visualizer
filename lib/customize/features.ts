@@ -46,10 +46,11 @@ import { ManagedFeature } from "../feature/FeatureManager";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
-import { mavenDependenciesFeature } from "../feature/spring/mavenDependenciesFeature";
+import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { directMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
 
 /**
  * The features managed by this SDM
@@ -98,7 +99,8 @@ export const features: ManagedFeature[] = [
         toDisplayableFingerprintName: () => "Spring git ignore",
     }, async p => p.hasFile("pom.xml")),
     springBootVersionFeature,
-    mavenDependenciesFeature,
+    // allMavenDependenciesFeature,    // This is expensive
+    directMavenDependenciesFeature,
     pythonDependenciesFeature,
 ];
 
