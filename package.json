@@ -24,7 +24,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.6.0-master.20190702113653",
+    "@atomist/automation-client": "1.6.0-master.20190704104454",
     "@atomist/automation-client-ext-humio": "1.0.3-master.20190319172045",
     "@atomist/clj-editors": "0.7.1-master.20190610013419",
     "@atomist/sdm": "1.6.0-master.20190702114952",
