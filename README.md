@@ -49,7 +49,7 @@ Configure the Postgres database details in `client.config.json` in your `~/.atom
       "password": "<postgres password",
       "host": "<postgres host>",
       "port": "<postgres port>",
-      "database": "org_wiz"
+      "database": "org_viz"
     }
   }
 }
