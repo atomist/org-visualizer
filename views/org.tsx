@@ -80,9 +80,12 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
+    const existsLink: string = `./query?filter=true&type=${f.type}&name=${f.name}-present&byOrg=true`;
+
     return <li key={displayName}>
         <i>{displayName}</i>: {f.appearsIn} projects, {" "}
-        <a href={variantsQueryLink}>{f.variants} variants</a>
+        <a href={variantsQueryLink}>{f.variants} variants</a> {" "}
+        <a href={existsLink}>Presence</a>
         {idealDisplay(f)}
     </li>;
 }
