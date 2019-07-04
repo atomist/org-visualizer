@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/atomist-seeds/empty-sdm/compare/0.1.13...HEAD)
+## [Unreleased](https://github.com/atomist-seeds/empty-sdm/compare/0.1.14...HEAD)
+
+## [0.1.14](https://github.com/atomist-seeds/empty-sdm/compare/0.1.13...0.1.14) - 2019-07-04
 
 ## [0.1.13](https://github.com/atomist-seeds/empty-sdm/compare/0.1.12...0.1.13) - 2019-07-04
 
