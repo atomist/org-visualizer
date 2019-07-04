@@ -47,7 +47,6 @@ export const springBootVersionFeature: Feature = {
         await setSpringBootVersionTransform(fp.data[0])(p, undefined, undefined);
         return true;
     },
-    selector: fp => fp.type === SpringBootVersionType,
     toDisplayableFingerprintName: () => "Spring Boot version",
     toDisplayableFingerprint: fp => fp.data.versions.map(v => v.version).join(","),
 };

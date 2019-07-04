@@ -27,7 +27,7 @@ export interface PythonDependency {
  * Emits direct and transitive dependencies
  */
 export const pythonDependenciesFeature: Feature = {
-    name: "python-deps",
+    name: PythonDirectDepType,
     displayName: "Python dependencies",
     extract: async p => {
         const requirementsFile = await p.getFile("requirements.txt");
@@ -38,7 +38,6 @@ export const pythonDependenciesFeature: Feature = {
         const allDeps = findDependenciesFromRequirements(requirementsFileContent);
         return allDeps.map(depToFingerprint);
     },
-    selector: fp => PythonDirectDepType === fp.type,
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => {
         const version = fp.data.replace(fp.name, "");

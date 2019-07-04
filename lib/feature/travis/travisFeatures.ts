@@ -29,7 +29,7 @@ import * as yaml from "yamljs";
 const TravisScriptsType = "travis-scripts";
 
 export const TravisScriptsFeature: Feature = {
-    name: "travis-scripts",
+    name: TravisScriptsType,
     displayName: "Travis scripts",
     extract: async p => {
         const travis = await travisScanner(p);
@@ -45,7 +45,6 @@ export const TravisScriptsFeature: Feature = {
         } : undefined;
     },
     toDisplayableFingerprint: fp => fp.data.join(","),
-    selector: fp => fp.type === TravisScriptsType,
 };
 
 /**

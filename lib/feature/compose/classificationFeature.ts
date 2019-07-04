@@ -61,14 +61,13 @@ export function classificationFeature(id: Pick<Feature, "name" | "displayName" |
             }
             const data = JSON.stringify(_.uniq(tags).sort());
             return !!tags ? {
-                    name: id.name,
-                    type: id.name,
-                    data,
-                    sha: sha256(data),
-                } :
+                name: id.name,
+                type: id.name,
+                data,
+                sha: sha256(data),
+            } :
                 undefined;
         },
-        selector: fp => fp.name === id.name,
         toDisplayableFingerprint: fp => JSON.parse(fp.data).join() || "unknown",
     };
 }

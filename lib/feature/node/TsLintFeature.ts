@@ -19,9 +19,11 @@ import { Feature } from "@atomist/sdm-pack-fingerprints";
 
 import * as _ from "lodash";
 
+const TsLintFeatureName = "tslint";
+
 export class TsLintProperty extends AbstractFingerprint {
 
-    public readonly type = "TypeScript";
+    public readonly type = TsLintFeatureName;
 
     constructor(public readonly path: string, public readonly property: string, data: any) {
         super(`tslintproperty::${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
@@ -33,15 +35,13 @@ export class TsLintPropertyFeature implements Feature<TsLintProperty> {
 
     public readonly displayName = "TSLint";
 
-    public readonly name = "tslint";
+    public readonly name = TsLintFeatureName;
 
     get apply() {
         return async (p, tsi) => {
             throw new Error(`Applying TSlint version ${tsi.typeScriptVersion} not yet supported`);
         };
     }
-
-    public selector = fp => fp.name && fp.name.startsWith("tslintproperty::");
 
     public extract = async p => {
         const tslint = await p.getFile("tslint.json");

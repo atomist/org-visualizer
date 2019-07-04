@@ -43,7 +43,6 @@ export const GitRecencyFeature: Feature = {
     name: "git-recency",
     displayName: undefined,
     extract: gitRecencyExtractor,
-    selector: fp => fp.type === "git-recency",
 };
 
 // export const gitActivityExtractor: ExtractFingerprint =

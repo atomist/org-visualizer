@@ -39,7 +39,6 @@ export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
     toDisplayableFingerprint: fp => {
         return fp.data.version || "inherited";
     },
-    selector: fp => fp.type === SpringBootStarterType,
 };
 
 function createSpringBootStarterFingerprint(data: VersionedArtifact): SpringBootStarterFingerprint {

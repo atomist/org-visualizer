@@ -76,7 +76,7 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public featureFor(fp: FP): ManagedFeature | undefined {
-        return !!fp ? this.features.find(f => f.selector(fp)) : undefined;
+        return !!fp ? this.features.find(f => f.name === (fp.type || fp.name)) : undefined;
     }
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
@@ -102,10 +102,10 @@ export class DefaultFeatureManager implements FeatureManager {
         const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
             // TODO: Rod: There is an assumption here that all fingerprints with the same name match the same selectors.
-            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.selector(fp)).map(fp => fp.name));
+            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.name === (fp.type || fp.name)).map(fp => fp.name));
             const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
-                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => fp.name === name);
+                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => (fp.name === name));
                 fingerprints.push(await aggregateFingerprints(this, feature, theseFingerprints));
             }
             result.features.push({
@@ -121,7 +121,7 @@ export class DefaultFeatureManager implements FeatureManager {
         const allFingerprintsInOneProject: FP[] = allFingerprints(par.analysis);
         for (const feature of this.features) {
             const originalFingerprints =
-                _.sortBy(allFingerprintsInOneProject.filter(fp => feature.selector(fp)), fp => fp.name);
+                _.sortBy(allFingerprintsInOneProject.filter(fp => feature.name === (fp.type || fp.name)), fp => fp.name);
             if (originalFingerprints.length > 0) {
                 const fingerprints: MelbaFingerprintForDisplay[] = [];
                 for (const fp of originalFingerprints) {
@@ -142,13 +142,15 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     /**
+     * TODO - I don't think this worked.
      * Find all the Features we can manage in this project
      */
     public async featuresFound(pa: HasFingerprints): Promise<ManagedFeature[]> {
-        return _.uniq(
-            _.flatMap(Object.getOwnPropertyNames(pa.fingerprints)
-                .map(name => this.features.filter(f => f.selector(pa.fingerprints[name]))),
-            ));
+        return [];
+        // return _.uniq(
+        //     _.flatMap(Object.getOwnPropertyNames(pa.fingerprints)
+        //         .map(name => this.features.filter(f => f.selector(pa.fingerprints[name]))),
+        //     ));
     }
 
     public get flags(): Flagger {

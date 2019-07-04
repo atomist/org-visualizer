@@ -48,7 +48,6 @@ export function assembledFeature(
                 undefined;
         },
         apply: undefined,
-        selector: fp => fp.name === opts.name,
     };
 }
 
@@ -85,6 +84,5 @@ export function featureOf(
                 undefined;
         },
         apply: undefined,
-        selector: fp => fp.name === opts.name,
     };
 }

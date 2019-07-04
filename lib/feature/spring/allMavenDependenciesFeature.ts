@@ -20,16 +20,14 @@ import {
     VersionedArtifact,
 } from "@atomist/sdm-pack-spring";
 
-const MavenDirectDepType = "maven-direct-dep";
-
-const MavenTransitiveDepType = "maven-transitive-dep";
+const MavenDepsType = "maven-deps";
 
 /**
  * Emits direct and transitive dependencies.
  * Requires running Maven, so expensive
  */
 export const allMavenDependenciesFeature: Feature = {
-    name: "maven-deps",
+    name: MavenDepsType,
     displayName: "Maven dependency tree",
     extract: async p => {
         const pom = await p.getFile("pom.xml");
@@ -43,11 +41,10 @@ export const allMavenDependenciesFeature: Feature = {
                 ...dep,
                 // TODO this is probably wrong
                 direct: pomContent.includes(`<group>${dep.group}</group>`) &&
-                pomContent.includes(`<artifact>${dep.group}</artifact>`),
+                    pomContent.includes(`<artifact>${dep.group}</artifact>`),
             }))
             .map(gavToFingerprint);
     },
-    selector: fp => [MavenDirectDepType, MavenTransitiveDepType].includes(fp.type),
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => {
         const version = JSON.parse(fp.data).version || "no version";
@@ -58,7 +55,7 @@ export const allMavenDependenciesFeature: Feature = {
 function gavToFingerprint(gav: VersionedArtifact & { direct: boolean }): FP {
     const data = JSON.stringify(gav);
     return {
-        type: gav.direct ? MavenDirectDepType : MavenTransitiveDepType,
+        type: MavenDepsType,
         name: `${gav.group}:${gav.artifact}`,
         abbreviation: "mvn",
         version: "0.1.0",

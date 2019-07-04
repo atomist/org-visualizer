@@ -28,6 +28,7 @@ export const fileCountFeature: Feature = {
     extract: async p => {
         const data = await p.totalFileCount() + "";
         return {
+            type: "size",
             name: "size",
             data,
             sha: sha256(data),
@@ -35,7 +36,6 @@ export const fileCountFeature: Feature = {
     },
     toDisplayableFingerprint: fp => fp.data,
     toDisplayableFingerprintName: () => "size",
-    selector: fp => fp.name === "size",
 };
 
 export const branchCount: Feature = {
@@ -49,6 +49,7 @@ export const branchCount: Feature = {
         const brCount = bp.stdout.split("\n").length;
         const data = brCount + "";
         return {
+            type: "branches",
             name: "branches",
             data,
             sha: sha256(data),
@@ -56,5 +57,4 @@ export const branchCount: Feature = {
     },
     toDisplayableFingerprint: fp => fp.data,
     toDisplayableFingerprintName: () => "size",
-    selector: fp => fp.name === "size",
 };

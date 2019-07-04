@@ -42,7 +42,7 @@ export class TypeScriptVersionFeature implements AtomicFeature<TypeScriptVersion
 
     public async consolidate(fps: FP[]): Promise<TypeScriptVersion> {
         const target = fps
-            .filter(fp => NpmDeps.selector(fp))
+            .filter(fp => fp.type === NpmDeps.name)
             .find(fp => fp.name === "typescript");
         return !!target ? {
             name: TypeScriptVersionName,

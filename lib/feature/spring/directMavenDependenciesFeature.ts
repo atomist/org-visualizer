@@ -27,7 +27,7 @@ const MavenDirectDep = "maven-direct-dep";
  * Emits direct dependencies only
  */
 export const directMavenDependenciesFeature: Feature = {
-    name: "maven-direct-deps",
+    name: MavenDirectDep,
     displayName: "Direct Maven dependencies",
     extract: async p => {
         const deps = await findDeclaredDependencies(p);
@@ -37,7 +37,6 @@ export const directMavenDependenciesFeature: Feature = {
         // TODO implement this
         return false;
     },
-    selector: fp => [MavenDirectDep].includes(fp.type),
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => {
         const version = JSON.parse(fp.data).version;
