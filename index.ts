@@ -74,6 +74,10 @@ export const configuration: Configuration = configure(async sdm => {
             },
         };
     } else {
+        sdm.configuration.ws.termination = {
+            graceful: true,
+            gracePeriod: 1000 * 60 * 10,
+        };
         sdm.addEvent(CreateFingerprintJob);
         sdm.addCommand(calculateFingerprintTask(features, handlers));
         return {};
