@@ -36,7 +36,7 @@ import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
     AnalyzedGrouper,
-    DefaultAnalyzedRenderer,
+    defaultAnalyzedRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../feature/support/groupingUtils";
@@ -45,6 +45,7 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
+import { GitRecency } from "../feature/git/gitActivityScanner";
 
 /**
  * Well known reporters against our repo cohort.
@@ -93,6 +94,39 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     };
                 }),
 
+        recency: params =>
+            treeBuilderFor<Analyzed>("recency", params)
+                .group({
+                    name: "size",
+                    by: ar => {
+                        const fp = ar.fingerprints.find(fp => fp.name === "git-recency");
+                        if (!fp) {
+                            return "unknown";
+                        }
+                        const date = new Date(fp.data);
+                        const days = daysSince(date);
+                        if (days > 500) {
+                            return "prehistoric";
+                        }
+                        if (days > 365) {
+                            return "ancient";
+                        }
+                        if (days > 30) {
+                            return "slow";
+                        }
+                        return "active";
+                    },
+                })
+                .renderWith(defaultAnalyzedRenderer(ar => {
+                    const fp = ar.fingerprints.find(fp => fp.name === "git-recency");
+                    if (!fp) {
+                        return 1;
+                    }
+                    const date = new Date(fp.data);
+                    return date ?
+                        daysSince(date) : 1;
+                })),
+
         licenses: params =>
             treeBuilderFor<ProjectAnalysis>("licenses", params)
                 .group({
@@ -104,7 +138,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         return _.get(ar, "elements.node.packageJson.license", "No license");
                     },
                 })
-                .renderWith(DefaultAnalyzedRenderer),
+                .renderWith(defaultAnalyzedRenderer()),
 
         skew:
             params => {
@@ -143,7 +177,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         name: "version",
                         by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
                     })
-                    .renderWith(DefaultAnalyzedRenderer),
+                    .renderWith(defaultAnalyzedRenderer()),
 
         springVersions: params =>
             treeBuilderFor("Spring Boot version", params)
@@ -151,7 +185,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     name: "version",
                     by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
                 })
-                .renderWith(DefaultAnalyzedRenderer),
+                .renderWith(defaultAnalyzedRenderer()),
 
         langs:
             params =>
@@ -218,7 +252,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                             return pl.packageLock.dependencies[params.artifact].version;
                         },
                     })
-                    .renderWith(DefaultAnalyzedRenderer),
+                    .renderWith(defaultAnalyzedRenderer()),
 
         npmDependencyCount:
             params => featureGroup("Maven dependency count", params, NpmDeps),
@@ -244,10 +278,12 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                     };
                 }),
 
+        // Features found in this project
         featureCount: params =>
             treeBuilderFor<ProjectAnalysis>("featureCount", params)
                 .renderWith(ar => {
-                    const rendered = DefaultAnalyzedRenderer(ar);
+                    // TODO fix this using new support
+                    const rendered = defaultAnalyzedRenderer()(ar);
                     rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
                     return rendered;
                 }),
@@ -284,7 +320,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                                 .join(",");
                         },
                     })
-                    .renderWith(DefaultAnalyzedRenderer),
+                    .renderWith(defaultAnalyzedRenderer()),
 
         // Generic path
         path: params =>
@@ -299,7 +335,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                         return typeof raw === "string" ? raw : JSON.stringify(raw);
                     },
                 })
-                .renderWith(DefaultAnalyzedRenderer),
+                .renderWith(defaultAnalyzedRenderer()),
     }
 ;
 
@@ -384,4 +420,11 @@ export function skewReport(): ReportBuilder<FP> {
                 size: 1,
             };
         });
+}
+
+const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+function daysSince(date: Date): number {
+    const now = new Date();
+    return Math.round(Math.abs((now.getTime() - date.getTime()) / oneDay));
 }

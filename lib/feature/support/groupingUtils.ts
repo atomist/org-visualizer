@@ -26,8 +26,8 @@ export type ProjectAnalysisGrouper = (ar: ProjectAnalysis) => string;
 
 export const OrgGrouper: AnalyzedGrouper = a => _.get(a, "id.owner");
 
-export const DefaultAnalyzedRenderer: Renderer<Analyzed> =
-    ar => {
+export function defaultAnalyzedRenderer(sizer: (a: Analyzed) => number = () => 1): Renderer<Analyzed> {
+    return ar => {
         const projectName = ar.id.path ?
             ar.id.repo + path.sep + ar.id.path :
             ar.id.repo;
@@ -37,8 +37,9 @@ export const DefaultAnalyzedRenderer: Renderer<Analyzed> =
 
         return {
             name: projectName,
-            size: 1,
+            size: sizer(ar),
             url,
             repoUrl: ar.id.url,
         };
     };
+}

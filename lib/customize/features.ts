@@ -51,6 +51,7 @@ import { directMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 
 /**
  * The features managed by this SDM
@@ -71,6 +72,7 @@ export const features: ManagedFeature[] = [
     TravisScriptsFeature,
     fileCountFeature,
     branchCount,
+    GitRecencyFeature,
     stackFeature,
     ciFeature,
     javaBuildFeature,
