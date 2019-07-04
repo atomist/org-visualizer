@@ -159,6 +159,6 @@ Conduct</a></li>
         </form>
 
         <h2>Data</h2>
-        <a href="./api/v1/*/fingerprint/npm-project-deps/tslint?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a>
+        <a href="./api/v1/*/fingerprint/npm-project-deps?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a>
     </div>;
 }
