@@ -46,7 +46,7 @@ export class TypeScriptVersionFeature implements AtomicFeature<TypeScriptVersion
             .find(fp => fp.name === "typescript");
         return !!target ? {
             name: TypeScriptVersionName,
-            type: "tsVersion",
+            type: "TypeScript",
             data: target.data[1],
             sha: sha256(target.data[1]),
         } : undefined;

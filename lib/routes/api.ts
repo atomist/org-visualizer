@@ -68,8 +68,8 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 
         configureAuth(express);
 
-        express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
-        express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.options("/api/v1/:workspace_id/fingerprint", corsHandler());
+        express.get("/api/v1/:workspace_id/fingerprint", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
                 const fps = await fingerprints(clientFactory, workspaceId);
@@ -82,22 +82,23 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         });
 
         /* the d3 sunburst on the /query page uses this */
-        express.options("/api/v1/:workspace_id/fingerprint", corsHandler());
-        express.get("/api/v1/:workspace_id/fingerprint", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
+        express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const tree = await repoTree({
                     clientFactory,
                     query: fingerprintsChildrenQuery(whereFor(req), req.query.otherLabel),
-                    rootName: req.query.name,
-                    featureName: req.query.type,
+                    rootName: req.params.name,
+                    featureName: req.params.type,
                 });
-                logger.info("Returning fingerprint type=%s, name='%s': %j", req.query.type, req.query.name, tree);
+                logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
                 if (req.query.byOrg === "true") {
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
                     splitBy<{ owner: string }>(tree, l => l.owner, 1);
                 }
+
                 res.json(tree);
             } catch (e) {
                 logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);

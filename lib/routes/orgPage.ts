@@ -202,6 +202,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 const allQueries = _.merge(featureQueries, WellKnownReporters);
                 const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
+                const queryString = jsonToQueryString(req.query);
                 const cannedQueryDefinition = allQueries[req.query.name];
                 if (!cannedQueryDefinition) {
                     return res.render("noQuery", {
@@ -210,8 +211,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }
 
                 dataUrl = !!req.query.filter ?
-                    `/api/v1/${workspaceId}/filter/${req.query.name}?byOrg=${req.query.byOrg}` :
-                    `/api/v1/${workspaceId}/fingerprint?type=${req.query.type}&name=${encodeURI(req.query.name)}&byOrg=${req.query.byOrg === "true"}`;
+                    `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
+                    `/api/v1/${workspaceId}/fingerprint/${encodeURIComponent(req.query.type)}/${encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
 
                 // tslint:disable-next-line
                 const feature = featureManager.featureFor({ name: fingerprintName } as FP);
@@ -271,6 +272,12 @@ export function whereFor(req): string {
         return "true";
     }
     return wsid ? `workspace_id = '${wsid}'` : "true";
+}
+
+export function jsonToQueryString(json: object): string {
+    return Object.keys(json).map(key =>
+        encodeURIComponent(key) + "=" + encodeURIComponent(json[key]),
+    ).join("&");
 }
 
 function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedFeature): string {

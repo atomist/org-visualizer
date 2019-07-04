@@ -15,10 +15,6 @@
  */
 
 import { LocalProject } from "@atomist/automation-client";
-import {
-    TechnologyElement,
-    TechnologyScanner,
-} from "@atomist/sdm-pack-analysis";
 import { ExtractFingerprint, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import * as child_process from "child_process";
 import * as util from "util";
