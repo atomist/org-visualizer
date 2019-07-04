@@ -47,10 +47,10 @@ import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
+import { directMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { directMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
 
 /**
  * The features managed by this SDM
