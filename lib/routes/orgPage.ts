@@ -119,8 +119,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
 
                 features.features = features.features.filter(f => !!f.feature.displayName);
                 const importantFeatures = features;
-                //const importantFeatures = features;
-                    //relevantFingerprints(features, fp => fp.variants > 1);
+                // const importantFeatures = features;
+                    // relevantFingerprints(features, fp => fp.variants > 1);
 
                 res.send(renderStaticReactNode(OrgExplorer({
                     actionableFingerprints,
