@@ -72,6 +72,8 @@ You will need the following installed on your machine for the out of the box vis
 
 ### Analyze your repositories
 
+>You can start quickly by loading data from four open source organizations by running the script `load-demo-data.sh`.
+
 #### GitHub
 
 To analyze a GitHub organization, run the following command:

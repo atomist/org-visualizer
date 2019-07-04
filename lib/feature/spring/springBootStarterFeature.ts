@@ -36,14 +36,16 @@ export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
             .filter(d => d.artifact.includes("-starter"))
             .map(createSpringBootStarterFingerprint);
     },
-    toDisplayableFingerprint: fp => fp.data.version || "inherited",
+    toDisplayableFingerprint: fp => {
+        return fp.data.version || "inherited";
+    },
     selector: fp => fp.type === SpringBootStarterType,
 };
 
 function createSpringBootStarterFingerprint(data: VersionedArtifact): SpringBootStarterFingerprint {
     return {
         type: SpringBootStarterType,
-        name: `${data.group}:${data.artifact}`,
+        name: `starter:${data.group}:${data.artifact}`,
         data,
         sha: sha256(JSON.stringify(data)),
     };
