@@ -43,6 +43,7 @@ import {
 } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
+import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
@@ -51,7 +52,6 @@ import { directMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 
 /**
  * The features managed by this SDM

@@ -32,6 +32,7 @@ import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { Analyzed } from "../feature/FeatureManager";
+import { GitRecency } from "../feature/git/gitActivityScanner";
 import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
@@ -45,7 +46,6 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import { GitRecency } from "../feature/git/gitActivityScanner";
 
 /**
  * Well known reporters against our repo cohort.
