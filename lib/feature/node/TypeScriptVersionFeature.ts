@@ -14,64 +14,73 @@
  * limitations under the License.
  */
 
-import { AtomicFeature, FP, NpmDeps, PossibleIdeal, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    LocalProject,
+    logger,
+} from "@atomist/automation-client";
+import { execPromise } from "@atomist/sdm";
+import {
+    Feature,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
+import { PackageJson } from "@atomist/sdm-pack-node";
+import * as _ from "lodash";
 
-export type TypeScriptVersionName = "tsVersion";
-export const TypeScriptVersionName = "tsVersion";
+const TypeScriptVersionType = "typescript-version";
+const PackageJsonName = "package.json";
 
-export interface TypeScriptVersion extends FP {
+export const TypeScriptVersionFeature: Feature = {
+    name: "typescriptVersion",
+    displayName: "TypeScript Version",
 
-    name: TypeScriptVersionName;
-    data: string;
+    extract: async p => {
+        if (!(await p.hasFile(PackageJsonName))) {
+            return undefined;
+        }
 
-}
+        try {
+            const pj = JSON.parse(await (await p.getFile("package.json")).getContent()) as PackageJson;
 
-export class TypeScriptVersionFeature implements AtomicFeature<TypeScriptVersion> {
+            const versions = [
+                _.get(pj.dependencies, "typescript"),
+                _.get(pj.devDependencies, "typescript"),
+            ].filter(v => !!v);
 
-    public readonly displayName = "TypeScript version";
+            if (versions.length === 0) {
+                return undefined;
+            }
 
-    public readonly name = TypeScriptVersionName;
+            return {
+                type: TypeScriptVersionType,
+                name: TypeScriptVersionType,
+                abbreviation: "tsv",
+                version: "0.1.0",
+                data: versions,
+                sha: sha256(JSON.stringify(versions)),
+            };
+        } catch (e) {
+            logger.warn("Error extracting TypeScript version: %s", e.message);
+            return undefined;
+        }
+    },
+    apply: async (p, fp) => {
+        if (fp.data.length !== 1) {
+            return false;
+        }
+        if (!(await p.hasFile(PackageJsonName))) {
+            return false;
+        }
+        if (!(p as LocalProject).baseDir) {
+            return false;
+        }
 
-    get apply() {
-        return async (p, tsi) => {
-            throw new Error(`Applying TypeScript version ${tsi.typeScriptVersion} not yet supported`);
-        };
-    }
+        await execPromise(
+            "npm",
+            ["install", `typescript@${fp.data[0]}`, "--save-dev", "--safe-exact"],
+            { cwd: (p as LocalProject).baseDir });
 
-    public selector = fp => fp.name === TypeScriptVersionName;
-
-    public async consolidate(fps: FP[]): Promise<TypeScriptVersion> {
-        const target = fps
-            .filter(fp => fp.type === NpmDeps.name)
-            .find(fp => fp.name === "typescript");
-        return !!target ? {
-            name: TypeScriptVersionName,
-            type: "TypeScript",
-            data: target.data[1],
-            sha: sha256(target.data[1]),
-        } : undefined;
-    }
-
-    public toDisplayableFingerprintName(): string {
-        return "TypeScript version";
-    }
-
-    public toDisplayableFingerprint(fpi: TypeScriptVersion): string {
-        return fpi.data;
-    }
-
-    // public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<TypeScriptVersion>>> {
-    //     const ideal = new TypeScriptVersion("3.4.57");
-    //     return [{
-    //         fingerprintName,
-    //         reason: "hard-coded",
-    //         url: "http://jessitron.com",
-    //         ideal,
-    //     }];
-    // }
-
-}
-
-// public compare(h1: TypeScriptVersion, h2: TypeScriptVersion, by: string): number {
-//         return h1.typeScriptVersion > h2.typeScriptVersion ? 1 : -1;
-//     }
+        return true;
+    },
+    toDisplayableFingerprintName: () => "TypeScript version",
+    toDisplayableFingerprint: fp => fp.data.versions.map(v => v.version).join(","),
+};

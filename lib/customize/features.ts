@@ -37,9 +37,9 @@ import {
     fileCountFeature,
 } from "../feature/common/count";
 import {
-    ciFeature,
-    javaBuildFeature,
-    stackFeature,
+    CiFeature,
+    JavaBuildFeature,
+    StackFeature,
 } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
@@ -47,10 +47,9 @@ import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
-import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
-import { directMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
+import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
-import { springBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
 
 /**
@@ -62,7 +61,7 @@ export const features: ManagedFeature[] = [
     DockerfilePath,
     DockerPorts,
     SpringBootStarterFeature,
-    new TypeScriptVersionFeature(),
+    TypeScriptVersionFeature,
     new CodeOwnershipFeature(),
     {
         ...NpmDeps,
@@ -73,9 +72,9 @@ export const features: ManagedFeature[] = [
     fileCountFeature,
     branchCount,
     GitRecencyFeature,
-    stackFeature,
-    ciFeature,
-    javaBuildFeature,
+    StackFeature,
+    CiFeature,
+    JavaBuildFeature,
     conditionalize(filesFeature({
             name: "node-git-ignore",
             displayName: "Node git ignore",
@@ -100,9 +99,9 @@ export const features: ManagedFeature[] = [
         displayName: "Spring git ignore",
         toDisplayableFingerprintName: () => "Spring git ignore",
     }, async p => p.hasFile("pom.xml")),
-    springBootVersionFeature,
+    SpringBootVersionFeature,
     // allMavenDependenciesFeature,    // This is expensive
-    directMavenDependenciesFeature,
+    DirectMavenDependenciesFeature,
     pythonDependenciesFeature,
 ];
 

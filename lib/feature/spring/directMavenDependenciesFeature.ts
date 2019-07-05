@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import {
-    findDependenciesFromEffectivePom,
-    VersionedArtifact,
-} from "@atomist/sdm-pack-spring";
+    Feature,
+    FP,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
+import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 
 const MavenDirectDep = "maven-direct-dep";
@@ -26,7 +27,7 @@ const MavenDirectDep = "maven-direct-dep";
 /**
  * Emits direct dependencies only
  */
-export const directMavenDependenciesFeature: Feature = {
+export const DirectMavenDependenciesFeature: Feature = {
     name: MavenDirectDep,
     displayName: "Direct Maven dependencies",
     extract: async p => {

@@ -20,7 +20,7 @@ import { classificationFeature } from "../compose/classificationFeature";
 
 const StackName = "stack";
 
-export const stackFeature: Feature = classificationFeature({
+export const StackFeature: Feature = classificationFeature({
         name: StackName,
         displayName: "Technology stack",
         toDisplayableFingerprintName: () => "Technology stack",
@@ -41,7 +41,7 @@ export const stackFeature: Feature = classificationFeature({
     },
 );
 
-export const javaBuildFeature: Feature = classificationFeature({
+export const JavaBuildFeature: Feature = classificationFeature({
         name: "javaBuild",
         displayName: "Java build tool",
         toDisplayableFingerprintName: () => "Java build tool",
@@ -50,7 +50,7 @@ export const javaBuildFeature: Feature = classificationFeature({
     { classification: "gradle", reason: "has build.gradle", predicate: async p => p.hasFile("build.gradle") },
 );
 
-export const ciFeature: Feature = classificationFeature({
+export const CiFeature: Feature = classificationFeature({
         name: "ci",
         displayName: "CI tool",
         toDisplayableFingerprintName: () => "CI tool",

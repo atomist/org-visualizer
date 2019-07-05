@@ -23,17 +23,25 @@ import {
     PushImpact,
 } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
-import { DockerFrom } from "@atomist/sdm-pack-docker";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
 import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import {
-    ciFeature,
-    javaBuildFeature,
-    stackFeature,
+    CiFeature,
+    JavaBuildFeature,
+    StackFeature,
 } from "./lib/feature/common/stackFeature";
-import { springBootVersionFeature } from "./lib/feature/spring/springBootVersionFeature";
+import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
+import { DirectMavenDependenciesFeature } from "./lib/feature/spring/directMavenDependenciesFeature";
+import { SpringBootStarterFeature } from "./lib/feature/spring/springBootStarterFeature";
+import { SpringBootVersionFeature } from "./lib/feature/spring/springBootVersionFeature";
+import { TravisScriptsFeature } from "./lib/feature/travis/travisFeatures";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
@@ -49,12 +57,18 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 export const configuration: Configuration = configure(async sdm => {
 
     const features = [
-        NpmDeps,
         DockerFrom,
-        springBootVersionFeature,
-        stackFeature,
-        ciFeature,
-        javaBuildFeature,
+        DockerfilePath,
+        DockerPorts,
+        SpringBootStarterFeature,
+        TypeScriptVersionFeature,
+        NpmDeps,
+        TravisScriptsFeature,
+        StackFeature,
+        CiFeature,
+        JavaBuildFeature,
+        SpringBootVersionFeature,
+        DirectMavenDependenciesFeature,
     ];
     const handlers = [];
 
