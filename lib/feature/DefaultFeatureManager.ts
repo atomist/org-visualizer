@@ -100,11 +100,10 @@ export class DefaultFeatureManager implements FeatureManager {
         };
         const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
         for (const feature of this.features) {
-            // TODO: Rod: There is an assumption here that all fingerprints with the same name match the same selectors.
-            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.name === (fp.type || fp.name)).map(fp => fp.name));
+            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.name === fp.type).map(fp => fp.name));
             const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
-                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => (fp.name === name));
+                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => fp.name === name && feature.name === fp.type);
                 fingerprints.push(await aggregateFingerprints(this, feature, theseFingerprints));
             }
             result.features.push({

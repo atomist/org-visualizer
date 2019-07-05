@@ -78,7 +78,7 @@ export const features: ManagedFeature[] = [
     conditionalize(filesFeature({
             name: "node-git-ignore",
             displayName: "Node git ignore",
-            type: "gitignore",
+            type: "node-gitignore",
             toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",
@@ -90,7 +90,7 @@ export const features: ManagedFeature[] = [
     conditionalize(filesFeature({
             name: "spring-git-ignore",
             displayName: "git ignore",
-            type: "gitignore",
+            type: "spring-gitignore",
             toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",

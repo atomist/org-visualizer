@@ -30,7 +30,7 @@ const TypeScriptVersionType = "typescript-version";
 const PackageJsonName = "package.json";
 
 export const TypeScriptVersionFeature: Feature = {
-    name: "typescriptVersion",
+    name: TypeScriptVersionType,
     displayName: "TypeScript Version",
 
     extract: async p => {
