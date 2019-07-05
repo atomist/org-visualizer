@@ -84,5 +84,5 @@ export const TypeScriptVersionFeature: Feature = {
     toDisplayableFingerprintName: () => "TypeScript version",
     toDisplayableFingerprint: fp => {
         return fp.data.join(",");
-    }
+    },
 };
