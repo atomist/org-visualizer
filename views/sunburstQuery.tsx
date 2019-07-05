@@ -54,7 +54,7 @@ export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
         {/*{idealDisplay}*/}
         <div className="wrapper">
             <div id="putSvgHere" className="sunburstSvg"></div>
-            <div id="dataAboutWhatYouClicked" className="sunburstData">put stuff here</div>
+            <div id="dataAboutWhatYouClicked" className="sunburstData">Click a slice to see its details</div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
         <a href={"." + props.dataUrl}>Raw data</a>
