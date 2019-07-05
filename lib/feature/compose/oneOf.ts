@@ -15,7 +15,12 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { DerivedFeature, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    DerivedFeature,
+    Feature,
+    FP,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 import { allFingerprints } from "../DefaultFeatureManager";
 import { HasFingerprints } from "../FeatureManager";
 

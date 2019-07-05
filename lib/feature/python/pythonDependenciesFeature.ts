@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    FP,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 
 const PythonDirectDepType = "python-direct-dep";
 

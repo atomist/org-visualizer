@@ -39,7 +39,7 @@ export const TypeScriptVersionFeature: Feature = {
         }
 
         try {
-            const pj = JSON.parse(await (await p.getFile("package.json")).getContent()) as PackageJson;
+            const pj = JSON.parse(await (await p.getFile(PackageJsonName)).getContent()) as PackageJson;
 
             const versions = [
                 _.get(pj.dependencies, "typescript"),

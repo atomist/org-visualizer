@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    FP,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 

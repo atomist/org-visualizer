@@ -16,7 +16,10 @@
 
 import { LocalProject } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Size in terms of files

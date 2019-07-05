@@ -15,7 +15,11 @@
  */
 
 import { LocalProject } from "@atomist/automation-client";
-import { ExtractFingerprint, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    ExtractFingerprint,
+    Feature,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 import * as child_process from "child_process";
 import * as util from "util";
 

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    RepoRef,
-} from "@atomist/automation-client";
+import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import {
     PersistenceResult,

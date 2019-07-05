@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
-import { ScmSearchCriteria } from "../ScmSearchCriteria";
-import {
-    Spider,
-    SpiderOptions,
-    SpiderResult,
-} from "../Spider";
-
 import {
     GitCommandGitProject,
     logger,
@@ -29,6 +21,7 @@ import {
     RepoRef,
 } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
+import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as fs from "fs-extra";
 import * as path from "path";
 import {
@@ -42,6 +35,12 @@ import {
     keepExistingPersisted,
     persistRepoInfo,
 } from "../common";
+import { ScmSearchCriteria } from "../ScmSearchCriteria";
+import {
+    Spider,
+    SpiderOptions,
+    SpiderResult,
+} from "../Spider";
 
 export class LocalSpider implements Spider {
 

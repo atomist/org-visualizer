@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
+import * as _ from "lodash";
 import {
     featureManager,
     IdealStore,
 } from "../customize/featureManager";
 import { allFingerprints } from "../feature/DefaultFeatureManager";
 import {
-    analysisResultStore,
-    sdmConfigClientFactory,
-} from "../machine/machine";
-
-import * as _ from "lodash";
-import {
     retrieveFromLocalStorage,
     saveToLocalStorage,
 } from "../feature/localStorage";
+import {
+    analysisResultStore,
+    sdmConfigClientFactory,
+} from "../machine/machine";
 
 async function setIdeals() {
     const repos = await analysisResultStore(sdmConfigClientFactory({})).loadWhere("");

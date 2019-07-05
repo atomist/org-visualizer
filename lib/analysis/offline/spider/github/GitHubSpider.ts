@@ -22,21 +22,15 @@ import {
 } from "@atomist/automation-client";
 import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
 import { execPromise } from "@atomist/sdm";
-import {
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
-import {
-    PersistResult,
-} from "../../persist/ProjectAnalysisResultStore";
-import { SpideredRepo } from "../../SpideredRepo";
+import { PersistResult } from "../../persist/ProjectAnalysisResultStore";
 import {
     analyze,
     AnalyzeResults,
     keepExistingPersisted,
     persistRepoInfo,
-    RepoInfo,
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {

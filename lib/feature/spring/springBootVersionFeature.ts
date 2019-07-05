@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     setSpringBootVersionTransform,
     SpringBootVersionInspection,

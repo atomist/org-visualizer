@@ -18,12 +18,11 @@ import {
     logger,
     toStringArray,
 } from "@atomist/automation-client";
+import { Services } from "@atomist/sdm-pack-analysis";
 import {
-    Services,
-    TechnologyScanner,
-    TechnologyStack,
-} from "@atomist/sdm-pack-analysis";
-import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
+    Feature,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 import * as yaml from "yamljs";
 
 const TravisScriptsType = "travis-scripts";

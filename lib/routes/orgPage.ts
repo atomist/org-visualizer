@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    Express,
-    RequestHandler,
-} from "express";
-import * as ReactDOMServer from "react-dom/server";
-import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    featureManager,
-} from "../customize/featureManager";
-import { WellKnownReporters } from "./wellKnownReporters";
-
 import { logger } from "@atomist/automation-client";
+import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
     FP,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import * as _ from "lodash";
 import {
     CSSProperties,
     ReactElement,
 } from "react";
-import serveStatic = require("serve-static");
+import * as ReactDOMServer from "react-dom/server";
 import { OrgExplorer } from "../../views/org";
 import {
     FeatureForDisplay,
@@ -52,19 +45,19 @@ import {
     SunburstQuery,
 } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
+import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { featureManager } from "../customize/featureManager";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
-import {
-    ManagedFeature,
-} from "../feature/FeatureManager";
+import { ManagedFeature } from "../feature/FeatureManager";
 import { setIdeal } from "../feature/localStorage";
 import { reportersAgainst } from "../feature/reportersAgainst";
-import {
-    allManagedFingerprints,
-} from "../feature/support/featureUtils";
+import { allManagedFingerprints } from "../feature/support/featureUtils";
+import { WellKnownReporters } from "./wellKnownReporters";
+import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,

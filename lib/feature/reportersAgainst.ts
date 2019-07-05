@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import { treeBuilderFor } from "../routes/wellKnownReporters";
-import {
-    FeatureManager,
-    Flag,
-    HasFingerprints,
-} from "./FeatureManager";
-import { defaultAnalyzedRenderer } from "./support/groupingUtils";
-
 import * as _ from "lodash";
+import { treeBuilderFor } from "../routes/wellKnownReporters";
 import {
     allFingerprints,
     defaultedToDisplayableFingerprint,
     fingerprintsFrom,
 } from "./DefaultFeatureManager";
+import {
+    FeatureManager,
+    Flag,
+    HasFingerprints,
+} from "./FeatureManager";
 import { Reporters } from "./reporters";
+import { defaultAnalyzedRenderer } from "./support/groupingUtils";
 
 /**
  * Create an object exposing well-known queries against our repo cohort

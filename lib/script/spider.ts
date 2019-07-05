@@ -24,25 +24,24 @@
 import {
     configureLogging,
     logger,
-    MinimalLogging,
     PlainLogging,
 } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
+
+import * as _ from "lodash";
 import * as path from "path";
 import * as yargs from "yargs";
 import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
+import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
 import { Spider } from "../analysis/offline/spider/Spider";
 import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
 import {
     createAnalyzer,
     sdmConfigClientFactory,
 } from "../machine/machine";
-import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
-
-import * as _ from "lodash";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(PlainLogging);

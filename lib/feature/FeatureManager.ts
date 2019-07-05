@@ -15,9 +15,7 @@
  */
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import {
-    ProjectAnalysis,
-} from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import {
     AtomicFeature,
     DerivedFeature,

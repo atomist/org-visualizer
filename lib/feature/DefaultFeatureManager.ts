@@ -15,6 +15,12 @@
  */
 
 import {
+    FP,
+    PossibleIdeal,
+} from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import {
     AggregateFingerprintStatus,
     FeatureManager,
     FingerprintCensus,
@@ -23,13 +29,6 @@ import {
     IdealResolver,
     ManagedFeature,
 } from "./FeatureManager";
-
-import {
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
-import * as _ from "lodash";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     return _.flatMap(toArray(ar), a => a.fingerprints);

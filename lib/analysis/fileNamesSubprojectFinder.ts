@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    gatherFromFiles,
-    GlobOptions,
-} from "@atomist/automation-client/lib/project/util/projectUtils";
+import { gatherFromFiles } from "@atomist/automation-client/lib/project/util/projectUtils";
 import * as path from "path";
 import {
     SubprojectFinder,

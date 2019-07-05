@@ -39,9 +39,7 @@ import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { featureManager } from "../customize/featureManager";
-import {
-    features,
-} from "../customize/features";
+import { features } from "../customize/features";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { CodeOwnerScanner } from "../element/codeOwnership";
