@@ -111,13 +111,10 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
 
         // Add white contour
         text.append('textPath')
+            .attr('class', 'textOutline')
             .attr('startOffset', '50%')
             .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
-            .text(d => d.data.name)
-            .style('fill', 'none')
-            .style('stroke', '#fff')
-            .style('stroke-width', 5)
-            .style('stroke-linejoin', 'round');
+            .text(d => d.data.name);
 
         text.append('textPath')
             .attr('startOffset', '50%')

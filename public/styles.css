@@ -52,6 +52,11 @@ svg .slice {
     cursor: pointer;
 }
 
+svg .slice:hover {
+    stroke-width: 2px;
+    color: red;
+}
+
 svg .slice .main-arc {
     stroke: #fff;
     stroke-width: 1px;
@@ -65,6 +70,20 @@ svg .slice text {
     pointer-events: none;
     dominant-baseline: middle;
     text-anchor: middle;
+}
+
+svg textPath.textOutline {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 5;
+    stroke-linejoin: round;
+}
+
+svg .slice:hover textPath.textOutline {
+    fill: none;
+    stroke: #faa;
+    stroke-width: 5;
+    stroke-linejoin: round;
 }
 
 /* Collabsible content stuff 
