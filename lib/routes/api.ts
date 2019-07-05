@@ -82,6 +82,19 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
             }
         });
 
+        express.options("/api/v1/:workspace_id/fingerprint/:type", corsHandler());
+        express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
+            try {
+                const workspaceId = req.params.workspace_id || "local";
+                const fps = await fingerprintsOfType(clientFactory, req.params.type, workspaceId);
+                logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
+                res.json(fps);
+            } catch (e) {
+                logger.warn("Error occurred getting fingerprints: %s", e.message);
+                res.sendStatus(500);
+            }
+        });
+
         /* the d3 sunburst on the /query page uses this */
         express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
         express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
@@ -170,6 +183,18 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
   WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   GROUP by feature_name, fingerprintName`;
         const rows = await client.query(sql, [workspaceId]);
+        return rows.rows;
+    });
+}
+
+async function fingerprintsOfType(clientFactory: ClientFactory, type: string, workspaceId: string): Promise<FingerprintData[]> {
+    return doWithClient(clientFactory, async client => {
+        const sql = `SELECT distinct f.name as fingerprintName, count(rs.id) as appearsIn
+  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $2
+  AND f.feature_name = $1
+  GROUP by fingerprintName`;
+        const rows = await client.query(sql, [type, workspaceId]);
         return rows.rows;
     });
 }
