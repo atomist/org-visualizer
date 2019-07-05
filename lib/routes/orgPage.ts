@@ -31,6 +31,7 @@ import {
     ReactElement,
 } from "react";
 import * as ReactDOMServer from "react-dom/server";
+import serveStatic = require("serve-static");
 import { OrgExplorer } from "../../views/org";
 import {
     FeatureForDisplay,
@@ -57,7 +58,6 @@ import { setIdeal } from "../feature/localStorage";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { allManagedFingerprints } from "../feature/support/featureUtils";
 import { WellKnownReporters } from "./wellKnownReporters";
-import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
