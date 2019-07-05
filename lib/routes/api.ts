@@ -68,8 +68,9 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
 
         configureAuth(express);
 
-        express.options("/api/v1/:workspace_id/fingerprint", corsHandler());
-        express.get("/api/v1/:workspace_id/fingerprint", [corsHandler(), ...authHandlers()], async (req, res) => {
+        // Return all fingerprints
+        express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
+        express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
                 const fps = await fingerprints(clientFactory, workspaceId);
@@ -166,7 +167,7 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
     return doWithClient(clientFactory, async client => {
         const sql = `SELECT distinct f.name as fingerprintName, feature_name as featureName, count(rs.id) as appearsIn
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id = $1
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   GROUP by feature_name, fingerprintName`;
         const rows = await client.query(sql, [workspaceId]);
         return rows.rows;
