@@ -53,7 +53,6 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
                 variables: {
                     providerId: "zjlmxjzwhurspem",
                 },
-                options: QueryNoCacheOptions,
             });
 
             const orgs = result.Org.map(org => {
