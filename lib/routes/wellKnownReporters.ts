@@ -31,7 +31,10 @@ import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
-import { Analyzed, FeatureManager } from "../feature/FeatureManager";
+import {
+    Analyzed,
+    FeatureManager,
+} from "../feature/FeatureManager";
 import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
