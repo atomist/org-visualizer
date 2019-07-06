@@ -212,7 +212,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 }
 
                 // tslint:disable-next-line
-                const feature = featureManager.featureFor({ name: fingerprintName } as FP);
+                const feature = featureManager.featureFor(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
                 function idealDisplayValue(ideal: PossibleIdeal): string | undefined {

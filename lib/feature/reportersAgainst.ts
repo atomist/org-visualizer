@@ -113,7 +113,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         if (!found) {
                             return undefined;
                         }
-                        const feature = featureManager.featureFor(found);
+                        const feature = featureManager.featureFor(found.type);
                         if (ideal && ideal.ideal) {
                             return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
                         }

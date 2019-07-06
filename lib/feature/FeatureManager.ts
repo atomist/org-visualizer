@@ -147,15 +147,9 @@ export interface FeatureManager {
     readonly features: ManagedFeature[];
 
     /**
-     * Find the feature that manages this fingerprint
+     * Find the feature that manages fingerprints of this type
      */
-    featureFor(fp: FP): ManagedFeature | undefined;
-
-    /**
-     * Find all the Features relevant to this project:
-     * That is, which can manage fingerprints found in this project
-     */
-    featuresFound(hf: HasFingerprints): Promise<ManagedFeature[]>;
+    featureFor(type: string): ManagedFeature | undefined;
 
     /**
      * Report on the feature usage identified in this cohort of projects.
@@ -177,13 +171,6 @@ export interface FeatureManager {
      */
     flags: Flagger;
 
-    /**
-     * Which Huckleberries could grow in this project that are not already growing.
-     * They may not all be present
-     */
-    possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
-
-    necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]>;
 }
 
 /**

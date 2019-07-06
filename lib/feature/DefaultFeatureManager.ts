@@ -74,8 +74,8 @@ export class DefaultFeatureManager implements FeatureManager {
         return this.opts.features;
     }
 
-    public featureFor(fp: FP): ManagedFeature | undefined {
-        return !!fp ? this.features.find(f => f.name === (fp.type || fp.name)) : undefined;
+    public featureFor(type: string): ManagedFeature | undefined {
+        return type ? this.features.find(f => f.name === type) : undefined;
     }
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
@@ -139,32 +139,8 @@ export class DefaultFeatureManager implements FeatureManager {
         return result;
     }
 
-    /**
-     * TODO - I don't think this worked.
-     * Find all the Features we can manage in this project
-     */
-    public async featuresFound(pa: HasFingerprints): Promise<ManagedFeature[]> {
-        return [];
-        // return _.uniq(
-        //     _.flatMap(Object.getOwnPropertyNames(pa.fingerprints)
-        //         .map(name => this.features.filter(f => f.selector(pa.fingerprints[name]))),
-        //     ));
-    }
-
     public get flags(): Flagger {
         return this.opts.flags;
-    }
-
-    /**
-     * Which features could grow in this project that are not already growing.
-     * They may not all be present
-     */
-    public async possibleFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
-        throw new Error("not implemented");
-    }
-
-    public async necessaryFeaturesNotFound(analysis: HasFingerprints): Promise<ManagedFeature[]> {
-        throw new Error("not implemented");
     }
 
     get idealResolver(): IdealResolver {

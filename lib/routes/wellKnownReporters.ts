@@ -431,7 +431,7 @@ export function featureReport(type: string, fm: FeatureManager): ReportBuilder<F
             by: fp => fp.type === type ? fp.name : undefined,
         })
         .renderWith(fp => {
-            const feature = fm.featureFor(fp);
+            const feature = fm.featureFor(fp.type);
             return {
                 name: feature ? feature.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
                 size: 1,

@@ -175,7 +175,7 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
         if ((l as any).sha) {
             const fp = l as any as FP;
             // It's a fingerprint name
-            const feature = fm.featureFor(fp);
+            const feature = fm.featureFor(fp.type);
             if (feature) {
                 fp.name = feature.toDisplayableFingerprint ? feature.toDisplayableFingerprint(fp) : fp.data;
             }
