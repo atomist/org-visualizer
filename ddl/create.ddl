@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS fingerprints;
 DROP TABLE IF EXISTS repo_snapshots;
 
 CREATE TABLE repo_snapshots (
- id varchar NOT NULL PRIMARY KEY, -- we use the natural key for a repo here which is in this format that we use elsewhere in the wider graph. This allows us to use the repo-id to look into the wider graph and makes things more efficient
+ id varchar NOT NULL PRIMARY KEY,
  workspace_id varchar NOT NULL,
  provider_id text NOT NULL,
  owner text NOT NULL,
@@ -26,9 +26,9 @@ CREATE TABLE repo_snapshots (
  branch text,
  path text,
  commit_sha varchar NOT NULL,
- analysis jsonb, -- we should move this to jsonb as it's going to be more versatile for us
+ analysis jsonb,
  timestamp TIMESTAMP  NOT NULL,
- query text -- currently missing in our db - will add this to our schema
+ query text
 );
 
 -- One instance for each fingerprint
@@ -36,8 +36,8 @@ CREATE TABLE fingerprints (
   name text NOT NULL,
   feature_name text NOT NULL,
   sha varchar NOT NULL,
-  data jsonb, -- also moved to jsonb for future use
-  id varchar NOT NULL PRIMARY KEY -- we have an id for fingerprints. This combines and creates a hash of name, feature_name and sha. 
+  data jsonb,
+  id varchar NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS repo_fingerprints (
