@@ -191,21 +191,25 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             } else {
                 const repos = await store.loadWhere(whereFor(req));
 
-                const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-                const allQueries = _.merge(featureQueries, WellKnownReporters);
                 const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
                 const queryString = jsonToQueryString(req.query);
-                const cannedQueryDefinition = allQueries[req.query.name];
-                if (!cannedQueryDefinition) {
-                    return res.render("noQuery", {
-                        query: req.query.name,
-                    });
-                }
+                if (req.query.name === "*") {
+                    dataUrl = `/api/v1/${workspaceId}/filter/featureReport?${queryString}`;
+                } else {
+                    const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
+                    const allQueries = _.merge(featureQueries, WellKnownReporters);
+                    const cannedQueryDefinition = allQueries[req.query.name];
+                    if (!cannedQueryDefinition) {
+                        return res.render("noQuery", {
+                            query: req.query.name,
+                        });
+                    }
 
-                dataUrl = !!req.query.filter ?
-                    `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
-                    `/api/v1/${workspaceId}/fingerprint/${encodeURIComponent(req.query.type)}/${encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
+                    dataUrl = !!req.query.filter ?
+                        `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
+                        `/api/v1/${workspaceId}/fingerprint/${encodeURIComponent(req.query.type)}/${encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
+                }
 
                 // tslint:disable-next-line
                 const feature = featureManager.featureFor({ name: fingerprintName } as FP);

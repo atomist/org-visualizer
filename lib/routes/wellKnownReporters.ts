@@ -31,7 +31,7 @@ import * as path from "path";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
-import { Analyzed } from "../feature/FeatureManager";
+import { Analyzed, FeatureManager } from "../feature/FeatureManager";
 import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
@@ -416,6 +416,21 @@ export function skewReport(): ReportBuilder<FP> {
         .renderWith(fp => {
             return {
                 name: fp.sha,
+                size: 1,
+            };
+        });
+}
+
+export function featureReport(type: string, fm: FeatureManager): ReportBuilder<FP> {
+    return treeBuilder<FP>(type)
+        .group({
+            name: "name",
+            by: fp => fp.type === type ? fp.name : undefined,
+        })
+        .renderWith(fp => {
+            const feature = fm.featureFor(fp);
+            return {
+                name: feature ? feature.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
                 size: 1,
             };
         });

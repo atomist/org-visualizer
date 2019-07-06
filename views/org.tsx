@@ -12,6 +12,7 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
 
 export interface FeatureForDisplay {
     feature: {
+        name: string,
         displayName?: string,
     };
     fingerprints: FingerprintForDisplay[];
@@ -62,9 +63,10 @@ function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
 }
 
 function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactElement {
-
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
+
+    const allLink: string = `./query?type=${f.feature.name}&name=*&byOrg=true`;
 
     return <div className="wrap-collabsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
@@ -73,6 +75,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
             <div className="content-inner">
                 <ul>
                     {f.fingerprints.map(fingerprintListItem)}
+                    <li><a href={allLink}>All of type</a></li>
                 </ul>
             </div></div></div>;
 }

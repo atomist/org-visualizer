@@ -51,6 +51,7 @@ import {
 } from "./auth";
 import { whereFor } from "./orgPage";
 import {
+    featureReport,
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
@@ -139,6 +140,19 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
                     return leaves.length < 6;
                 });
                 trimOuterRim(data);
+                return res.json(data);
+            }
+
+            if (req.params.name === "featureReport") {
+                const type = req.query.type;
+                const fingerprints: FP[] = [];
+                for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
+                    if (fp.type === type && !fingerprints.some(f => f.sha === fp.sha)) {
+                        fingerprints.push(fp);
+                    }
+                }
+                logger.info("Found %d fingerprints", fingerprints.length);
+                const data = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
                 return res.json(data);
             }
 
