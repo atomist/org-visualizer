@@ -17,6 +17,7 @@
 import { Client } from "pg";
 import { doWithClient } from "../analysis/offline/persist/pgUtils";
 import { SunburstTree } from "../tree/sunburst";
+import { logger } from "@atomist/automation-client";
 
 export interface TreeQuery {
 
@@ -84,12 +85,16 @@ FROM (
  */
 export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
     return doWithClient(opts.clientFactory, async client => {
-        const results = await client.query(opts.query, [opts.featureName, opts.rootName]);
-        // TODO error checking
-        const data = results.rows[0];
-        return {
-            name: opts.rootName,
-            children: data.row_to_json.children,
-        };
+        try {
+            const results = await client.query(opts.query, [opts.featureName, opts.rootName]);
+            const data = results.rows[0];
+            return {
+                name: opts.rootName,
+                children: data.row_to_json.children,
+            };
+        } catch (err) {
+            logger.error("Error running SQL %s: %s", opts.query, err);
+            throw err;
+        }
     });
 }
