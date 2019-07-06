@@ -170,10 +170,13 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
     });
 }
 
+/**
+ * Data about the use of a fingerprint in a workspace
+ */
 export interface FingerprintData {
-    fingerprintName: string;
-    featureName: string;
-    appearsIn: number;
+    name: string;
+    type: string;
+    count: number;
 }
 
 async function fingerprints(clientFactory: ClientFactory, workspaceId: string): Promise<FingerprintData[]> {
@@ -183,7 +186,13 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
   WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   GROUP by feature_name, fingerprintName`;
         const rows = await client.query(sql, [workspaceId]);
-        return rows.rows;
+        return rows.rows.map(row => {
+            return {
+                name: row.fingerprintname,
+                type: row.featurename,
+                count: parseInt(row.appearsin),
+            };
+        });
     });
 }
 
@@ -195,6 +204,12 @@ async function fingerprintsOfType(clientFactory: ClientFactory, type: string, wo
   AND f.feature_name = $1
   GROUP by fingerprintName`;
         const rows = await client.query(sql, [type, workspaceId]);
-        return rows.rows;
+        return rows.rows.map(row => {
+            return {
+                name: row.fingerprintname,
+                type,
+                count: parseInt(row.appearsin),
+            };
+        });
     });
 }
