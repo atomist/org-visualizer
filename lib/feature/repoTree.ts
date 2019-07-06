@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
 import { Client } from "pg";
 import { doWithClient } from "../analysis/offline/persist/pgUtils";
 import { SunburstTree } from "../tree/sunburst";
-import { logger } from "@atomist/automation-client";
 
 export interface TreeQuery {
 
