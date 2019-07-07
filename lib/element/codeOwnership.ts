@@ -51,7 +51,7 @@ export const CodeOwnershipExtractor: ExtractFingerprint =
                 abbreviation: "owners",
                 data,
                 sha: sha256(JSON.stringify(data)),
-            }
+            };
         }
         return undefined;
     };
