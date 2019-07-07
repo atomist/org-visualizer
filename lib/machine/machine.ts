@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-import {
-    Configuration,
-    logger,
-} from "@atomist/automation-client";
-import {
-    PushImpactListener,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
-import { nodeScanner } from "@atomist/sdm-pack-analysis-node";
-import { circleScanner } from "@atomist/uhura/lib/element/circle/circleScanner";
-import { DockerScanner } from "@atomist/uhura/lib/element/docker/dockerScanner";
-import { gitlabCiScanner } from "@atomist/uhura/lib/element/gitlab-ci/gitlabCiScanner";
-import { jenkinsScanner } from "@atomist/uhura/lib/element/jenkins/jenkinsScanner";
-import { reactScanner } from "@atomist/uhura/lib/element/react/reactScanner";
-import { travisScanner } from "@atomist/uhura/lib/element/travis/travisScanner";
+import { Configuration, logger, } from "@atomist/automation-client";
+import { PushImpactListener, SoftwareDeliveryMachine, } from "@atomist/sdm";
+import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -43,7 +27,6 @@ import { features } from "../customize/features";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { CodeOwnerScanner } from "../element/codeOwnership";
-import { packageLockScanner } from "../element/packageLock";
 import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
 
 /**
@@ -53,21 +36,10 @@ import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
  */
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
-        .withScanner(packageLockScanner)
-        // .withStack(nodeStackSupport(sdm))
-        .withScanner(nodeScanner)
+        //.withScanner(packageLockScanner)
         .withFeatures(features)
-        // .withScanner(GitActivityScanner)
-        .withScanner(new DockerScanner())
-        .withScanner(travisScanner)
-        .withScanner(circleScanner)
-        .withScanner(jenkinsScanner)
-        .withScanner(gitlabCiScanner)
-        .withScanner(reactScanner)
-
-        // This one is crazy expensive so skip it
+        // This one is crazy expensive so may want to skip it
          .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
-
         .withScanner(CodeOfConductScanner)
         .withScanner(CodeOwnerScanner)
         .withScorer(idealConvergenceScorer(featureManager))
