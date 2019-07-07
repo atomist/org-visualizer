@@ -24,10 +24,10 @@ import {
     AggregateFingerprintStatus,
     FeatureManager,
     FingerprintCensus,
-    UndesirableUsageChecker,
     HasFingerprints,
     IdealResolver,
-    ManagedFeature, UndesirableUsage,
+    ManagedFeature,
+    UndesirableUsage, UndesirableUsageChecker,
 } from "./FeatureManager";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
@@ -146,7 +146,6 @@ export class DefaultFeatureManager implements FeatureManager {
     public async findUndesirableUsages(hf: HasFingerprints): Promise<UndesirableUsage[]> {
         return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker(fp))));
     }
-
 
     get idealResolver(): IdealResolver {
         return this.opts.idealResolver;
