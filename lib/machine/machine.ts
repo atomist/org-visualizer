@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Configuration, logger, } from "@atomist/automation-client";
-import { PushImpactListener, SoftwareDeliveryMachine, } from "@atomist/sdm";
-import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
+import { Configuration, logger } from "@atomist/automation-client";
+import { PushImpactListener, SoftwareDeliveryMachine } from "@atomist/sdm";
+import { analyzerBuilder, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -36,7 +36,7 @@ import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
  */
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
-        //.withScanner(packageLockScanner)
+        // .withScanner(packageLockScanner)
         .withFeatures(features)
         // This one is crazy expensive so may want to skip it
          .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
