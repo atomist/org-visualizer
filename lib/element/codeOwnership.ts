@@ -15,16 +15,9 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { AbstractFingerprint } from "@atomist/sdm";
-import {
-    AnalysisDerivedFeature,
-    ProjectAnalysis,
-    TechnologyElement,
-    TechnologyScanner,
-} from "@atomist/sdm-pack-analysis";
-import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
+import { ExtractFingerprint, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 
-export interface CodeOwnershipElement extends TechnologyElement {
+export interface CodeOwnershipData {
 
     /**
      * Content of the CODEOWNERS
@@ -37,34 +30,33 @@ export interface CodeOwnershipElement extends TechnologyElement {
     jiraTeam?: string;
 }
 
+const codeOwnershipFingerprintName = "codeOwnership";
+
 /*
- * Find a code of conduct in a repository if possible
+ * Find a code ownership file if possible
  */
-export const CodeOwnerScanner: TechnologyScanner<CodeOwnershipElement> =
+export const CodeOwnershipExtractor: ExtractFingerprint =
     async (p: Project) => {
         const codeownersFile = await p.getFile("CODEOWNERS");
         if (codeownersFile) {
             const content = await codeownersFile.getContent();
             const jiraTeamMatch = /JiraTeam\((?<teamId>.*)\)/.exec(content);
             const jiraTeam = jiraTeamMatch ? jiraTeamMatch.groups.teamId : "No Jira Team";
-            return {
-                name: "codeOwnership",
-                tags: ["ownership"],
+            const data: CodeOwnershipData = {
                 jiraTeam,
                 content,
             };
+            return {
+                name: codeOwnershipFingerprintName,
+                abbreviation: "owners",
+                data,
+                sha: sha256(JSON.stringify(data)),
+            }
         }
         return undefined;
     };
 
-const codeOwnershipFingerprintName = "codeOwnership";
-export class CodeOwnership extends AbstractFingerprint {
-    constructor(public readonly codeOwnershipContent: string) {
-        super(codeOwnershipFingerprintName, "owners", "1.0.0", codeOwnershipContent);
-    }
-
-}
-export class CodeOwnershipFeature implements AnalysisDerivedFeature<CodeOwnership> {
+export class CodeOwnershipFeature implements Feature {
 
     public readonly displayName: string = "Code Ownership";
 
@@ -78,30 +70,9 @@ export class CodeOwnershipFeature implements AnalysisDerivedFeature<CodeOwnershi
 
     public selector = fp => fp.name === codeOwnershipFingerprintName;
 
-    public async derive(analysis: ProjectAnalysis) {
-        const n = analysis.elements.codeOwnership as CodeOwnershipElement;
-        if (!n) {
-            return undefined;
-        }
-        return !!n.jiraTeam ?
-            new CodeOwnership(n.jiraTeam) :
-            undefined;
-    }
+    public extract = CodeOwnershipExtractor;
 
-    public get relevanceTest() {
-        return pa => !!pa.elements.codeOwnership;
+    public toDisplayableFingerprint(fp: FP): string {
+        return fp.data;
     }
-
-    public get necessityTest() {
-        return pa => !!pa.elements.codeOwnership;
-    }
-
-    public toDisplayableString(h: CodeOwnership): string {
-        return h.data;
-    }
-
-    public async suggestedIdeals(fingerprintName: string): Promise<Array<PossibleIdeal<CodeOwnership>>> {
-        return [];
-    }
-
 }

@@ -15,14 +15,7 @@
  */
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
-import {
-    AtomicFeature,
-    DerivedFeature,
-    Feature,
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { AtomicFeature, Feature, FP, PossibleIdeal, } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name
@@ -104,12 +97,10 @@ export interface HasFingerprints {
  */
 export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 
-export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<ProjectAnalysis, FPI>;
-
 /**
  * Type of feature we can manage
  */
-export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI> | AnalysisDerivedFeature<FPI>;
+export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI>;
 
 /**
  * Flag for an undesirable usage
