@@ -23,7 +23,8 @@ import {
 } from "./DefaultFeatureManager";
 import {
     FeatureManager,
-    HasFingerprints, UndesirableUsage,
+    HasFingerprints,
+    UndesirableUsage,
 } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";

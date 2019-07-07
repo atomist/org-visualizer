@@ -27,7 +27,8 @@ import {
     HasFingerprints,
     IdealResolver,
     ManagedFeature,
-    UndesirableUsage, UndesirableUsageChecker,
+    UndesirableUsage,
+    UndesirableUsageChecker,
 } from "./FeatureManager";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
