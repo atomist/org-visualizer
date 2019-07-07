@@ -16,7 +16,7 @@
 
 import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { simpleFlagger } from "../feature/FeatureManager";
+import { chainUndesirableUsageCheckers } from "../feature/FeatureManager";
 import { Ideals } from "../feature/localStorage";
 import { features } from "./features";
 
@@ -27,7 +27,7 @@ export const featureManager = new DefaultFeatureManager({
             return Ideals[name];
         },
         features,
-        flags: simpleFlagger(
+        flags: chainUndesirableUsageCheckers(
             // async fp => {
             //     return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
             //         {

@@ -32,7 +32,7 @@ export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<F
 /**
  * Function that can flag an issue with a fingerprint
  */
-export type Flagger = (fp: FP) => Promise<Flag[]>;
+export type UndesirableUsageChecker = (fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
 
 /**
  * Report on use of a fingerprint across a cohort of projects
@@ -111,11 +111,10 @@ export type AnalysisDerivedFeature<FPI extends FP = FP> = DerivedFeature<Project
  */
 export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI> | AnalysisDerivedFeature<FPI>;
 
-// TODO: Hey Rod, can we call this UndesirableUsage instead? "flag" could mean a zillion things. Flag is a verb here.
 /**
  * Flag for an undesirable usage
  */
-export interface Flag {
+export interface UndesirableUsage {
 
     readonly severity: "error" | "warn";
 
@@ -131,7 +130,7 @@ export interface Flag {
 
     /**
      * URL associated with this if one is available.
-     * For example, a security advice.
+     * For example, a security advisory.
      */
     readonly url?: string;
 }
@@ -165,25 +164,25 @@ export interface FeatureManager {
 
     /**
      * Is this fingerprint flagged as bad?
-     * Return the empty array if no flags are found
-     * @param {FP} fp
-     * @return {Promise<Flag>}
+     * Return the empty array if no undesirableUsageChecker are found
      */
-    flags: Flagger;
+    undesirableUsageChecker: UndesirableUsageChecker;
+
+    findUndesirableUsages(hf: HasFingerprints): Promise<UndesirableUsage[]>;
 
 }
 
 /**
- * Flagger from a list
- * @param {(fp: FP) => Promise<Flag[]>} flaggings
- * @return {Flagger}
+ * UndesirableUsageChecker from a list
+ * @param {(fp: FP) => Promise<Flag[]>} checkers
+ * @return {UndesirableUsageChecker}
  */
-export function simpleFlagger(...flaggings: Array<(fp: FP) => Promise<Flag>>): Flagger {
+export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageChecker[]): UndesirableUsageChecker {
     return async fp => {
-        for (const f of flaggings) {
+        for (const f of checkers) {
             const flagged = await f(fp);
             if (flagged) {
-                return [flagged];
+                return flagged;
             }
         }
         return [];

@@ -23,8 +23,7 @@ import {
 } from "./DefaultFeatureManager";
 import {
     FeatureManager,
-    Flag,
-    HasFingerprints,
+    HasFingerprints, UndesirableUsage,
 } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
@@ -48,9 +47,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
             .group({
                 name: "flags",
                 by: async hf => {
-                    const knownBad = (await Promise.all(
-                        allFingerprints(hf).map(fp => featureManager.flags(fp)),
-                    )).filter(f => !!f && f.length > 0);
+                    const knownBad = await featureManager.findUndesirableUsages(hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
                         "-" + knownBad.length;
@@ -59,10 +56,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
             .group({
                 name: "violations",
                 by: async hf => {
-                    const flags = await Promise.all(
-                        allFingerprints(hf).map(fp => featureManager.flags(fp)),
-                    );
-                    const knownBad: Flag[] = _.flatten(flags.filter(f => !!f && f.length > 0));
+                    const knownBad = await featureManager.findUndesirableUsages(hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
                         knownBad.map(bad => bad.message).join(",");
