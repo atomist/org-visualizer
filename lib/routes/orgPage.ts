@@ -222,7 +222,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 }
 
                 currentIdealForDisplay = idealDisplayValue(await featureManager.idealStore
-                    .fetchIdeal("local", req.query.type, fingerprintName));
+                    .loadIdeal("local", req.query.type, fingerprintName));
                 if (!currentIdealForDisplay) {
                     // TODO: this sucks
                     // if (feature && feature.suggestedIdeals) {

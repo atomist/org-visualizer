@@ -82,6 +82,8 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
 
+        const ideals = await this.idealStore.loadIdeals("local");
+
         const result: FingerprintCensus = {
             projectsAnalyzed: repos.length,
             features: [],
@@ -92,7 +94,9 @@ export class DefaultFeatureManager implements FeatureManager {
             const fingerprints: AggregateFingerprintStatus[] = [];
             for (const name of names) {
                 const theseFingerprints = allFingerprintsInAllProjects.filter(fp => fp.name === name && feature.name === fp.type);
-                fingerprints.push(await aggregateFingerprints(this, feature, theseFingerprints));
+                fingerprints.push(await aggregateFingerprints(this, feature,
+                    ideals.find(i => isConcreteIdeal(i) && i.ideal.type === feature.name && i.ideal.name === name),
+                    theseFingerprints));
             }
             result.features.push({
                 feature,
@@ -176,10 +180,10 @@ function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
 
 async function aggregateFingerprints(featureManager: FeatureManager,
                                      feature: ManagedFeature,
+                                     ideal: Ideal,
                                      fingerprintsByTypeAndName: FP[]): Promise<AggregateFingerprintStatus> {
     const type = fingerprintsByTypeAndName[0].type;
     const name = fingerprintsByTypeAndName[0].name;
-    const ideal = await featureManager.idealStore.fetchIdeal("local", type, name);
     return {
         type,
         name,

@@ -41,7 +41,14 @@ export interface IdealStore {
      */
     setIdeal(workspaceId: string, fingerprintId: string): Promise<void>;
 
-    fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
+    loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
+
+    /**
+     * Load all ideals in this workspace
+     * @param {string} workspaceId
+     * @return {Promise<Ideal[]>}
+     */
+    loadIdeals(workspaceId: string): Promise<Ideal[]>;
 }
 
 /**

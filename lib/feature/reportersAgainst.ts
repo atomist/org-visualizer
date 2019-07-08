@@ -112,7 +112,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                         }
 
                         if (!ideal) {
-                            ideal = await featureManager.idealStore.fetchIdeal("local", params.type, name);
+                            ideal = await featureManager.idealStore.loadIdeal("local", params.type, name);
                         }
                         if (!ideal) {
                             throw new Error(`No ideal for ${params.type}/${name}`);

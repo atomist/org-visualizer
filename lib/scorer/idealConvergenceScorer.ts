@@ -23,7 +23,7 @@ export function idealConvergenceScorer(fm: FeatureManager): Scorer {
         const correctFingerprints = 0;
         const hasIdeal = 0;
         for (const name of allFingerprintNames) {
-            // const ideal = await fm.idealResolver.fetchIdeal(name);
+            // const ideal = await fm.idealResolver.loadIdeal(name);
             // if (ideal && ideal.ideal) {
             //     ++hasIdeal;
             //     if (ideal.ideal.sha === i.reason.analysis.fingerprints[name].sha) {

@@ -124,7 +124,16 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         await this.storeIdeal(workspaceId, ci);
     }
 
-    public async fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
+    public async loadIdeals(workspaceId: string): Promise<Ideal[]> {
+        const rawRows = await doWithClient(this.clientFactory, async client => {
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
+            WHERE workspace_id = $1`, [workspaceId]);
+            return rows.rows;
+        });
+        return rawRows.map(idealRowToIdeal);
+    }
+
+    public async loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
         const rawRow = await doWithClient(this.clientFactory, async client => {
             const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
             WHERE workspace_id = $1 AND feature_name = $2 AND name = $3`, [workspaceId, type, name]);
@@ -133,13 +142,7 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         if (!rawRow) {
             return undefined;
         }
-        if (!!rawRow.data) {
-            return {
-                ideal: rawRow,
-                reason: `Local database row ${rawRow.id}`,
-            } as ConcreteIdeal;
-        }
-        throw new Error("Elimination ideals not yet supported");
+        return idealRowToIdeal(rawRow);
     }
 
     public async loadFingerprintById(id: string): Promise<FP | undefined> {
@@ -252,4 +255,14 @@ values ($1, $2) ON CONFLICT DO NOTHING
     constructor(public readonly clientFactory: ClientFactory) {
     }
 
+}
+
+function idealRowToIdeal(rawRow: any): Ideal {
+    if (!!rawRow.data) {
+        return {
+            ideal: rawRow,
+            reason: `Local database row ${rawRow.id}`,
+        } as ConcreteIdeal;
+    }
+    throw new Error("Elimination ideals not yet supported");
 }
