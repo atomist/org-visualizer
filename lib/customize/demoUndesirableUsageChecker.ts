@@ -28,14 +28,22 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
         {
             severity: "warn",
             authority: "Rod",
-            message: "Old version of TypeScript",
+            message: "Old TypeScript",
         } :
         undefined,
     async (wsid, fp) => fp.type === NpmDeps.name && fp.name === "axios" ?
         {
             severity: "warn",
             authority: "Christian",
-            message: "Don't use Axios",
+            message: "Axios",
+        } :
+        undefined,
+    async (wsid, fp) => fp.type === NpmDeps.name &&
+        fp.data[1].length > "15" ?
+        {
+            severity: "warn",
+            authority: "Rod",
+            message: "Pre-release npm",
         } :
         undefined,
     async (wsid, fp) => {

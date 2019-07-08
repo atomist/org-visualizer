@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { Ideal, isConcreteIdeal, } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
-import {
-    allFingerprints,
-    defaultedToDisplayableFingerprint,
-    fingerprintsFrom,
-} from "./DefaultFeatureManager";
-import {
-    FeatureManager,
-    HasFingerprints,
-    UndesirableUsage,
-} from "./FeatureManager";
+import { defaultedToDisplayableFingerprint, fingerprintsFrom, } from "./DefaultFeatureManager";
+import { FeatureManager, HasFingerprints, } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
 
@@ -64,7 +53,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
                     const knownBad = await featureManager.findUndesirableUsages("local", hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
-                        knownBad.map(bad => bad.message).join(",");
+                        _.uniq(knownBad.map(bad => bad.message)).join(",");
                 },
             })
             .renderWith(defaultAnalyzedRenderer());
