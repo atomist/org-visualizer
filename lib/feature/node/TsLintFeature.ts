@@ -26,7 +26,7 @@ export class TsLintProperty extends AbstractFingerprint {
     public readonly type = TsLintFeatureName;
 
     constructor(public readonly path: string, public readonly property: string, data: any) {
-        super(`tslintproperty::${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
+        super(`${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
     }
 
 }

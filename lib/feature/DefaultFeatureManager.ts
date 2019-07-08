@@ -132,11 +132,11 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public get undesirableUsageChecker(): UndesirableUsageChecker {
-        return this.opts.flags;
+        return this.opts.undesirableUsageChecker;
     }
 
     public async findUndesirableUsages(hf: HasFingerprints): Promise<UndesirableUsage[]> {
-        return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker(fp))));
+        return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker.check(fp))));
     }
 
     get idealStore(): IdealStore {
@@ -146,7 +146,7 @@ export class DefaultFeatureManager implements FeatureManager {
     constructor(private readonly opts: {
         idealStore: IdealStore,
         features: ManagedFeature[],
-        flags: UndesirableUsageChecker,
+        undesirableUsageChecker: UndesirableUsageChecker,
     }) {
         opts.features.forEach(f => {
             if (!f) {

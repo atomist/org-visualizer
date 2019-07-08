@@ -52,6 +52,8 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
+import { PermitAllUsageChecker } from "./lib/feature/FeatureManager";
+import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
@@ -130,7 +132,7 @@ export const configuration: Configuration = configure(async sdm => {
             const featureManager = new DefaultFeatureManager({
                 idealStore: resultStore,
                 features,
-                flags: () => undefined,
+                undesirableUsageChecker: demoUndesirableUsageChecker,
             });
             const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
                     orgPage(featureManager, resultStore)] :

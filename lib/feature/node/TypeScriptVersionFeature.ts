@@ -26,7 +26,7 @@ import {
 import { PackageJson } from "@atomist/sdm-pack-node";
 import * as _ from "lodash";
 
-const TypeScriptVersionType = "typescript-version";
+export const TypeScriptVersionType = "typescript-version";
 const PackageJsonName = "package.json";
 
 export const TypeScriptVersionFeature: Feature = {

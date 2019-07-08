@@ -130,7 +130,16 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
         {displayFeatures(props)}
+
+
         <h2>Common queries</h2>
+
+        <h3>See Problems</h3>
+        <ul>
+            <li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
+
+        </ul>
+
         <h3>Community</h3>
         <ul>
             <li key="community-1"><a href="./query?filter=true&name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of

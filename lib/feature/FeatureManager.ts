@@ -51,10 +51,18 @@ export interface IdealStore {
     loadIdeals(workspaceId: string): Promise<Ideal[]>;
 }
 
+export type UndesirableUsageCheck = (fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
+
 /**
  * Function that can flag an issue with a fingerprint
  */
-export type UndesirableUsageChecker = (fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
+export interface UndesirableUsageChecker {
+    check: UndesirableUsageCheck;
+}
+
+export const PermitAllUsageChecker: UndesirableUsageChecker = {
+    check: async () => [],
+};
 
 /**
  * Report on use of a fingerprint across a cohort of projects
@@ -199,14 +207,16 @@ export interface FeatureManager {
  * @param {(fp: FP) => Promise<Flag[]>} checkers
  * @return {UndesirableUsageChecker}
  */
-export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageChecker[]): UndesirableUsageChecker {
-    return async fp => {
-        for (const f of checkers) {
-            const flagged = await f(fp);
-            if (flagged) {
-                return flagged;
+export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck[]): UndesirableUsageChecker {
+    return {
+        check: async fp => {
+            for (const f of checkers) {
+                const flagged = await f(fp);
+                if (flagged) {
+                    return flagged;
+                }
             }
-        }
-        return [];
+            return [];
+        },
     };
 }
