@@ -104,8 +104,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
-                    workspaceId, id, ideal.ideal.name,
-                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+                        workspaceId, id, ideal.ideal.name,
+                        ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -130,6 +130,10 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
             WHERE workspace_id = $1`, [workspaceId]);
             return rows.rows;
         });
+        if (!rawRows) {
+            // database access can fail
+            return [];
+        }
         return rawRows.map(idealRowToIdeal);
     }
 
@@ -259,10 +263,11 @@ values ($1, $2) ON CONFLICT DO NOTHING
 
 function idealRowToIdeal(rawRow: any): Ideal {
     if (!!rawRow.data) {
-        return {
+        const result: ConcreteIdeal = {
             ideal: rawRow,
             reason: `Local database row ${rawRow.id}`,
-        } as ConcreteIdeal;
+        };
+        return result;
     }
     throw new Error("Elimination ideals not yet supported");
 }
