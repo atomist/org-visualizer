@@ -50,6 +50,8 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
+import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
+import { features } from "./lib/customize/features";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
@@ -125,11 +127,18 @@ export const configuration: Configuration = configure(async sdm => {
         configureHumio,
         async cfg => {
             const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
-            const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [orgPage(resultStore)] : [];
+            const featureManager = new DefaultFeatureManager({
+                idealStore: resultStore,
+                features,
+                flags: () => undefined,
+            });
+            const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
+                    orgPage(featureManager, resultStore)] :
+                [];
 
             cfg.http.customizers = [
                 ...staticPages,
-                api(sdmConfigClientFactory(cfg), resultStore, resultStore),
+                api(sdmConfigClientFactory(cfg), resultStore, featureManager),
             ];
             return cfg;
         },

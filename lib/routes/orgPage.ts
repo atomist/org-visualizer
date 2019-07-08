@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { ConcreteIdeal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
+import { ConcreteIdeal, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -44,13 +44,12 @@ import {
 } from "../../views/sunburstQuery";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager } from "../customize/featureManager";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
-import { ManagedFeature } from "../feature/FeatureManager";
+import { FeatureManager, ManagedFeature } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { allManagedFingerprints } from "../feature/support/featureUtils";
 import { WellKnownReporters } from "./wellKnownReporters";
@@ -68,10 +67,9 @@ function renderStaticReactNode(body: ReactElement,
 
 /**
  * Add the org page route to Atomist SDM Express server.
- * @param {ProjectAnalysisResultStore} store
  * @return {ExpressCustomizer}
  */
-export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
+export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
         express.use(bodyParser.json());       // to support JSON-encoded bodies
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -90,28 +88,27 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         express.get("/org", ...handlers, async (req, res) => {
             try {
                 const repos = await store.loadWhere(whereFor(req));
+                const fingerprintCensus = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
-                const features = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
-
-                features.features.forEach(famf => {
+                fingerprintCensus.features.forEach(famf => {
                     famf.fingerprints = famf.fingerprints
                         .sort((a, b) => b.appearsIn - a.appearsIn)
                         .sort((a, b) => b.variants - a.variants);
                 });
 
-                const actionableFingerprints = allManagedFingerprints(features)
-                    .filter(mf => mf.variants > features.projectsAnalyzed / 10)
+                const actionableFingerprints = allManagedFingerprints(fingerprintCensus)
+                    .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
                     .sort((a, b) => b.appearsIn - a.appearsIn)
                     .sort((a, b) => b.variants - a.variants);
 
-                features.features = features.features.filter(f => !!f.feature.displayName);
-                const importantFeatures = features;
+                fingerprintCensus.features = fingerprintCensus.features.filter(f => !!f.feature.displayName);
+                const importantFeatures = fingerprintCensus;
                 // const importantFeatures = features;
                 // relevantFingerprints(features, fp => fp.variants > 1);
 
                 res.send(renderStaticReactNode(OrgExplorer({
                     actionableFingerprints,
-                    projectsAnalyzed: features.projectsAnalyzed,
+                    projectsAnalyzed: fingerprintCensus.projectsAnalyzed,
                     importantFeatures,
                     projects: repos.map(r => ({ ...r.analysis.id, id: r.id })),
                 })));
@@ -202,24 +199,25 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 const feature = featureManager.featureFor(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-                // function idealDisplayValue(ideal: Ideal): string | undefined {
-                //     if (ideal === undefined) {
-                //         return undefined;
-                //     }
-                //     if (ideal.ideal === undefined) {
-                //         return "eliminate";
-                //     }
-                //     try {
-                //         return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
-                //     } catch (err) {
-                //         logger.error("Could not display fingerprint: " + err);
-                //         return JSON.stringify(ideal.ideal.data);
-                //     }
-                // }
+                function idealDisplayValue(ideal: Ideal): string | undefined {
+                    if (ideal === undefined) {
+                        return undefined;
+                    }
+                    if (!isConcreteIdeal(ideal)) {
+                        return "eliminate";
+                    }
+                    try {
+                        return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
+                    } catch (err) {
+                        logger.error("Could not display fingerprint: " + err);
+                        return JSON.stringify(ideal.ideal.data);
+                    }
+                }
 
-                currentIdealForDisplay = undefined; //idealDisplayValue(await featureManager.idealResolver(fingerprintName));
+                currentIdealForDisplay = idealDisplayValue(await featureManager.idealStore
+                    .fetchIdeal("local", req.query.type, fingerprintName));
                 if (!currentIdealForDisplay) {
-                    // TODO: this sucks
+                    //TODO: this sucks
                     // if (feature && feature.suggestedIdeals) {
                     //     const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
                     //     for (const ideal of possibleIdeals) {
@@ -231,7 +229,6 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     //     }
                     // }
                 }
-
             }
             logger.info("Data url=%s", dataUrl);
 

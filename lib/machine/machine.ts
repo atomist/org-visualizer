@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-import {
-    Configuration,
-    logger,
-} from "@atomist/automation-client";
-import {
-    PushImpactListener,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { Configuration, logger, } from "@atomist/automation-client";
+import { PushImpactListener, SoftwareDeliveryMachine, } from "@atomist/sdm";
+import { analyzerBuilder, ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager } from "../customize/featureManager";
 import { features } from "../customize/features";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
-import { CodeOwnershipExtractor } from "../element/codeOwnership";
-import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
 import { IdealStore } from "../feature/FeatureManager";
 
 /**
@@ -51,7 +39,7 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         // This one is crazy expensive so may want to skip it
          .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
         .withScanner(CodeOfConductScanner)
-        .withScorer(idealConvergenceScorer(featureManager))
+        //.withScorer(idealConvergenceScorer(featureManager))
         .build();
 }
 

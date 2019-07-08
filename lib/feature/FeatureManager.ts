@@ -21,6 +21,8 @@ import {
     FP,
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { MelbaFeatureForDisplay } from "./DefaultFeatureManager";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
@@ -168,10 +170,12 @@ export interface FeatureManager {
      */
     fingerprintCensus(results: HasFingerprints[]): Promise<FingerprintCensus>;
 
+    projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]>;
+
     /**
      * Function that can resolve ideal status for this feature
      */
-    idealResolver: IdealStore;
+    readonly idealStore: IdealStore;
 
     /**
      * Is this fingerprint flagged as bad?

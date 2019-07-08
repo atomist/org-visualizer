@@ -15,45 +15,47 @@
  */
 
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { chainUndesirableUsageCheckers } from "../feature/FeatureManager";
+import { chainUndesirableUsageCheckers, IdealStore } from "../feature/FeatureManager";
 import { features } from "./features";
 
-export const featureManager = new DefaultFeatureManager({
-        idealResolver: undefined,
-        features,
-        flags: chainUndesirableUsageCheckers(
-            // async fp => {
-            //     return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
-            //         {
-            //             severity: "warn",
-            //             authority: "Rod",
-            //             message: "Old TypeScript version",
-            //         } :
-            //         undefined;
-            // },
-            async fp => fp.name === "npm-project-dep::axios" ?
-                {
-                    severity: "warn",
-                    authority: "Christian",
-                    message: "Don't use Axios",
-                } :
-                undefined,
-            async fp => {
-                if (fp.name === "tslintproperty::rules:max-file-line-count") {
-                    try {
-                        const obj = JSON.parse(fp.data);
-                        if (obj.options && obj.options.some(parseInt) > 500) {
-                            return {
-                                severity: "warn",
-                                authority: "Rod",
-                                message: "Allow long files",
-                            };
+export function xfeatureManager(idealStore: IdealStore) {
+    return new DefaultFeatureManager({
+            idealStore: undefined,
+            features,
+            flags: chainUndesirableUsageCheckers(
+                // async fp => {
+                //     return (fp.name === "tsVersion" && (fp as TypeScriptVersion).typeScriptVersion.startsWith("2")) ?
+                //         {
+                //             severity: "warn",
+                //             authority: "Rod",
+                //             message: "Old TypeScript version",
+                //         } :
+                //         undefined;
+                // },
+                async fp => fp.name === "npm-project-dep::axios" ?
+                    {
+                        severity: "warn",
+                        authority: "Christian",
+                        message: "Don't use Axios",
+                    } :
+                    undefined,
+                async fp => {
+                    if (fp.name === "tslintproperty::rules:max-file-line-count") {
+                        try {
+                            const obj = JSON.parse(fp.data);
+                            if (obj.options && obj.options.some(parseInt) > 500) {
+                                return {
+                                    severity: "warn",
+                                    authority: "Rod",
+                                    message: "Allow long files",
+                                };
+                            }
+                        } catch {
+                            // Do nothing
                         }
-                    } catch {
-                        // Do nothing
                     }
-                }
-                return undefined;
-            }),
-    },
-);
+                    return undefined;
+                }),
+        },
+    );
+}

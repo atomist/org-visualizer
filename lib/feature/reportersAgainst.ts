@@ -28,6 +28,7 @@ import {
 } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Create an object exposing well-known queries against our repo cohort
@@ -36,7 +37,7 @@ import { defaultAnalyzedRenderer } from "./support/groupingUtils";
  * Return 3 queries for each fingerprint name
  * 1. <fingerprintName>: Show distribution of the fingerprint
  * 2. <fingerprintName>-present: Is this fingerprint name present in this repo? Returns for all repos
- * 3. <fingerprintName>-ideal: Show progress toward the ideal for this fingerprint name
+ * 3. <fingerprintName>-progress: Show progress toward the ideal for this fingerprint name
  */
 export async function reportersAgainst(featureManager: FeatureManager,
                                        repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
@@ -95,28 +96,37 @@ export async function reportersAgainst(featureManager: FeatureManager,
                 .renderWith(defaultAnalyzedRenderer());
 
         // Add a query that tells us how many repositories are on vs off the ideal, if any, for this fingerprint
-        reporters[name + "-ideal"] = params =>
-            treeBuilderFor(name, params)
+        reporters[name + "-progress"] = params => {
+            let ideal: Ideal;
+            return treeBuilderFor(name, params)
                 .group({
-                    name: name + " ideal?",
+                    name: name + " progress?",
                     by: async hf => {
-                        const found = hf.fingerprints.find(fp => fp.name === name);
-                        // const ideal = await featureManager.idealResolver(name);
-                        throw new Error("fix me");
-                        // if (!ideal.ideal) {
-                        //     return !found ? `Yes (gone)` : "No (present)";
-                        // }
-                        // if (!found) {
-                        //     return undefined;
-                        // }
-                        // const feature = featureManager.featureFor(found.type);
-                        // if (ideal && ideal.ideal) {
-                        //     return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
-                        // }
-                        // return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
+                        const name = params.name.replace("-progress", "");
+                        const found = hf.fingerprints.find(fp => fp.name === name && fp.type === params.type);
+                        if (!found) {
+                            return undefined;
+                        }
+
+                        if (!ideal) {
+                            ideal = await featureManager.idealStore.fetchIdeal("local", params.type, name);
+                        }
+                        if (!ideal) {
+                            throw new Error(`No ideal for ${params.type}/${name}`);
+                        }
+                        if (!isConcreteIdeal(ideal)) {
+                            return !found ? `Yes (gone)` : "No (present)";
+                        }
+
+                        const feature = featureManager.featureFor(found.type);
+                        if (ideal && ideal.ideal) {
+                            return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
+                        }
+                        return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
                     },
                 })
                 .renderWith(defaultAnalyzedRenderer());
+        };
     }
 
     return reporters;

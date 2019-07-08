@@ -82,8 +82,9 @@ export class DefaultFeatureManager implements FeatureManager {
         async function aggregateFingerprints(featureManager: FeatureManager,
                                              feature: ManagedFeature,
                                              fps: FP[]): Promise<AggregateFingerprintStatus> {
+            const type = fps[0].type;
             const name = fps[0].name;
-            const ideal = undefined; //await featureManager.idealResolver.fetchIdeal(name);
+            const ideal = await featureManager.idealStore.fetchIdeal("local", type, name);
             return {
                 type: fps[0].type,
                 name,
@@ -148,12 +149,12 @@ export class DefaultFeatureManager implements FeatureManager {
         return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker(fp))));
     }
 
-    get idealResolver(): IdealStore {
-        return this.opts.idealResolver;
+    get idealStore(): IdealStore {
+        return this.opts.idealStore;
     }
 
     constructor(private readonly opts: {
-        idealResolver: IdealStore,
+        idealStore: IdealStore,
         features: ManagedFeature[],
         flags: UndesirableUsageChecker,
     }) {

@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import { Feature, FP } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -28,7 +28,6 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { featureManager } from "../customize/featureManager";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { FeatureManager, IdealStore } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
@@ -61,7 +60,7 @@ import {
  */
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
-                    idealStore: IdealStore): ExpressCustomizer {
+                    featureManager: FeatureManager): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -73,7 +72,7 @@ export function api(clientFactory: ClientFactory,
 
         express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
         express.post("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
-            await idealStore.setIdeal(req.params.workspace_id, req.params.id);
+            await featureManager.idealStore.setIdeal(req.params.workspace_id, req.params.id);
             console.log(`Set ideal to ${req.params.id}`);
             res.sendStatus(200);
         });

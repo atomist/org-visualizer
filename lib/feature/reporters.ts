@@ -38,6 +38,10 @@ export interface ReporterParams {
      */
     path?: string;
 
+    type: string;
+
+    name: string;
+
     // tODO change to value
     artifact?: string;
 }
