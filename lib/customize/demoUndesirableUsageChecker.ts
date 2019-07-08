@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { chainUndesirableUsageCheckers, } from "../feature/FeatureManager";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import { chainUndesirableUsageCheckers } from "../feature/FeatureManager";
 import { TypeScriptVersionType } from "../feature/node/TypeScriptVersionFeature";
 
 /**

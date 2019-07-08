@@ -131,7 +131,6 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
         {displayFeatures(props)}
 
-
         <h2>Common queries</h2>
 
         <h3>See Problems</h3>
