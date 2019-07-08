@@ -1,4 +1,3 @@
-
 function sunburst(name, dataUrl, pWidth, pHeight) {
     const minDiameterInPixels = 100;
 
@@ -81,13 +80,20 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .append('g').attr('class', 'slice')
             .on('click', d => {
                 d3.event.stopPropagation();
-                var descriptionOfWhereYouClicked = `${d.data.name}`;
+                const setIdealLink = `<a href="thing">Set as ideal</a>`;
+                let descriptionOfWhereYouClicked = `${d.data.name}`;
                 for (let place = d; place = place.parent; !!place) {
-                    descriptionOfWhereYouClicked = place.data.name + "<br />" + descriptionOfWhereYouClicked;
+                    descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
                 }
                 console.log("Clicked on " + d.data.name);
                 if (d.data.size === 1) {
-                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked + `<br /><a href="${d.data.url}">${d.data.url}</a>`
+                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
+                        `<br/><a href="${d.data.url}">${d.data.url}</a>`;
+                }
+                if (!!d.data.sha) {
+                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
+                        `<br/><a href="${d.data.url}">${d.data.url}</a>` +
+                        setIdealLink;
                 }
                 dataDiv.html(descriptionOfWhereYouClicked);
                 focusOn(d);
@@ -122,7 +128,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .text(d => d.data.name);
     });
 
-    function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
+    function focusOn(d = {x0: 0, x1: 1, y0: 0, y1: 1}) {
         // Reset to top-level if no data point specified
 
         const transition = svg.transition()

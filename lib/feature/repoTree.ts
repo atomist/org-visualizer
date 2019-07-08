@@ -61,7 +61,7 @@ export function fingerprintsChildrenQuery(whereClause: string, includeWithout: b
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
        SELECT
-         fingerprints.name as name, fingerprints.sha as sha, fingerprints.data as data, fingerprints.feature_name as type,
+         fingerprints.id as id, fingerprints.name as name, fingerprints.sha as sha, fingerprints.data as data, fingerprints.feature_name as type,
          (
            SELECT json_agg(row_to_json(repo))
            FROM (
