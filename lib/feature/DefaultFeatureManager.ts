@@ -81,22 +81,6 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 
     public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
-        async function aggregateFingerprints(featureManager: FeatureManager,
-                                             feature: ManagedFeature,
-                                             fps: FP[]): Promise<AggregateFingerprintStatus> {
-            const type = fps[0].type;
-            const name = fps[0].name;
-            const ideal = await featureManager.idealStore.fetchIdeal("local", type, name);
-            return {
-                type: fps[0].type,
-                name,
-                appearsIn: fps.length,
-                variants: _.uniq(fps.map(fp => fp.sha)).length,
-                ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
-                featureName: feature.displayName,
-                displayName: defaultedToDisplayableFingerprintName(feature)(name),
-            };
-        }
 
         const result: FingerprintCensus = {
             projectsAnalyzed: repos.length,
@@ -187,5 +171,22 @@ function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
     return {
         ...ideal,
         displayValue,
+    };
+}
+
+async function aggregateFingerprints(featureManager: FeatureManager,
+                                     feature: ManagedFeature,
+                                     fingerprintsByTypeAndName: FP[]): Promise<AggregateFingerprintStatus> {
+    const type = fingerprintsByTypeAndName[0].type;
+    const name = fingerprintsByTypeAndName[0].name;
+    const ideal = await featureManager.idealStore.fetchIdeal("local", type, name);
+    return {
+        type,
+        name,
+        appearsIn: fingerprintsByTypeAndName.length,
+        variants: _.uniq(fingerprintsByTypeAndName.map(fp => fp.sha)).length,
+        ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
+        featureName: feature.displayName,
+        displayName: defaultedToDisplayableFingerprintName(feature)(name),
     };
 }
