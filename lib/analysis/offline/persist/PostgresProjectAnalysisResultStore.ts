@@ -32,6 +32,7 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
+import { Analyzed, HasFingerprints } from "../../../feature/FeatureManager";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
@@ -131,6 +132,9 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
             await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
             await client.query(`DELETE from repo_snapshots WHERE id = $1`, [id]);
 
+            const shaToUse = !!(analysisResult.analysis as ProjectAnalysis).gitStatus ?
+                (analysisResult.analysis as ProjectAnalysis).gitStatus.sha :
+                repoRef.sha;
             await client.query(`
             INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
@@ -140,7 +144,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
                     repoRef.owner,
                     repoRef.repo,
                     repoRef.url,
-                    !!analysisResult.analysis.gitStatus ? analysisResult.analysis.gitStatus.sha : repoRef.sha,
+                    shaToUse,
                     analysisResult.analysis,
                     (analysisResult as SpideredRepo).query,
                 ]);
@@ -165,7 +169,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
     }
 
     // Persist the fingerprints for this analysis
-    private async persistFingerprints(pa: ProjectAnalysis, id: string, client: Client): Promise<void> {
+    private async persistFingerprints(pa: Analyzed, id: string, client: Client): Promise<void> {
         for (const fp of pa.fingerprints) {
             const featureName = fp.type || "unknown";
             const fingerprintId = featureName + "_" + fp.name + "_" + fp.sha;

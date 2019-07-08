@@ -1,5 +1,6 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
+import { Analyzed } from "../lib/feature/FeatureManager";
 
 type DisplayName = string;
 
@@ -16,7 +17,7 @@ export interface FeatureForDisplay {
 }
 
 export interface ProjectExplorerProps {
-    analysis: ProjectAnalysis;
+    analysis: Analyzed;
     features: FeatureForDisplay[];
 }
 

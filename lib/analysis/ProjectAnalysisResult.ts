@@ -16,6 +16,7 @@
 
 import { RemoteRepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { Analyzed } from "../feature/FeatureManager";
 
 export interface SubprojectDescription {
     path: string;
@@ -27,7 +28,7 @@ export interface SubprojectDescription {
  * The result of running one analysis. Allows us to attach further information,
  * such as provenance if we spidered it.
  */
-export interface ProjectAnalysisResult {
+export interface ProjectAnalysisResult<A extends Analyzed = Analyzed> {
 
     /**
      * Unique id. Available after persistence.
@@ -36,7 +37,7 @@ export interface ProjectAnalysisResult {
 
     readonly workspaceId: string;
 
-    readonly analysis: ProjectAnalysis;
+    readonly analysis: A;
 
     /**
      * Date of this analysis

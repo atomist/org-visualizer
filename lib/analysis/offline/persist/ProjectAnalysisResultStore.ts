@@ -21,8 +21,6 @@ import {
     SpiderFailure,
 } from "../spider/Spider";
 
-export type ProjectUrl = string;
-
 export interface PersistResult {
     attemptedCount: number;
     failed: SpiderFailure[];
@@ -58,7 +56,7 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Where e.g. workspace_id = value
-     * @param {string} where
+     * @param {string} where SQL where clause
      * @return {Promise<ProjectAnalysisResult[]>}
      */
     loadWhere(where: string): Promise<ProjectAnalysisResult[]>;
