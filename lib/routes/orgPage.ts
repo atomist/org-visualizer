@@ -217,7 +217,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 currentIdealForDisplay = idealDisplayValue(await featureManager.idealStore
                     .fetchIdeal("local", req.query.type, fingerprintName));
                 if (!currentIdealForDisplay) {
-                    //TODO: this sucks
+                    // TODO: this sucks
                     // if (feature && feature.suggestedIdeals) {
                     //     const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
                     //     for (const ideal of possibleIdeals) {
@@ -244,7 +244,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 [
                     "/lib/jquery-3.4.1.min.js",
                     "/lib/d3.v4.min.js",
-                    "/js/sunburst.js"
+                    "/js/sunburst.js",
                 ]));
         });
 

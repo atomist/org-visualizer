@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
 import {
@@ -28,7 +29,6 @@ import {
 } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
-import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Create an object exposing well-known queries against our repo cohort

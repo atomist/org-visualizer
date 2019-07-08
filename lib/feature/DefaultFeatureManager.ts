@@ -127,7 +127,7 @@ export class DefaultFeatureManager implements FeatureManager {
                 for (const fp of originalFingerprints) {
                     fingerprints.push({
                         ...fp,
-                        //ideal: await this.opts.idealResolver(fp.name),
+                        // ideal: await this.opts.idealResolver(fp.name),
                         displayValue: defaultedToDisplayableFingerprint(feature)(fp),
                         displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
                     });

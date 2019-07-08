@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
-import { filesFeature, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
+import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
+import { filesFeature, NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import { branchCount, fileCountFeature, } from "../feature/common/count";
-import { CiFeature, JavaBuildFeature, StackFeature, } from "../feature/common/stackFeature";
+import { branchCount, fileCountFeature } from "../feature/common/count";
+import { CiFeature, JavaBuildFeature, StackFeature } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
+import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
 import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
@@ -29,7 +30,6 @@ import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { idealsFromNpm } from "../feature/node/idealFromNpm";
 
 /**
  * The features managed by this SDM

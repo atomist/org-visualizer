@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import { ConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
-    deconstructNpmDepsFingerprintName
+    deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
-import { logger } from "@atomist/automation-client";
 
 export async function idealsFromNpm(name: string): Promise<ConcreteIdeal[]> {
     const ideal = await idealFromNpm(name);

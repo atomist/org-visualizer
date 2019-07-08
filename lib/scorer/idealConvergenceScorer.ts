@@ -20,8 +20,8 @@ import { FeatureManager } from "../feature/FeatureManager";
 export function idealConvergenceScorer(fm: FeatureManager): Scorer {
     return async i => {
         const allFingerprintNames = Object.getOwnPropertyNames(i.reason.analysis.fingerprints);
-        let correctFingerprints = 0;
-        let hasIdeal = 0;
+        const correctFingerprints = 0;
+        const hasIdeal = 0;
         for (const name of allFingerprintNames) {
             // const ideal = await fm.idealResolver.fetchIdeal(name);
             // if (ideal && ideal.ideal) {

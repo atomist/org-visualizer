@@ -32,11 +32,13 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { features } from "./lib/customize/features";
 import {
     CiFeature,
     JavaBuildFeature,
     StackFeature,
 } from "./lib/feature/common/stackFeature";
+import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
 import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
 import { DirectMavenDependenciesFeature } from "./lib/feature/spring/directMavenDependenciesFeature";
 import { SpringBootStarterFeature } from "./lib/feature/spring/springBootStarterFeature";
@@ -50,8 +52,6 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
-import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
-import { features } from "./lib/customize/features";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
