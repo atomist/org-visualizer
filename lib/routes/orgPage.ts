@@ -249,7 +249,6 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 }),
                 "Atomist Aspect",
                 [
-                    "/lib/jquery-3.4.1.min.js",
                     "/lib/d3.v4.min.js",
                     "/js/sunburst.js",
                 ]));

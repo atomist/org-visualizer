@@ -81,9 +81,8 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .on('click', d => {
                 d3.event.stopPropagation();
                 const workspaceId = "local";
-                const postUrl = `./api/v1/${workspaceId}/ideal/${d.data.id}`;
                 const setIdealLink = `<button 
-                    onclick="$.post('${postUrl}')"
+                    onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
                     >Set as ideal</button>`;
                 let descriptionOfWhereYouClicked = `${d.data.name}`;
                 for (let place = d; place = place.parent; !!place) {
@@ -166,4 +165,17 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
                 })
         }
     }
+};
+
+function postSetIdeal(workspaceId, fingerprintId) {
+    const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
+    fetch(postUrl, { method: 'POST' }).then(response => {
+        if (response.ok) {
+            console.log("yay")
+        }
+        else {
+            console.log("oh no");
+        }
+    },
+        e => console.log("boo"));
 }
