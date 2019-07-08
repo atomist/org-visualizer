@@ -65,7 +65,7 @@ export function authHandlers(): exp.RequestHandler[] {
             creds = (req as any).authorization.credentials;
         }
 
-        const workspaceId = req.query.workspace_id;
+        const workspaceId = req.params.workspace_id || req.query.workspace_id;
 
         if (!workspaceId) {
             next();
