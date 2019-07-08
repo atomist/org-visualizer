@@ -20,6 +20,7 @@ import {
     logger,
 } from "@atomist/automation-client";
 import { ApolloGraphClient } from "@atomist/automation-client/lib/graph/ApolloGraphClient";
+import { isInLocalMode } from "@atomist/sdm-core";
 import { CorsOptions } from "cors";
 import * as exp from "express";
 
@@ -55,8 +56,12 @@ export function corsHandler(): exp.RequestHandler {
 }
 
 export function authHandlers(): exp.RequestHandler[] {
-    const cookieParser = require("cookie-parser");
+    // In local mode we don't need auth
+    if (isInLocalMode()) {
+        return  [(req: exp.Request, res: exp.Response, next: exp.NextFunction) => next()];
+    }
 
+    const cookieParser = require("cookie-parser");
     return [cookieParser(), (req: exp.Request, res: exp.Response, next: exp.NextFunction) => {
         let creds: string;
         if (!!req.cookies && !!req.cookies.access_token) {
