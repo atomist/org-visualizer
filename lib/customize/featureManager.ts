@@ -15,7 +15,10 @@
  */
 
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
-import { chainUndesirableUsageCheckers, IdealStore } from "../feature/FeatureManager";
+import {
+    chainUndesirableUsageCheckers,
+    IdealStore,
+} from "../feature/FeatureManager";
 import { features } from "./features";
 
 export function xfeatureManager(idealStore: IdealStore) {

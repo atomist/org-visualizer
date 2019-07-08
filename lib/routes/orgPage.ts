@@ -16,7 +16,11 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { ConcreteIdeal, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    ConcreteIdeal,
+    Ideal,
+    isConcreteIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -49,7 +53,10 @@ import {
     defaultedToDisplayableFingerprintName,
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
-import { FeatureManager, ManagedFeature } from "../feature/FeatureManager";
+import {
+    FeatureManager,
+    ManagedFeature,
+} from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { allManagedFingerprints } from "../feature/support/featureUtils";
 import { WellKnownReporters } from "./wellKnownReporters";

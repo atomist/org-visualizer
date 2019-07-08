@@ -16,7 +16,10 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Feature, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    Feature,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -29,7 +32,10 @@ import {
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
-import { FeatureManager, IdealStore } from "../feature/FeatureManager";
+import {
+    FeatureManager,
+    IdealStore,
+} from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     fingerprintsChildrenQuery,

@@ -15,7 +15,9 @@
  */
 
 import {
-    FP, Ideal, isConcreteIdeal,
+    FP,
+    Ideal,
+    isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";

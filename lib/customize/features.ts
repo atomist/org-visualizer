@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
-import { filesFeature, NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
+import {
+    filesFeature,
+    NpmDeps,
+} from "@atomist/sdm-pack-fingerprints";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import { branchCount, fileCountFeature } from "../feature/common/count";
-import { CiFeature, JavaBuildFeature, StackFeature } from "../feature/common/stackFeature";
+import {
+    branchCount,
+    fileCountFeature,
+} from "../feature/common/count";
+import {
+    CiFeature,
+    JavaBuildFeature,
+    StackFeature,
+} from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
