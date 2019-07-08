@@ -31,6 +31,7 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { getCategory } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import {
     FeatureManager,
@@ -218,6 +219,7 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
             return {
                 name: row.fingerprintname,
                 type: row.featurename,
+                categories: getCategory(row.featurename),
                 count: parseInt(row.appearsin, 10),
             };
         });
@@ -236,6 +238,7 @@ async function fingerprintsOfType(clientFactory: ClientFactory, type: string, wo
             return {
                 name: row.fingerprintname,
                 type,
+                categories: getCategory(row.featurename),
                 count: parseInt(row.appearsin, 10),
             };
         });

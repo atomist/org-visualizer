@@ -32,15 +32,15 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { registerCategory } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
-import { features } from "./lib/customize/features";
+import { Features } from "./lib/customize/features";
 import {
     CiFeature,
     JavaBuildFeature,
     StackFeature,
 } from "./lib/feature/common/stackFeature";
 import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
-import { PermitAllUsageChecker } from "./lib/feature/FeatureManager";
 import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
 import { DirectMavenDependenciesFeature } from "./lib/feature/spring/directMavenDependenciesFeature";
 import { SpringBootStarterFeature } from "./lib/feature/spring/springBootStarterFeature";
@@ -60,7 +60,7 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 
 export const configuration: Configuration = configure(async sdm => {
 
-    const features = [
+    const jobFeatures = [
         DockerFrom,
         DockerfilePath,
         DockerPorts,
@@ -76,13 +76,25 @@ export const configuration: Configuration = configure(async sdm => {
     ];
     const handlers = [];
 
+    registerCategory(DockerFrom, "docker");
+    registerCategory(DockerfilePath, "docker");
+    registerCategory(DockerPorts, "docker");
+    registerCategory(SpringBootStarterFeature, "java", "spring");
+    registerCategory(TypeScriptVersionFeature, "node");
+    registerCategory(NpmDeps, "node", "dependencies");
+    registerCategory(TravisScriptsFeature, "ci");
+    registerCategory(CiFeature, "ci");
+    registerCategory(JavaBuildFeature, "java");
+    registerCategory(SpringBootVersionFeature, "java", "spring");
+    registerCategory(DirectMavenDependenciesFeature, "java", "dependencies");
+
     if (mode === "online") {
         const pushImpact = new PushImpact();
 
         sdm.addExtensionPacks(
             fingerprintSupport({
                 pushImpactGoal: pushImpact,
-                features,
+                features: jobFeatures,
                 handlers,
             }));
 
@@ -93,7 +105,7 @@ export const configuration: Configuration = configure(async sdm => {
         };
     } else {
         sdm.addEvent(CreateFingerprintJob);
-        sdm.addCommand(calculateFingerprintTask(features, handlers));
+        sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers));
         return {};
     }
 
@@ -131,7 +143,7 @@ export const configuration: Configuration = configure(async sdm => {
             const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
             const featureManager = new DefaultFeatureManager({
                 idealStore: resultStore,
-                features,
+                features: Features,
                 undesirableUsageChecker: demoUndesirableUsageChecker,
             });
             const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
