@@ -16,6 +16,7 @@
 
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
 import {
     Analyzed,
@@ -36,7 +37,6 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
-import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
@@ -115,7 +115,7 @@ values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
             return {
                 ideal: rawRow,
                 reason: `Local database row ${rawRow.id}`,
-            }
+            };
         }
         throw new Error("Elimination ideals not yet supported");
     }
