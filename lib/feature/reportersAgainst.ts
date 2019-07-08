@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Ideal, isConcreteIdeal, } from "@atomist/sdm-pack-fingerprints";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
-import { defaultedToDisplayableFingerprint, fingerprintsFrom, } from "./DefaultFeatureManager";
-import { FeatureManager, HasFingerprints, } from "./FeatureManager";
+import { defaultedToDisplayableFingerprint, fingerprintsFrom } from "./DefaultFeatureManager";
+import { FeatureManager, HasFingerprints } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
 
