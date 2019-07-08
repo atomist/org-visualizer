@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
-import { execPromise } from "@atomist/sdm";
 import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
-import { ConcreteIdeal, filesFeature, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
-import {
-    createNpmDepFingerprint,
-    deconstructNpmDepsFingerprintName,
-} from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
+import { filesFeature, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
 import { branchCount, fileCountFeature, } from "../feature/common/count";
 import { CiFeature, JavaBuildFeature, StackFeature, } from "../feature/common/stackFeature";
@@ -35,6 +29,7 @@ import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { idealsFromNpm } from "../feature/node/idealFromNpm";
 
 /**
  * The features managed by this SDM
@@ -49,7 +44,7 @@ export const features: ManagedFeature[] = [
     new CodeOwnershipFeature(),
     {
         ...NpmDeps,
-        suggestedIdeals: idealFromNpm,
+        suggestedIdeals: (type, name) => idealsFromNpm(name),
     },
     new TsLintPropertyFeature(),
     TravisScriptsFeature,
@@ -88,18 +83,3 @@ export const features: ManagedFeature[] = [
     DirectMavenDependenciesFeature,
     pythonDependenciesFeature,
 ];
-
-async function idealFromNpm(name: string): Promise<ConcreteIdeal[]> {
-    const libraryName = deconstructNpmDepsFingerprintName(name);
-    try {
-        const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
-        logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
-        return [{
-            ideal: createNpmDepFingerprint(libraryName, result.stdout.trim()),
-            reason: "latest from NPM",
-        }];
-    } catch (err) {
-        logger.error("Could not find version of " + libraryName + ": " + err.message);
-    }
-    return undefined;
-}
