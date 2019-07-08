@@ -283,7 +283,7 @@ function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedF
 }
 
 function idealIsElimination(fingerprint: MelbaFingerprintForDisplay): boolean {
-    return !isConcreteIdeal(fingerprint.ideal);
+    return fingerprint.ideal && !isConcreteIdeal(fingerprint.ideal);
 }
 
 function idealIsDifferentFromActual(fingerprint: MelbaFingerprintForDisplay): boolean {
