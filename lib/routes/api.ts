@@ -31,7 +31,7 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { getCategory } from "../customize/categories";
+import { getCategories } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import {
     FeatureManager,
@@ -205,6 +205,7 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
 export interface FingerprintData {
     name: string;
     type: string;
+    categories: string[];
     count: number;
 }
 
@@ -219,7 +220,7 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
             return {
                 name: row.fingerprintname,
                 type: row.featurename,
-                categories: getCategory(row.featurename),
+                categories: getCategories({ name: row.featurename }),
                 count: parseInt(row.appearsin, 10),
             };
         });
@@ -238,7 +239,7 @@ async function fingerprintsOfType(clientFactory: ClientFactory, type: string, wo
             return {
                 name: row.fingerprintname,
                 type,
-                categories: getCategory(row.featurename),
+                categories: getCategories({ name: row.featurename }),
                 count: parseInt(row.appearsin, 10),
             };
         });

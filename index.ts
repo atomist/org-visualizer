@@ -32,7 +32,7 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { registerCategory } from "./lib/customize/categories";
+import { registerCategories } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 import { Features } from "./lib/customize/features";
 import {
@@ -76,17 +76,17 @@ export const configuration: Configuration = configure(async sdm => {
     ];
     const handlers = [];
 
-    registerCategory(DockerFrom, "docker");
-    registerCategory(DockerfilePath, "docker");
-    registerCategory(DockerPorts, "docker");
-    registerCategory(SpringBootStarterFeature, "java", "spring");
-    registerCategory(TypeScriptVersionFeature, "node");
-    registerCategory(NpmDeps, "node", "dependencies");
-    registerCategory(TravisScriptsFeature, "ci");
-    registerCategory(CiFeature, "ci");
-    registerCategory(JavaBuildFeature, "java");
-    registerCategory(SpringBootVersionFeature, "java", "spring");
-    registerCategory(DirectMavenDependenciesFeature, "java", "dependencies");
+    registerCategories(DockerFrom, "docker");
+    registerCategories(DockerfilePath, "docker");
+    registerCategories(DockerPorts, "docker");
+    registerCategories(SpringBootStarterFeature, "java", "spring");
+    registerCategories(TypeScriptVersionFeature, "node");
+    registerCategories(NpmDeps, "node", "dependencies");
+    registerCategories(TravisScriptsFeature, "ci");
+    registerCategories(CiFeature, "ci");
+    registerCategories(JavaBuildFeature, "java");
+    registerCategories(SpringBootVersionFeature, "java", "spring");
+    registerCategories(DirectMavenDependenciesFeature, "java", "dependencies");
 
     if (mode === "online") {
         const pushImpact = new PushImpact();

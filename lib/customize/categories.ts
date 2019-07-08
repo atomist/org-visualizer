@@ -21,13 +21,14 @@ const FeatureCategories: Record<string, string[]> = {};
 /**
  * Store a categories for a given Features
  */
-export function registerCategory(feature: Feature<any>, ...categories: string[]): void {
+export function registerCategories(feature: Pick<Feature<any>, "name">,
+                                   ...categories: string[]): void {
     FeatureCategories[feature.name] = categories;
 }
 
 /**
  * Retrieve categories or undefined for a given Feature
  */
-export function getCategory(feature: Feature<any>): string[] | undefined {
+export function getCategories(feature: Pick<Feature<any>, "name">): string[] | undefined {
     return FeatureCategories[feature.name];
 }
