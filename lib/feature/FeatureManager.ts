@@ -20,7 +20,6 @@ import {
     Feature,
     FP,
     Ideal,
-    PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 
 /**
@@ -31,6 +30,14 @@ import {
 export interface IdealStore {
 
     storeIdeal(workspaceId: string, ideal: Ideal): Promise<void>;
+
+    /**
+     * Set the ideal to the given fingerprint id
+     * @param {string} workspaceId
+     * @param {string} fingerprintId
+     * @return {Promise<void>}
+     */
+    setIdeal(workspaceId: string, fingerprintId: string): Promise<void>;
 
     fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
 }
@@ -70,7 +77,7 @@ export interface AggregateFingerprintStatus {
      */
     readonly appearsIn: number;
 
-    readonly ideal: PossibleIdeal & { displayValue: string };
+    readonly ideal: Ideal & { displayValue: string };
 
     /**
      * Number of variants of this fingerprint across the cohort

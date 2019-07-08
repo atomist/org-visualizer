@@ -17,6 +17,8 @@
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import {
+    ConcreteIdeal,
+    FP,
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
@@ -96,20 +98,36 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     public async storeIdeal(workspaceId: string, ideal: Ideal): Promise<void> {
         if (isConcreteIdeal(ideal)) {
             await doWithClient(this.clientFactory, async client => {
+                // Clear out any existing ideal
+                await client.query("DELETE FROM ideal_fingerprints WHERE workspace_id = $1 AND feature_name = $2 AND name = $3",
+                    [workspaceId, ideal.ideal.type, ideal.ideal.name]);
                 const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
-values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
-`, [workspaceId, id, ideal.ideal.name, ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
+                    workspaceId, id, ideal.ideal.name,
+                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
         }
     }
 
+    public async setIdeal(workspaceId: string, fingerprintId: string): Promise<void> {
+        const ideal = await this.loadFingerprintById(fingerprintId);
+        if (!ideal) {
+            throw new Error(`Fingerprint with id=${fingerprintId} not found`);
+        }
+        const ci: ConcreteIdeal = {
+            reason: "Local database",
+            ideal,
+        };
+        await this.storeIdeal(workspaceId, ci);
+    }
+
     public async fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
         const rawRow = await doWithClient(this.clientFactory, async client => {
             const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
-            WHERE workspace_id = $1 AND feature_name = $2 AND name = $3)`, [workspaceId, type, name]);
+            WHERE workspace_id = $1 AND feature_name = $2 AND name = $3`, [workspaceId, type, name]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
         if (!rawRow) {
@@ -119,9 +137,17 @@ values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
             return {
                 ideal: rawRow,
                 reason: `Local database row ${rawRow.id}`,
-            };
+            } as ConcreteIdeal;
         }
         throw new Error("Elimination ideals not yet supported");
+    }
+
+    public async loadFingerprintById(id: string): Promise<FP | undefined> {
+        return doWithClient(this.clientFactory, async client => {
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM fingerprints
+            WHERE id = $1`, [id]);
+            return rows.rows.length === 1 ? rows.rows[0] : undefined;
+        });
     }
 
     private async persistAnalysisResults(

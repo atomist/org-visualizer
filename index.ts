@@ -124,13 +124,12 @@ export const configuration: Configuration = configure(async sdm => {
     postProcessors: [
         configureHumio,
         async cfg => {
-
             const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
             const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [orgPage(resultStore)] : [];
 
             cfg.http.customizers = [
                 ...staticPages,
-                api(sdmConfigClientFactory(cfg), resultStore),
+                api(sdmConfigClientFactory(cfg), resultStore, resultStore),
             ];
             return cfg;
         },

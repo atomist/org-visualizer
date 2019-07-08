@@ -37,7 +37,7 @@ export async function doWithClient<R>(clientFactory: () => Client,
     try {
         result = await what(client);
     } catch (err) {
-        logger.warn(err);
+        logger.warn("Error accessing database: ", err);
     } finally {
         client.end();
     }

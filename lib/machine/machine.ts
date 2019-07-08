@@ -37,6 +37,7 @@ import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { CodeOfConductScanner } from "../element/codeOfConduct";
 import { CodeOwnershipExtractor } from "../element/codeOwnership";
 import { idealConvergenceScorer } from "../scorer/idealConvergenceScorer";
+import { IdealStore } from "../feature/FeatureManager";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -61,7 +62,7 @@ export function sdmConfigClientFactory(config: Configuration): ClientFactory {
     });
 }
 
-export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore {
+export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore & IdealStore {
     return new PostgresProjectAnalysisResultStore(factory);
 }
 

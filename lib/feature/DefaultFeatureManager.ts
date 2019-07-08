@@ -15,8 +15,7 @@
  */
 
 import {
-    FP,
-    PossibleIdeal,
+    FP, Ideal, isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
@@ -56,9 +55,9 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
 }
 
 export type MelbaFingerprintForDisplay = FP & {
-    ideal?: PossibleIdeal,
-    displayValue: string,
-    displayName: string,
+    ideal?: Ideal;
+    displayValue: string;
+    displayName: string;
 };
 
 export interface MelbaFeatureForDisplay {
@@ -84,7 +83,7 @@ export class DefaultFeatureManager implements FeatureManager {
                                              feature: ManagedFeature,
                                              fps: FP[]): Promise<AggregateFingerprintStatus> {
             const name = fps[0].name;
-            const ideal = await featureManager.idealResolver(name);
+            const ideal = undefined; //await featureManager.idealResolver.fetchIdeal(name);
             return {
                 type: fps[0].type,
                 name,
@@ -95,6 +94,7 @@ export class DefaultFeatureManager implements FeatureManager {
                 displayName: defaultedToDisplayableFingerprintName(feature)(name),
             };
         }
+
         const result: FingerprintCensus = {
             projectsAnalyzed: repos.length,
             features: [],
@@ -126,7 +126,7 @@ export class DefaultFeatureManager implements FeatureManager {
                 for (const fp of originalFingerprints) {
                     fingerprints.push({
                         ...fp,
-                        ideal: await this.opts.idealResolver(fp.name),
+                        //ideal: await this.opts.idealResolver(fp.name),
                         displayValue: defaultedToDisplayableFingerprint(feature)(fp),
                         displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
                     });
@@ -174,13 +174,13 @@ export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fp
 }
 
 function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
-                               ideal?: PossibleIdeal): PossibleIdeal & { displayValue: string } {
+                               ideal?: Ideal): Ideal & { displayValue: string } {
     if (!ideal) {
         return undefined;
     }
-    const displayValue = ideal.ideal ?
-        displayFingerprint(ideal.ideal)
-        : "eliminate";
+    const displayValue = isConcreteIdeal(ideal) ?
+        displayFingerprint(ideal.ideal) :
+        "eliminate";
     return {
         ...ideal,
         displayValue,

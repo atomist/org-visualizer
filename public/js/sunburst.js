@@ -80,7 +80,12 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .append('g').attr('class', 'slice')
             .on('click', d => {
                 d3.event.stopPropagation();
-                const setIdealLink = `<a href="thing">Set as ideal</a>`;
+                const workspaceId = "local";
+                const postUrl = `./api/v1/${workspaceId}/ideal/${d.data.id}`;
+                const setIdealLink = `<a 
+                    href="javascript:{}"
+                    onclick="$.post('${postUrl}')"
+                    >Set as ideal</a>`;
                 let descriptionOfWhereYouClicked = `${d.data.name}`;
                 for (let place = d; place = place.parent; !!place) {
                     descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
@@ -92,8 +97,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
                 }
                 if (!!d.data.sha) {
                     descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-                        `<br/><a href="${d.data.url}">${d.data.url}</a>` +
-                        setIdealLink;
+                        "<br/>" + setIdealLink;
                 }
                 dataDiv.html(descriptionOfWhereYouClicked);
                 focusOn(d);

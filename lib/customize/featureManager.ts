@@ -19,9 +19,7 @@ import { chainUndesirableUsageCheckers } from "../feature/FeatureManager";
 import { features } from "./features";
 
 export const featureManager = new DefaultFeatureManager({
-        idealResolver: async name => {
-            return undefined;
-        },
+        idealResolver: undefined,
         features,
         flags: chainUndesirableUsageCheckers(
             // async fp => {

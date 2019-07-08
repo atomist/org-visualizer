@@ -16,31 +16,15 @@
 
 import { logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import {
-    DockerfilePath,
-    DockerFrom,
-    DockerPorts,
-} from "@atomist/sdm-pack-docker";
-import {
-    filesFeature,
-    FP,
-    NpmDeps,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
+import { ConcreteIdeal, filesFeature, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
 import {
     createNpmDepFingerprint,
     deconstructNpmDepsFingerprintName,
 } from "@atomist/sdm-pack-fingerprints/lib/fingerprints/npmDeps";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
-import {
-    branchCount,
-    fileCountFeature,
-} from "../feature/common/count";
-import {
-    CiFeature,
-    JavaBuildFeature,
-    StackFeature,
-} from "../feature/common/stackFeature";
+import { branchCount, fileCountFeature, } from "../feature/common/count";
+import { CiFeature, JavaBuildFeature, StackFeature, } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/oneOf";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
@@ -105,19 +89,17 @@ export const features: ManagedFeature[] = [
     pythonDependenciesFeature,
 ];
 
-async function idealFromNpm(fingerprintName: string): Promise<Array<PossibleIdeal<FP>>> {
-    const libraryName = deconstructNpmDepsFingerprintName(fingerprintName);
+async function idealFromNpm(name: string): Promise<ConcreteIdeal[]> {
+    const libraryName = deconstructNpmDepsFingerprintName(name);
     try {
         const result = await execPromise("npm", ["view", libraryName, "dist-tags.latest"]);
         logger.info(`World Ideal Version is ${result.stdout} for ${libraryName}`);
         return [{
-            fingerprintName,
             ideal: createNpmDepFingerprint(libraryName, result.stdout.trim()),
             reason: "latest from NPM",
         }];
     } catch (err) {
         logger.error("Could not find version of " + libraryName + ": " + err.message);
     }
-
     return undefined;
 }

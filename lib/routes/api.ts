@@ -30,7 +30,7 @@ import {
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { featureManager } from "../customize/featureManager";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
-import { FeatureManager } from "../feature/FeatureManager";
+import { FeatureManager, IdealStore } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     fingerprintsChildrenQuery,
@@ -59,7 +59,9 @@ import {
 /**
  * Public API routes, returning JSON
  */
-export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultStore): ExpressCustomizer {
+export function api(clientFactory: ClientFactory,
+                    store: ProjectAnalysisResultStore,
+                    idealStore: IdealStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -68,6 +70,13 @@ export function api(clientFactory: ClientFactory, store: ProjectAnalysisResultSt
         }));
 
         configureAuth(express);
+
+        express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
+        express.post("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
+            await idealStore.setIdeal(req.params.workspace_id, req.params.id);
+            console.log(`Set ideal to ${req.params.id}`);
+            res.sendStatus(200);
+        });
 
         // Return all fingerprints
         express.options("/api/v1/:workspace_id/fingerprints", corsHandler());

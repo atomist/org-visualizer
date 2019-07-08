@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { Ideal } from "@atomist/sdm-pack-fingerprints";
+import { ConcreteIdeal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -73,7 +73,6 @@ function renderStaticReactNode(body: ReactElement,
  */
 export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
-
         express.use(bodyParser.json());       // to support JSON-encoded bodies
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
             extended: true,
@@ -165,17 +164,8 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
             })));
         });
 
-        /* the /query page calls this */
-        express.post("/setIdeal", ...handlers, async (req, res) => {
-            logger.info("setting ideal " + JSON.stringify(req.body));
-            // await setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
-            throw new Error("Not setting ideals yet");
-            // res.send(200);
-        });
-
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
-
             let dataUrl: string;
             let currentIdealForDisplay;
             const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
@@ -212,34 +202,34 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 const feature = featureManager.featureFor(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-                function idealDisplayValue(ideal: Ideal): string | undefined {
-                    if (ideal === undefined) {
-                        return undefined;
-                    }
-                    if (ideal.ideal === undefined) {
-                        return "eliminate";
-                    }
-                    try {
-                        return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
-                    } catch (err) {
-                        logger.error("Could not display fingerprint: " + err);
-                        return JSON.stringify(ideal.ideal.data);
-                    }
-                }
+                // function idealDisplayValue(ideal: Ideal): string | undefined {
+                //     if (ideal === undefined) {
+                //         return undefined;
+                //     }
+                //     if (ideal.ideal === undefined) {
+                //         return "eliminate";
+                //     }
+                //     try {
+                //         return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
+                //     } catch (err) {
+                //         logger.error("Could not display fingerprint: " + err);
+                //         return JSON.stringify(ideal.ideal.data);
+                //     }
+                // }
 
-                currentIdealForDisplay = idealDisplayValue(await featureManager.idealResolver(fingerprintName));
+                currentIdealForDisplay = undefined; //idealDisplayValue(await featureManager.idealResolver(fingerprintName));
                 if (!currentIdealForDisplay) {
                     // TODO: this sucks
-                    if (feature && feature.suggestedIdeals) {
-                        const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
-                        for (const ideal of possibleIdeals) {
-                            possibleIdealsForDisplay.push({
-                                ...ideal,
-                                displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
-                                stringified: JSON.stringify(ideal),
-                            });
-                        }
-                    }
+                    // if (feature && feature.suggestedIdeals) {
+                    //     const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
+                    //     for (const ideal of possibleIdeals) {
+                    //         possibleIdealsForDisplay.push({
+                    //             ...ideal,
+                    //             displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
+                    //             stringified: JSON.stringify(ideal),
+                    //         });
+                    //     }
+                    // }
                 }
 
             }
@@ -254,7 +244,11 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                     dataUrl,
                 }),
                 "Atomist Aspect",
-                ["/lib/d3.v4.min.js", "/js/sunburst.js"]));
+                [
+                    "/lib/jquery-3.4.1.min.js",
+                    "/lib/d3.v4.min.js",
+                    "/js/sunburst.js"
+                ]));
         });
 
     };
@@ -276,7 +270,7 @@ export function jsonToQueryString(json: object): string {
 
 function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedFeature): string {
     if (idealIsDifferentFromActual(fingerprint)) {
-        return defaultedToDisplayableFingerprint(feature)(fingerprint.ideal.ideal);
+        return defaultedToDisplayableFingerprint(feature)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
     if (idealIsElimination(fingerprint)) {
         return "eliminate";
@@ -285,15 +279,15 @@ function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedF
 }
 
 function idealIsElimination(fingerprint: MelbaFingerprintForDisplay): boolean {
-    return fingerprint.ideal && fingerprint.ideal.ideal === undefined;
+    return !isConcreteIdeal(fingerprint.ideal);
 }
 
 function idealIsDifferentFromActual(fingerprint: MelbaFingerprintForDisplay): boolean {
-    return fingerprint.ideal && fingerprint.ideal.ideal !== undefined && fingerprint.ideal.ideal.sha !== fingerprint.sha;
+    return fingerprint.ideal && isConcreteIdeal(fingerprint.ideal) && fingerprint.ideal.ideal.sha !== fingerprint.sha;
 }
 
 function idealIsSameAsActual(fingerprint: MelbaFingerprintForDisplay): boolean {
-    return fingerprint.ideal && fingerprint.ideal.ideal !== undefined && fingerprint.ideal.ideal.sha === fingerprint.sha;
+    return fingerprint.ideal && isConcreteIdeal(fingerprint.ideal) && fingerprint.ideal.ideal.sha === fingerprint.sha;
 }
 
 function displayStyleAccordingToIdeal(fingerprint: MelbaFingerprintForDisplay): CSSProperties {

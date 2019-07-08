@@ -185,7 +185,7 @@ const commandLineParameters = yargs.argv as any;
 const owner = commandLineParameters.owner;
 const search = commandLineParameters.search;
 const query = commandLineParameters.query;
-const workspaceId = commandLineParameters.workspace || commandLineParameters.owner || "local";
+const workspaceId = commandLineParameters.workspace || "local";
 const source: "local" | "GitHub" = commandLineParameters.localDirectory ? "local" : "GitHub";
 const localDirectory = commandLineParameters.localDirectory ? path.resolve(commandLineParameters.localDirectory) : "";
 
