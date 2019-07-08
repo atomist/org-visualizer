@@ -81,9 +81,9 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .on('click', d => {
                 d3.event.stopPropagation();
                 const workspaceId = "local";
-                const setIdealLink = `<button 
+                const setIdealLink = `<button id="setIdeal"
                     onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
-                    >Set as ideal</button>`;
+                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay"></label>`;
                 let descriptionOfWhereYouClicked = `${d.data.name}`;
                 for (let place = d; place = place.parent; !!place) {
                     descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
@@ -169,13 +169,23 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
 
 function postSetIdeal(workspaceId, fingerprintId) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
+    const labelElement = document.getElementById("setIdealLabel");
     fetch(postUrl, { method: 'POST' }).then(response => {
         if (response.ok) {
             console.log("yay")
+            labelElement.textContent = "ideal set, woo";
+            labelElement.setAttribute("class", "success");
+            labelElement.setAttribute("display", "static");
         }
         else {
             console.log("oh no");
+            labelElement.textContent = "failed to set. consult the server logaments";
+            labelElement.setAttribute("class", "error");
         }
     },
-        e => console.log("boo"));
+        e => {
+            console.log("boo");
+            labelElement.textContent = "Network error";
+            labelElement.setAttribute("class", "error");
+        });
 }

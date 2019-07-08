@@ -86,6 +86,29 @@ svg .slice:hover textPath.textOutline {
     stroke-linejoin: round;
 }
 
+/*
+ * set ideal button stuff, on sunburst page
+ */
+
+label[for="setIdeal"] {
+    padding: 5px;
+    outline: 1px black solid;
+    margin: 5px;
+    display: inline-block;
+}
+
+label.nothingToSay {
+    display: none;
+}
+
+label.error {
+    color: red;
+}
+
+label.success {
+    color: green;
+}
+
 /* Collabsible content stuff 
  * https://alligator.io/css/collapsible/
  */
