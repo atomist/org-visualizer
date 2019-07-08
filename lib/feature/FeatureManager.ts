@@ -18,7 +18,8 @@ import { RemoteRepoRef } from "@atomist/automation-client";
 import {
     AtomicFeature,
     Feature,
-    FP, Ideal,
+    FP,
+    Ideal,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 

@@ -16,11 +16,15 @@
 
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    Ideal,
+    isConcreteIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
 import {
     Analyzed,
-    HasFingerprints, IdealStore,
+    HasFingerprints,
+    IdealStore,
 } from "../../../feature/FeatureManager";
 import {
     isProjectAnalysisResult,
