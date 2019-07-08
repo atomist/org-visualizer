@@ -17,6 +17,7 @@
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
+import { Analyzed, HasFingerprints } from "../../../feature/FeatureManager";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
@@ -32,7 +33,6 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
-import { Analyzed, HasFingerprints } from "../../../feature/FeatureManager";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
