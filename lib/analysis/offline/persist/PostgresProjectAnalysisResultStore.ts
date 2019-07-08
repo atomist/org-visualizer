@@ -17,7 +17,10 @@
 import { RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
-import { Analyzed, HasFingerprints } from "../../../feature/FeatureManager";
+import {
+    Analyzed,
+    HasFingerprints,
+} from "../../../feature/FeatureManager";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
