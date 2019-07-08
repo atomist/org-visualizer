@@ -135,8 +135,9 @@ export class DefaultFeatureManager implements FeatureManager {
         return this.opts.undesirableUsageChecker;
     }
 
-    public async findUndesirableUsages(hf: HasFingerprints): Promise<UndesirableUsage[]> {
-        return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker.check(fp))));
+    public async findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<UndesirableUsage[]> {
+        return _.flatten(await Promise.all(allFingerprints(hf).map(fp =>
+            this.undesirableUsageChecker.check(workspaceId, fp))));
     }
 
     get idealStore(): IdealStore {

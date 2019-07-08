@@ -23,7 +23,7 @@ import { TypeScriptVersionType } from "../feature/node/TypeScriptVersionFeature"
  * @type {UndesirableUsageChecker}
  */
 export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
-    async fp => fp.type === TypeScriptVersionType && fp.name === TypeScriptVersionType
+    async (wsid, fp) => fp.type === TypeScriptVersionType && fp.name === TypeScriptVersionType
         && fp.data.some(v => v.startsWith("2")) ?
         {
             severity: "warn",
@@ -31,14 +31,14 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
             message: "Old version of TypeScript",
         } :
         undefined,
-    async fp => fp.type === NpmDeps.name && fp.name === "axios" ?
+    async (wsid, fp) => fp.type === NpmDeps.name && fp.name === "axios" ?
         {
             severity: "warn",
             authority: "Christian",
             message: "Don't use Axios",
         } :
         undefined,
-    async fp => {
+    async (wsid, fp) => {
         if (fp.type === "tslintproperty" && fp.name === "rules:max-file-line-count") {
             try {
                 const obj = JSON.parse(fp.data);

@@ -52,7 +52,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
             .group({
                 name: "flags",
                 by: async hf => {
-                    const knownBad = await featureManager.findUndesirableUsages(hf);
+                    const knownBad = await featureManager.findUndesirableUsages("local", hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
                         "-" + knownBad.length;
@@ -61,7 +61,7 @@ export async function reportersAgainst(featureManager: FeatureManager,
             .group({
                 name: "violations",
                 by: async hf => {
-                    const knownBad = await featureManager.findUndesirableUsages(hf);
+                    const knownBad = await featureManager.findUndesirableUsages("local", hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
                         knownBad.map(bad => bad.message).join(",");

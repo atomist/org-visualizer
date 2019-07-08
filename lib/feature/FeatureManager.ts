@@ -51,7 +51,7 @@ export interface IdealStore {
     loadIdeals(workspaceId: string): Promise<Ideal[]>;
 }
 
-export type UndesirableUsageCheck = (fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
+export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
 
 /**
  * Function that can flag an issue with a fingerprint
@@ -198,7 +198,7 @@ export interface FeatureManager {
      */
     undesirableUsageChecker: UndesirableUsageChecker;
 
-    findUndesirableUsages(hf: HasFingerprints): Promise<UndesirableUsage[]>;
+    findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<UndesirableUsage[]>;
 
 }
 
@@ -209,9 +209,9 @@ export interface FeatureManager {
  */
 export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck[]): UndesirableUsageChecker {
     return {
-        check: async fp => {
+        check: async (workspaceId, fp) => {
             for (const f of checkers) {
-                const flagged = await f(fp);
+                const flagged = await f(workspaceId, fp);
                 if (flagged) {
                     return flagged;
                 }
