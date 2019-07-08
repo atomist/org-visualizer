@@ -23,7 +23,9 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 
 /**
- * Function that can return the desired ideal, if any, for a given fingerprint name
+ * Function that can return the desired ideal, if any, for a given fingerprint name.
+ * While a Feature can suggest multiple ideals in the suggestedIdeals method,
+ * there can only be one ideal recommended at any time.
  */
 export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<FP>>;
 
