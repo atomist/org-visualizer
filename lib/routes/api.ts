@@ -204,7 +204,7 @@ async function fingerprints(clientFactory: ClientFactory, workspaceId: string): 
             return {
                 name: row.fingerprintname,
                 type: row.featurename,
-                count: parseInt(row.appearsin),
+                count: parseInt(row.appearsin, 10),
             };
         });
     });
@@ -222,7 +222,7 @@ async function fingerprintsOfType(clientFactory: ClientFactory, type: string, wo
             return {
                 name: row.fingerprintname,
                 type,
-                count: parseInt(row.appearsin),
+                count: parseInt(row.appearsin, 10),
             };
         });
     });

@@ -101,7 +101,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
             .group({
                 name: "size",
                 by: ar => {
-                    const fp = ar.fingerprints.find(fp => fp.name === "git-recency");
+                    const fp = ar.fingerprints.find(f => f.name === "git-recency");
                     if (!fp) {
                         return "unknown";
                     }
@@ -120,7 +120,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
                 },
             })
             .renderWith(defaultAnalyzedRenderer(ar => {
-                const fp = ar.fingerprints.find(fp => fp.name === "git-recency");
+                const fp = ar.fingerprints.find(f => f.name === "git-recency");
                 if (!fp) {
                     return 1;
                 }
