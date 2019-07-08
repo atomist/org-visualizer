@@ -82,10 +82,9 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
                 d3.event.stopPropagation();
                 const workspaceId = "local";
                 const postUrl = `./api/v1/${workspaceId}/ideal/${d.data.id}`;
-                const setIdealLink = `<a 
-                    href="javascript:{}"
+                const setIdealLink = `<button 
                     onclick="$.post('${postUrl}')"
-                    >Set as ideal</a>`;
+                    >Set as ideal</button>`;
                 let descriptionOfWhereYouClicked = `${d.data.name}`;
                 for (let place = d; place = place.parent; !!place) {
                     descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
@@ -132,7 +131,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .text(d => d.data.name);
     });
 
-    function focusOn(d = {x0: 0, x1: 1, y0: 0, y1: 1}) {
+    function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
         // Reset to top-level if no data point specified
 
         const transition = svg.transition()
