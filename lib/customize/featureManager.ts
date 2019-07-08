@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { PossibleIdeal } from "@atomist/sdm-pack-fingerprints";
 import { DefaultFeatureManager } from "../feature/DefaultFeatureManager";
 import { chainUndesirableUsageCheckers } from "../feature/FeatureManager";
-import { Ideals } from "../feature/localStorage";
 import { features } from "./features";
-
-export type IdealStore = Record<string, PossibleIdeal>;
 
 export const featureManager = new DefaultFeatureManager({
         idealResolver: async name => {
-            return Ideals[name];
+            return undefined;
         },
         features,
         flags: chainUndesirableUsageCheckers(

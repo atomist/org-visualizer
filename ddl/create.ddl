@@ -46,6 +46,17 @@ CREATE TABLE IF NOT EXISTS repo_fingerprints (
   PRIMARY KEY (repo_snapshot_id, fingerprint_id)
 );
 
+-- For each name/feature_name combination, the ideal for the given workspace
+CREATE TABLE ideal_fingerprints (
+  name text NOT NULL,
+  feature_name text NOT NULL,
+  -- Workspace this ideal applies to
+  workspace_id varchar NOT NULL,
+  sha varchar NOT NULL,
+  data jsonb,
+  id varchar NOT NULL PRIMARY KEY
+);
+
 CREATE INDEX ON repo_snapshots (workspace_id);
 
 CREATE INDEX ON fingerprints (name);

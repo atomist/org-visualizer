@@ -19,7 +19,7 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Client } from "pg";
 import {
     Analyzed,
-    HasFingerprints,
+    HasFingerprints, IdealStore,
 } from "../../../feature/FeatureManager";
 import {
     isProjectAnalysisResult,
@@ -36,8 +36,9 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 
-export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore {
+export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
     public count(): Promise<number> {
         return doWithClient(this.clientFactory, async client => {
@@ -86,6 +87,37 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
 
     public async persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
         return this.persistAnalysisResults(isProjectAnalysisResult(repos) ? [repos] : repos);
+    }
+
+    public async storeIdeal(workspaceId: string, ideal: Ideal): Promise<void> {
+        if (isConcreteIdeal(ideal)) {
+            await doWithClient(this.clientFactory, async client => {
+                const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
+                await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
+values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+`, [workspaceId, id, ideal.ideal.name, ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+            });
+        } else {
+            throw new Error("Elimination ideals not yet supported");
+        }
+    }
+
+    public async fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
+        const rawRow = await doWithClient(this.clientFactory, async client => {
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
+            WHERE workspace_id = $1 AND feature_name = $2 AND name = $3)`, [workspaceId, type, name]);
+            return rows.rows.length === 1 ? rows.rows[0] : undefined;
+        });
+        if (!rawRow) {
+            return undefined;
+        }
+        if (!!rawRow.data) {
+            return {
+                ideal: rawRow,
+                reason: `Local database row ${rawRow.id}`,
+            }
+        }
+        throw new Error("Elimination ideals not yet supported");
     }
 
     private async persistAnalysisResults(

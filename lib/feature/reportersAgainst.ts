@@ -101,18 +101,19 @@ export async function reportersAgainst(featureManager: FeatureManager,
                     name: name + " ideal?",
                     by: async hf => {
                         const found = hf.fingerprints.find(fp => fp.name === name);
-                        const ideal = await featureManager.idealResolver(name);
-                        if (!ideal.ideal) {
-                            return !found ? `Yes (gone)` : "No (present)";
-                        }
-                        if (!found) {
-                            return undefined;
-                        }
-                        const feature = featureManager.featureFor(found.type);
-                        if (ideal && ideal.ideal) {
-                            return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
-                        }
-                        return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
+                        // const ideal = await featureManager.idealResolver(name);
+                        throw new Error("fix me");
+                        // if (!ideal.ideal) {
+                        //     return !found ? `Yes (gone)` : "No (present)";
+                        // }
+                        // if (!found) {
+                        //     return undefined;
+                        // }
+                        // const feature = featureManager.featureFor(found.type);
+                        // if (ideal && ideal.ideal) {
+                        //     return found.sha === ideal.ideal.sha ? `Yes (${defaultedToDisplayableFingerprint(feature)(ideal.ideal)})` : "No";
+                        // }
+                        // return !!found ? defaultedToDisplayableFingerprint(feature)(found) : undefined;
                     },
                 })
                 .renderWith(defaultAnalyzedRenderer());

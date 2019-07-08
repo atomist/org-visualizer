@@ -16,10 +16,6 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    FP,
-    PossibleIdeal,
-} from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -54,10 +50,10 @@ import {
     MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
 import { ManagedFeature } from "../feature/FeatureManager";
-import { setIdeal } from "../feature/localStorage";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { allManagedFingerprints } from "../feature/support/featureUtils";
 import { WellKnownReporters } from "./wellKnownReporters";
+import { Ideal } from "@atomist/sdm-pack-fingerprints";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -172,8 +168,9 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
         /* the /query page calls this */
         express.post("/setIdeal", ...handlers, async (req, res) => {
             logger.info("setting ideal " + JSON.stringify(req.body));
-            await setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
-            res.send(200);
+            //await setIdeal(req.body.fingerprintName, JSON.parse(req.body.stringifiedFP));
+            throw new Error("Not setting ideals yet")
+            //res.send(200);
         });
 
         /* the query page */
@@ -215,7 +212,7 @@ export function orgPage(store: ProjectAnalysisResultStore): ExpressCustomizer {
                 const feature = featureManager.featureFor(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-                function idealDisplayValue(ideal: PossibleIdeal): string | undefined {
+                function idealDisplayValue(ideal: Ideal): string | undefined {
                     if (ideal === undefined) {
                         return undefined;
                     }

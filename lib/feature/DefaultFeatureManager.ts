@@ -25,7 +25,7 @@ import {
     FeatureManager,
     FingerprintCensus,
     HasFingerprints,
-    IdealResolver,
+    IdealStore,
     ManagedFeature,
     UndesirableUsage,
     UndesirableUsageChecker,
@@ -148,12 +148,12 @@ export class DefaultFeatureManager implements FeatureManager {
         return _.flatten(await Promise.all(allFingerprints(hf).map(fp => this.undesirableUsageChecker(fp))));
     }
 
-    get idealResolver(): IdealResolver {
+    get idealResolver(): IdealStore {
         return this.opts.idealResolver;
     }
 
     constructor(private readonly opts: {
-        idealResolver: IdealResolver,
+        idealResolver: IdealStore,
         features: ManagedFeature[],
         flags: UndesirableUsageChecker,
     }) {

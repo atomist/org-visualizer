@@ -18,7 +18,7 @@ import { RemoteRepoRef } from "@atomist/automation-client";
 import {
     AtomicFeature,
     Feature,
-    FP,
+    FP, Ideal,
     PossibleIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 
@@ -27,7 +27,12 @@ import {
  * While a Feature can suggest multiple ideals in the suggestedIdeals method,
  * there can only be one ideal recommended at any time.
  */
-export type IdealResolver = (fingerprintName: string) => Promise<PossibleIdeal<FP>>;
+export interface IdealStore {
+
+    storeIdeal(workspaceId: string, ideal: Ideal): Promise<void>;
+
+    fetchIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
+}
 
 /**
  * Function that can flag an issue with a fingerprint
@@ -158,7 +163,7 @@ export interface FeatureManager {
     /**
      * Function that can resolve ideal status for this feature
      */
-    idealResolver: IdealResolver;
+    idealResolver: IdealStore;
 
     /**
      * Is this fingerprint flagged as bad?
