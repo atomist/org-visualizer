@@ -145,25 +145,25 @@ yargs
         description: "GitHub user or organization",
     })
     .option("search", {
-            required: false,
-            alias: 's',
-            requiresArg: true,
-            description: "Search within repository names"
-        }
+        required: false,
+        alias: 's',
+        requiresArg: true,
+        description: "Search within repository names"
+    }
     )
     .option("query", {
-            required: false,
-            alias: 'q',
-            requiresArg: true,
-            description: "GitHub query"
-        }
+        required: false,
+        alias: 'q',
+        requiresArg: true,
+        description: "GitHub query"
+    }
     )
     .option("workspace", {
-            required: false,
-            requiresArg: true,
-            alias: 'w',
-            description: "Name of Atomist workspace to store results under"
-        }
+        required: false,
+        requiresArg: true,
+        alias: 'w',
+        description: "Name of Atomist workspace to store results under"
+    }
     )
     .option("localDirectory", {
         required: false,

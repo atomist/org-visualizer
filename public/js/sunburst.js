@@ -157,12 +157,10 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
 
         moveStackToFront(d);
 
-        //
-
         function moveStackToFront(elD) {
             svg.selectAll('.slice').filter(d => d === elD)
                 .each(function (d) {
-                    this.parentNode.appendChild(this);
+                    this.parentNode.appendChild(this); // move all parents to the end of the line
                     if (d.parent) {
                         moveStackToFront(d.parent);
                     }
