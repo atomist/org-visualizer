@@ -76,17 +76,17 @@ export const configuration: Configuration = configure(async sdm => {
     ];
     const handlers = [];
 
-    registerCategories(DockerFrom, "docker");
-    registerCategories(DockerfilePath, "docker");
-    registerCategories(DockerPorts, "docker");
-    registerCategories(SpringBootStarterFeature, "java", "spring");
-    registerCategories(TypeScriptVersionFeature, "node");
-    registerCategories(NpmDeps, "node", "dependencies");
-    registerCategories(TravisScriptsFeature, "ci");
-    registerCategories(CiFeature, "ci");
-    registerCategories(JavaBuildFeature, "java");
-    registerCategories(SpringBootVersionFeature, "java", "spring");
-    registerCategories(DirectMavenDependenciesFeature, "java", "dependencies");
+    registerCategories(DockerFrom, "Docker");
+    registerCategories(DockerfilePath, "Docker");
+    registerCategories(DockerPorts, "Docker");
+    registerCategories(SpringBootStarterFeature, "Java");
+    registerCategories(TypeScriptVersionFeature, "Typescript");
+    registerCategories(NpmDeps, "Node.js");
+    // registerCategories(TravisScriptsFeature, "ci");
+    // registerCategories(CiFeature, "ci");
+    registerCategories(JavaBuildFeature, "Java");
+    registerCategories(SpringBootVersionFeature, "Java");
+    registerCategories(DirectMavenDependenciesFeature, "Java");
 
     if (mode === "online") {
         const pushImpact = new PushImpact();
@@ -110,51 +110,51 @@ export const configuration: Configuration = configure(async sdm => {
     }
 
 }, {
-    name: "Analysis Software Delivery Machine",
-    preProcessors: async cfg => {
+        name: "Analysis Software Delivery Machine",
+        preProcessors: async cfg => {
 
-        // Do not surface the single pushImpact goal set in every UI
-        cfg.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
-        // Use lazy project loader for this SDM
-        cfg.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
-        // Disable goal hooks from repos
-        cfg.sdm.goal = {
-            hooks: false,
-        };
-        // For safety we sign every goal
-        cfg.sdm.goalSigning = {
-            ...cfg.sdm.goalSigning,
-            scope: GoalSigningScope.All,
-        };
-
-        if (mode === "job") {
-            cfg.name = `${cfg.name}-job`;
-            cfg.ws.termination = {
-                graceful: true,
-                gracePeriod: 1000 * 60 * 10,
+            // Do not surface the single pushImpact goal set in every UI
+            cfg.sdm.tagGoalSet = async () => [{ name: "@atomist/sdm/internal" }];
+            // Use lazy project loader for this SDM
+            cfg.sdm.projectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
+            // Disable goal hooks from repos
+            cfg.sdm.goal = {
+                hooks: false,
             };
-        }
+            // For safety we sign every goal
+            cfg.sdm.goalSigning = {
+                ...cfg.sdm.goalSigning,
+                scope: GoalSigningScope.All,
+            };
 
-        return cfg;
-    },
-    postProcessors: [
-        configureHumio,
-        async cfg => {
-            const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
-            const featureManager = new DefaultFeatureManager({
-                idealStore: resultStore,
-                features: Features,
-                undesirableUsageChecker: demoUndesirableUsageChecker,
-            });
-            const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
-                    orgPage(featureManager, resultStore)] :
-                [];
+            if (mode === "job") {
+                cfg.name = `${cfg.name}-job`;
+                cfg.ws.termination = {
+                    graceful: true,
+                    gracePeriod: 1000 * 60 * 10,
+                };
+            }
 
-            cfg.http.customizers = [
-                ...staticPages,
-                api(sdmConfigClientFactory(cfg), resultStore, featureManager),
-            ];
             return cfg;
         },
-    ],
-});
+        postProcessors: [
+            configureHumio,
+            async cfg => {
+                const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
+                const featureManager = new DefaultFeatureManager({
+                    idealStore: resultStore,
+                    features: Features,
+                    undesirableUsageChecker: demoUndesirableUsageChecker,
+                });
+                const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
+                    orgPage(featureManager, resultStore)] :
+                    [];
+
+                cfg.http.customizers = [
+                    ...staticPages,
+                    api(sdmConfigClientFactory(cfg), resultStore, featureManager),
+                ];
+                return cfg;
+            },
+        ],
+    });
