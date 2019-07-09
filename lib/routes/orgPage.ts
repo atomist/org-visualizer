@@ -108,7 +108,9 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     .sort((a, b) => b.appearsIn - a.appearsIn)
                     .sort((a, b) => b.variants - a.variants);
 
-                fingerprintCensus.features = fingerprintCensus.features.filter(f => !!f.feature.displayName);
+                fingerprintCensus.features = fingerprintCensus.features
+                    .filter(f => !!f.feature.displayName)
+                    .filter(f => f.fingerprints.length > 0);
                 const importantFeatures = fingerprintCensus;
                 // const importantFeatures = features;
                 // relevantFingerprints(features, fp => fp.variants > 1);
