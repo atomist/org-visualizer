@@ -28,6 +28,17 @@ export interface SpringBootStarterFingerprint extends FP {
     data: VersionedArtifact;
 }
 
+/**
+ * Detect which Spring Boot starter dependencies are included in your projects,
+ * and which versions.
+ *
+ * This includes maven dependencies ending in "-starter"
+ *
+ * The fingerprint includes the whole
+ * [VersionedArtifact](https://atomist.github.io/sdm-pack-spring/interfaces/_lib_maven_versionedartifact_.versionedartifact.html)
+ *
+ * Only the version is displayed (or "inherited" if the version is empty).
+ */
 export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
     name: SpringBootStarterType,
     displayName: "Spring Boot Starter",
