@@ -173,7 +173,7 @@ function postSetIdeal(workspaceId, fingerprintId) {
     fetch(postUrl, { method: 'POST' }).then(response => {
         if (response.ok) {
             console.log("yay")
-            labelElement.textContent = "ideal set, woo";
+            labelElement.textContent = "ideal set!";
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         }
