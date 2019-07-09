@@ -20,9 +20,7 @@ export interface FeatureForDisplay {
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
-    importantFeatures: {
-        features: FeatureForDisplay[],
-    };
+    importantFeatures: FeatureForDisplay[];
     projects: ProjectForDisplay[];
 }
 
@@ -119,7 +117,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         <h2>Features</h2>
         <div className="importantFeatures">
             <ul>
-                {props.importantFeatures.features.map(displayImportantFeature)}
+                {props.importantFeatures.map(displayImportantFeature)}
             </ul>
         </div>
     </div>;
