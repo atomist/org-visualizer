@@ -41,7 +41,7 @@ export function ProjectList(props: ProjectListProps): React.ReactElement {
 }
 
 function collapsible(key: string, title: string, content: React.ReactElement, startOpen: boolean): React.ReactElement {
-    return <div className="wrap-collabsible owner-collapsible">
+    return <div className="wrap-collapsible owner-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={startOpen}></input>
         <label htmlFor={key} className="lbl-toggle">{title}</label>
         <div className="collapsible-content">

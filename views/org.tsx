@@ -69,7 +69,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
 
     const allLink: string = `./query?type=${f.feature.name}&name=*&byOrg=true`;
 
-    return <div className="wrap-collabsible feature-collapsible">
+    return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
         <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">

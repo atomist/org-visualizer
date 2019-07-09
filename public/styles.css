@@ -109,11 +109,11 @@ label.success {
     color: green;
 }
 
-/* Collabsible content stuff 
+/* Collapsible content stuff 
  * https://alligator.io/css/collapsible/
  */
 
-.wrap-collabsible {
+.wrap-collapsible {
     margin-bottom: 1.2rem 0;
     padding-bottom: 1rem;
 }
