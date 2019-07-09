@@ -10,17 +10,20 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
     variants: number;
 }
 
+export interface ManagedFeatureForDisplay {
+    name: string;
+    displayName?: string;
+}
+
 export interface FeatureForDisplay {
-    feature: {
-        name: string,
-        displayName?: string,
-    };
+    feature: ManagedFeatureForDisplay;
     fingerprints: FingerprintForDisplay[];
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
     importantFeatures: FeatureForDisplay[];
+    unfoundFeatures: ManagedFeatureForDisplay[];
     projects: ProjectForDisplay[];
 }
 
@@ -79,6 +82,25 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
             </div></div></div>;
 }
 
+function displayUnfoundFeatures(mfs: ManagedFeatureForDisplay[]): React.ReactElement {
+    if (mfs.length === 0) {
+        return <div></div>;
+    }
+    return <div>
+        <h2>Unseen Features</h2>
+        These features were not found in any project:
+        <ul>
+            {mfs.map(displayUnfoundFeature)}
+        </ul>
+    </div>;
+}
+
+function displayUnfoundFeature(mf: ManagedFeatureForDisplay, i: number): React.ReactElement {
+    return <li className="unfound">
+        {mf.displayName}
+    </li>;
+}
+
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
@@ -120,6 +142,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
                 {props.importantFeatures.map(displayImportantFeature)}
             </ul>
         </div>
+        {displayUnfoundFeatures(props.unfoundFeatures)}
     </div>;
 }
 

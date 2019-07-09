@@ -113,10 +113,15 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     .filter(f => !!f.feature.displayName)
                     .filter(f => f.fingerprints.length > 0);
 
+                const unfoundFeatures = fingerprintCensus.features
+                    .filter(f => f.fingerprints.length === 0)
+                    .map(f => f.feature);
+
                 res.send(renderStaticReactNode(OrgExplorer({
                     actionableFingerprints,
                     projectsAnalyzed: fingerprintCensus.projectsAnalyzed,
                     importantFeatures,
+                    unfoundFeatures,
                     projects: repos.map(r => ({ ...r.analysis.id, id: r.id })),
                 })));
             } catch (e) {
