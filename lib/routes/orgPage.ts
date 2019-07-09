@@ -43,6 +43,7 @@ import {
     ProjectList,
 } from "../../views/projectList";
 import {
+    CurrentIdealForDisplay,
     PossibleIdealForDisplay,
     SunburstQuery,
 } from "../../views/sunburstQuery";
@@ -173,7 +174,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
             let dataUrl: string;
-            let currentIdealForDisplay;
+            let currentIdealForDisplay: CurrentIdealForDisplay;
             const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
             let fingerprintDisplayName: string = "";
@@ -201,43 +202,27 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
 
                     dataUrl = !!req.query.filter ?
                         `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
-                        `/api/v1/${workspaceId}/fingerprint/${encodeURIComponent(req.query.type)}/${encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
+                        `/api/v1/${workspaceId}/fingerprint/${
+                        encodeURIComponent(req.query.type)}/${
+                        encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
                 }
 
                 // tslint:disable-next-line
                 const feature = featureManager.featureFor(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(fingerprintName);
 
-                function idealDisplayValue(ideal: Ideal): string | undefined {
-                    if (ideal === undefined) {
+                function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
+                    if (!ideal) {
                         return undefined;
                     }
                     if (!isConcreteIdeal(ideal)) {
-                        return "eliminate";
+                        return { displayValue: "eliminate" };
                     }
-                    try {
-                        return defaultedToDisplayableFingerprint(feature)(ideal.ideal);
-                    } catch (err) {
-                        logger.error("Could not display fingerprint: " + err);
-                        return JSON.stringify(ideal.ideal.data);
-                    }
+                    return { displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal) };
                 }
 
                 currentIdealForDisplay = idealDisplayValue(await featureManager.idealStore
                     .loadIdeal("local", req.query.type, fingerprintName));
-                if (!currentIdealForDisplay) {
-                    // TODO: this sucks
-                    // if (feature && feature.suggestedIdeals) {
-                    //     const possibleIdeals = await feature.suggestedIdeals(fingerprintName);
-                    //     for (const ideal of possibleIdeals) {
-                    //         possibleIdealsForDisplay.push({
-                    //             ...ideal,
-                    //             displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal),
-                    //             stringified: JSON.stringify(ideal),
-                    //         });
-                    //     }
-                    // }
-                }
             }
             logger.info("Data url=%s", dataUrl);
 

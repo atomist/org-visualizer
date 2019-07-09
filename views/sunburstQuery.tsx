@@ -1,7 +1,9 @@
 import * as React from "react";
 
 // tslint:disable-next-line:no-empty-interface
-export interface CurrentIdealForDisplay { }
+export interface CurrentIdealForDisplay {
+    displayValue: string;
+}
 
 export interface PossibleIdealForDisplay {
     url?: string;
@@ -20,7 +22,7 @@ export interface SunburstQueryProps {
 
 function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
     return <h2>
-        Current ideal: {currentIdeal}
+        Current ideal: {currentIdeal.displayValue}
     </h2>;
 }
 
@@ -36,22 +38,14 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
     </li>;
 }
 
-function displaySuggestedIdeals(possibleIdeals: PossibleIdealForDisplay[]): React.ReactElement {
-    return <ul>
-        {possibleIdeals.map(suggestedIdealListItem)}
-        <li key="other">Other: <input defaultValue="" /> <button type="submit">Set</button></li>
-    </ul>;
-}
-
 export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
 
     const d3ScriptCall = `<script>sunburst("${props.query || ""}", "${props.dataUrl}", window.innerWidth - 250, window.innerHeight - 100);</script>`;
 
-    const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) :
-        displaySuggestedIdeals(props.possibleIdeals);
+    const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) : "";
     return <div className="sunburst">
         <h1>{props.fingerprintDisplayName}</h1>
-        {/*{idealDisplay}*/}
+        {idealDisplay}
         <div className="wrapper">
             <div id="putSvgHere" className="sunburstSvg"></div>
             <div id="dataAboutWhatYouClicked" className="sunburstData">Click a slice to see its details</div>
