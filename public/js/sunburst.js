@@ -80,24 +80,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
             .append('g').attr('class', 'slice')
             .on('click', d => {
                 d3.event.stopPropagation();
-                const workspaceId = "local";
-                const setIdealLink = `<button id="setIdeal"
-                    onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
-                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay"></label>`;
-                let descriptionOfWhereYouClicked = `${d.data.name}`;
-                for (let place = d; place = place.parent; !!place) {
-                    descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
-                }
-                console.log("Clicked on " + d.data.name);
-                if (d.data.size === 1) {
-                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-                        `<br/><a href="${d.data.url}">${d.data.url}</a>`;
-                }
-                if (!!d.data.sha) {
-                    descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-                        "<br/>" + setIdealLink;
-                }
-                dataDiv.html(descriptionOfWhereYouClicked);
+                dataDiv.html(constructDescription(d));
                 focusOn(d);
             });
 
@@ -166,6 +149,27 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         }
     }
 };
+
+function constructDescription(d) {
+    const workspaceId = "local";
+    let descriptionOfWhereYouClicked = `${d.data.name}`;
+    for (let place = d; place = place.parent; !!place) {
+        descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
+    }
+    console.log("Clicked on " + d.data.name);
+    if (d.data.size === 1) {
+        descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
+            `<br/><a href="${d.data.url}">${d.data.url}</a>`;
+    }
+    if (!!d.data.sha) {
+        const setIdealLink = `<button id="setIdeal"
+                    onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
+                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay"></label>`;
+        descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
+            "<br/>" + setIdealLink;
+    }
+    return descriptionOfWhereYouClicked;
+}
 
 function postSetIdeal(workspaceId, fingerprintId) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
