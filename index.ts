@@ -60,56 +60,55 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 
 export const configuration: Configuration = configure(async sdm => {
 
-    const jobFeatures = [
-        DockerFrom,
-        DockerfilePath,
-        DockerPorts,
-        SpringBootStarterFeature,
-        TypeScriptVersionFeature,
-        NpmDeps,
-        TravisScriptsFeature,
-        StackFeature,
-        CiFeature,
-        JavaBuildFeature,
-        SpringBootVersionFeature,
-        DirectMavenDependenciesFeature,
-    ];
-    const handlers = [];
+        const jobFeatures = [
+            DockerFrom,
+            DockerfilePath,
+            DockerPorts,
+            SpringBootStarterFeature,
+            TypeScriptVersionFeature,
+            NpmDeps,
+            TravisScriptsFeature,
+            StackFeature,
+            CiFeature,
+            JavaBuildFeature,
+            SpringBootVersionFeature,
+            DirectMavenDependenciesFeature,
+        ];
+        const handlers = [];
 
-    registerCategories(DockerFrom, "Docker");
-    registerCategories(DockerfilePath, "Docker");
-    registerCategories(DockerPorts, "Docker");
-    registerCategories(SpringBootStarterFeature, "Java");
-    registerCategories(TypeScriptVersionFeature, "Typescript");
-    registerCategories(NpmDeps, "Node.js");
-    // registerCategories(TravisScriptsFeature, "ci");
-    // registerCategories(CiFeature, "ci");
-    registerCategories(JavaBuildFeature, "Java");
-    registerCategories(SpringBootVersionFeature, "Java");
-    registerCategories(DirectMavenDependenciesFeature, "Java");
+        registerCategories(DockerFrom, "Docker");
+        registerCategories(DockerfilePath, "Docker");
+        registerCategories(DockerPorts, "Docker");
+        registerCategories(SpringBootStarterFeature, "Java");
+        registerCategories(TypeScriptVersionFeature, "TypeScript");
+        registerCategories(NpmDeps, "Node.js");
+        registerCategories(JavaBuildFeature, "Java");
+        registerCategories(SpringBootVersionFeature, "Java");
+        registerCategories(DirectMavenDependenciesFeature, "Java");
 
-    if (mode === "online") {
-        const pushImpact = new PushImpact();
+        if (mode === "online") {
+            const pushImpact = new PushImpact();
 
-        sdm.addExtensionPacks(
-            fingerprintSupport({
-                pushImpactGoal: pushImpact,
-                features: jobFeatures,
-                handlers,
-            }));
+            sdm.addExtensionPacks(
+                fingerprintSupport({
+                    pushImpactGoal: pushImpact,
+                    features: jobFeatures,
+                    handlers,
+                }));
 
-        return {
-            analyze: {
-                goals: pushImpact,
-            },
-        };
-    } else {
-        sdm.addEvent(CreateFingerprintJob);
-        sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers));
-        return {};
-    }
+            return {
+                analyze: {
+                    goals: pushImpact,
+                },
+            };
+        } else {
+            sdm.addEvent(CreateFingerprintJob);
+            sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers));
+            return {};
+        }
 
-}, {
+    },
+    {
         name: "Analysis Software Delivery Machine",
         preProcessors: async cfg => {
 
@@ -147,7 +146,7 @@ export const configuration: Configuration = configure(async sdm => {
                     undesirableUsageChecker: demoUndesirableUsageChecker,
                 });
                 const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
-                    orgPage(featureManager, resultStore)] :
+                        orgPage(featureManager, resultStore)] :
                     [];
 
                 cfg.http.customizers = [
