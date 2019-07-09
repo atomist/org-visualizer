@@ -164,7 +164,7 @@ function constructDescription(d) {
     if (!!d.data.sha) {
         const setIdealLink = `<button id="setIdeal"
                     onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
-                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay"></label>`;
+                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay">&nbsp;</label>`;
         descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
             "<br/>" + setIdealLink;
     }
