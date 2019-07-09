@@ -163,7 +163,7 @@ input[type='checkbox'].sneaky {
 }
 
 .toggle:checked+.lbl-toggle+.collapsible-content {
-    max-height: 5000px;
+    max-height: none;
 }
 
 .toggle:checked+.lbl-toggle {
