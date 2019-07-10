@@ -136,7 +136,7 @@ export function api(clientFactory: ClientFactory,
         });
 
         // In memory queries against returns
-        express.get("/api/v1/:workspace/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             const repos = await store.loadWhere(whereFor(req));
 
             if (req.params.name === "skew") {
