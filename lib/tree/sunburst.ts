@@ -17,6 +17,7 @@
 import { logger } from "@atomist/automation-client";
 
 import * as _ from "lodash";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 
 export interface SunburstTree {
     name: string;
@@ -163,4 +164,19 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
 
     // console.log(JSON.stringify(result));
     return result;
+}
+
+export async function entropy(typeAndNameQuery: () => Promise<FP[]>): Promise<number> {
+    const fps: FP[] = await typeAndNameQuery();
+
+    const groups: Record<string, FP[]> = _.groupBy(fps, fp => fp.sha);
+
+    const total: number = fps.length;
+
+    return Object.values(groups).reduce(
+        (agg, fp: FP[]) => {
+            return agg + fp.length * Math.log(fp.length / total);
+        },
+        0,
+    );
 }
