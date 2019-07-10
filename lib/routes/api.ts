@@ -65,8 +65,8 @@ import {
  * Public API routes, returning JSON
  */
 export function api(clientFactory: ClientFactory,
-    store: ProjectAnalysisResultStore,
-    featureManager: FeatureManager): ExpressCustomizer {
+                    store: ProjectAnalysisResultStore,
+                    featureManager: FeatureManager): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
