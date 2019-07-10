@@ -80,7 +80,9 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
         <div className="collapsible-content">
             <div className="content-inner">
                 <ul>
+                    {f.fingerprints.length > 1 &&
                     <li key={"all" + i}>{about} <a href={allLink}>All of type</a></li>
+                    }
                     {f.fingerprints.map(fingerprintListItem)}
                 </ul>
             </div></div></div>;
