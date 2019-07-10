@@ -99,6 +99,11 @@ export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLea
     });
 }
 
+/**
+ * Return all terminals under this level
+ * @param {SunburstLevel} t
+ * @return {SunburstLeaf[]}
+ */
 export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
     const leaves: SunburstLeaf[] = [];
     visit(t, l => {
@@ -108,6 +113,10 @@ export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
         return true;
     });
     return leaves;
+}
+
+export function childCount(l: SunburstLevel): number {
+    return isSunburstTree(l) ? l.children.length : 0;
 }
 
 /**
