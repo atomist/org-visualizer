@@ -65,8 +65,8 @@ import {
  * Public API routes, returning JSON
  */
 export function api(clientFactory: ClientFactory,
-                    store: ProjectAnalysisResultStore,
-                    featureManager: FeatureManager): ExpressCustomizer {
+    store: ProjectAnalysisResultStore,
+    featureManager: FeatureManager): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -136,6 +136,7 @@ export function api(clientFactory: ClientFactory,
         });
 
         // In memory queries against returns
+        express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
         express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             const repos = await store.loadWhere(whereFor(req));
 
