@@ -23,6 +23,7 @@ import { ApolloGraphClient } from "@atomist/automation-client/lib/graph/ApolloGr
 import { isInLocalMode } from "@atomist/sdm-core";
 import { CorsOptions } from "cors";
 import * as exp from "express";
+import * as _ from "lodash";
 
 const PersonByIdentityQuery = `query PersonByIdentity {
   personByIdentity {
