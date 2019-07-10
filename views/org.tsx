@@ -13,6 +13,7 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
 export interface ManagedFeatureForDisplay {
     name: string;
     displayName?: string;
+    documentationUrl?: string;
 }
 
 export interface FeatureForDisplay {
@@ -70,14 +71,17 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
 
     const allLink: string = `./query?type=${f.feature.name}&name=*&byOrg=true`;
 
+    const about = !f.feature.documentationUrl ? "" :
+        <a href={f.feature.documentationUrl}>About</a>;
+
     return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
         <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">
             <div className="content-inner">
                 <ul>
+                    <li key={"all" + i}>{about} <a href={allLink}>All of type</a></li>
                     {f.fingerprints.map(fingerprintListItem)}
-                    <li><a href={allLink}>All of type</a></li>
                 </ul>
             </div></div></div>;
 }
@@ -96,8 +100,10 @@ function displayUnfoundFeatures(mfs: ManagedFeatureForDisplay[]): React.ReactEle
 }
 
 function displayUnfoundFeature(mf: ManagedFeatureForDisplay, i: number): React.ReactElement {
+    const link = !!mf.documentationUrl ?
+        <a href={mf.documentationUrl}>{mf.displayName}</a> : mf.displayName;
     return <li className="unfound">
-        {mf.displayName}
+        {link}
     </li>;
 }
 

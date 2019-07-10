@@ -19,6 +19,7 @@ import {
     FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
+import { DocumentedFeature } from "../DocumentedFeature";
 
 const PythonDirectDepType = "python-direct-dep";
 
@@ -28,9 +29,17 @@ export interface PythonDependency {
 }
 
 /**
- * Emits direct and transitive dependencies
+ * Find Python dependencies in requirements.txt
+ *
+ * Use this to find out what Python dependencies are declared
+ * in your project, and what versions are specified.
+ *
+ * This fingerprints each line that looks like a dependency.
+ * The entire line becomes the data of the fingerprint.
+ *
+ * The displayed value is the whole line, minus the name.
  */
-export const pythonDependenciesFeature: Feature = {
+export const pythonDependenciesFeature: Feature & DocumentedFeature = {
     name: PythonDirectDepType,
     displayName: "Python dependencies",
     extract: async p => {
@@ -47,6 +56,8 @@ export const pythonDependenciesFeature: Feature = {
         const version = fp.data.replace(fp.name, "");
         return version;
     },
+    documentationUrl:
+        "https://atomist-blogs.github.io/org-visualizer/modules/_lib_feature_python_pythondependenciesfeature_.html#pythondependenciesfeature",
 };
 
 export function findDependenciesFromRequirements(requirementsTxt: string): PythonDependency[] {

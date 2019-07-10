@@ -21,6 +21,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
+import { DocumentedFeature } from "../DocumentedFeature";
 
 const SpringBootStarterType = "spring-boot-starter";
 
@@ -39,7 +40,7 @@ export interface SpringBootStarterFingerprint extends FP {
  *
  * Only the version is displayed (or "inherited" if the version is empty).
  */
-export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
+export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> & DocumentedFeature = {
     name: SpringBootStarterType,
     displayName: "Spring Boot Starter",
     extract: async p => {
@@ -54,6 +55,8 @@ export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
     toDisplayableFingerprint: fp => {
         return fp.data.version || "inherited";
     },
+    documentationUrl:
+        "https://atomist-blogs.github.io/org-visualizer/modules/_lib_feature_spring_springbootstarterfeature_.html#springbootstarterfeature",
 };
 
 function createSpringBootStarterFingerprint(data: VersionedArtifact): SpringBootStarterFingerprint {

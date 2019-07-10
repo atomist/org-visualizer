@@ -25,13 +25,24 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { PackageJson } from "@atomist/sdm-pack-node";
 import * as _ from "lodash";
+import { DocumentedFeature } from "../DocumentedFeature";
 
 export const TypeScriptVersionType = "typescript-version";
 const PackageJsonName = "package.json";
 
-export const TypeScriptVersionFeature: Feature = {
+/**
+ * What version of TypeScript does each project build with?
+ *
+ * Each TypeScript project gets one fingerprint, containing
+ * the TypeScript version(s) declared as a dependency and/or devDependency.
+ * in package.json.
+ *
+ */
+export const TypeScriptVersionFeature: Feature & DocumentedFeature = {
     name: TypeScriptVersionType,
     displayName: "TypeScript Version",
+    documentationUrl:
+        "https://atomist-blogs.github.io/org-visualizer/modules/_lib_feature_node_typescriptversionfeature_.html#typescriptversionfeature",
 
     extract: async p => {
         if (!(await p.hasFile(PackageJsonName))) {
@@ -54,7 +65,7 @@ export const TypeScriptVersionFeature: Feature = {
                 type: TypeScriptVersionType,
                 name: TypeScriptVersionType,
                 abbreviation: "tsv",
-                version: "0.1.0",
+                version: "0.1.0", // of this fingerprint code
                 data: versions,
                 sha: sha256(JSON.stringify(versions)),
             };
