@@ -74,15 +74,17 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
     const about = !f.feature.documentationUrl ? "" :
         <a href={f.feature.documentationUrl}>About</a>;
 
+    const graphAll = f.fingerprints.length <= 1 ? "" : <a href={allLink}>All fingerprints</a>;
+
+    const summaryListItem = about || graphAll ? <li key={"all" + i}>{about} {graphAll}</li> : "";
+
     return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
         <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">
             <div className="content-inner">
                 <ul>
-                    {f.fingerprints.length > 1 &&
-                    <li key={"all" + i}>{about} <a href={allLink}>All of type</a></li>
-                    }
+                    {summaryListItem}
                     {f.fingerprints.map(fingerprintListItem)}
                 </ul>
             </div></div></div>;
