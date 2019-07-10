@@ -16,8 +16,8 @@
 
 import { logger } from "@atomist/automation-client";
 
-import * as _ from "lodash";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
 
 export interface SunburstTree {
     name: string;
