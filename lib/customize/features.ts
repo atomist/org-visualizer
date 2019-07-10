@@ -46,8 +46,8 @@ import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFea
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
 
 /**
- * The features managed by this SDM
- * @type {(Feature | TypeScriptVersionFeature | CodeOwnershipFeature | {extract: ExtractFingerprint<FPI extends FP>; displayName: string; name: string; selector: FingerprintSelector; apply?: ApplyFingerprint<FPI extends FP>; summary?: DiffSummaryFingerprint; comparators?: Array<FingerprintComparator<FPI extends FP>>; toDisplayableFingerprint?(fpi: FPI): string; toDisplayableFingerprintName?(fingerprintName: string): string; validate?(fpi: FPI): Promise<ReviewComment[]>; suggestedIdeals: {(fingerprintName: string): Promise<Array<PossibleIdeal<FPI extends FP>>>; (fingerprintName: string): Promise<Array<PossibleIdeal<FP>>>}} | TsLintPropertyFeature)[]}
+ * The features managed by this SDM.
+ * Modify this list to customize with your own features.
  */
 export const Features: ManagedFeature[] = [
     DockerFrom,

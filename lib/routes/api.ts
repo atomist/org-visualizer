@@ -35,7 +35,6 @@ import { getCategories } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import {
     FeatureManager,
-    IdealStore,
 } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
@@ -80,7 +79,7 @@ export function api(clientFactory: ClientFactory,
         express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
         express.post("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
             await featureManager.idealStore.setIdeal(req.params.workspace_id, req.params.id);
-            console.log(`Set ideal to ${req.params.id}`);
+            logger.info(`Set ideal to ${req.params.id}`);
             res.sendStatus(200);
         });
 
@@ -89,7 +88,7 @@ export function api(clientFactory: ClientFactory,
         express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
-                const fps = await fingerprints(clientFactory, workspaceId);
+                const fps = await fingerprintsInWorkspace(clientFactory, workspaceId);
                 logger.debug("Returning fingerprints for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
@@ -148,14 +147,14 @@ export function api(clientFactory: ClientFactory,
                     }
                 }
                 logger.info("Found %d fingerprints", fingerprints.length);
-                const data = await skewReport().toSunburstTree(() => fingerprints);
-                killChildren(data, (c, depth) => {
+                const skewTree = await skewReport().toSunburstTree(() => fingerprints);
+                killChildren(skewTree, (c, depth) => {
                     const leaves = leavesUnder(c);
                     logger.info("Found %d leaves under %s", leaves.length, c.name);
                     return leaves.length < 6;
                 });
-                trimOuterRim(data);
-                return res.json(data);
+                trimOuterRim(skewTree);
+                return res.json(skewTree);
             }
 
             if (req.params.name === "featureReport") {
@@ -167,8 +166,8 @@ export function api(clientFactory: ClientFactory,
                     }
                 }
                 logger.info("Found %d fingerprints", fingerprints.length);
-                const data = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
-                return res.json(data);
+                const featureTree = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
+                return res.json(featureTree);
             }
 
             const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
@@ -209,7 +208,7 @@ export interface FingerprintData {
     count: number;
 }
 
-async function fingerprints(clientFactory: ClientFactory, workspaceId: string): Promise<FingerprintData[]> {
+async function fingerprintsInWorkspace(clientFactory: ClientFactory, workspaceId: string): Promise<FingerprintData[]> {
     return doWithClient(clientFactory, async client => {
         const sql = `SELECT distinct f.name as fingerprintName, feature_name as featureName, count(rs.id) as appearsIn
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f

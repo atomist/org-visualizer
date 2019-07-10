@@ -103,17 +103,17 @@ export async function reportersAgainst(featureManager: FeatureManager,
                 .group({
                     name: name + " progress?",
                     by: async hf => {
-                        const name = params.name.replace("-progress", "");
-                        const found = hf.fingerprints.find(fp => fp.name === name && fp.type === params.type);
+                        const fingerprintName = params.name.replace("-progress", "");
+                        const found = hf.fingerprints.find(fp => fp.name === fingerprintName && fp.type === params.type);
                         if (!found) {
                             return undefined;
                         }
 
                         if (!ideal) {
-                            ideal = await featureManager.idealStore.loadIdeal("local", params.type, name);
+                            ideal = await featureManager.idealStore.loadIdeal("local", params.type, fingerprintName);
                         }
                         if (!ideal) {
-                            throw new Error(`No ideal for ${params.type}/${name}`);
+                            throw new Error(`No ideal for ${params.type}/${fingerprintName}`);
                         }
                         if (!isConcreteIdeal(ideal)) {
                             return !found ? `Yes (gone)` : "No (present)";
