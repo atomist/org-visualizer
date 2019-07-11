@@ -1,0 +1,17 @@
+subscription OnGitHubAppInstallation {
+    GitHubAppInstallation {
+        id
+        owner
+        ownerType
+        gitHubAppResourceProvider {
+            id
+            providerId
+            apiUrl
+            credential {
+                owner {
+                    login
+                }
+            }
+        }
+    }
+}

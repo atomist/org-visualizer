@@ -18,7 +18,6 @@ import {
     configurationValue,
     GraphQL,
     logger,
-    QueryNoCacheOptions,
     Success,
 } from "@atomist/automation-client";
 import {
@@ -31,6 +30,7 @@ import {
 import { bold } from "@atomist/slack-messages";
 import {
     OnDiscoveryJob,
+    OnGitHubAppInstallation,
     ReposByProvider,
 } from "../typings/types";
 import {
@@ -39,28 +39,31 @@ import {
 } from "./fingerprintTask";
 
 export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subscription> = {
-    name: "CreateFingerprintJob",
-    description: "Creates a job that calculates the fingerprints on every repo of an org",
-    subscription: GraphQL.subscription("OnDiscoveryJob"),
-    listener: async (e, ctx) => {
-        const job = e.data.AtmJob[0];
+        name: "CreateFingerprintJob",
+        description: "Creates a job that calculates the fingerprints on every repo of an org",
+        subscription: GraphQL.subscription("OnDiscoveryJob"),
+        listener: async (e, ctx) => {
+            const job = e.data.AtmJob[0];
 
-        if (job.name.startsWith("RepositoryDiscovery/zjlmxjzwhurspem")) {
+            if (job.name.startsWith("RepositoryDiscovery")) {
 
-            // Query all orgs and repos and create a Fingerprint command for each
-            const result = await ctx.graphClient.query<ReposByProvider.Query, ReposByProvider.Variables>({
-                name: "ReposByProvider",
-                variables: {
-                    providerId: "zjlmxjzwhurspem",
-                },
-            });
+                const event = JSON.parse(job.data) as OnGitHubAppInstallation.Subscription;
+                const org = event.GitHubAppInstallation[0];
+                const provider = event.GitHubAppInstallation[0].gitHubAppResourceProvider;
 
-            const orgs = result.Org.map(org => {
-                const provider = org.scmProvider;
-                return {
+                // Query all orgs and repos and create a Fingerprint command for each
+                const result = await ctx.graphClient.query<ReposByProvider.Query, ReposByProvider.Variables>({
+                    name: "ReposByProvider",
+                    variables: {
+                        providerId: provider.providerId,
+                        org: org.owner,
+                    },
+                });
+
+                const repos = {
                     providerId: provider.providerId,
                     name: org.owner,
-                    tasks: org.repos.map(repo => {
+                    tasks: result.Org[0].repos.map(repo => {
                         return {
                             providerId: provider.providerId,
                             repoId: repo.id,
@@ -70,31 +73,29 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
                         };
                     }),
                 };
-            });
 
-            const prefs: PreferenceStore = configurationValue<PreferenceStoreFactory>("sdm.preferenceStoreFactory")(ctx);
+                const prefs: PreferenceStore = configurationValue<PreferenceStoreFactory>("sdm.preferenceStoreFactory")(ctx);
 
-            for (const org of orgs) {
-                const analyzed = await prefs.get<boolean>(preferenceKey(org.name), { scope: PreferenceScope.Sdm, defaultValue: false });
+                const analyzed = await prefs.get<boolean>(preferenceKey(org.owner), { scope: PreferenceScope.Sdm, defaultValue: false });
                 if (!analyzed) {
                     try {
                         await createJob<CalculateFingerprintTaskParameters>({
                                 command: calculateFingerprintTask([], [], undefined),
-                                parameters: org.tasks,
-                                name: `OrganizationAnalysis/${org.providerId}/${org.name}`,
-                                description: `Analyzing repositories in ${bold(org.name)}`,
+                                parameters: repos.tasks,
+                                name: `OrganizationAnalysis/${provider.providerId}/${org.owner}`,
+                                description: `Analyzing repositories in ${bold(org.owner)}`,
                             },
                             ctx);
-                        await prefs.put<boolean>(preferenceKey(org.name), true, { scope: PreferenceScope.Sdm });
+                        await prefs.put<boolean>(preferenceKey(org.owner), true, { scope: PreferenceScope.Sdm });
                     } catch (e) {
-                        logger.warn("Failed to create job for org '%s': %s", org.name, e.message);
+                        logger.warn("Failed to create job for org '%s': %s", org.owner, e.message);
                     }
                 }
             }
-        }
-        return Success;
-    },
-};
+            return Success;
+        },
+    }
+;
 
 function preferenceKey(org: string): string {
     return `analyzed/${org}`;
