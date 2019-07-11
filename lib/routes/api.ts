@@ -85,7 +85,7 @@ export function api(clientFactory: ClientFactory,
                 logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
                 res.json(fingerprintUsage);
             } catch (e) {
-                logger.warn("Error occurred getting fingerprints: %s", e.message);
+                logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
                 res.sendStatus(500);
             }
         });
@@ -98,7 +98,7 @@ export function api(clientFactory: ClientFactory,
                 logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
-                logger.warn("Error occurred getting fingerprints: %s", e.message);
+                logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
                 res.sendStatus(500);
             }
         });
@@ -123,7 +123,7 @@ export function api(clientFactory: ClientFactory,
 
                 res.json(tree);
             } catch (e) {
-                logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);
+                logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
                 res.sendStatus(500);
             }
         });
@@ -165,7 +165,7 @@ export function api(clientFactory: ClientFactory,
                 const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
                 return res.json(data);
             } catch (e) {
-                logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);
+                logger.warn("Error occurred getting fingerprint: %s %s", e.message, e.stack);
                 res.sendStatus(500);
             }
         });
