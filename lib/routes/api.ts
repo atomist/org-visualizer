@@ -138,48 +138,53 @@ export function api(clientFactory: ClientFactory,
         // In memory queries against returns
         express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
         express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
-            const repos = await store.loadWhere(whereFor(req));
+            try {
+                const repos = await store.loadWhere(whereFor(req));
 
-            if (req.params.name === "skew") {
-                const fingerprints: FP[] = [];
-                for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
-                    if (!fingerprints.some(f => f.sha === fp.sha)) {
-                        fingerprints.push(fp);
+                if (req.params.name === "skew") {
+                    const fingerprints: FP[] = [];
+                    for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
+                        if (!fingerprints.some(f => f.sha === fp.sha)) {
+                            fingerprints.push(fp);
+                        }
                     }
+                    logger.info("Found %d fingerprints", fingerprints.length);
+                    const skewTree = await skewReport().toSunburstTree(() => fingerprints);
+                    killChildren(skewTree, (c, depth) => {
+                        const leaves = leavesUnder(c);
+                        logger.info("Found %d leaves under %s", leaves.length, c.name);
+                        return leaves.length < 6;
+                    });
+                    trimOuterRim(skewTree);
+                    return res.json(skewTree);
                 }
-                logger.info("Found %d fingerprints", fingerprints.length);
-                const skewTree = await skewReport().toSunburstTree(() => fingerprints);
-                killChildren(skewTree, (c, depth) => {
-                    const leaves = leavesUnder(c);
-                    logger.info("Found %d leaves under %s", leaves.length, c.name);
-                    return leaves.length < 6;
+
+                if (req.params.name === "featureReport") {
+                    const type = req.query.type;
+                    const fingerprints: FP[] = [];
+                    for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
+                        if (fp.type === type && !fingerprints.some(f => f.sha === fp.sha)) {
+                            fingerprints.push(fp);
+                        }
+                    }
+                    logger.info("Found %d fingerprints", fingerprints.length);
+                    const featureTree = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
+                    return res.json(featureTree);
+                }
+
+                const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
+                const allQueries = _.merge(featureQueries, WellKnownReporters);
+
+                const cannedQuery = allQueries[req.params.name]({
+                    ...req.query,
                 });
-                trimOuterRim(skewTree);
-                return res.json(skewTree);
+                const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
+                const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
+                return res.json(data);
+            } catch (e) {
+                logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stackTrace);
+                res.sendStatus(500);
             }
-
-            if (req.params.name === "featureReport") {
-                const type = req.query.type;
-                const fingerprints: FP[] = [];
-                for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
-                    if (fp.type === type && !fingerprints.some(f => f.sha === fp.sha)) {
-                        fingerprints.push(fp);
-                    }
-                }
-                logger.info("Found %d fingerprints", fingerprints.length);
-                const featureTree = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
-                return res.json(featureTree);
-            }
-
-            const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
-            const allQueries = _.merge(featureQueries, WellKnownReporters);
-
-            const cannedQuery = allQueries[req.params.name]({
-                ...req.query,
-            });
-            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-            return res.json(data);
         });
     };
 }
