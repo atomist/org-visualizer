@@ -26,6 +26,7 @@ import {
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
 import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
 import {
     FingerprintKind,
@@ -47,7 +48,6 @@ import {
     GitHubSearchResult,
     GitHubSpider,
 } from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
-import { FP } from "@atomist/sdm-pack-fingerprints";
 
 // tslint:disable
 const oneSearchResult: GitHubSearchResult = {
