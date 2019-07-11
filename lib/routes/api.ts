@@ -214,7 +214,11 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
         }
         const rows = await client.query(sql, params);
         return rows.rows.map(r => ({
-            ...r,
+            name: r.name,
+            type: r.type,
+            variants: +r.variants,
+            count: +r.count,
+            entropy: +r.entropy,
             // This is really confusing but the Feature.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));
