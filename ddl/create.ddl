@@ -16,6 +16,8 @@ DROP TABLE IF EXISTS fingerprints;
 
 DROP TABLE IF EXISTS repo_snapshots;
 
+DROP TABLE IF EXISTS fingerprint_analytics;
+
 CREATE TABLE repo_snapshots (
  id varchar NOT NULL PRIMARY KEY,
  workspace_id varchar NOT NULL,
@@ -46,6 +48,18 @@ CREATE TABLE IF NOT EXISTS repo_fingerprints (
   PRIMARY KEY (repo_snapshot_id, fingerprint_id)
 );
 
+-- This table must be kept up to date by application code
+-- whenever a fingerprint is inserted
+CREATE TABLE fingerprint_analytics (
+  name text NOT NULL,
+  feature_name text NOT NULL,
+  workspace_id varchar NOT NULL,
+  count numeric,
+  entropy numeric,
+  variants numeric,
+  PRIMARY KEY (name, feature_name, workspace_id)
+);
+
 -- For each name/feature_name combination, the ideal for the given workspace
 CREATE TABLE ideal_fingerprints (
   name text NOT NULL,
@@ -61,3 +75,6 @@ CREATE INDEX ON repo_snapshots (workspace_id);
 
 CREATE INDEX ON fingerprints (name);
 CREATE INDEX ON fingerprints (feature_name);
+
+CREATE INDEX ON fingerprint_analytics (workspace_id);
+

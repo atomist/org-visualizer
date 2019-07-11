@@ -107,6 +107,7 @@ export class GitHubSpider implements Spider {
         const analyzeResults = _.reduce(analyzeAndPersistResults,
             combineAnalyzeAndPersistResult,
             emptyAnalyzeAndPersistResult);
+        await opts.persister.computeAnalytics(opts.workspaceId);
         return {
             repositoriesDetected: repoCount,
             projectsDetected: analyzeResults.projectCount,

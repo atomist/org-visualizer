@@ -405,11 +405,17 @@ export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, para
         tb;
 }
 
-export function skewReport(): ReportBuilder<FP> {
+export function skewReport(fm: FeatureManager): ReportBuilder<FP> {
     return treeBuilder<FP>("skew")
         .group({
             name: "type",
-            by: fp => fp.type,
+            by: fp => {
+                // Suppress features without display names
+                const feature = fm.featureFor(fp.type);
+                return !!feature && feature.displayName ?
+                    feature.displayName :
+                    undefined;
+            },
         })
         .group({
             name: "name",

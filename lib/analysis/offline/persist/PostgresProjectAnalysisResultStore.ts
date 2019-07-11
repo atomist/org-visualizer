@@ -28,6 +28,7 @@ import {
     HasFingerprints,
     IdealStore,
 } from "../../../feature/FeatureManager";
+import { analyzeCohort } from "../../../tree/sunburst";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
@@ -40,6 +41,7 @@ import {
 import {
     combinePersistResults,
     emptyPersistResult,
+    FingerprintKind,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
@@ -95,6 +97,20 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         return this.persistAnalysisResults(isProjectAnalysisResult(repos) ? [repos] : repos);
     }
 
+    public async computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {
+        return calculateAndPersistEntropy(this.clientFactory, workspaceId, type, name);
+    }
+
+    public async distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
+        const sql = `SELECT distinct f.name, feature_name as type
+  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1`;
+        return doWithClient(this.clientFactory, async client => {
+            const result = await client.query(sql, [workspaceId]);
+            return result.rows;
+        });
+    }
+
     public async storeIdeal(workspaceId: string, ideal: Ideal): Promise<void> {
         if (isConcreteIdeal(ideal)) {
             await doWithClient(this.clientFactory, async client => {
@@ -104,8 +120,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
-                        workspaceId, id, ideal.ideal.name,
-                        ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+                    workspaceId, id, ideal.ideal.name,
+                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -155,6 +171,28 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
             WHERE id = $1`, [id]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
+    }
+
+    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
+        return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
+    }
+
+    public async computeAnalytics(workspaceId: string): Promise<void> {
+        const allFingerprints = await fingerprintsInWorkspace(this.clientFactory, workspaceId);
+        const fingerprintKinds = await this.distinctFingerprintKinds(workspaceId);
+
+        for (const kind of fingerprintKinds) {
+            const fingerprintsOfKind = allFingerprints.filter(f => f.type === kind.type && f.name === kind.name);
+            const cohortAnalysis = await analyzeCohort(async () => fingerprintsOfKind);
+            await doWithClient(this.clientFactory, async client => {
+                const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
+        values ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
+                const rows = await client.query(sql, [kind.type, kind.name, workspaceId,
+                    cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                return rows.rows;
+            });
+        }
     }
 
     private async persistAnalysisResults(
@@ -270,4 +308,61 @@ function idealRowToIdeal(rawRow: any): Ideal {
         return result;
     }
     throw new Error("Elimination ideals not yet supported");
+}
+
+/**
+ * Raw fingerprints in the workspace
+ * @return {Promise<FP[]>}
+ */
+async function fingerprintsInWorkspace(clientFactory: ClientFactory,
+                                       workspaceId: string,
+                                       type?: string,
+                                       name?: string): Promise<FP[]> {
+    return doWithClient(clientFactory, async client => {
+        const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
+  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
+  AND ${type ? "feature_name = $2" : "true"} AND ${type ? "f.name = $3" : "true"}`;
+        const params = [workspaceId];
+        if (!!type) {
+            params.push(type);
+        }
+        if (!!name) {
+            params.push(name);
+        }
+
+        const rows = await client.query(sql, params);
+        return rows.rows.map(row => {
+            return {
+                name: row.fingerprintname,
+                type: row.feature_name,
+                sha: row.sha,
+                data: row.data,
+            };
+        });
+    });
+}
+
+/**
+ * Calculate and persist entropy for one fingerprint kind
+ * @param {ClientFactory} clientFactory
+ * @param {string} workspaceId
+ * @param {string} type
+ * @param {string} name
+ * @return {Promise<void>}
+ */
+async function calculateAndPersistEntropy(clientFactory: ClientFactory,
+                                          workspaceId: string,
+                                          type: string,
+                                          name: string): Promise<void> {
+    const fingerprints = await fingerprintsInWorkspace(clientFactory, workspaceId, type, name);
+    const cohortAnalysis = await analyzeCohort(async () => fingerprints);
+    await doWithClient(clientFactory, async client => {
+        const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
+        values ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
+        const rows = await client.query(sql, [type, name, workspaceId, cohortAnalysis.entropy,
+            cohortAnalysis.variants, cohortAnalysis.count]);
+        return rows.rows;
+    });
 }

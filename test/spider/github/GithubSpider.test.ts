@@ -19,6 +19,7 @@ import {
     Project,
     RepoRef,
 } from "@atomist/automation-client";
+import { FP } from "@atomist/clj-editors";
 import { SdmContext } from "@atomist/sdm";
 import {
     Interpretation,
@@ -28,6 +29,7 @@ import {
 import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import * as assert from "assert";
 import {
+    FingerprintKind,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
@@ -111,7 +113,23 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return { attemptedCount: persisted, failed: [], succeeded: where };
     }
 
+    public computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {
+        return undefined;
+    }
+
+    public distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
+        return undefined;
+    }
+
+    public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
+        return undefined;
+    }
+
+    public async computeAnalytics(workspaceId: string): Promise<void> {
+    }
+
 }
+
 function opts(): SpiderOptions {
     return {
         // tslint:disable-next-line:no-object-literal-type-assertion
@@ -127,7 +145,8 @@ describe("GithubSpider", () => {
         const subject = new GitHubSpider(async function*(t, q) { },
         );
 
-        const result = await subject.spider(undefined, undefined, undefined);
+        const result = await subject.spider(undefined, undefined,
+            { persister: new FakeProjectAnalysisResultStore()} as any);
 
         assert.deepStrictEqual(result, EmptySpiderResult);
     });

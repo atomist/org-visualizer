@@ -16,10 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    Feature,
-    FP,
-} from "@atomist/sdm-pack-fingerprints";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -33,15 +30,14 @@ import {
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { getCategories } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
-import {
-    FeatureManager,
-} from "../feature/FeatureManager";
+import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     fingerprintsChildrenQuery,
     repoTree,
 } from "../feature/repoTree";
 import {
+    CohortAnalysis,
     killChildren,
     leavesUnder,
     splitBy,
@@ -88,9 +84,9 @@ export function api(clientFactory: ClientFactory,
         express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
-                const fps = await fingerprintsInWorkspace(clientFactory, workspaceId);
-                logger.debug("Returning fingerprints for '%s': %j", workspaceId, fps);
-                res.json(fps);
+                const fingerprintUsage: FingerprintUsage[] = await fingerprintUsageForType(clientFactory, workspaceId);
+                logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
+                res.json(fingerprintUsage);
             } catch (e) {
                 logger.warn("Error occurred getting fingerprints: %s", e.message);
                 res.sendStatus(500);
@@ -101,7 +97,7 @@ export function api(clientFactory: ClientFactory,
         express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
-                const fps = await fingerprintsOfType(clientFactory, req.params.type, workspaceId);
+                const fps = await fingerprintUsageForType(clientFactory, req.params.type, workspaceId);
                 logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
@@ -186,6 +182,12 @@ export function api(clientFactory: ClientFactory,
                 res.sendStatus(500);
             }
         });
+
+        // Calculate and persist entropy for this fingerprint
+        express.put("/api/v1/:workspace/entropy/:type/:name", ...handlers, async (req, res) => {
+            await store.computeAnalyticsForFingerprintKind(req.params.workspace, req.params.type, req.params.name);
+            res.sendStatus(201);
+        });
     };
 }
 
@@ -207,46 +209,23 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
 /**
  * Data about the use of a fingerprint in a workspace
  */
-export interface FingerprintData {
+export interface FingerprintUsage extends CohortAnalysis {
     name: string;
     type: string;
     categories: string[];
-    count: number;
 }
 
-async function fingerprintsInWorkspace(clientFactory: ClientFactory, workspaceId: string): Promise<FingerprintData[]> {
-    return doWithClient(clientFactory, async client => {
-        const sql = `SELECT distinct f.name as fingerprintName, feature_name as featureName, count(rs.id) as appearsIn
-  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  GROUP by feature_name, fingerprintName`;
-        const rows = await client.query(sql, [workspaceId]);
-        return rows.rows.map(row => {
-            return {
-                name: row.fingerprintname,
-                type: row.featurename,
-                categories: getCategories({ name: row.featurename }),
-                count: parseInt(row.appearsin, 10),
-            };
-        });
-    });
-}
-
-async function fingerprintsOfType(clientFactory: ClientFactory, type: string, workspaceId: string): Promise<FingerprintData[]> {
-    return doWithClient(clientFactory, async client => {
-        const sql = `SELECT distinct f.name as fingerprintName, count(rs.id) as appearsIn
-  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $2
-  AND f.feature_name = $1
-  GROUP by fingerprintName`;
-        const rows = await client.query(sql, [type, workspaceId]);
-        return rows.rows.map(row => {
-            return {
-                name: row.fingerprintname,
-                type,
-                categories: getCategories({ name: row.featurename }),
-                count: parseInt(row.appearsin, 10),
-            };
-        });
+async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
+    return doWithClient<FingerprintUsage[]>(clientFactory, async client => {
+        const sql = `SELECT name, feature_name as type, variants, count, entropy
+  from fingerprint_analytics f
+  WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
+  AND  ${type ? "f.feature_name = $2" : "true" }`;
+        const params = [workspaceId];
+        if (!!type) {
+            params.push(type);
+        }
+        const rows = await client.query(sql, params);
+        return rows.rows;
     });
 }
