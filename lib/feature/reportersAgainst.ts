@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
+import { FingerprintKind } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
-import {
-    defaultedToDisplayableFingerprint,
-    fingerprintsFrom,
-} from "./DefaultFeatureManager";
-import {
-    FeatureManager,
-    HasFingerprints,
-} from "./FeatureManager";
+import { defaultedToDisplayableFingerprint } from "./DefaultFeatureManager";
+import { FeatureManager } from "./FeatureManager";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
 
@@ -40,8 +32,9 @@ import { defaultAnalyzedRenderer } from "./support/groupingUtils";
  * 2. <fingerprintName>-present: Is this fingerprint name present in this repo? Returns for all repos
  * 3. <fingerprintName>-progress: Show progress toward the ideal for this fingerprint name
  */
-export async function reportersAgainst(featureManager: FeatureManager,
-                                       repos: HasFingerprints[] | AsyncIterable<HasFingerprints>): Promise<Reporters> {
+export async function reportersAgainst(
+    relevantFingerprintKinds: () => Promise<FingerprintKind[]>,
+    featureManager: FeatureManager): Promise<Reporters> {
     const reporters: Reporters = {};
 
     // Report bad fingerprints according to the FeatureManager
@@ -67,13 +60,10 @@ export async function reportersAgainst(featureManager: FeatureManager,
             })
             .renderWith(defaultAnalyzedRenderer());
 
-    for await (const fingerprint of fingerprintsFrom(repos)) {
-        const name = fingerprint.name;
-        if (reporters[fingerprint.name]) {
-            // Don't set it again
-            continue;
-        }
+    // TODO this assumes that names are unique
+    const kinds = await relevantFingerprintKinds();
 
+    for (const name of _.uniq(kinds.map(k => k.name))) {
         reporters[name] = params =>
             treeBuilderFor(name, params)
                 .group({

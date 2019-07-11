@@ -185,15 +185,15 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
             if (req.query.skew) {
                 dataUrl = `/api/v1/${workspaceId}/filter/skew`;
             } else {
-                const repos = await store.loadWhere(whereFor(req));
-
                 const fingerprintName = req.query.name.replace(/-ideal$/, "");
 
                 const queryString = jsonToQueryString(req.query);
                 if (req.query.name === "*") {
                     dataUrl = `/api/v1/${workspaceId}/filter/featureReport?${queryString}`;
                 } else {
-                    const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
+                    const featureQueries = await reportersAgainst(
+                        () => store.distinctFingerprintKinds(workspaceId),
+                        featureManager);
                     const allQueries = _.merge(featureQueries, WellKnownReporters);
                     const cannedQueryDefinition = allQueries[req.query.name];
                     if (!cannedQueryDefinition) {

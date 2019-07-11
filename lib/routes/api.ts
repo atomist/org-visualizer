@@ -144,18 +144,14 @@ export function api(clientFactory: ClientFactory,
 
                 if (req.params.name === "featureReport") {
                     const type = req.query.type;
-                    const fingerprints: FP[] = [];
-                    for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
-                        if (fp.type === type && !fingerprints.some(f => f.sha === fp.sha)) {
-                            fingerprints.push(fp);
-                        }
-                    }
+                    const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                     logger.info("Found %d fingerprints", fingerprints.length);
                     const featureTree = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
                     return res.json(featureTree);
                 }
 
-                const featureQueries = await reportersAgainst(featureManager, repos.map(r => r.analysis));
+                const featureQueries = await reportersAgainst(
+                    () => store.distinctFingerprintKinds(req.params.workspace_id), featureManager);
                 const allQueries = _.merge(featureQueries, WellKnownReporters);
 
                 const cannedQuery = allQueries[req.params.name]({

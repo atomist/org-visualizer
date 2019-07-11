@@ -21,7 +21,6 @@ import {
     PersistenceResult,
     SpiderFailure,
 } from "../spider/Spider";
-import { ClientFactory } from "./pgUtils";
 
 export interface PersistResult {
     attemptedCount: number;
@@ -90,6 +89,9 @@ export interface ProjectAnalysisResultStore {
      */
     computeAnalytics(workspaceId: string): Promise<void>;
 
+    /**
+     * Return all the fingerprints in this workspace, optionally narrowed by type and name
+     */
     fingerprintsInWorkspace(
         workspaceId: string,
         type?: string,
