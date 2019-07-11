@@ -34,6 +34,7 @@ import {
 import { FingerprintHandler } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { computeFingerprints } from "@atomist/sdm-pack-fingerprints/lib/machine/runner";
 import * as _ from "lodash";
+import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     IngestScmCommit,
     ScmCommitInput,
@@ -50,7 +51,8 @@ export type CalculateFingerprintTaskParameters = {
 };
 
 export function calculateFingerprintTask(fingerprinters: Feature[],
-                                         handlers: FingerprintHandler[])
+                                         handlers: FingerprintHandler[],
+                                         store: ProjectAnalysisResultStore)
     : CommandHandlerRegistration<CalculateFingerprintTaskParameters> {
     return {
         name: "CalculateFingerprintTask",
@@ -160,7 +162,13 @@ export function calculateFingerprintTask(fingerprinters: Feature[],
                     },
                 };
 
-                await fingerprintRunner(fingerprinters, handlers, computeFingerprints)(pi);
+                const fps = await fingerprintRunner(fingerprinters, handlers, computeFingerprints)(pi);
+                for await (const fp of fps) {
+                    await store.computeAnalyticsForFingerprintKind(
+                        ci.context.workspaceId,
+                        fp.type,
+                        fp.name);
+                }
             });
         },
     };

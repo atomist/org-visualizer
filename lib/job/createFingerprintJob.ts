@@ -79,7 +79,7 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
                 if (!analyzed) {
                     try {
                         await createJob<CalculateFingerprintTaskParameters>({
-                                command: calculateFingerprintTask([], []),
+                                command: calculateFingerprintTask([], [], undefined),
                                 parameters: org.tasks,
                                 name: `OrganizationAnalysis/${org.providerId}/${org.name}`,
                                 description: `Analyzing repositories in ${bold(org.name)}`,
