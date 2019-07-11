@@ -48,6 +48,7 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
+import { FingerprintUsage } from "./api";
 
 /**
  * Well known reporters against our repo cohort.
@@ -405,8 +406,23 @@ export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, para
         tb;
 }
 
-export function skewReport(fm: FeatureManager): ReportBuilder<FP> {
-    return treeBuilder<FP>("skew")
+export function skewReport(fm: FeatureManager): ReportBuilder<FingerprintUsage> {
+    return treeBuilder<FingerprintUsage>("entropy")
+        .group({
+            name: "entropy-band",
+            by: fp => {
+                if (fp.entropy > 2) {
+                    return "random (>2)";
+                }
+                if (fp.entropy > 1) {
+                    return "wild (>1)";
+                }
+                if (fp.entropy > .5) {
+                    return "loose (>.5)";
+                }
+                return undefined;
+            },
+        })
         .group({
             name: "type",
             by: fp => {
@@ -417,14 +433,10 @@ export function skewReport(fm: FeatureManager): ReportBuilder<FP> {
                     undefined;
             },
         })
-        .group({
-            name: "name",
-            by: fp => fp.name,
-        })
         .renderWith(fp => {
             return {
-                name: fp.sha,
-                size: 1,
+                name: `${fp.name} (${fp.entropy})`,
+                size: fp.variants,
             };
         });
 }

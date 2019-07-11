@@ -138,20 +138,10 @@ export function api(clientFactory: ClientFactory,
                 const repos = await store.loadWhere(whereFor(req));
 
                 if (req.params.name === "skew") {
-                    const fingerprints: FP[] = [];
-                    for await (const fp of fingerprintsFrom(repos.map(ar => ar.analysis))) {
-                        if (!fingerprints.some(f => f.sha === fp.sha)) {
-                            fingerprints.push(fp);
-                        }
-                    }
-                    logger.info("Found %d fingerprints", fingerprints.length);
-                    const skewTree = await skewReport(featureManager).toSunburstTree(() => fingerprints);
-                    killChildren(skewTree, (c, depth) => {
-                        const leaves = leavesUnder(c);
-                        logger.info("Found %d leaves under %s", leaves.length, c.name);
-                        return leaves.length < 6;
-                    });
-                    trimOuterRim(skewTree);
+                    const fingerprintUsage = await fingerprintUsageForType(clientFactory, req.params.workspace_id);
+                    logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
+                    const skewTree = await skewReport(featureManager).toSunburstTree(
+                         () => fingerprintUsage);
                     return res.json(skewTree);
                 }
 

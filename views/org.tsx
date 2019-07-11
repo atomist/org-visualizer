@@ -178,7 +178,7 @@ Conduct</a></li>
 
         <h3>Code</h3>
         <ul>
-            <li key="code-1"><a href="./query?skew=true&byOrg=true">Feature drift</a></li>
+            <li key="code-1"><a href="./query?skew=true&byOrg=true">Entropy explorer</a></li>
 
             <li key="code-2"><a href="./query?filter=true&name=featureCount&byOrg=true">Feature count by project</a></li>
 
