@@ -145,7 +145,7 @@ export function api(clientFactory: ClientFactory,
                         }
                     }
                     logger.info("Found %d fingerprints", fingerprints.length);
-                    const skewTree = await skewReport().toSunburstTree(() => fingerprints);
+                    const skewTree = await skewReport(featureManager).toSunburstTree(() => fingerprints);
                     killChildren(skewTree, (c, depth) => {
                         const leaves = leavesUnder(c);
                         logger.info("Found %d leaves under %s", leaves.length, c.name);
