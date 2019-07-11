@@ -1,4 +1,4 @@
-query ReposByProvider($providerId: String, $org: String!) {
+query ReposByProvider($providerId: String, $org: String) {
     Org(owner: $org) {
         owner
         repos {
