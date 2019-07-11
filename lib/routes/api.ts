@@ -138,7 +138,7 @@ export function api(clientFactory: ClientFactory,
                     const fingerprintUsage = await fingerprintUsageForType(clientFactory, req.params.workspace_id);
                     logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
                     const skewTree = await skewReport(featureManager).toSunburstTree(
-                         () => fingerprintUsage);
+                        () => fingerprintUsage);
                     return res.json(skewTree);
                 }
 
@@ -208,7 +208,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
         const sql = `SELECT name, feature_name as type, variants, count, entropy
   from fingerprint_analytics f
   WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  AND  ${type ? "f.feature_name = $2" : "true" }`;
+  AND  ${type ? "f.feature_name = $2" : "true"}`;
         const params = [workspaceId];
         if (!!type) {
             params.push(type);
