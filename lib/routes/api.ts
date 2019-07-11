@@ -199,7 +199,6 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
 export interface FingerprintUsage extends CohortAnalysis {
     name: string;
     type: string;
-    entropy: number;
     categories: string[];
 }
 
