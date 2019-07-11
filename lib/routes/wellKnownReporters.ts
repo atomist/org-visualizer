@@ -282,7 +282,7 @@ export const WellKnownReporters: Reporters<ProjectAnalysis> = {
 
         // Features found in this project
         featureCount: params =>
-            treeBuilderFor<ProjectAnalysis>("featureCount", params)
+            treeBuilderFor("featureCount", params)
                 .renderWith(ar => {
                     // TODO fix this using new support
                     const rendered = defaultAnalyzedRenderer()(ar);
