@@ -174,7 +174,7 @@ function constructDescription(d) {
 function postSetIdeal(workspaceId, fingerprintId) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
     const labelElement = document.getElementById("setIdealLabel");
-    fetch(postUrl, { method: 'POST' }).then(response => {
+    fetch(postUrl, { method: 'PUT' }).then(response => {
         if (response.ok) {
             console.log("yay")
             labelElement.textContent = "ideal set!";

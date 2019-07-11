@@ -28,7 +28,6 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { getCategories } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
@@ -38,11 +37,8 @@ import {
 } from "../feature/repoTree";
 import {
     CohortAnalysis,
-    killChildren,
-    leavesUnder,
     splitBy,
     SunburstTree,
-    trimOuterRim,
     visit,
 } from "../tree/sunburst";
 import {
@@ -73,10 +69,10 @@ export function api(clientFactory: ClientFactory,
         configureAuth(express);
 
         express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
-        express.post("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
+        express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
             await featureManager.idealStore.setIdeal(req.params.workspace_id, req.params.id);
             logger.info(`Set ideal to ${req.params.id}`);
-            res.sendStatus(200);
+            res.sendStatus(201);
         });
 
         // Return all fingerprints
