@@ -28,6 +28,7 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { getCategories } from "../customize/categories";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
@@ -198,6 +199,7 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
 export interface FingerprintUsage extends CohortAnalysis {
     name: string;
     type: string;
+    entropy: number;
     categories: string[];
 }
 
@@ -212,6 +214,10 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             params.push(type);
         }
         const rows = await client.query(sql, params);
-        return rows.rows;
+        return rows.rows.map(r => ({
+            ...r,
+            // This is really confusing but the Feature.name is feature_name alias type in the db
+            categories: getCategories({ name: r.type }),
+        }));
     });
 }
