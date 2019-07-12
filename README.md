@@ -87,6 +87,9 @@ You will need the following installed on your machine for the out of the box vis
 
 >You can start quickly by loading data from four open source organizations by running the script `load-demo-data.sh`.
 
+The `spider` command is part of this org-visualizer project.
+Add it to your path by running `npm link` in your clone of this repository.
+
 #### GitHub
 
 To analyze a GitHub organization, run the following command:
