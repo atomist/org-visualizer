@@ -23,6 +23,7 @@ import {
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
+import { getCategories } from "../../../customize/categories";
 import {
     Analyzed,
     HasFingerprints,
@@ -45,7 +46,6 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
-import { getCategories } from "../../../customize/categories";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
@@ -185,6 +185,11 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
 
     public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
         return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
+    }
+
+    public async fingerprintsForProject(snapshotId: string): Promise<FP[]> {
+        return fingerprintsForProject(this.clientFactory, snapshotId);
+
     }
 
     public async computeAnalytics(workspaceId: string): Promise<void> {
@@ -354,6 +359,25 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
     });
 }
 
+async function fingerprintsForProject(clientFactory: ClientFactory,
+                                      snapshotId: string): Promise<FP[]> {
+    return doWithClient(clientFactory, async client => {
+        const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
+  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
+  WHERE rs.id = $1 AND rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id
+  ORDER BY feature_name, fingerprintName ASC`;
+        const rows = await client.query(sql, [snapshotId]);
+        return rows.rows.map(row => {
+            return {
+                name: row.fingerprintname,
+                type: row.feature_name,
+                sha: row.sha,
+                data: row.data,
+            };
+        });
+    });
+}
+
 /**
  * Calculate and persist entropy for one fingerprint kind
  * @param {ClientFactory} clientFactory
@@ -403,7 +427,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
 }
 
 // TODO GitHub only
-function rowToRepoRef(row: { provider_id: string, owner: string, name: string, url: string, sha: string}): RemoteRepoRef {
+function rowToRepoRef(row: { provider_id: string, owner: string, name: string, url: string, sha: string }): RemoteRepoRef {
     return GitHubRepoRef.from({
         ...row,
         repo: row.name,

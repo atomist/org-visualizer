@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    FP,
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { FP, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     FeatureManager,
     HasFingerprints,
@@ -78,9 +73,8 @@ export class DefaultFeatureManager implements FeatureManager {
         return type ? this.features.find(f => f.name === type) : undefined;
     }
 
-    public async projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]> {
+    public async projectFingerprints(allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]> {
         const result = [];
-        const allFingerprintsInOneProject: FP[] = allFingerprints(par.analysis);
         for (const feature of this.features) {
             const originalFingerprints =
                 _.sortBy(allFingerprintsInOneProject.filter(fp => feature.name === (fp.type || fp.name)), fp => fp.name);

@@ -28,6 +28,7 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
+import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
 import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
@@ -48,7 +49,6 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 
 /**
  * Well known reporters against our repo cohort.

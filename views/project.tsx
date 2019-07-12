@@ -1,31 +1,30 @@
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
-import { Analyzed } from "../lib/feature/FeatureManager";
+import { ProjectAnalysisResult } from "../lib/analysis/ProjectAnalysisResult";
 
 type DisplayName = string;
 
-export interface FingerprintForDisplay {
+export interface ProjectFingerprintForDisplay {
     displayName: DisplayName;
     idealDisplayString: string;
     displayValue: string;
     style: React.CSSProperties;
 }
 
-export interface FeatureForDisplay {
+export interface ProjectFeatureForDisplay {
     feature: { displayName: DisplayName };
-    fingerprints: FingerprintForDisplay[];
+    fingerprints: ProjectFingerprintForDisplay[];
 }
 
 export interface ProjectExplorerProps {
-    analysis: Analyzed;
-    features: FeatureForDisplay[];
+    analysisResult: ProjectAnalysisResult;
+    features: ProjectFeatureForDisplay[];
 }
 
 export function ProjectExplorer(props: ProjectExplorerProps): React.ReactElement {
     return <div>
-        <h1>Project {props.analysis.id.owner}:{props.analysis.id.repo}</h1>
+        <h1>Project {props.analysisResult.repoRef.owner}:{props.analysisResult.repoRef.repo}</h1>
 
-        <a href={props.analysis.id.url}>Source</a>
+        <a href={props.analysisResult.repoRef.url}>Source</a>
 
         <h2>Architectural Concerns</h2>
 
@@ -33,7 +32,7 @@ export function ProjectExplorer(props: ProjectExplorerProps): React.ReactElement
     </div>;
 }
 
-function displayFeature(feature: FeatureForDisplay): React.ReactElement {
+function displayFeature(feature: ProjectFeatureForDisplay): React.ReactElement {
     return <div>
         <h3>{feature.feature.displayName}</h3>
         <ul>
@@ -42,7 +41,7 @@ function displayFeature(feature: FeatureForDisplay): React.ReactElement {
     </div>;
 }
 
-function displayFingerprint(fingerprint: FingerprintForDisplay): React.ReactElement {
+function displayFingerprint(fingerprint: ProjectFingerprintForDisplay): React.ReactElement {
     return <li style={fingerprint.style} key={fingerprint.displayName}>
         <i>{fingerprint.displayName}</i>: {fingerprint.displayValue}
         {" "} (Ideal: {fingerprint.idealDisplayString || "none"})

@@ -35,7 +35,7 @@ import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
 import { FeatureForDisplay, ManagedFeatureForDisplay, OrgExplorer } from "../../views/org";
 import {
-    ProjectExplorer,
+    ProjectExplorer, ProjectFeatureForDisplay,
 } from "../../views/project";
 import {
     ProjectForDisplay,
@@ -93,19 +93,12 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
             try {
-                // TODO get away from this
                 const repos = await store.loadWhere(whereFor(req));
 
                 const fingerprintUsage = await store.fingerprintUsageForType("*");
 
-                // fingerprintUsage.features.forEach(famf => {
-                //     famf.fingerprints = famf.fingerprints
-                //         .sort((a, b) => b.appearsIn - a.appearsIn)
-                //         .sort((a, b) => b.variants - a.variants);
-                // });
-
                 const actionableFingerprints = [];
-                //allManagedFingerprints(fingerprintCensus)
+                // allManagedFingerprints(fingerprintCensus)
                     // .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
                     // .sort((a, b) => b.appearsIn - a.appearsIn)
                     // .sort((a, b) => b.variants - a.variants);
@@ -157,7 +150,6 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         });
 
         /* the project page */
-        /*
         express.get("/project", ...handlers, async (req, res) => {
             const id = req.query.id;
             const analysisResult = await store.loadById(id);
@@ -165,10 +157,10 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 return res.send(`No project at ${JSON.stringify(id)}`);
             }
 
-            const featuresAndFingerprints = await featureManager.projectFingerprints(analysisResult);
+            const featuresAndFingerprints = await featureManager.projectFingerprints(await store.fingerprintsForProject(id));
 
             // assign style based on ideal
-            const ffd: FeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
+            const ffd: ProjectFeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
                 ...featureAndFingerprints,
                 fingerprints: featureAndFingerprints.fingerprints.map(fp => ({
                     ...fp,
@@ -178,11 +170,10 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
             }));
 
             return res.send(renderStaticReactNode(ProjectExplorer({
-                analysis: analysisResult.analysis,
+                analysisResult,
                 features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName),
             })));
         });
-*/
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {

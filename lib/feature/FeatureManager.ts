@@ -126,8 +126,8 @@ export interface FeatureManager {
      */
     featureFor(type: string): ManagedFeature | undefined;
 
-    // TODO this should go
-    projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]>;
+    // TODO does this UI logic belong here?
+    projectFingerprints(allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]>;
 
     /**
      * Function that can resolve ideal status for this feature

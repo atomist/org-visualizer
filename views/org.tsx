@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ProjectForDisplay, ProjectList } from "./projectList";
 import { CohortAnalysis } from "../lib/tree/sunburst";
+import { ProjectForDisplay, ProjectList } from "./projectList";
 
 export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     type: string;

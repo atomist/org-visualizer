@@ -16,12 +16,9 @@
 
 import { RepoRef } from "@atomist/automation-client";
 import { FP } from "@atomist/sdm-pack-fingerprints";
-import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
-import {
-    PersistenceResult,
-    SpiderFailure,
-} from "../spider/Spider";
 import { CohortAnalysis } from "../../../tree/sunburst";
+import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
+import { PersistenceResult, SpiderFailure } from "../spider/Spider";
 
 export interface PersistResult {
     attemptedCount: number;
@@ -108,4 +105,6 @@ export interface ProjectAnalysisResultStore {
         workspaceId: string,
         type?: string,
         name?: string): Promise<FP[]>;
+
+    fingerprintsForProject(id: string): Promise<FP[]>;
 }

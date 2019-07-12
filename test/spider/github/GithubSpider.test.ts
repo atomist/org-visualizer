@@ -14,40 +14,23 @@
  * limitations under the License.
  */
 
-import {
-    InMemoryProject,
-    Project,
-    RepoRef,
-} from "@atomist/automation-client";
+import { InMemoryProject, Project, RepoRef } from "@atomist/automation-client";
 import { SdmContext } from "@atomist/sdm";
-import {
-    Interpretation,
-    ProjectAnalysis,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { Interpretation, ProjectAnalysis, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
 import {
-    FingerprintKind, FingerprintUsage,
+    FingerprintKind,
+    FingerprintUsage,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { ScmSearchCriteria } from "../../../lib/analysis/offline/spider/ScmSearchCriteria";
-import {
-    EmptySpiderResult,
-    SpiderOptions,
-    SpiderResult,
-} from "../../../lib/analysis/offline/spider/Spider";
-import {
-    isProjectAnalysisResult,
-    ProjectAnalysisResult,
-} from "../../../lib/analysis/ProjectAnalysisResult";
+import { EmptySpiderResult, SpiderOptions, SpiderResult } from "../../../lib/analysis/offline/spider/Spider";
+import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../../lib/analysis/ProjectAnalysisResult";
 import { SubprojectStatus } from "../../../lib/analysis/subprojectFinder";
-import {
-    GitHubSearchResult,
-    GitHubSpider,
-} from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
+import { GitHubSearchResult, GitHubSpider } from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
 
 // tslint:disable
 const oneSearchResult: GitHubSearchResult = {
@@ -116,6 +99,11 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
     public fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
         return undefined;
     }
+
+    public fingerprintsForProject(snapshotId: string): Promise<[]> {
+        return undefined;
+    }
+
 
     public computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {
         return undefined;
