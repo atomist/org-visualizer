@@ -21,7 +21,7 @@ import {
     CodeOfConduct,
 } from "../../lib/element/codeOfConduct";
 
-describe("codeOfConductScanner", () => {
+describe("codeOfConduct", () => {
 
     it("should find no code of conduct", async () => {
         const p = InMemoryProject.of();

@@ -16,7 +16,7 @@
 
 import { Feature, sha256, TypedFP } from "@atomist/sdm-pack-fingerprints";
 
-export interface CodeOfConduct {
+export interface CodeOfConductData {
 
     /**
      * Content of the code of conduct
@@ -33,7 +33,7 @@ export interface CodeOfConduct {
  * Find a code of conduct in a repository if possible
  * @constructor
  */
-export const CodeOfConduct: Feature<TypedFP<CodeOfConduct>> = {
+export const CodeOfConduct: Feature<TypedFP<CodeOfConductData>> = {
     name: "code-of-conduct",
     displayName: "Code of conduct",
     extract: async p => {
