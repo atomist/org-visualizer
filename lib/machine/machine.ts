@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { Configuration, logger } from "@atomist/automation-client";
-import { PushImpactListener, SoftwareDeliveryMachine } from "@atomist/sdm";
-import { analyzerBuilder, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import {
+    Configuration,
+    logger,
+} from "@atomist/automation-client";
+import {
+    PushImpactListener,
+    SoftwareDeliveryMachine,
+} from "@atomist/sdm";
+import {
+    analyzerBuilder,
+    ProjectAnalyzer,
+} from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";

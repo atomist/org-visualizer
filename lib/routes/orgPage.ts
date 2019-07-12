@@ -17,7 +17,8 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
-    ConcreteIdeal, FP,
+    ConcreteIdeal,
+    FP,
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
