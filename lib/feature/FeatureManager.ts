@@ -15,7 +15,7 @@
  */
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import { AtomicFeature, Feature, FP, Ideal, } from "@atomist/sdm-pack-fingerprints";
+import { AtomicFeature, Feature, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.

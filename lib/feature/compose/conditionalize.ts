@@ -15,7 +15,7 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { Feature, } from "@atomist/sdm-pack-fingerprints";
+import { Feature } from "@atomist/sdm-pack-fingerprints";
 
 // TODO move to fingerprints pack
 

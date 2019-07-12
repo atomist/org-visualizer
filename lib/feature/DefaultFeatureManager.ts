@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FP, } from "@atomist/sdm-pack-fingerprints";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     FeatureManager,

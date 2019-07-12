@@ -23,6 +23,7 @@ import {
     filesFeature,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { CodeOfConductFeature } from "../element/codeOfConduct";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
 import {
     branchCount,
@@ -44,7 +45,6 @@ import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { CodeOfConductFeature } from "../element/codeOfConduct";
 
 /**
  * The features managed by this SDM.
