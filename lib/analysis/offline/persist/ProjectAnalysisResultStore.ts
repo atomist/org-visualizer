@@ -18,7 +18,10 @@ import { RepoRef } from "@atomist/automation-client";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { CohortAnalysis } from "../../../tree/sunburst";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
-import { PersistenceResult, SpiderFailure } from "../spider/Spider";
+import {
+    PersistenceResult,
+    SpiderFailure,
+} from "../spider/Spider";
 
 export interface PersistResult {
     attemptedCount: number;

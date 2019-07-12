@@ -31,7 +31,10 @@ import {
     Feature,
     fingerprintRunner,
 } from "@atomist/sdm-pack-fingerprints";
-import { FingerprintHandler, FP } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import {
+    FingerprintHandler,
+    FP,
+} from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { computeFingerprints } from "@atomist/sdm-pack-fingerprints/lib/machine/runner";
 import * as _ from "lodash";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";

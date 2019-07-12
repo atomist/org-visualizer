@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { FP, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    FP,
+    Ideal,
+    isConcreteIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     FeatureManager,

@@ -14,16 +14,34 @@
  * limitations under the License.
  */
 
-import { GitHubRepoRef, RemoteRepoRef, RepoRef } from "@atomist/automation-client";
+import {
+    GitHubRepoRef,
+    RemoteRepoRef,
+    RepoRef,
+} from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { ConcreteIdeal, FP, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
+import {
+    ConcreteIdeal,
+    FP,
+    Ideal,
+    isConcreteIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
 import { getCategories } from "../../../customize/categories";
-import { Analyzed, IdealStore } from "../../../feature/FeatureManager";
+import {
+    Analyzed,
+    IdealStore,
+} from "../../../feature/FeatureManager";
 import { analyzeCohort } from "../../../tree/sunburst";
-import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../ProjectAnalysisResult";
+import {
+    isProjectAnalysisResult,
+    ProjectAnalysisResult,
+} from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
-import { ClientFactory, doWithClient } from "./pgUtils";
+import {
+    ClientFactory,
+    doWithClient,
+} from "./pgUtils";
 import {
     combinePersistResults,
     emptyPersistResult,

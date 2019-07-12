@@ -33,9 +33,14 @@ import {
 } from "react";
 import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
-import { FeatureForDisplay, ManagedFeatureForDisplay, OrgExplorer } from "../../views/org";
 import {
-    ProjectExplorer, ProjectFeatureForDisplay,
+    FeatureForDisplay,
+    ManagedFeatureForDisplay,
+    OrgExplorer,
+} from "../../views/org";
+import {
+    ProjectExplorer,
+    ProjectFeatureForDisplay,
 } from "../../views/project";
 import {
     ProjectForDisplay,
