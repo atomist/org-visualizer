@@ -52,6 +52,7 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
+import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 
 /**
  * Public API routes, returning JSON
@@ -119,13 +120,19 @@ export function api(clientFactory: ClientFactory,
                     featureName: req.params.type,
                 });
                 logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
-                resolveFeatureNames(featureManager, tree);
                 if (!byName) {
-                    splitBy<{ owner: string }>(tree,
-                        l => _.get(l, "data.image"),
+                    splitBy<{ data: any, type: string }>(tree,
+                        l => {
+                            const feature: BaseFeature = featureManager.featureFor(l.type);
+                            if (!feature || !feature.toDisplayableFingerprintName) {
+                                return l.name;
+                            }
+                            return feature.toDisplayableFingerprintName(l.name);
+                        },
                         0,
-                        l => descendants(l).filter(n => !!_.get(n, "data.image")));
+                        l => descendants(l).filter(n => !!_.get(n, "sha")));
                 }
+                resolveFeatureNames(featureManager, tree);
                 if (req.query.byOrg === "true") {
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
