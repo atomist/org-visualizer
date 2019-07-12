@@ -70,7 +70,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 ...row,
                 repoRef: rowToRepoRef(row),
             }));
-        });
+        }, []);
     }
 
     public async loadById(id: string): Promise<ProjectAnalysisResult> {
@@ -118,7 +118,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         return doWithClient(this.clientFactory, async client => {
             const result = await client.query(sql, [workspaceId]);
             return result.rows;
-        });
+        }, []);
     }
 
     public fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
@@ -134,8 +134,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
-                    workspaceId, id, ideal.ideal.name,
-                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+                        workspaceId, id, ideal.ideal.name,
+                        ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -155,16 +155,14 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
     }
 
     public async loadIdeals(workspaceId: string): Promise<Ideal[]> {
-        const rawRows = await doWithClient(this.clientFactory, async client => {
+        return doWithClient(this.clientFactory, async client => {
             const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
             WHERE workspace_id = $1`, [workspaceId]);
-            return rows.rows;
-        });
-        if (!rawRows) {
-            // database access can fail
-            return [];
-        }
-        return rawRows.map(idealRowToIdeal);
+            if (!rows.rows) {
+                return [];
+            }
+            return rows.rows.map(idealRowToIdeal);
+        }, []);
     }
 
     public async loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
@@ -208,7 +206,7 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
                 const rows = await client.query(sql, [kind.type, kind.name, workspaceId,
-                    cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
                 return rows.rows;
             });
         }
@@ -216,8 +214,8 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
 
     private async persistAnalysisResults(
         analysisResultIterator: AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
-        const persistResults: PersistResult[] = [];
         return doWithClient(this.clientFactory, async client => {
+            const persistResults: PersistResult[] = [];
             for await (const analysisResult of analysisResultIterator) {
                 if (!analysisResult.analysis) {
                     throw new Error("Analysis is undefined!");
@@ -225,7 +223,7 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
                 persistResults.push(await this.persistOne(client, analysisResult));
             }
             return persistResults.reduce(combinePersistResults, emptyPersistResult);
-        });
+        }, emptyPersistResult);
     }
 
     private async persistOne(client: Client, analysisResult: ProjectAnalysisResult): Promise<PersistResult> {
@@ -361,7 +359,7 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                 data: row.data,
             };
         });
-    });
+    }, []);
 }
 
 async function fingerprintsForProject(clientFactory: ClientFactory,
@@ -380,7 +378,7 @@ async function fingerprintsForProject(clientFactory: ClientFactory,
                 data: row.data,
             };
         });
-    });
+    }, []);
 }
 
 /**
@@ -404,7 +402,7 @@ async function calculateAndPersistEntropy(clientFactory: ClientFactory,
         const rows = await client.query(sql, [type, name, workspaceId, cohortAnalysis.entropy,
             cohortAnalysis.variants, cohortAnalysis.count]);
         return rows.rows;
-    });
+    }, []);
 }
 
 async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
@@ -428,7 +426,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             // This is really confusing but the Feature.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));
-    });
+    }, []);
 }
 
 // TODO GitHub only

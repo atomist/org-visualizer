@@ -21,12 +21,19 @@ export type ClientFactory = () => Client;
 
 /**
  * Perform the given operations with a database client connection
+ *
+ * Connection errors result in an exception.
+ * Errors thrown by the passed-in function result are logged, and the
+ * provided defaultResult is returned (or else undefined).
+ *
  * @param {() => } clientFactory
- * @param {(c: ) => Promise<R>} what
+ * @param {(c: ) => Promise<R>} a function to run with the client
+ * @param {R} defaultResult return this in case of error (if not provided, return undefined)
  * @return {Promise<R>}
  */
 export async function doWithClient<R>(clientFactory: () => Client,
-                                      what: (c: Client) => Promise<R>): Promise<R> {
+                                      what: (c: Client) => Promise<R>,
+                                      defaultResult?: R): Promise<R> {
     const client = clientFactory();
     let result: R;
     try {
@@ -38,6 +45,7 @@ export async function doWithClient<R>(clientFactory: () => Client,
         result = await what(client);
     } catch (err) {
         logger.warn("Error accessing database: ", err);
+        return defaultResult;
     } finally {
         client.end();
     }
