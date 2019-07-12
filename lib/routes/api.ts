@@ -35,6 +35,7 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
+    mergeSiblings,
     splitBy,
     SunburstTree,
     visit,
@@ -106,7 +107,7 @@ export function api(clientFactory: ClientFactory,
             try {
                 const tree = await repoTree({
                     clientFactory,
-                    query: fingerprintsChildrenQuery(whereFor(req), req.query.otherLabel),
+                    query: fingerprintsChildrenQuery(whereFor(req), req.query.otherLabel === "true"),
                     rootName: req.params.name,
                     featureName: req.params.type,
                 });
@@ -116,6 +117,11 @@ export function api(clientFactory: ClientFactory,
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
                     splitBy<{ owner: string }>(tree, l => l.owner, 1);
+                }
+                if (req.query.presence === "true") {
+                    mergeSiblings(tree,
+                        parent => parent.children.some(c => (c as any).sha),
+                        kid => (kid as any).sha ? "Yes" : "No");
                 }
 
                 res.json(tree);

@@ -114,7 +114,7 @@ function displayUnfoundFeature(mf: ManagedFeatureForDisplay, i: number): React.R
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
-    const existsLink: string = `./query?filter=true&type=${f.type}&name=${f.name}-present&byOrg=true`;
+    const existsLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true&presence=true&otherLabel=true`;
 
     return <li key={displayName}>
         <i>{displayName}</i>: {f.count} projects, {" "}

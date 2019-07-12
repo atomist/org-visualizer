@@ -61,6 +61,29 @@ export function killChildren(t: SunburstTree, toTerminate: (tl: SunburstTree, de
     });
 }
 
+export function mergeSiblings(t: SunburstTree,
+                              selector: (l: SunburstTree) => boolean,
+                              grouper: (l: SunburstLevel) => string): void {
+    visit(t, (l, depth) => {
+        if (isSunburstTree(l) && selector(l)) {
+            const grouped: Record<string, SunburstLevel[]> = _.groupBy(l.children, grouper);
+            l.children = [];
+            for (const name of Object.keys(grouped)) {
+                let children: SunburstLevel[] = _.flatten(grouped[name]);
+                if (name === "No") {
+                    children = _.flatten(children.map(c => childrenOf(c)));
+                }
+                l.children.push({
+                    name,
+                    children,
+                });
+            }
+            return false;
+        }
+        return true;
+    });
+}
+
 /**
  * Trim the outer rim, replacing the next one with sized leaves
  * @param {SunburstTree} t
@@ -119,6 +142,11 @@ export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
 export function childCount(l: SunburstLevel): number {
     return isSunburstTree(l) ? l.children.length : 0;
 }
+
+export function childrenOf(l: SunburstLevel): SunburstLevel[] {
+    return isSunburstTree(l) ? l.children : [];
+}
+
 
 /**
  * Merge these trees. They must have the same name.

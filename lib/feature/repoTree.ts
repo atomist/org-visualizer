@@ -40,7 +40,7 @@ export interface TreeQuery {
  */
 function without(whereClause: string) {
     return `UNION ALL
-            SELECT  $1 as name, null as sha, null as data, $1 as type,
+            SELECT  null as id, $1 as name, null as sha, null as data, $1 as type,
             (
            SELECT json_agg(row_to_json(repo))
            FROM (
@@ -57,7 +57,7 @@ function without(whereClause: string) {
 
 // Returns children
 export function fingerprintsChildrenQuery(whereClause: string, includeWithout: boolean) {
-    return `
+    const sql = `
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
        SELECT
@@ -76,6 +76,8 @@ FROM (
          ${includeWithout ? without(whereClause) : ""}
 ) fp) as fingerprint_groups
 `;
+    logger.debug("Running SQL\n%s", sql);
+    return sql;
 }
 
 /**
