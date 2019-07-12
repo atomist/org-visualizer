@@ -15,7 +15,7 @@
  */
 
 import { ReportBuilder } from "../tree/TreeBuilder";
-import { Analyzed } from "./FeatureManager";
+import { Analyzed } from "./AspectRegistry";
 
 /**
  * Options for report generation

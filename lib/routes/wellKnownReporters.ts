@@ -31,11 +31,11 @@ import * as path from "path";
 import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
 import { PackageLock } from "../element/packageLock";
-import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import {
     Analyzed,
-    FeatureManager,
-} from "../feature/FeatureManager";
+    AspectRegistry,
+} from "../feature/AspectRegistry";
+import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
 import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {
@@ -406,7 +406,7 @@ export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, para
         tb;
 }
 
-export function skewReport(fm: FeatureManager): ReportBuilder<FingerprintUsage> {
+export function skewReport(fm: AspectRegistry): ReportBuilder<FingerprintUsage> {
     return treeBuilder<FingerprintUsage>("entropy")
         .group({
             name: "entropy-band",
@@ -427,7 +427,7 @@ export function skewReport(fm: FeatureManager): ReportBuilder<FingerprintUsage> 
             name: "type",
             by: fp => {
                 // Suppress features without display names
-                const feature = fm.featureFor(fp.type);
+                const feature = fm.aspectOf(fp.type);
                 return !!feature && feature.displayName ?
                     feature.displayName :
                     undefined;
@@ -444,14 +444,14 @@ export function skewReport(fm: FeatureManager): ReportBuilder<FingerprintUsage> 
 /**
  * Report on all fingerprints of a particular type
  */
-export function featureReport(type: string, fm: FeatureManager, allMatching: FP[]): ReportBuilder<FP> {
+export function featureReport(type: string, fm: AspectRegistry, allMatching: FP[]): ReportBuilder<FP> {
     return treeBuilder<FP>(type)
         .group({
             name: "name",
             by: fp => fp.type === type ? fp.name : undefined,
         })
         .renderWith(fp => {
-            const feature = fm.featureFor(fp.type);
+            const feature = fm.aspectOf(fp.type);
             return {
                 name: feature ? feature.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
                 size: allMatching.filter(a => fp.sha === a.sha).length,

@@ -25,6 +25,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { CodeOfConductFeature } from "../element/codeOfConduct";
 import { CodeOwnershipFeature } from "../element/codeOwnership";
+import { ManagedAspect } from "../feature/AspectRegistry";
 import {
     branchCount,
     fileCountFeature,
@@ -35,7 +36,6 @@ import {
     StackFeature,
 } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/conditionalize";
-import { ManagedFeature } from "../feature/FeatureManager";
 import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
@@ -50,7 +50,7 @@ import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
  * The features managed by this SDM.
  * Modify this list to customize with your own features.
  */
-export const Features: ManagedFeature[] = [
+export const Features: ManagedAspect[] = [
     DockerFrom,
     DockerfilePath,
     DockerPorts,

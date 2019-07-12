@@ -19,7 +19,6 @@ import {
     FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
-import { DocumentedFeature } from "../DocumentedFeature";
 
 const PythonDirectDepType = "python-direct-dep";
 
@@ -39,7 +38,7 @@ export interface PythonDependency {
  *
  * The displayed value is the whole line, minus the name.
  */
-export const pythonDependenciesFeature: Feature & DocumentedFeature = {
+export const pythonDependenciesFeature: Feature = {
     name: PythonDirectDepType,
     displayName: "Python dependencies",
     extract: async p => {

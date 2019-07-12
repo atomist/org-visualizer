@@ -16,7 +16,7 @@
 
 import { RemoteRepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { Analyzed } from "../feature/FeatureManager";
+import { Analyzed } from "../feature/AspectRegistry";
 
 export interface SubprojectDescription {
     path: string;

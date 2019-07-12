@@ -63,7 +63,7 @@ export const PermitAllUsageChecker: UndesirableUsageChecker = {
 };
 
 export interface FingerprintsWithManagingFeature<ProcessedFingerprint> {
-    feature: ManagedFeature;
+    feature: ManagedAspect;
     fingerprints: ProcessedFingerprint[];
 }
 
@@ -83,7 +83,7 @@ export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 /**
  * Type of feature we can manage
  */
-export type ManagedFeature<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI>;
+export type ManagedAspect<FPI extends FP = FP> = Feature<FPI> | AtomicFeature<FPI>;
 
 /**
  * Flag for an undesirable usage
@@ -112,17 +112,17 @@ export interface UndesirableUsage {
 /**
  * Manage a number of features.
  */
-export interface FeatureManager {
+export interface AspectRegistry {
 
     /**
      * All the features we are managing
      */
-    readonly features: ManagedFeature[];
+    readonly features: ManagedAspect[];
 
     /**
      * Find the feature that manages fingerprints of this type
      */
-    featureFor(type: string): ManagedFeature | undefined;
+    aspectOf(type: string): ManagedAspect | undefined;
 
     /**
      * Function that can resolve ideal status for this feature

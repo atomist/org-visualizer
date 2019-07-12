@@ -11,15 +11,15 @@ export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     featureName: string;
 }
 
-export interface FeatureForDisplay {
+export interface AspectForDisplay {
     feature: BaseFeature;
     fingerprints: FingerprintForDisplay[];
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
-    importantFeatures: FeatureForDisplay[];
-    unfoundFeatures: BaseFeature[];
+    importantAspects: AspectForDisplay[];
+    unfoundAspects: BaseFeature[];
     projects: ProjectForDisplay[];
 }
 
@@ -60,7 +60,7 @@ function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     return result;
 }
 
-function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactElement {
+function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElement {
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
 
@@ -84,7 +84,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
             </div></div></div>;
 }
 
-function displayUnfoundFeatures(mfs: BaseFeature[]): React.ReactElement {
+function displayUnfoundAspects(mfs: BaseFeature[]): React.ReactElement {
     if (mfs.length === 0) {
         return <div></div>;
     }
@@ -92,12 +92,12 @@ function displayUnfoundFeatures(mfs: BaseFeature[]): React.ReactElement {
         <h2>Unseen Aspects</h2>
         These aspects were not found in any project:
         <ul>
-            {mfs.map(displayUnfoundFeature)}
+            {mfs.map(displayUnfoundAspect)}
         </ul>
     </div>;
 }
 
-function displayUnfoundFeature(mf: BaseFeature, i: number): React.ReactElement {
+function displayUnfoundAspect(mf: BaseFeature, i: number): React.ReactElement {
     const link = !!mf.documentationUrl ?
         <a href={mf.documentationUrl}>{mf.displayName}</a> : mf.displayName;
     return <li className="unfound">
@@ -118,7 +118,7 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     </li>;
 }
 
-export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
+export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div><h2>No projects analyzed</h2>
             To investigate some projects, run `npm link` and then `spider --owner atomist`<br></br>
@@ -143,10 +143,10 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         <h2>Aspects</h2>
         <div className="importantFeatures">
             <ul>
-                {props.importantFeatures.map(displayImportantFeature)}
+                {props.importantAspects.map(displayImportantAspect)}
             </ul>
         </div>
-        {displayUnfoundFeatures(props.unfoundFeatures)}
+        {displayUnfoundAspects(props.unfoundAspects)}
     </div>;
 }
 
@@ -154,7 +154,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
 
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
-        {displayFeatures(props)}
+        {displayAspects(props)}
 
         <h2>Common queries</h2>
 

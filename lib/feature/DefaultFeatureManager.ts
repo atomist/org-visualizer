@@ -17,13 +17,13 @@
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
-    FeatureManager,
+    AspectRegistry,
     HasFingerprints,
     IdealStore,
-    ManagedFeature,
+    ManagedAspect,
     UndesirableUsage,
     UndesirableUsageChecker,
-} from "./FeatureManager";
+} from "./AspectRegistry";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     return _.flatMap(toArray(ar), a => a.fingerprints);
@@ -52,13 +52,13 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
 /**
  * Features must have unique names
  */
-export class DefaultFeatureManager implements FeatureManager {
+export class DefaultFeatureManager implements AspectRegistry {
 
     get features() {
         return this.opts.features;
     }
 
-    public featureFor(type: string): ManagedFeature | undefined {
+    public aspectOf(type: string): ManagedAspect | undefined {
         return type ? this.features.find(f => f.name === type) : undefined;
     }
 
@@ -77,7 +77,7 @@ export class DefaultFeatureManager implements FeatureManager {
 
     constructor(private readonly opts: {
         idealStore: IdealStore,
-        features: ManagedFeature[],
+        features: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
     }) {
         opts.features.forEach(f => {
@@ -88,10 +88,10 @@ export class DefaultFeatureManager implements FeatureManager {
     }
 }
 
-export function defaultedToDisplayableFingerprintName(feature?: ManagedFeature): (fingerprintName: string) => string {
+export function defaultedToDisplayableFingerprintName(feature?: ManagedAspect): (fingerprintName: string) => string {
     return (feature && feature.toDisplayableFingerprintName) || (name => name);
 }
 
-export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fpi: FP) => string {
+export function defaultedToDisplayableFingerprint(feature?: ManagedAspect): (fpi: FP) => string {
     return (feature && feature.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

@@ -15,9 +15,9 @@
  */
 
 import { Scorer } from "@atomist/sdm-pack-analysis";
-import { FeatureManager } from "../feature/FeatureManager";
+import { AspectRegistry } from "../feature/AspectRegistry";
 
-export function idealConvergenceScorer(fm: FeatureManager): Scorer {
+export function idealConvergenceScorer(fm: AspectRegistry): Scorer {
     return async i => {
         const allFingerprintNames = Object.getOwnPropertyNames(i.reason.analysis.fingerprints);
         const correctFingerprints = 0;

@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    LocalProject,
-    logger,
-} from "@atomist/automation-client";
+import { LocalProject, logger } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import {
-    Feature,
-    sha256,
-} from "@atomist/sdm-pack-fingerprints";
+import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { PackageJson } from "@atomist/sdm-pack-node";
 import * as _ from "lodash";
-import { DocumentedFeature } from "../DocumentedFeature";
 
 export const TypeScriptVersionType = "typescript-version";
 const PackageJsonName = "package.json";
@@ -38,7 +31,7 @@ const PackageJsonName = "package.json";
  * in package.json.
  *
  */
-export const TypeScriptVersionFeature: Feature & DocumentedFeature = {
+export const TypeScriptVersionFeature: Feature = {
     name: TypeScriptVersionType,
     displayName: "TypeScript Version",
     documentationUrl:

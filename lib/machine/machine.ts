@@ -33,7 +33,7 @@ import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Features } from "../customize/features";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
-import { IdealStore } from "../feature/FeatureManager";
+import { IdealStore } from "../feature/AspectRegistry";
 
 /**
  * Add scanners to the analyzer to extract data

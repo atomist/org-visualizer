@@ -21,21 +21,21 @@ import {
 import * as _ from "lodash";
 import { FingerprintKind } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
-import { FeatureManager } from "./FeatureManager";
+import { AspectRegistry } from "./AspectRegistry";
 import { Reporters } from "./reporters";
 import { defaultAnalyzedRenderer } from "./support/groupingUtils";
 
 /**
  * Create an object exposing well-known queries against our repo cohort
- * based on the fingerprints the given FeatureManager knows how to manage.
+ * based on the fingerprints the given AspectRegistry knows how to manage.
  * Return a query named "flagged" that shows any flagged fingerprints, across all repos.
  */
 export async function reportersAgainst(
     relevantFingerprintKinds: () => Promise<FingerprintKind[]>,
-    featureManager: FeatureManager): Promise<Reporters> {
+    featureManager: AspectRegistry): Promise<Reporters> {
     const reporters: Reporters = {};
 
-    // Report bad fingerprints according to the FeatureManager
+    // Report bad fingerprints according to the AspectRegistry
     reporters.flagged = params =>
         treeBuilderFor("flagged", params)
             .group({

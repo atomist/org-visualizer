@@ -22,7 +22,6 @@ import {
 import { TypedFP } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
-import { DocumentedFeature } from "../DocumentedFeature";
 
 const SpringBootStarterType = "spring-boot-starter";
 
@@ -39,7 +38,7 @@ export type SpringBootStarterFingerprint = TypedFP<VersionedArtifact>;
  *
  * Only the version is displayed (or "inherited" if the version is empty).
  */
-export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> & DocumentedFeature = {
+export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
     name: SpringBootStarterType,
     displayName: "Spring Boot Starter",
     extract: async p => {

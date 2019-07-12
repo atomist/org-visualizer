@@ -31,7 +31,7 @@ import { getCategories } from "../../../customize/categories";
 import {
     Analyzed,
     IdealStore,
-} from "../../../feature/FeatureManager";
+} from "../../../feature/AspectRegistry";
 import { analyzeCohort } from "../../../tree/sunburst";
 import {
     isProjectAnalysisResult,

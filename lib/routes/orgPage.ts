@@ -37,7 +37,7 @@ import {
 import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
 import {
-    FeatureForDisplay,
+    AspectForDisplay,
     OrgExplorer,
 } from "../../views/org";
 import {
@@ -56,13 +56,13 @@ import {
 import { TopLevelPage } from "../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
+    AspectRegistry,
+    ManagedAspect,
+} from "../feature/AspectRegistry";
+import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../feature/DefaultFeatureManager";
-import {
-    FeatureManager,
-    ManagedFeature,
-} from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { WellKnownReporters } from "./wellKnownReporters";
 
@@ -81,7 +81,7 @@ function renderStaticReactNode(body: ReactElement,
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisResultStore): ExpressCustomizer {
+export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
         express.use(bodyParser.json());       // to support JSON-encoded bodies
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -106,7 +106,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     const actionableFingerprints = [];
                     const ideals = await featureManager.idealStore.loadIdeals("local");
 
-                    const importantFeatures: FeatureForDisplay[] = featureManager.features
+                    const importantFeatures: AspectForDisplay[] = featureManager.features
                         .filter(f => !!f.displayName)
                         .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
                         .map(feature => ({
@@ -136,8 +136,8 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     res.send(renderStaticReactNode(OrgExplorer({
                         actionableFingerprints,
                         projectsAnalyzed: repos.length,
-                        importantFeatures,
-                        unfoundFeatures,
+                        importantAspects: importantFeatures,
+                        unfoundAspects: unfoundFeatures,
                         projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                     })));
                 } catch
@@ -173,10 +173,10 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 return res.send(`No project at ${JSON.stringify(id)}`);
             }
 
-            const featuresAndFingerprints = await projectFingerprints(featureManager, await store.fingerprintsForProject(id));
+            const aspectsAndFingerprints = await projectFingerprints(featureManager, await store.fingerprintsForProject(id));
 
             // assign style based on ideal
-            const ffd: ProjectFeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
+            const ffd: ProjectFeatureForDisplay[] = aspectsAndFingerprints.map(featureAndFingerprints => ({
                 ...featureAndFingerprints,
                 fingerprints: featureAndFingerprints.fingerprints.map(fp => ({
                     ...fp,
@@ -213,7 +213,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 }
 
                 // tslint:disable-next-line
-                const feature = featureManager.featureFor(req.query.type);
+                const feature = featureManager.aspectOf(req.query.type);
                 fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
 
                 function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
@@ -265,7 +265,7 @@ export function jsonToQueryString(json: object): string {
     ).join("&");
 }
 
-function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedFeature): string {
+function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedAspect): string {
     if (idealIsDifferentFromActual(fingerprint)) {
         return defaultedToDisplayableFingerprint(feature)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
@@ -309,12 +309,12 @@ export type MelbaFingerprintForDisplay = FP & {
     displayName: string;
 };
 
-export interface MelbaFeatureForDisplay {
-    feature: ManagedFeature;
+export interface MelbaAspectForDisplay {
+    feature: ManagedAspect;
     fingerprints: MelbaFingerprintForDisplay[];
 }
 
-async function projectFingerprints(fm: FeatureManager, allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]> {
+async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProject: FP[]): Promise<MelbaAspectForDisplay[]> {
     const result = [];
     for (const feature of fm.features) {
         const originalFingerprints =

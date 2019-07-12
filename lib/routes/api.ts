@@ -30,7 +30,7 @@ import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { FeatureManager } from "../feature/FeatureManager";
+import { AspectRegistry } from "../feature/AspectRegistry";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
     fingerprintsChildrenQuery,
@@ -60,7 +60,7 @@ import {
  */
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
-                    featureManager: FeatureManager): ExpressCustomizer {
+                    aspectRegistry: AspectRegistry): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -72,7 +72,7 @@ export function api(clientFactory: ClientFactory,
 
         express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
         express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
-            await featureManager.idealStore.setIdeal(req.params.workspace_id, req.params.id);
+            await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
             logger.info(`Set ideal to ${req.params.id}`);
             res.sendStatus(201);
         });
@@ -124,16 +124,16 @@ export function api(clientFactory: ClientFactory,
                 if (!byName) {
                     splitBy<{ data: any, type: string }>(tree,
                         l => {
-                            const feature: BaseFeature = featureManager.featureFor(l.type);
-                            if (!feature || !feature.toDisplayableFingerprintName) {
+                            const aspect: BaseFeature = aspectRegistry.aspectOf(l.type);
+                            if (!aspect || !aspect.toDisplayableFingerprintName) {
                                 return l.name;
                             }
-                            return feature.toDisplayableFingerprintName(l.name);
+                            return aspect.toDisplayableFingerprintName(l.name);
                         },
                         0,
                         l => descendants(l).filter(n => !!_.get(n, "sha")));
                 }
-                resolveFeatureNames(featureManager, tree);
+                resolveAspectNames(aspectRegistry, tree);
                 if (req.query.byOrg === "true") {
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {
@@ -144,7 +144,7 @@ export function api(clientFactory: ClientFactory,
                         parent => parent.children.some(c => (c as any).sha),
                         kid => (kid as any).sha ? "Yes" : "No");
                 } else if (req.query.progress === "true") {
-                    const ideal = await featureManager.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
+                    const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
                     if (!ideal || !isConcreteIdeal(ideal)) {
                         throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name}`);
                     }
@@ -167,7 +167,7 @@ export function api(clientFactory: ClientFactory,
                 if (req.params.name === "skew") {
                     const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id);
                     logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
-                    const skewTree = await skewReport(featureManager).toSunburstTree(
+                    const skewTree = await skewReport(aspectRegistry).toSunburstTree(
                         () => fingerprintUsage);
                     return res.json(skewTree);
                 }
@@ -177,13 +177,13 @@ export function api(clientFactory: ClientFactory,
                     const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                     const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);
                     logger.info("Found %d fingerprints", fingerprints.length);
-                    const featureTree = await featureReport(type, featureManager, withDups).toSunburstTree(
+                    const featureTree = await featureReport(type, aspectRegistry, withDups).toSunburstTree(
                         () => fingerprints);
                     return res.json(featureTree);
                 }
 
                 const featureQueries = await reportersAgainst(
-                    () => store.distinctFingerprintKinds(req.params.workspace_id), featureManager);
+                    () => store.distinctFingerprintKinds(req.params.workspace_id), aspectRegistry);
                 const allQueries = _.merge(featureQueries, WellKnownReporters);
 
                 const cannedQuery = allQueries[req.params.name]({
@@ -208,15 +208,14 @@ export function api(clientFactory: ClientFactory,
     };
 }
 
-// Use Features to find names of features
-function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
+function resolveAspectNames(fm: AspectRegistry, t: SunburstTree): void {
     visit(t, l => {
         if ((l as any).sha) {
             const fp = l as any as FP;
             // It's a fingerprint name
-            const feature = fm.featureFor(fp.type);
-            if (feature) {
-                fp.name = feature.toDisplayableFingerprint ? feature.toDisplayableFingerprint(fp) : fp.data;
+            const aspect = fm.aspectOf(fp.type);
+            if (aspect) {
+                fp.name = aspect.toDisplayableFingerprint ? aspect.toDisplayableFingerprint(fp) : fp.data;
             }
         }
         return true;
