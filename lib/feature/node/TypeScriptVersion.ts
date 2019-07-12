@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { LocalProject, logger } from "@atomist/automation-client";
+import {
+    LocalProject,
+    logger,
+} from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import { Feature, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { PackageJson } from "@atomist/sdm-pack-node";
