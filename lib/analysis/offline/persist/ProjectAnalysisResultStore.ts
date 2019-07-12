@@ -21,6 +21,7 @@ import {
     PersistenceResult,
     SpiderFailure,
 } from "../spider/Spider";
+import { CohortAnalysis } from "../../../tree/sunburst";
 
 export interface PersistResult {
     attemptedCount: number;
@@ -43,6 +44,15 @@ export const emptyPersistResult: PersistResult = {
 };
 
 export type FingerprintKind = Pick<FP, "type" | "name">;
+
+/**
+ * Data about the use of a fingerprint in a workspace
+ */
+export interface FingerprintUsage extends CohortAnalysis {
+    name: string;
+    type: string;
+    categories: string[];
+}
 
 /**
  * Interface for basic persistence operations.
@@ -79,6 +89,8 @@ export interface ProjectAnalysisResultStore {
      * Return distinct fingerprint type/name combinations in this workspace
      */
     distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]>;
+
+    fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]>;
 
     computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void>;
 

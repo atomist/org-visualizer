@@ -18,41 +18,17 @@ import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler, } from "express";
 import * as _ from "lodash";
-import {
-    ClientFactory,
-    doWithClient,
-} from "../analysis/offline/persist/pgUtils";
-import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { getCategories } from "../customize/categories";
-import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
+import { ClientFactory, } from "../analysis/offline/persist/pgUtils";
+import { FingerprintUsage, ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { FeatureManager } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
-import {
-    fingerprintsChildrenQuery,
-    repoTree,
-} from "../feature/repoTree";
-import {
-    CohortAnalysis,
-    splitBy,
-    SunburstTree,
-    visit,
-} from "../tree/sunburst";
-import {
-    authHandlers,
-    configureAuth,
-    corsHandler,
-} from "./auth";
+import { fingerprintsChildrenQuery, repoTree, } from "../feature/repoTree";
+import { splitBy, SunburstTree, visit, } from "../tree/sunburst";
+import { authHandlers, configureAuth, corsHandler, } from "./auth";
 import { whereFor } from "./orgPage";
-import {
-    featureReport,
-    skewReport,
-    WellKnownReporters,
-} from "./wellKnownReporters";
+import { featureReport, skewReport, WellKnownReporters, } from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON
@@ -81,7 +57,7 @@ export function api(clientFactory: ClientFactory,
         express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
-                const fingerprintUsage: FingerprintUsage[] = await fingerprintUsageForType(clientFactory, workspaceId);
+                const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
                 logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
                 res.json(fingerprintUsage);
             } catch (e) {
@@ -94,7 +70,7 @@ export function api(clientFactory: ClientFactory,
         express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const workspaceId = req.params.workspace_id || "local";
-                const fps = await fingerprintUsageForType(clientFactory, req.params.type, workspaceId);
+                const fps = await store.fingerprintUsageForType(workspaceId, req.params.type);
                 logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
                 res.json(fps);
             } catch (e) {
@@ -135,7 +111,7 @@ export function api(clientFactory: ClientFactory,
                 const repos = await store.loadWhere(whereFor(req));
 
                 if (req.params.name === "skew") {
-                    const fingerprintUsage = await fingerprintUsageForType(clientFactory, req.params.workspace_id);
+                    const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id);
                     logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
                     const skewTree = await skewReport(featureManager).toSunburstTree(
                         () => fingerprintUsage);
@@ -186,37 +162,5 @@ function resolveFeatureNames(fm: FeatureManager, t: SunburstTree): void {
             }
         }
         return true;
-    });
-}
-
-/**
- * Data about the use of a fingerprint in a workspace
- */
-export interface FingerprintUsage extends CohortAnalysis {
-    name: string;
-    type: string;
-    categories: string[];
-}
-
-async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
-    return doWithClient<FingerprintUsage[]>(clientFactory, async client => {
-        const sql = `SELECT name, feature_name as type, variants, count, entropy
-  from fingerprint_analytics f
-  WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  AND  ${type ? "f.feature_name = $2" : "true"}`;
-        const params = [workspaceId];
-        if (!!type) {
-            params.push(type);
-        }
-        const rows = await client.query(sql, params);
-        return rows.rows.map(r => ({
-            name: r.name,
-            type: r.type,
-            variants: +r.variants,
-            count: +r.count,
-            entropy: +r.entropy,
-            // This is really confusing but the Feature.name is feature_name alias type in the db
-            categories: getCategories({ name: r.type }),
-        }));
     });
 }

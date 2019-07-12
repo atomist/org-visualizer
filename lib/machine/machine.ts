@@ -77,6 +77,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
                 const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });
                 logger.info("Performing fresh analysis of project at %s", pu.id.url);
                 await opts.analyzedRepoStore.persist({
+                    repoRef: analysis.id,
                     analysis,
                     timestamp: now,
                     subproject: found.subproject,

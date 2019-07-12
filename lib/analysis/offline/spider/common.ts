@@ -145,15 +145,18 @@ export async function persistRepoInfo(
         timestamp: Date,
         url: string,
     }): Promise<PersistResult> {
+
+    // Use a spread as url has a getter and otherwise disappears
+    const repoRef = {
+        ...repoInfo.analysis.id,
+        url: moreInfo.url,
+    };
     const toPersist: SpideredRepo = {
         workspaceId: opts.workspaceId,
+        repoRef,
         analysis: {
-            // Use a spread as url has a getter and otherwise disappears
             ...repoInfo.analysis,
-            id: {
-                ...repoInfo.analysis.id,
-                url: moreInfo.url,
-            },
+            id: repoRef,
         },
         topics: [], // enriched.interpretation.keywords,
         sourceData: moreInfo.sourceData,

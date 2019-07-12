@@ -48,7 +48,7 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import { FingerprintUsage } from "./api";
+import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 
 /**
  * Well known reporters against our repo cohort.

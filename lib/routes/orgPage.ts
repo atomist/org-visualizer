@@ -33,9 +33,8 @@ import {
 } from "react";
 import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
-import { OrgExplorer } from "../../views/org";
+import { FeatureForDisplay, ManagedFeatureForDisplay, OrgExplorer } from "../../views/org";
 import {
-    FeatureForDisplay,
     ProjectExplorer,
 } from "../../views/project";
 import {
@@ -59,7 +58,6 @@ import {
     ManagedFeature,
 } from "../feature/FeatureManager";
 import { reportersAgainst } from "../feature/reportersAgainst";
-import { allManagedFingerprints } from "../feature/support/featureUtils";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 function renderStaticReactNode(body: ReactElement,
@@ -95,34 +93,45 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
             try {
+                // TODO get away from this
                 const repos = await store.loadWhere(whereFor(req));
-                const fingerprintCensus = await featureManager.fingerprintCensus(repos.map(r => r.analysis));
 
-                fingerprintCensus.features.forEach(famf => {
-                    famf.fingerprints = famf.fingerprints
-                        .sort((a, b) => b.appearsIn - a.appearsIn)
-                        .sort((a, b) => b.variants - a.variants);
-                });
+                const fingerprintUsage = await store.fingerprintUsageForType("*");
 
-                const actionableFingerprints = allManagedFingerprints(fingerprintCensus)
-                    .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
-                    .sort((a, b) => b.appearsIn - a.appearsIn)
-                    .sort((a, b) => b.variants - a.variants);
+                // fingerprintUsage.features.forEach(famf => {
+                //     famf.fingerprints = famf.fingerprints
+                //         .sort((a, b) => b.appearsIn - a.appearsIn)
+                //         .sort((a, b) => b.variants - a.variants);
+                // });
 
-                const importantFeatures = fingerprintCensus.features
-                    .filter(f => !!f.feature.displayName)
-                    .filter(f => f.fingerprints.length > 0);
+                const actionableFingerprints = [];
+                //allManagedFingerprints(fingerprintCensus)
+                    // .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
+                    // .sort((a, b) => b.appearsIn - a.appearsIn)
+                    // .sort((a, b) => b.variants - a.variants);
 
-                const unfoundFeatures = fingerprintCensus.features
-                    .filter(f => f.fingerprints.length === 0)
-                    .map(f => f.feature);
+                const importantFeatures: FeatureForDisplay[] = featureManager.features
+                    .filter(f => !!f.displayName)
+                    .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
+                    .map(feature => ({
+                        feature,
+                        fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
+                            .map(fu => ({
+                                ...fu,
+                                featureName: feature.name,
+                            })),
+                    }));
+
+                const unfoundFeatures: ManagedFeatureForDisplay[] = featureManager.features
+                    .filter(f => !!f.displayName)
+                    .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 
                 res.send(renderStaticReactNode(OrgExplorer({
                     actionableFingerprints,
-                    projectsAnalyzed: fingerprintCensus.projectsAnalyzed,
+                    projectsAnalyzed: repos.length,
                     importantFeatures,
                     unfoundFeatures,
-                    projects: repos.map(r => ({ ...r.analysis.id, id: r.id })),
+                    projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                 })));
             } catch (e) {
                 logger.error(e.stack);
@@ -148,6 +157,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         });
 
         /* the project page */
+        /*
         express.get("/project", ...handlers, async (req, res) => {
             const id = req.query.id;
             const analysisResult = await store.loadById(id);
@@ -172,6 +182,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName),
             })));
         });
+*/
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {

@@ -31,13 +31,15 @@ export interface SubprojectDescription {
 export interface ProjectAnalysisResult<A extends Analyzed = Analyzed> {
 
     /**
-     * Unique id. Available after persistence.
+     * Unique database id. Available after persistence.
      */
     readonly id?: string;
 
+    readonly repoRef: RemoteRepoRef;
+
     readonly workspaceId: string;
 
-    readonly analysis: A;
+    readonly analysis?: A;
 
     /**
      * Date of this analysis

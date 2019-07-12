@@ -29,7 +29,7 @@ import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
 import {
-    FingerprintKind,
+    FingerprintKind, FingerprintUsage,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
@@ -111,6 +111,10 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
             where.push(hardCodedPlace);
         }
         return { attemptedCount: persisted, failed: [], succeeded: where };
+    }
+
+    public fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
+        return undefined;
     }
 
     public computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {

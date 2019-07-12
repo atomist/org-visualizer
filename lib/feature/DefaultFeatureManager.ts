@@ -22,9 +22,7 @@ import {
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
-    AggregateFingerprintStatus,
     FeatureManager,
-    FingerprintCensus,
     HasFingerprints,
     IdealStore,
     ManagedFeature,
@@ -78,32 +76,6 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public featureFor(type: string): ManagedFeature | undefined {
         return type ? this.features.find(f => f.name === type) : undefined;
-    }
-
-    public async fingerprintCensus(repos: HasFingerprints[]): Promise<FingerprintCensus> {
-
-        const ideals = await this.idealStore.loadIdeals("local");
-
-        const result: FingerprintCensus = {
-            projectsAnalyzed: repos.length,
-            features: [],
-        };
-        const allFingerprintsInAllProjects: FP[] = _.flatMap(repos, allFingerprints);
-        for (const feature of this.features) {
-            const names = _.uniq(allFingerprintsInAllProjects.filter(fp => feature.name === fp.type).map(fp => fp.name));
-            const fingerprints: AggregateFingerprintStatus[] = [];
-            for (const name of names) {
-                const theseFingerprints = allFingerprintsInAllProjects.filter(fp => fp.name === name && feature.name === fp.type);
-                fingerprints.push(await aggregateFingerprints(this, feature,
-                    ideals.find(i => isConcreteIdeal(i) && i.ideal.type === feature.name && i.ideal.name === name),
-                    theseFingerprints));
-            }
-            result.features.push({
-                feature,
-                fingerprints,
-            });
-        }
-        return result;
     }
 
     public async projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]> {
@@ -176,22 +148,5 @@ function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
     return {
         ...ideal,
         displayValue,
-    };
-}
-
-async function aggregateFingerprints(featureManager: FeatureManager,
-                                     feature: ManagedFeature,
-                                     ideal: Ideal,
-                                     fingerprintsByTypeAndName: FP[]): Promise<AggregateFingerprintStatus> {
-    const type = fingerprintsByTypeAndName[0].type;
-    const name = fingerprintsByTypeAndName[0].name;
-    return {
-        type,
-        name,
-        appearsIn: fingerprintsByTypeAndName.length,
-        variants: _.uniq(fingerprintsByTypeAndName.map(fp => fp.sha)).length,
-        ideal: addDisplayNameToIdeal(defaultedToDisplayableFingerprint(feature), ideal),
-        featureName: feature.displayName,
-        displayName: defaultedToDisplayableFingerprintName(feature)(name),
     };
 }

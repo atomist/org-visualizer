@@ -1,13 +1,13 @@
 import * as React from "react";
 import { ProjectForDisplay, ProjectList } from "./projectList";
+import { CohortAnalysis } from "../lib/tree/sunburst";
 
-export interface FingerprintForDisplay extends MaybeAnIdeal {
+export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     type: string;
     displayName?: string;
     name: string;
+
     featureName: string;
-    appearsIn: number; // count of projects
-    variants: number;
 }
 
 export interface ManagedFeatureForDisplay {
@@ -43,7 +43,7 @@ function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): Rea
     const queryLink = `./query?type=${af.type}&name=${af.name}&byOrg=true`;
     const existsLink = `./query?type=${af.type}&name=${af.name}-present&filter=true&byOrg=true`;
     return <li key={af.name}><i>{af.featureName}:
-                {af.displayName}</i>: {af.appearsIn} projects, {" "}
+                {af.displayName}</i>: {af.count} projects, {" "}
         <a href={queryLink}>{af.variants} variants</a> -
          <a href={existsLink}> Exists?</a>
         {idealDisplay(af)}
@@ -117,8 +117,8 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const existsLink: string = `./query?filter=true&type=${f.type}&name=${f.name}-present&byOrg=true`;
 
     return <li key={displayName}>
-        <i>{displayName}</i>: {f.appearsIn} projects, {" "}
-        <a href={variantsQueryLink}>{f.variants} variants</a> {" "}
+        <i>{displayName}</i>: {f.count} projects, {" "}
+        <a href={variantsQueryLink}>{f.variants} variants</a> ({f.entropy}){" "}
         <a href={existsLink}>Presence</a> {" "}
         {idealDisplay(f)}
     </li>;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RepoRef } from "@atomist/automation-client";
+import { GitHubRepoRef, RemoteRepoRef, RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import {
     ConcreteIdeal,
@@ -41,10 +41,11 @@ import {
 import {
     combinePersistResults,
     emptyPersistResult,
-    FingerprintKind,
+    FingerprintKind, FingerprintUsage,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
+import { getCategories } from "../../../customize/categories";
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
@@ -61,7 +62,10 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 from repo_snapshots ` +
                 (where ? `WHERE ${where}` : "");
             const rows = await client.query(sql);
-            return rows.rows;
+            return rows.rows.map(row => ({
+                ...row,
+                repoRef: rowToRepoRef(row),
+            }));
         });
     }
 
@@ -75,6 +79,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 analysis: result.rows[0].analysis,
                 timestamp: result.rows[0].timestamp,
                 workspaceId: result.rows[0].workspace_id,
+                repoRef: rowToRepoRef(result.rows[0]),
             } : undefined;
         });
     }
@@ -89,6 +94,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 analysis: result.rows[0].analysis,
                 timestamp: result.rows[0].timestamp,
                 workspaceId: result.rows[0].workspace_id,
+                repoRef: rowToRepoRef(result.rows[0]),
             } : undefined;
         });
     }
@@ -109,6 +115,10 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
             const result = await client.query(sql, [workspaceId]);
             return result.rows;
         });
+    }
+
+    public fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
+        return fingerprintUsageForType(this.clientFactory, workspaceId, type);
     }
 
     public async storeIdeal(workspaceId: string, ideal: Ideal): Promise<void> {
@@ -322,7 +332,8 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
         const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f
   WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  AND ${type ? "feature_name = $2" : "true"} AND ${type ? "f.name = $3" : "true"}`;
+  AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
+  ORDER BY feature_name, fingerprintName ASC`;
         const params = [workspaceId];
         if (!!type) {
             params.push(type);
@@ -364,5 +375,37 @@ async function calculateAndPersistEntropy(clientFactory: ClientFactory,
         const rows = await client.query(sql, [type, name, workspaceId, cohortAnalysis.entropy,
             cohortAnalysis.variants, cohortAnalysis.count]);
         return rows.rows;
+    });
+}
+
+async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
+    return doWithClient<FingerprintUsage[]>(clientFactory, async client => {
+        const sql = `SELECT name, feature_name as type, variants, count, entropy
+  from fingerprint_analytics f
+  WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
+  AND  ${type ? "f.feature_name = $2" : "true"}
+  ORDER BY entropy DESC`;
+        const params = [workspaceId];
+        if (!!type) {
+            params.push(type);
+        }
+        const rows = await client.query(sql, params);
+        return rows.rows.map(r => ({
+            name: r.name,
+            type: r.type,
+            variants: +r.variants,
+            count: +r.count,
+            entropy: +r.entropy,
+            // This is really confusing but the Feature.name is feature_name alias type in the db
+            categories: getCategories({ name: r.type }),
+        }));
+    });
+}
+
+// TODO GitHub only
+function rowToRepoRef(row: { provider_id: string, owner: string, name: string, url: string, sha: string}): RemoteRepoRef {
+    return GitHubRepoRef.from({
+        ...row,
+        repo: row.name,
     });
 }

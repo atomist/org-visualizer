@@ -64,61 +64,9 @@ export const PermitAllUsageChecker: UndesirableUsageChecker = {
     check: async () => [],
 };
 
-/**
- * Report on use of a fingerprint across a cohort of projects
- */
-export interface AggregateFingerprintStatus {
-
-    /**
-     * Feature that owns this fingerprint
-     */
-    readonly featureName: string;
-
-    /**
-     * Feature type (featureName)
-     */
-    readonly type: string;
-
-    /**
-     * A nice name for display
-     */
-    readonly displayName: string;
-
-    /**
-     * Fingerprint name
-     */
-    readonly name: string;
-
-    /**
-     * Number of projects this fingerprint appears in
-     */
-    readonly appearsIn: number;
-
-    readonly ideal: Ideal & { displayValue: string };
-
-    /**
-     * Number of variants of this fingerprint across the cohort
-     */
-    readonly variants: number;
-}
-
 export interface FingerprintsWithManagingFeature<ProcessedFingerprint> {
     feature: ManagedFeature;
     fingerprints: ProcessedFingerprint[];
-}
-
-/**
- * Report on feature usage in a cohort of projects
- */
-export interface FingerprintCensus {
-
-    readonly projectsAnalyzed: number;
-
-    /**
-     * Array of features with data about fingerprints they manage
-     */
-    features: Array<FingerprintsWithManagingFeature<AggregateFingerprintStatus>>;
-
 }
 
 /**
@@ -178,13 +126,7 @@ export interface FeatureManager {
      */
     featureFor(type: string): ManagedFeature | undefined;
 
-    /**
-     * Report on the feature usage identified in this cohort of projects.
-     * @param {HasFingerprints[]} results
-     * @return {Promise<FingerprintCensus>}
-     */
-    fingerprintCensus(results: HasFingerprints[]): Promise<FingerprintCensus>;
-
+    // TODO this should go
     projectFingerprints(par: ProjectAnalysisResult): Promise<MelbaFeatureForDisplay[]>;
 
     /**
