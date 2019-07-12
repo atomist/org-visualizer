@@ -102,9 +102,8 @@ export const configuration: Configuration = configure(async sdm => {
                 },
             };
         } else {
-            const resultStore = analysisResultStore(sdmConfigClientFactory(sdm.configuration));
             sdm.addEvent(CreateFingerprintJob);
-            sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers, resultStore));
+            sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers));
             return {};
         }
 

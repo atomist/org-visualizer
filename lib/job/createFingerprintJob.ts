@@ -91,7 +91,7 @@ async function fingerprintGitHubAppInstallation(event: OnGitHubAppInstallation.S
     if (!analyzed) {
         try {
             await createJob<CalculateFingerprintTaskParameters>({
-                    command: calculateFingerprintTask([], [], undefined),
+                    command: calculateFingerprintTask([], []),
                     parameters: repos.tasks,
                     name: `OrganizationAnalysis/${provider.providerId}/${org.owner}`,
                     description: `Analyzing repositories in ${bold(org.owner)}`,
@@ -136,7 +136,7 @@ async function fingerprintGitHubResourceProvider(ctx: HandlerContext): Promise<v
         if (!analyzed) {
             try {
                 await createJob<CalculateFingerprintTaskParameters>({
-                        command: calculateFingerprintTask([], [], undefined),
+                        command: calculateFingerprintTask([], []),
                         parameters: org.tasks,
                         name: `OrganizationAnalysis/${org.providerId}/${org.name}`,
                         description: `Analyzing repositories in ${bold(org.name)}`,
