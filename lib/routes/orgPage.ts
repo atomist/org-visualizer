@@ -192,13 +192,13 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     if (req.query.name === "*") {
                         dataUrl = `/api/v1/${workspaceId}/filter/featureReport?${queryString}`;
                     }
-                }
 
-                dataUrl = !!req.query.filter ?
-                    `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
-                    `/api/v1/${workspaceId}/fingerprint/${
-                        encodeURIComponent(req.query.type)}/${
-                        encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
+                    dataUrl = !!req.query.filter ?
+                        `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
+                        `/api/v1/${workspaceId}/fingerprint/${
+                            encodeURIComponent(req.query.type)}/${
+                            encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
+                }
 
                 // tslint:disable-next-line
                 const feature = featureManager.featureFor(req.query.type);
