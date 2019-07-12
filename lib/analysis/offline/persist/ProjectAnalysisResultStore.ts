@@ -100,11 +100,13 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name
+     * @param dedup deduplicte
      */
     fingerprintsInWorkspace(
         workspaceId: string,
         type?: string,
-        name?: string): Promise<FP[]>;
+        name?: string,
+        dedup?: boolean): Promise<FP[]>;
 
     fingerprintsForProject(id: string): Promise<FP[]>;
 }

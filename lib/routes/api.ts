@@ -121,8 +121,10 @@ export function api(clientFactory: ClientFactory,
                 if (req.params.name === "featureReport") {
                     const type = req.query.type;
                     const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
+                    const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);
                     logger.info("Found %d fingerprints", fingerprints.length);
-                    const featureTree = await featureReport(type, featureManager).toSunburstTree(() => fingerprints);
+                    const featureTree = await featureReport(type, featureManager, withDups).toSunburstTree(
+                        () => fingerprints);
                     return res.json(featureTree);
                 }
 

@@ -16,33 +16,19 @@
 
 import { GitHubRepoRef, RemoteRepoRef, RepoRef } from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import {
-    ConcreteIdeal,
-    FP,
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { ConcreteIdeal, FP, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
 import { getCategories } from "../../../customize/categories";
-import {
-    Analyzed,
-    HasFingerprints,
-    IdealStore,
-} from "../../../feature/FeatureManager";
+import { Analyzed, IdealStore } from "../../../feature/FeatureManager";
 import { analyzeCohort } from "../../../tree/sunburst";
-import {
-    isProjectAnalysisResult,
-    ProjectAnalysisResult,
-} from "../../ProjectAnalysisResult";
+import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { SpideredRepo } from "../SpideredRepo";
-import {
-    ClientFactory,
-    doWithClient,
-} from "./pgUtils";
+import { ClientFactory, doWithClient } from "./pgUtils";
 import {
     combinePersistResults,
     emptyPersistResult,
-    FingerprintKind, FingerprintUsage,
+    FingerprintKind,
+    FingerprintUsage,
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
@@ -183,8 +169,8 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         });
     }
 
-    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
-        return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
+    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string, dedup?: boolean): Promise<FP[]> {
+        return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name, dedup);
     }
 
     public async fingerprintsForProject(snapshotId: string): Promise<FP[]> {
@@ -332,9 +318,10 @@ function idealRowToIdeal(rawRow: any): Ideal {
 async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
-                                       name?: string): Promise<FP[]> {
+                                       name?: string,
+                                       dedup?: boolean): Promise<FP[]> {
     return doWithClient(clientFactory, async client => {
-        const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
+        const sql = `SELECT ${dedup ? "DISTINCT" : ""} f.name as fingerprintName, f.feature_name, f.sha, f.data
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f
   WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}

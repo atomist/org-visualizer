@@ -441,7 +441,10 @@ export function skewReport(fm: FeatureManager): ReportBuilder<FingerprintUsage> 
         });
 }
 
-export function featureReport(type: string, fm: FeatureManager): ReportBuilder<FP> {
+/**
+ * Report on all fingerprints of a particular type
+ */
+export function featureReport(type: string, fm: FeatureManager, allMatching: FP[]): ReportBuilder<FP> {
     return treeBuilder<FP>(type)
         .group({
             name: "name",
@@ -451,7 +454,7 @@ export function featureReport(type: string, fm: FeatureManager): ReportBuilder<F
             const feature = fm.featureFor(fp.type);
             return {
                 name: feature ? feature.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
-                size: 1,
+                size: allMatching.filter(a => fp.sha === a.sha).length,
             };
         });
 }
