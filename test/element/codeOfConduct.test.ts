@@ -15,8 +15,12 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
+import { TypedFP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "power-assert";
-import { CodeOfConductFeature } from "../../lib/element/codeOfConduct";
+import {
+    CodeOfConduct,
+    CodeOfConductFeature,
+} from "../../lib/element/codeOfConduct";
 
 describe("codeOfConductScanner", () => {
 
@@ -28,18 +32,18 @@ describe("codeOfConductScanner", () => {
 
     it("should find test code of conduct", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: testCoC });
-        const s =  await CodeOfConductFeature.extract(p);
+        const s = await CodeOfConductFeature.extract(p) as TypedFP<CodeOfConduct>;
         assert(!!s);
-        assert.strictEqual(s[0].data.content, testCoC);
-        assert.strictEqual(s[0].data.title, "The Benign Code of Conduct");
+        assert.strictEqual(s.data.content, testCoC);
+        assert.strictEqual(s.data.title, "The Benign Code of Conduct");
     });
 
     it("should do its best with code of conduct without title", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: "meaningless" });
-        const s =  await CodeOfConductFeature.extract(p);
+        const s = await CodeOfConductFeature.extract(p) as TypedFP<CodeOfConduct>;
         assert(!!s);
-        assert.strictEqual(s[0].data.content, "meaningless");
-        assert(!s[0].data.title);
+        assert.strictEqual(s.data.content, "meaningless");
+        assert(!s.data.title);
     });
 
 });
