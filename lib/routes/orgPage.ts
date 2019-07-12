@@ -204,10 +204,6 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 if (req.query.skew) {
                     dataUrl = `/api/v1/${workspaceId}/filter/skew`;
                 } else {
-                    if (req.query.name === "*") {
-                        dataUrl = `/api/v1/${workspaceId}/filter/featureReport?${queryString}`;
-                    }
-
                     dataUrl = !!req.query.filter ?
                         `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
                         `/api/v1/${workspaceId}/fingerprint/${
