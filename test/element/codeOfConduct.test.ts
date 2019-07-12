@@ -18,7 +18,8 @@ import { InMemoryProject } from "@atomist/automation-client";
 import { TypedFP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "power-assert";
 import {
-    CodeOfConduct, CodeOfConductData,
+    CodeOfConduct,
+    CodeOfConductData,
 } from "../../lib/element/codeOfConduct";
 
 describe("codeOfConduct", () => {
