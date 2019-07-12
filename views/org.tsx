@@ -121,8 +121,8 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
 export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div><h2>No projects analyzed</h2>
-            To investigate some projects, run `npm link` and then `spider --owner atomist`<br></br>
-            Substitute your GitHub user or organization for `atomist` to get results for your own projects!
+            Use the `spider` command to investigate some projects.
+            See <a href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the README</a> for details.
         </div>;
     }
 
