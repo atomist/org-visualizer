@@ -18,6 +18,7 @@ import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -142,6 +143,14 @@ export function api(clientFactory: ClientFactory,
                     mergeSiblings(tree,
                         parent => parent.children.some(c => (c as any).sha),
                         kid => (kid as any).sha ? "Yes" : "No");
+                } else if (req.query.progress === "true") {
+                    const ideal = await featureManager.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
+                    if (!ideal || !isConcreteIdeal(ideal)) {
+                        throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name}`);
+                    }
+                    mergeSiblings(tree,
+                        parent => parent.children.some(c => (c as any).sha),
+                        kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No");
                 }
 
                 res.json(tree);

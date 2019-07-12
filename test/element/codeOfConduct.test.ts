@@ -32,7 +32,7 @@ describe("codeOfConductScanner", () => {
 
     it("should find test code of conduct", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: testCoC });
-        const s = await CodeOfConductFeature.extract(p) as TypedFP<CodeOfConduct>;
+        const s = await CodeOfConductFeature.extract(p);
         assert(!!s);
         assert.strictEqual(s.data.content, testCoC);
         assert.strictEqual(s.data.title, "The Benign Code of Conduct");
@@ -40,7 +40,7 @@ describe("codeOfConductScanner", () => {
 
     it("should do its best with code of conduct without title", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: "meaningless" });
-        const s = await CodeOfConductFeature.extract(p) as TypedFP<CodeOfConduct>;
+        const s = await CodeOfConductFeature.extract(p);
         assert(!!s);
         assert.strictEqual(s.data.content, "meaningless");
         assert(!s.data.title);

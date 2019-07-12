@@ -22,6 +22,8 @@ import {
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
+import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -36,7 +38,6 @@ import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
 import {
     FeatureForDisplay,
-    ManagedFeatureForDisplay,
     OrgExplorer,
 } from "../../views/org";
 import {
@@ -97,41 +98,55 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
         });
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
-            try {
-                const repos = await store.loadWhere(whereFor(req));
+                try {
+                    const repos = await store.loadWhere(whereFor(req));
 
-                const fingerprintUsage = await store.fingerprintUsageForType("*");
+                    const fingerprintUsage = await store.fingerprintUsageForType("*");
 
-                const actionableFingerprints = [];
+                    const actionableFingerprints = [];
+                    const ideals = await featureManager.idealStore.loadIdeals("local");
 
-                const importantFeatures: FeatureForDisplay[] = featureManager.features
-                    .filter(f => !!f.displayName)
-                    .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
-                    .map(feature => ({
-                        feature,
-                        fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
-                            .map(fu => ({
-                                ...fu,
-                                featureName: feature.name,
-                            })),
-                    }));
+                    const importantFeatures: FeatureForDisplay[] = featureManager.features
+                        .filter(f => !!f.displayName)
+                        .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
+                        .map(feature => ({
+                            feature,
+                            fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
+                                .map(fu => ({
+                                    ...fu,
+                                    featureName: feature.name,
+                                })),
+                        }));
+                    for (const ffd of importantFeatures) {
+                        for (const fp of ffd.fingerprints) {
+                            const ideal = ideals.find(id => {
+                                const c = idealCoordinates(id);
+                                return c.type === fp.type && c.name === fp.name;
+                            });
+                            if (ideal && isConcreteIdeal(ideal) && ffd.feature.toDisplayableFingerprint) {
+                                fp.ideal = { displayValue: ffd.feature.toDisplayableFingerprint(ideal.ideal) };
+                            }
+                        }
+                    }
 
-                const unfoundFeatures: ManagedFeatureForDisplay[] = featureManager.features
-                    .filter(f => !!f.displayName)
-                    .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
+                    const unfoundFeatures: BaseFeature[] = featureManager.features
+                        .filter(f => !!f.displayName)
+                        .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 
-                res.send(renderStaticReactNode(OrgExplorer({
-                    actionableFingerprints,
-                    projectsAnalyzed: repos.length,
-                    importantFeatures,
-                    unfoundFeatures,
-                    projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
-                })));
-            } catch (e) {
-                logger.error(e.stack);
-                res.status(500).send("failure");
-            }
-        });
+                    res.send(renderStaticReactNode(OrgExplorer({
+                        actionableFingerprints,
+                        projectsAnalyzed: repos.length,
+                        importantFeatures,
+                        unfoundFeatures,
+                        projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
+                    })));
+                } catch
+                    (e) {
+                    logger.error(e.stack);
+                    res.status(500).send("failure");
+                }
+            },
+        );
 
         /* Project list page */
         express.get("/projects", ...handlers, async (req, res) => {
@@ -197,7 +212,8 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                         `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
                         `/api/v1/${workspaceId}/fingerprint/${
                             encodeURIComponent(req.query.type)}/${
-                            encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
+                            encodeURIComponent(req.query.name)}?byOrg=${
+                        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
                 }
 
                 // tslint:disable-next-line
@@ -235,7 +251,8 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
             },
         );
 
-    };
+    }
+        ;
 }
 
 export function whereFor(req): string {

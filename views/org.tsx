@@ -1,3 +1,4 @@
+import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import * as React from "react";
 import { CohortAnalysis } from "../lib/tree/sunburst";
 import { ProjectForDisplay, ProjectList } from "./projectList";
@@ -10,21 +11,15 @@ export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     featureName: string;
 }
 
-export interface ManagedFeatureForDisplay {
-    name: string;
-    displayName?: string;
-    documentationUrl?: string;
-}
-
 export interface FeatureForDisplay {
-    feature: ManagedFeatureForDisplay;
+    feature: BaseFeature;
     fingerprints: FingerprintForDisplay[];
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
     importantFeatures: FeatureForDisplay[];
-    unfoundFeatures: ManagedFeatureForDisplay[];
+    unfoundFeatures: BaseFeature[];
     projects: ProjectForDisplay[];
 }
 
@@ -53,7 +48,7 @@ function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): Rea
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
     if (af.ideal) {
-        const idealQueryLink: string = `./query?filter=true&type=${af.type}&name=${af.name}-progress&byOrg=true`;
+        const idealQueryLink: string = `./query?type=${af.type}&name=${af.name}&byOrg=true&progress=true`;
 
         result = <span>
             -
@@ -70,7 +65,6 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
     const expandByDefault = f.fingerprints.length === 1;
 
     const allLink: string = `./query?type=${f.feature.name}&name=*&byOrg=true`;
-
     const about = !f.feature.documentationUrl ? "" :
         <a href={f.feature.documentationUrl}>About</a>;
 
@@ -90,7 +84,7 @@ function displayImportantFeature(f: FeatureForDisplay, i: number): React.ReactEl
             </div></div></div>;
 }
 
-function displayUnfoundFeatures(mfs: ManagedFeatureForDisplay[]): React.ReactElement {
+function displayUnfoundFeatures(mfs: BaseFeature[]): React.ReactElement {
     if (mfs.length === 0) {
         return <div></div>;
     }
@@ -103,7 +97,7 @@ function displayUnfoundFeatures(mfs: ManagedFeatureForDisplay[]): React.ReactEle
     </div>;
 }
 
-function displayUnfoundFeature(mf: ManagedFeatureForDisplay, i: number): React.ReactElement {
+function displayUnfoundFeature(mf: BaseFeature, i: number): React.ReactElement {
     const link = !!mf.documentationUrl ?
         <a href={mf.documentationUrl}>{mf.displayName}</a> : mf.displayName;
     return <li className="unfound">
