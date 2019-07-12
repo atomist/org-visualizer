@@ -95,8 +95,8 @@ function displayUnfoundFeatures(mfs: ManagedFeatureForDisplay[]): React.ReactEle
         return <div></div>;
     }
     return <div>
-        <h2>Unseen Features</h2>
-        These features were not found in any project:
+        <h2>Unseen Aspects</h2>
+        These aspects were not found in any project:
         <ul>
             {mfs.map(displayUnfoundFeature)}
         </ul>
@@ -146,7 +146,7 @@ export function displayFeatures(props: OrgExplorerProps): React.ReactElement {
         {projectSummary}
 
         {/*actionItems*/}
-        <h2>Features</h2>
+        <h2>Aspects</h2>
         <div className="importantFeatures">
             <ul>
                 {props.importantFeatures.map(displayImportantFeature)}
@@ -168,12 +168,6 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         <ul>
             <li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
 
-        </ul>
-
-        <h3>Community</h3>
-        <ul>
-            <li key="community-1"><a href="./query?filter=true&name=path&path=elements.codeOfConduct.name&byOrg=true&otherLabel=No Code of Conduct :-(">Code of
-Conduct</a></li>
         </ul>
 
         <h3>Code</h3>
