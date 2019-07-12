@@ -54,7 +54,7 @@ import {
  * Well known reporters against our repo cohort.
  * Works against full analyses.
  */
-export const WellKnownReporters: Reporters<ProjectAnalysis> = {
+export const WellKnownReporters: Reporters = {
 
         fileCount: params =>
             treeBuilderFor<Analyzed>("fileCount", params)

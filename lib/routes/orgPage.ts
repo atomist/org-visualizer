@@ -17,7 +17,7 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
-    ConcreteIdeal,
+    ConcreteIdeal, FP,
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
@@ -56,7 +56,6 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
-    MelbaFingerprintForDisplay,
 } from "../feature/DefaultFeatureManager";
 import {
     FeatureManager,
@@ -104,9 +103,9 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
 
                 const actionableFingerprints = [];
                 // allManagedFingerprints(fingerprintCensus)
-                    // .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
-                    // .sort((a, b) => b.appearsIn - a.appearsIn)
-                    // .sort((a, b) => b.variants - a.variants);
+                // .filter(mf => mf.variants > fingerprintCensus.projectsAnalyzed / 10)
+                // .sort((a, b) => b.appearsIn - a.appearsIn)
+                // .sort((a, b) => b.variants - a.variants);
 
                 const importantFeatures: FeatureForDisplay[] = featureManager.features
                     .filter(f => !!f.displayName)
@@ -162,7 +161,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                 return res.send(`No project at ${JSON.stringify(id)}`);
             }
 
-            const featuresAndFingerprints = await featureManager.projectFingerprints(await store.fingerprintsForProject(id));
+            const featuresAndFingerprints = await projectFingerprints(featureManager, await store.fingerprintsForProject(id));
 
             // assign style based on ideal
             const ffd: ProjectFeatureForDisplay[] = featuresAndFingerprints.map(featureAndFingerprints => ({
@@ -212,8 +211,8 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                     dataUrl = !!req.query.filter ?
                         `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
                         `/api/v1/${workspaceId}/fingerprint/${
-                        encodeURIComponent(req.query.type)}/${
-                        encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
+                            encodeURIComponent(req.query.type)}/${
+                            encodeURIComponent(req.query.name)}?byOrg=${req.query.byOrg === "true"}`;
                 }
 
                 // tslint:disable-next-line
@@ -303,4 +302,39 @@ function displayStyleAccordingToIdeal(fingerprint: MelbaFingerprintForDisplay): 
         return redStyle;
     }
     return {};
+}
+
+export type MelbaFingerprintForDisplay = FP & {
+    ideal?: Ideal;
+    displayValue: string;
+    displayName: string;
+};
+
+export interface MelbaFeatureForDisplay {
+    feature: ManagedFeature;
+    fingerprints: MelbaFingerprintForDisplay[];
+}
+
+async function projectFingerprints(fm: FeatureManager, allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]> {
+    const result = [];
+    for (const feature of fm.features) {
+        const originalFingerprints =
+            _.sortBy(allFingerprintsInOneProject.filter(fp => feature.name === (fp.type || fp.name)), fp => fp.name);
+        if (originalFingerprints.length > 0) {
+            const fingerprints: MelbaFingerprintForDisplay[] = [];
+            for (const fp of originalFingerprints) {
+                fingerprints.push({
+                    ...fp,
+                    // ideal: await this.opts.idealResolver(fp.name),
+                    displayValue: defaultedToDisplayableFingerprint(feature)(fp),
+                    displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
+                });
+            }
+            result.push({
+                feature,
+                fingerprints,
+            });
+        }
+    }
+    return result;
 }

@@ -15,14 +15,7 @@
  */
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import {
-    AtomicFeature,
-    Feature,
-    FP,
-    Ideal,
-} from "@atomist/sdm-pack-fingerprints";
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { MelbaFeatureForDisplay } from "./DefaultFeatureManager";
+import { AtomicFeature, Feature, FP, Ideal, } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
@@ -125,9 +118,6 @@ export interface FeatureManager {
      * Find the feature that manages fingerprints of this type
      */
     featureFor(type: string): ManagedFeature | undefined;
-
-    // TODO does this UI logic belong here?
-    projectFingerprints(allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]>;
 
     /**
      * Function that can resolve ideal status for this feature

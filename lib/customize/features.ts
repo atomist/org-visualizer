@@ -33,7 +33,7 @@ import {
     JavaBuildFeature,
     StackFeature,
 } from "../feature/common/stackFeature";
-import { conditionalize } from "../feature/compose/oneOf";
+import { conditionalize } from "../feature/compose/conditionalize";
 import { ManagedFeature } from "../feature/FeatureManager";
 import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";

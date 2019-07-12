@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    FP,
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { FP, } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     FeatureManager,
@@ -53,17 +49,6 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
     }
 }
 
-export type MelbaFingerprintForDisplay = FP & {
-    ideal?: Ideal;
-    displayValue: string;
-    displayName: string;
-};
-
-export interface MelbaFeatureForDisplay {
-    feature: ManagedFeature;
-    fingerprints: MelbaFingerprintForDisplay[];
-}
-
 /**
  * Features must have unique names
  */
@@ -75,30 +60,6 @@ export class DefaultFeatureManager implements FeatureManager {
 
     public featureFor(type: string): ManagedFeature | undefined {
         return type ? this.features.find(f => f.name === type) : undefined;
-    }
-
-    public async projectFingerprints(allFingerprintsInOneProject: FP[]): Promise<MelbaFeatureForDisplay[]> {
-        const result = [];
-        for (const feature of this.features) {
-            const originalFingerprints =
-                _.sortBy(allFingerprintsInOneProject.filter(fp => feature.name === (fp.type || fp.name)), fp => fp.name);
-            if (originalFingerprints.length > 0) {
-                const fingerprints: MelbaFingerprintForDisplay[] = [];
-                for (const fp of originalFingerprints) {
-                    fingerprints.push({
-                        ...fp,
-                        // ideal: await this.opts.idealResolver(fp.name),
-                        displayValue: defaultedToDisplayableFingerprint(feature)(fp),
-                        displayName: defaultedToDisplayableFingerprintName(feature)(fp.name),
-                    });
-                }
-                result.push({
-                    feature,
-                    fingerprints,
-                });
-            }
-        }
-        return result;
     }
 
     public get undesirableUsageChecker(): UndesirableUsageChecker {
@@ -133,18 +94,4 @@ export function defaultedToDisplayableFingerprintName(feature?: ManagedFeature):
 
 export function defaultedToDisplayableFingerprint(feature?: ManagedFeature): (fpi: FP) => string {
     return (feature && feature.toDisplayableFingerprint) || (fp => fp && fp.data);
-}
-
-function addDisplayNameToIdeal(displayFingerprint: (fpi: FP) => string,
-                               ideal?: Ideal): Ideal & { displayValue: string } {
-    if (!ideal) {
-        return undefined;
-    }
-    const displayValue = isConcreteIdeal(ideal) ?
-        displayFingerprint(ideal.ideal) :
-        "eliminate";
-    return {
-        ...ideal,
-        displayValue,
-    };
 }

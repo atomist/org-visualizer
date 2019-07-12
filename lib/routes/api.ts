@@ -129,8 +129,6 @@ export function api(clientFactory: ClientFactory,
         express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
         express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
-                const repos = await store.loadWhere(whereFor(req));
-
                 if (req.params.name === "skew") {
                     const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id);
                     logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
@@ -156,6 +154,8 @@ export function api(clientFactory: ClientFactory,
                 const cannedQuery = allQueries[req.params.name]({
                     ...req.query,
                 });
+
+                const repos = await store.loadWhere(whereFor(req));
                 const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
                 const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
                 return res.json(data);
