@@ -32,19 +32,19 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { Aspects } from "./lib/customize/aspects";
 import { registerCategories } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
-import { Features } from "./lib/customize/features";
 import {
     CiFeature,
-    JavaBuildFeature,
+    JavaBuild,
     StackFeature,
 } from "./lib/feature/common/stackFeature";
 import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
-import { TypeScriptVersionFeature } from "./lib/feature/node/TypeScriptVersionFeature";
-import { DirectMavenDependenciesFeature } from "./lib/feature/spring/directMavenDependenciesFeature";
-import { SpringBootStarterFeature } from "./lib/feature/spring/springBootStarterFeature";
-import { SpringBootVersionFeature } from "./lib/feature/spring/springBootVersionFeature";
+import { TypeScriptVersion } from "./lib/feature/node/TypeScriptVersion";
+import { DirectMavenDependencies } from "./lib/feature/spring/directMavenDependencies";
+import { SpringBootStarter } from "./lib/feature/spring/springBootStarter";
+import { SpringBootVersion } from "./lib/feature/spring/springBootVersion";
 import { TravisScriptsFeature } from "./lib/feature/travis/travisFeatures";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
@@ -64,27 +64,27 @@ export const configuration: Configuration = configure(async sdm => {
             DockerFrom,
             DockerfilePath,
             DockerPorts,
-            SpringBootStarterFeature,
-            TypeScriptVersionFeature,
+            SpringBootStarter,
+            TypeScriptVersion,
             NpmDeps,
             TravisScriptsFeature,
             StackFeature,
             CiFeature,
-            JavaBuildFeature,
-            SpringBootVersionFeature,
-            DirectMavenDependenciesFeature,
+            JavaBuild,
+            SpringBootVersion,
+            DirectMavenDependencies,
         ];
         const handlers = [];
 
         registerCategories(DockerFrom, "Docker");
         registerCategories(DockerfilePath, "Docker");
         registerCategories(DockerPorts, "Docker");
-        registerCategories(SpringBootStarterFeature, "Java");
-        registerCategories(TypeScriptVersionFeature, "TypeScript");
+        registerCategories(SpringBootStarter, "Java");
+        registerCategories(TypeScriptVersion, "TypeScript");
         registerCategories(NpmDeps, "Node.js");
-        registerCategories(JavaBuildFeature, "Java");
-        registerCategories(SpringBootVersionFeature, "Java");
-        registerCategories(DirectMavenDependenciesFeature, "Java");
+        registerCategories(JavaBuild, "Java");
+        registerCategories(SpringBootVersion, "Java");
+        registerCategories(DirectMavenDependencies, "Java");
 
         if (mode === "online") {
             const pushImpact = new PushImpact();
@@ -143,7 +143,7 @@ export const configuration: Configuration = configure(async sdm => {
                 const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
                 const featureManager = new DefaultFeatureManager({
                     idealStore: resultStore,
-                    features: Features,
+                    features: Aspects,
                     undesirableUsageChecker: demoUndesirableUsageChecker,
                 });
                 const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [

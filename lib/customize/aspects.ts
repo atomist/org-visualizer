@@ -23,8 +23,8 @@ import {
     filesFeature,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { CodeOfConductFeature } from "../element/codeOfConduct";
-import { CodeOwnershipFeature } from "../element/codeOwnership";
+import { CodeOfConduct } from "../element/codeOfConduct";
+import { CodeOwnership } from "../element/codeOwnership";
 import { ManagedAspect } from "../feature/AspectRegistry";
 import {
     branchCount,
@@ -32,44 +32,44 @@ import {
 } from "../feature/common/count";
 import {
     CiFeature,
-    JavaBuildFeature,
+    JavaBuild,
     StackFeature,
 } from "../feature/common/stackFeature";
 import { conditionalize } from "../feature/compose/conditionalize";
-import { GitRecencyFeature } from "../feature/git/gitActivityScanner";
+import { GitRecency } from "../feature/git/gitActivityScanner";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
-import { TypeScriptVersionFeature } from "../feature/node/TypeScriptVersionFeature";
-import { pythonDependenciesFeature } from "../feature/python/pythonDependenciesFeature";
-import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDependenciesFeature";
-import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
-import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
+import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
+import { PythonDependencies } from "../feature/python/pythonDependencies";
+import { DirectMavenDependencies } from "../feature/spring/directMavenDependencies";
+import { SpringBootStarter } from "../feature/spring/springBootStarter";
+import { SpringBootVersion } from "../feature/spring/springBootVersion";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
 
 /**
  * The features managed by this SDM.
  * Modify this list to customize with your own features.
  */
-export const Features: ManagedAspect[] = [
+export const Aspects: ManagedAspect[] = [
     DockerFrom,
     DockerfilePath,
     DockerPorts,
-    SpringBootStarterFeature,
-    TypeScriptVersionFeature,
-    new CodeOwnershipFeature(),
+    SpringBootStarter,
+    TypeScriptVersion,
+    new CodeOwnership(),
     {
         ...NpmDeps,
         suggestedIdeals: (type, name) => idealsFromNpm(name),
     },
-    CodeOfConductFeature,
+    CodeOfConduct,
     new TsLintPropertyFeature(),
     TravisScriptsFeature,
     fileCountFeature,
     branchCount,
-    GitRecencyFeature,
+    GitRecency,
     StackFeature,
     CiFeature,
-    JavaBuildFeature,
+    JavaBuild,
     conditionalize(filesFeature({
             name: "node-git-ignore",
             displayName: "Node git ignore",
@@ -96,8 +96,8 @@ export const Features: ManagedAspect[] = [
         toDisplayableFingerprintName: () => "Spring git ignore",
         toDisplayableFingerprint: fp => fp.sha,
     }, async p => p.hasFile("pom.xml")),
-    SpringBootVersionFeature,
+    SpringBootVersion,
     // allMavenDependenciesFeature,    // This is expensive
-    DirectMavenDependenciesFeature,
-    pythonDependenciesFeature,
+    DirectMavenDependencies,
+    PythonDependencies,
 ];

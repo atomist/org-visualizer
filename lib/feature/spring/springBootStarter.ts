@@ -38,7 +38,7 @@ export type SpringBootStarterFingerprint = TypedFP<VersionedArtifact>;
  *
  * Only the version is displayed (or "inherited" if the version is empty).
  */
-export const SpringBootStarterFeature: Feature<SpringBootStarterFingerprint> = {
+export const SpringBootStarter: Feature<SpringBootStarterFingerprint> = {
     name: SpringBootStarterType,
     displayName: "Spring Boot Starter",
     extract: async p => {

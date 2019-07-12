@@ -19,20 +19,19 @@ import { TypedFP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "power-assert";
 import {
     CodeOfConduct,
-    CodeOfConductFeature,
 } from "../../lib/element/codeOfConduct";
 
 describe("codeOfConductScanner", () => {
 
     it("should find no code of conduct", async () => {
         const p = InMemoryProject.of();
-        const s = await CodeOfConductFeature.extract(p);
+        const s = await CodeOfConduct.extract(p);
         assert(!s);
     });
 
     it("should find test code of conduct", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: testCoC });
-        const s = await CodeOfConductFeature.extract(p);
+        const s = await CodeOfConduct.extract(p);
         assert(!!s);
         assert.strictEqual(s.data.content, testCoC);
         assert.strictEqual(s.data.title, "The Benign Code of Conduct");
@@ -40,7 +39,7 @@ describe("codeOfConductScanner", () => {
 
     it("should do its best with code of conduct without title", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: "meaningless" });
-        const s = await CodeOfConductFeature.extract(p);
+        const s = await CodeOfConduct.extract(p);
         assert(!!s);
         assert.strictEqual(s.data.content, "meaningless");
         assert(!s.data.title);

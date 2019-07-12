@@ -41,7 +41,7 @@ export const StackFeature: Feature = classificationFeature({
     },
 );
 
-export const JavaBuildFeature: Feature = classificationFeature({
+export const JavaBuild: Feature = classificationFeature({
         name: "javaBuild",
         displayName: "Java build tool",
         toDisplayableFingerprintName: () => "Java build tool",

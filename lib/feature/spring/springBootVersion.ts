@@ -25,7 +25,7 @@ import {
 
 const SpringBootVersionType = "spring-boot-version";
 
-export const SpringBootVersionFeature: Feature = {
+export const SpringBootVersion: Feature = {
     name: "springVersion",
     displayName: "Spring Boot Version",
 

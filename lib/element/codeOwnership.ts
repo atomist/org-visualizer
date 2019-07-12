@@ -56,7 +56,7 @@ export const CodeOwnershipExtractor: ExtractFingerprint =
         return undefined;
     };
 
-export class CodeOwnershipFeature implements Feature {
+export class CodeOwnership implements Feature {
 
     public readonly displayName: string = "Code Ownership";
 

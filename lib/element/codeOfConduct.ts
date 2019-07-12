@@ -33,7 +33,7 @@ export interface CodeOfConduct {
  * Find a code of conduct in a repository if possible
  * @constructor
  */
-export const CodeOfConductFeature: Feature<TypedFP<CodeOfConduct>> = {
+export const CodeOfConduct: Feature<TypedFP<CodeOfConduct>> = {
     name: "code-of-conduct",
     displayName: "Code of conduct",
     extract: async p => {

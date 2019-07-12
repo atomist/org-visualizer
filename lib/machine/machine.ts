@@ -31,7 +31,7 @@ import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { Features } from "../customize/features";
+import { Aspects } from "../customize/aspects";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 import { IdealStore } from "../feature/AspectRegistry";
 
@@ -43,7 +43,7 @@ import { IdealStore } from "../feature/AspectRegistry";
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         // .withScanner(packageLockScanner)
-        .withFeatures(Features)
+        .withFeatures(Aspects)
         // This one is crazy expensive so may want to skip it
          .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
         // .withScorer(idealConvergenceScorer(featureManager))

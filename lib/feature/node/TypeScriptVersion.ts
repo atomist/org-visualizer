@@ -31,7 +31,7 @@ const PackageJsonName = "package.json";
  * in package.json.
  *
  */
-export const TypeScriptVersionFeature: Feature = {
+export const TypeScriptVersion: Feature = {
     name: TypeScriptVersionType,
     displayName: "TypeScript Version",
     documentationUrl:

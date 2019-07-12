@@ -27,7 +27,7 @@ const MavenDirectDep = "maven-direct-dep";
 /**
  * Emits direct dependencies only
  */
-export const DirectMavenDependenciesFeature: Feature = {
+export const DirectMavenDependencies: Feature = {
     name: MavenDirectDep,
     displayName: "Direct Maven dependencies",
     extract: async p => {

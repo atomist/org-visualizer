@@ -16,7 +16,7 @@
 
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { chainUndesirableUsageCheckers } from "../feature/AspectRegistry";
-import { TypeScriptVersionType } from "../feature/node/TypeScriptVersionFeature";
+import { TypeScriptVersionType } from "../feature/node/TypeScriptVersion";
 
 /**
  * Demonstration of code-driven flagging of undesirable uses

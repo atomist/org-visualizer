@@ -43,7 +43,7 @@ const gitRecencyExtractor: ExtractFingerprint =
         };
     };
 
-export const GitRecencyFeature: Feature = {
+export const GitRecency: Feature = {
     name: "git-recency",
     displayName: undefined,
     extract: gitRecencyExtractor,

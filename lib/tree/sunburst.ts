@@ -115,7 +115,8 @@ export function splitBy<T = {}>(t: SunburstTree,
             const oldKids = l.children;
             l.children = [];
             for (const name of distinctNames) {
-                const children = oldKids.filter(isSunburstTree).filter(k => descendantPicker(k).some(leaf => descendantClassifier(leaf as any) === name));
+                const children = oldKids.filter(isSunburstTree)
+                    .filter(k => descendantPicker(k).some(leaf => descendantClassifier(leaf as any) === name));
                 if (children.length > 0) {
                     l.children.push({ name, children });
                 }

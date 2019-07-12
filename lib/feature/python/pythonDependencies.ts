@@ -38,7 +38,7 @@ export interface PythonDependency {
  *
  * The displayed value is the whole line, minus the name.
  */
-export const pythonDependenciesFeature: Feature = {
+export const PythonDependencies: Feature = {
     name: PythonDirectDepType,
     displayName: "Python dependencies",
     extract: async p => {

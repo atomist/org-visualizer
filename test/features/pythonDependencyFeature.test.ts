@@ -18,7 +18,7 @@ import * as assert from "assert";
 import {
     findDependenciesFromRequirements,
     PythonDependency,
-} from "../../lib/feature/python/pythonDependenciesFeature";
+} from "../../lib/feature/python/pythonDependencies";
 
 describe("parsing requirements.txt", () => {
     it("can see a lib with no specifier", () => {
