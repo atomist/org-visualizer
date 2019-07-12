@@ -21,6 +21,8 @@ import { SunburstTree } from "../tree/sunburst";
 
 export interface TreeQuery {
 
+    workspaceId: string;
+
     clientFactory: () => Client;
 
     featureName: string;
@@ -35,10 +37,8 @@ export interface TreeQuery {
 
 /**
  * Without fingerprints
- * @param {string} whereClause
- * @return {string}
  */
-function without(whereClause: string) {
+function without(byName: boolean) {
     return `UNION ALL
             SELECT  null as id, $1 as name, null as sha, null as data, $1 as type,
             (
@@ -47,16 +47,18 @@ function without(whereClause: string) {
                   SELECT
                     repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_snapshots
-                   WHERE ${whereClause} AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id
+                   WHERE workspace_id = $1 
+                   AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id
                     FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in
-                        (SELECT id from fingerprints where fingerprints.feature_name = $1 and fingerprints.name = $2))
+                        (SELECT id from fingerprints where fingerprints.feature_name = $2 
+                            AND fingerprints.name ${byName ? "=" : "<>"} $3))
                 ) repo
          )
          children`;
 }
 
 // Returns children
-export function fingerprintsChildrenQuery(whereClause: string, includeWithout: boolean) {
+export function fingerprintsChildrenQuery(byName: boolean, includeWithout: boolean) {
     const sql = `
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
 FROM (
@@ -70,10 +72,10 @@ FROM (
                   FROM repo_fingerprints, repo_snapshots
                    WHERE repo_fingerprints.fingerprint_id = fingerprints.id
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
-                    AND ${whereClause}
+                    AND workspace_id = $1
                 ) repo
-         ) children FROM fingerprints WHERE fingerprints.feature_name = $1 and fingerprints.name = $2
-         ${includeWithout ? without(whereClause) : ""}
+         ) children FROM fingerprints WHERE fingerprints.feature_name = $2 and fingerprints.name ${byName ? "=" : "<>"} $3
+         ${includeWithout ? without(byName) : ""}
 ) fp) as fingerprint_groups
 `;
     logger.debug("Running SQL\n%s", sql);
@@ -88,7 +90,7 @@ FROM (
 export async function repoTree(opts: TreeQuery): Promise<SunburstTree> {
     return doWithClient(opts.clientFactory, async client => {
         try {
-            const results = await client.query(opts.query, [opts.featureName, opts.rootName]);
+            const results = await client.query(opts.query, [opts.workspaceId, opts.featureName, opts.rootName]);
             const data = results.rows[0];
             return {
                 name: opts.rootName,

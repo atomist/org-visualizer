@@ -35,6 +35,7 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
+    descendants,
     mergeSiblings,
     splitBy,
     SunburstTree,
@@ -104,15 +105,27 @@ export function api(clientFactory: ClientFactory,
         /* the d3 sunburst on the /query page uses this */
         express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
         express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+            const byName = req.params.name !== "*";
+            let workspaceId = req.params.workspace_id;
+            if (workspaceId === "*") {
+                workspaceId = "local";
+            }
             try {
                 const tree = await repoTree({
+                    workspaceId,
                     clientFactory,
-                    query: fingerprintsChildrenQuery(whereFor(req), req.query.otherLabel === "true"),
+                    query: fingerprintsChildrenQuery(byName, req.query.otherLabel === "true"),
                     rootName: req.params.name,
                     featureName: req.params.type,
                 });
                 logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 resolveFeatureNames(featureManager, tree);
+                if (!byName) {
+                    splitBy<{ owner: string }>(tree,
+                        l => _.get(l, "data.image"),
+                        0,
+                        l => descendants(l).filter(n => !!_.get(n, "data.image")));
+                }
                 if (req.query.byOrg === "true") {
                     splitBy<{ owner: string }>(tree, l => l.owner, 0);
                 } else if (req.query.byThing) {

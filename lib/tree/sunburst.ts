@@ -99,20 +99,23 @@ export function trimOuterRim(t: SunburstTree): void {
 }
 
 /**
- * Introduce a new level split by by the given classifier for terminals
+ * Introduce a new level split by by the given classifier for descendants
  */
-export function splitBy<T = {}>(t: SunburstTree, leafClassifier: (t: SunburstLeaf & T) => string, targetDepth: number): void {
+export function splitBy<T = {}>(t: SunburstTree,
+                                descendantClassifier: (t: SunburstLeaf & T) => string,
+                                targetDepth: number,
+                                descendantPicker: (l: SunburstTree) => SunburstLevel[] = leavesUnder): void {
     visit(t, (l, depth) => {
         if (depth === targetDepth && isSunburstTree(l)) {
             // Split children
-            const leaves = leavesUnder(l);
+            const leaves = descendantPicker(l);
             logger.info("Found %d leaves for %s", leaves.length, t.name);
             // Introduce a new level for each classification
-            const distinctNames = _.uniq(leaves.map(leaf => leafClassifier(leaf as any)));
+            const distinctNames = _.uniq(leaves.map(leaf => descendantClassifier(leaf as any)));
             const oldKids = l.children;
             l.children = [];
             for (const name of distinctNames) {
-                const children = oldKids.filter(k => leavesUnder(k).some(leaf => leafClassifier(leaf as any) === name));
+                const children = oldKids.filter(isSunburstTree).filter(k => descendantPicker(k).some(leaf => descendantClassifier(leaf as any) === name));
                 if (children.length > 0) {
                     l.children.push({ name, children });
                 }
@@ -139,6 +142,18 @@ export function leavesUnder(t: SunburstLevel): SunburstLeaf[] {
     return leaves;
 }
 
+export function descendants(t: SunburstLevel): SunburstLevel[] {
+    const descs: SunburstLevel[] = [];
+    visit(t, l => {
+        descs.push(l);
+        if (isSunburstTree(l)) {
+            descs.push(..._.flatten(l.children.map(descendants)));
+        }
+        return true;
+    });
+    return _.uniq(descs);
+}
+
 export function childCount(l: SunburstLevel): number {
     return isSunburstTree(l) ? l.children.length : 0;
 }
@@ -146,7 +161,6 @@ export function childCount(l: SunburstLevel): number {
 export function childrenOf(l: SunburstLevel): SunburstLevel[] {
     return isSunburstTree(l) ? l.children : [];
 }
-
 
 /**
  * Merge these trees. They must have the same name.
