@@ -44,6 +44,7 @@ import { DirectMavenDependenciesFeature } from "../feature/spring/directMavenDep
 import { SpringBootStarterFeature } from "../feature/spring/springBootStarterFeature";
 import { SpringBootVersionFeature } from "../feature/spring/springBootVersionFeature";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { CodeOfConductFeature } from "../element/codeOfConduct";
 
 /**
  * The features managed by this SDM.
@@ -60,6 +61,7 @@ export const Features: ManagedFeature[] = [
         ...NpmDeps,
         suggestedIdeals: (type, name) => idealsFromNpm(name),
     },
+    CodeOfConductFeature,
     new TsLintPropertyFeature(),
     TravisScriptsFeature,
     fileCountFeature,

@@ -33,7 +33,7 @@
     "@atomist/sdm-pack-analysis-spring": "2.0.0-master.20190428091941",
     "@atomist/sdm-pack-build": "^1.0.5",
     "@atomist/sdm-pack-docker": "^2.0.2",
-    "@atomist/sdm-pack-fingerprints": "^3.2.2",
+    "@atomist/sdm-pack-fingerprints": "^3.2.3-master.20190712041903",
     "@atomist/sdm-pack-node": "^1.1.1",
     "@atomist/sdm-pack-sloc": "1.0.3-master.20190502175705",
     "@atomist/sdm-pack-spring": "^2.0.0",

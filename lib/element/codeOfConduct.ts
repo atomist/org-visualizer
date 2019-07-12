@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { Project } from "@atomist/automation-client";
-import {
-    TechnologyElement,
-    TechnologyScanner,
-} from "@atomist/sdm-pack-analysis";
+import { Feature, sha256, TypedFP } from "@atomist/sdm-pack-fingerprints";
 
-export interface CodeOfConduct extends TechnologyElement {
+export interface CodeOfConduct {
 
     /**
      * Content of the code of conduct
@@ -37,20 +33,31 @@ export interface CodeOfConduct extends TechnologyElement {
  * Find a code of conduct in a repository if possible
  * @constructor
  */
-export const CodeOfConductScanner: TechnologyScanner<CodeOfConduct> =
-    async (p: Project) => {
-        const codeOfConductFile = await p.getFile("CODE_OF_CONDUCT.md");
+export const CodeOfConductFeature: Feature<TypedFP<CodeOfConduct>> = {
+    name: "code-of-conduct",
+    displayName: "Code of conduct",
+    extract: async p => {
+        const codeOfConductFile = await
+            p.getFile("CODE_OF_CONDUCT.md");
         if (codeOfConductFile) {
             const content = await codeOfConductFile.getContent();
-            return {
-                name: "codeOfConduct",
-                tags: ["community"],
+            const data = {
                 title: titleOf(content),
                 content,
             };
+            return {
+                name: "code-of-conduct",
+                type: "code-of-conduct",
+                data,
+                sha: sha256(JSON.stringify(data)),
+            };
         }
         return undefined;
-    };
+    },
+    toDisplayableFingerprint: fpi => {
+        return fpi.data.title || "untitled";
+    },
+};
 
 const markdownTitleRegex = /^# (.*)\n/;
 
