@@ -47,10 +47,10 @@ function without(byName: boolean) {
                   SELECT
                     repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_snapshots
-                   WHERE workspace_id = $1 
+                   WHERE workspace_id = $1
                    AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id
                     FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in
-                        (SELECT id from fingerprints where fingerprints.feature_name = $2 
+                        (SELECT id from fingerprints where fingerprints.feature_name = $2
                             AND fingerprints.name ${byName ? "=" : "<>"} $3))
                 ) repo
          )

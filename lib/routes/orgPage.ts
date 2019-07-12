@@ -232,7 +232,7 @@ export function orgPage(featureManager: FeatureManager, store: ProjectAnalysisRe
                         "/lib/d3.v4.min.js",
                         "/js/sunburst.js",
                     ]));
-            }
+            },
         );
 
     };

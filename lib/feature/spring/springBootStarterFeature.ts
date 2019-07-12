@@ -19,10 +19,10 @@ import {
     FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
+import { TypedFP } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 import { DocumentedFeature } from "../DocumentedFeature";
-import { TypedFP } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 
 const SpringBootStarterType = "spring-boot-starter";
 

@@ -71,7 +71,7 @@ export function mergeSiblings(t: SunburstTree,
             for (const name of Object.keys(grouped)) {
                 let children: SunburstLevel[] = _.flatten(grouped[name]);
                 if (name === "No") {
-                    children = _.flatten(children.map(c => childrenOf(c)));
+                    children = _.flatten(children.map(childrenOf));
                 }
                 l.children.push({
                     name,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Ideal, isConcreteIdeal, } from "@atomist/sdm-pack-fingerprints";
+import { Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { FingerprintKind } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { treeBuilderFor } from "../routes/wellKnownReporters";
