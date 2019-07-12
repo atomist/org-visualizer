@@ -17,6 +17,7 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -52,7 +53,6 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
-import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 
 /**
  * Public API routes, returning JSON
