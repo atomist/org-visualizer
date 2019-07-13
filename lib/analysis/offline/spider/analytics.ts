@@ -34,7 +34,7 @@ export async function computeAnalytics(persister: ProjectAnalysisResultStore, wo
         return { workspaceId, kind, cohortAnalysis };
     });
 
-    persister.persistAnalytics(persistThese);
+    await persister.persistAnalytics(persistThese);
 }
 
 /**

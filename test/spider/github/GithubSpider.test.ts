@@ -89,6 +89,7 @@ const hardCodedPlace = "place.json";
 
 class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
+
     public persisted: ProjectAnalysisResult[] = [];
     public count(): Promise<number> {
         throw new Error("Method not implemented.");
@@ -135,7 +136,8 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
     public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
         return undefined;
     }
-    persistAnalytics(workspaceId: string, kind: Pick<FP, "type" | "name">, cohortAnalysis: CohortAnalysis): Promise<boolean> {
+
+    persistAnalytics(params: { workspaceId: string; kind: Pick<FP, "type" | "name">; cohortAnalysis: CohortAnalysis; }[]): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
 }
