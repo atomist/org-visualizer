@@ -16,8 +16,8 @@
 
 import { RepoRef } from "@atomist/automation-client";
 import { FP } from "@atomist/sdm-pack-fingerprints";
-import { CohortAnalysis } from "../../../tree/sunburst";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
+import { CohortAnalysis } from "../spider/analytics";
 import {
     PersistenceResult,
     SpiderFailure,
@@ -92,14 +92,12 @@ export interface ProjectAnalysisResultStore {
 
     fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]>;
 
-    computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void>;
-
     /**
-     * Compute all analytics for this workspace. Slow but only used locally for spidering.
+     * Persist a record of analytics
      * @param {string} workspaceId
      * @return {Promise<void>}
      */
-    computeAnalytics(workspaceId: string): Promise<void>;
+    persistAnalytics(workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis): Promise<boolean>;
 
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name

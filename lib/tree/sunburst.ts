@@ -208,28 +208,3 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
     // console.log(JSON.stringify(result));
     return result;
 }
-
-export interface CohortAnalysis {
-    count: number;
-    variants: number;
-    entropy: number;
-}
-
-/**
- * Analyze a cohort of the same kind of fingerprints
- * @param {() => Promise<FP[]>} typeAndNameQuery
- * @return {Promise<CohortAnalysis>}
- */
-export async function analyzeCohort(typeAndNameQuery: () => Promise<FP[]>): Promise<CohortAnalysis> {
-    const fps: FP[] = await typeAndNameQuery();
-    const groups: Record<string, FP[]> = _.groupBy(fps, fp => fp.sha);
-    const total: number = fps.length;
-    const entropy = -1 * Object.values(groups).reduce(
-        (agg, fp: FP[]) => {
-            const p: number = fp.length / total;
-            return agg + p * Math.log(p);
-        },
-        0,
-    );
-    return { entropy, variants: Object.values(groups).length, count: fps.length };
-}

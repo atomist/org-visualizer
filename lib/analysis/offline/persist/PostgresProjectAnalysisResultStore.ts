@@ -32,11 +32,11 @@ import {
     Analyzed,
     IdealStore,
 } from "../../../feature/AspectRegistry";
-import { analyzeCohort } from "../../../tree/sunburst";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
 } from "../../ProjectAnalysisResult";
+import { CohortAnalysis } from "../spider/analytics";
 import { SpideredRepo } from "../SpideredRepo";
 import {
     ClientFactory,
@@ -105,10 +105,6 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
 
     public async persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
         return this.persistAnalysisResults(isProjectAnalysisResult(repos) ? [repos] : repos);
-    }
-
-    public async computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {
-        return calculateAndPersistEntropy(this.clientFactory, workspaceId, type, name);
     }
 
     public async distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
@@ -194,22 +190,15 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
 
     }
 
-    public async computeAnalytics(workspaceId: string): Promise<void> {
-        const allFingerprints = await fingerprintsInWorkspace(this.clientFactory, workspaceId);
-        const fingerprintKinds = await this.distinctFingerprintKinds(workspaceId);
-
-        for (const kind of fingerprintKinds) {
-            const fingerprintsOfKind = allFingerprints.filter(f => f.type === kind.type && f.name === kind.name);
-            const cohortAnalysis = await analyzeCohort(async () => fingerprintsOfKind);
-            await doWithClient(this.clientFactory, async client => {
-                const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
+    public async persistAnalytics(workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis): Promise<boolean> {
+        return doWithClient(this.clientFactory, async client => {
+            const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
-                const rows = await client.query(sql, [kind.type, kind.name, workspaceId,
-                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
-                return rows.rows;
-            });
-        }
+            await client.query(sql, [kind.type, kind.name, workspaceId,
+            cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+            return true;
+        });
     }
 
     private async persistAnalysisResults(
@@ -378,30 +367,6 @@ async function fingerprintsForProject(clientFactory: ClientFactory,
                 data: row.data,
             };
         });
-    }, []);
-}
-
-/**
- * Calculate and persist entropy for one fingerprint kind
- * @param {ClientFactory} clientFactory
- * @param {string} workspaceId
- * @param {string} type
- * @param {string} name
- * @return {Promise<void>}
- */
-async function calculateAndPersistEntropy(clientFactory: ClientFactory,
-                                          workspaceId: string,
-                                          type: string,
-                                          name: string): Promise<void> {
-    const fingerprints = await fingerprintsInWorkspace(clientFactory, workspaceId, type, name);
-    const cohortAnalysis = await analyzeCohort(async () => fingerprints);
-    await doWithClient(clientFactory, async client => {
-        const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
-        values ($1, $2, $3, $4, $5, $6)
-        ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
-        const rows = await client.query(sql, [type, name, workspaceId, cohortAnalysis.entropy,
-            cohortAnalysis.variants, cohortAnalysis.count]);
-        return rows.rows;
     }, []);
 }
 

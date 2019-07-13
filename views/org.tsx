@@ -1,6 +1,6 @@
 import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import * as React from "react";
-import { CohortAnalysis } from "../lib/tree/sunburst";
+import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 
 export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {

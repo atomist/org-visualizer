@@ -26,6 +26,7 @@ import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
 import { PersistResult } from "../../persist/ProjectAnalysisResultStore";
+import { computeAnalytics } from "../analytics";
 import {
     analyze,
     AnalyzeResults,
@@ -107,14 +108,13 @@ export class GitHubSpider implements Spider {
         const analyzeResults = _.reduce(analyzeAndPersistResults,
             combineAnalyzeAndPersistResult,
             emptyAnalyzeAndPersistResult);
-        await opts.persister.computeAnalytics(opts.workspaceId);
         return {
             repositoriesDetected: repoCount,
             projectsDetected: analyzeResults.projectCount,
             failed:
                 [...errors,
-                    ...analyzeResults.failedToPersist,
-                    ...analyzeResults.failedToCloneOrAnalyze],
+                ...analyzeResults.failedToPersist,
+                ...analyzeResults.failedToCloneOrAnalyze],
             keptExisting: keepExisting,
             persistedAnalyses: analyzeResults.persisted,
         };

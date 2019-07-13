@@ -30,6 +30,7 @@ import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../feature/AspectRegistry";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import {
@@ -202,7 +203,7 @@ export function api(clientFactory: ClientFactory,
 
         // Calculate and persist entropy for this fingerprint
         express.put("/api/v1/:workspace/entropy/:type/:name", ...handlers, async (req, res) => {
-            await store.computeAnalyticsForFingerprintKind(req.params.workspace, req.params.type, req.params.name);
+            await computeAnalyticsForFingerprintKind(store, req.params.workspace, req.params.type, req.params.name);
             res.sendStatus(201);
         });
     };
