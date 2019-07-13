@@ -97,7 +97,7 @@ export interface ProjectAnalysisResultStore {
      * @param {string} workspaceId
      * @return {Promise<void>}
      */
-    persistAnalytics(workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis): Promise<boolean>;
+    persistAnalytics(params: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean>;
 
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name

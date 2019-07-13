@@ -28,11 +28,13 @@ export async function computeAnalytics(persister: ProjectAnalysisResultStore, wo
     const allFingerprints = await persister.fingerprintsInWorkspace(workspaceId);
     const fingerprintKinds = await persister.distinctFingerprintKinds(workspaceId);
 
-    await Promise.all(fingerprintKinds.map(async (kind: FingerprintKind) => {
+    const persistThese = fingerprintKinds.map((kind: FingerprintKind) => {
         const fingerprintsOfKind = allFingerprints.filter(f => f.type === kind.type && f.name === kind.name);
         const cohortAnalysis = analyzeCohort(fingerprintsOfKind);
-        return persister.persistAnalytics(workspaceId, kind, cohortAnalysis);
-    }));
+        return { workspaceId, kind, cohortAnalysis };
+    });
+
+    persister.persistAnalytics(persistThese);
 }
 
 /**
@@ -49,7 +51,7 @@ export async function computeAnalyticsForFingerprintKind(persister: ProjectAnaly
                                                          name: string): Promise<void> {
     const fingerprints = await persister.fingerprintsInWorkspace(workspaceId, type, name);
     const cohortAnalysis = analyzeCohort(fingerprints);
-    await persister.persistAnalytics(workspaceId, { type, name }, cohortAnalysis);
+    await persister.persistAnalytics([{ workspaceId, kind: { type, name }, cohortAnalysis }]);
 }
 
 export interface CohortAnalysis {

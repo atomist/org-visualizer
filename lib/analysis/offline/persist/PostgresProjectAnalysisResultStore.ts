@@ -190,13 +190,15 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
 
     }
 
-    public async persistAnalytics(workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis): Promise<boolean> {
+    public async persistAnalytics(data: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean> {
         return doWithClient(this.clientFactory, async client => {
-            const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
+            for (const { kind, workspaceId, cohortAnalysis } of data) {
+                const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
-            await client.query(sql, [kind.type, kind.name, workspaceId,
-            cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                await client.query(sql, [kind.type, kind.name, workspaceId,
+                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+            }
             return true;
         });
     }
