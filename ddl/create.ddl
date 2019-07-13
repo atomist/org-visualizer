@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS repo_snapshots;
 
 DROP TABLE IF EXISTS fingerprint_analytics;
 
+DROP TABLE IF EXISTS ideal_fingerprints;
+
 CREATE TABLE repo_snapshots (
  id varchar NOT NULL PRIMARY KEY,
  workspace_id varchar NOT NULL,
