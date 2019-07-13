@@ -16,7 +16,10 @@
 
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { FingerprintKind, ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
+import {
+    FingerprintKind,
+    ProjectAnalysisResultStore,
+} from "../persist/ProjectAnalysisResultStore";
 
 /**
  * Retrieve all fingerprints, then compute and store fingerprint_analytics for the whole workspace
