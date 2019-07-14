@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { Analyzed } from "../feature/AspectRegistry";
 
 export interface Term {
     name: string;
-    predicate: (pas: ProjectAnalysisResult) => boolean;
+    predicate: (pas: Analyzed) => boolean;
 }
 
 export interface Terms {
@@ -31,7 +31,7 @@ export interface Partition {
     total: number;
 }
 
-export function suggestPartitions(repos: ProjectAnalysisResult[], terms: Terms): Partition[] {
+export function suggestPartitions(repos: Analyzed[], terms: Terms): Partition[] {
     const partitions: Partition[] = [];
     for (const term of terms.terms) {
         const matching = repos.filter(term.predicate).length;

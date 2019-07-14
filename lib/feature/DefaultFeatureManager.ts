@@ -82,16 +82,16 @@ export class DefaultFeatureManager implements AspectRegistry {
     }) {
         opts.features.forEach(f => {
             if (!f) {
-                throw new Error("A null feature was passed in");
+                throw new Error("A null aspect was passed in");
             }
         });
     }
 }
 
-export function defaultedToDisplayableFingerprintName(feature?: ManagedAspect): (fingerprintName: string) => string {
-    return (feature && feature.toDisplayableFingerprintName) || (name => name);
+export function defaultedToDisplayableFingerprintName(aspect?: ManagedAspect): (fingerprintName: string) => string {
+    return (aspect && aspect.toDisplayableFingerprintName) || (name => name);
 }
 
-export function defaultedToDisplayableFingerprint(feature?: ManagedAspect): (fpi: FP) => string {
-    return (feature && feature.toDisplayableFingerprint) || (fp => fp && fp.data);
+export function defaultedToDisplayableFingerprint(aspect?: ManagedAspect): (fpi: FP) => string {
+    return (aspect && aspect.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

@@ -81,7 +81,7 @@ function renderStaticReactNode(body: ReactElement,
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisResultStore): ExpressCustomizer {
+export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
         express.use(bodyParser.json());       // to support JSON-encoded bodies
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -104,9 +104,9 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                     const fingerprintUsage = await store.fingerprintUsageForType("*");
 
                     const actionableFingerprints = [];
-                    const ideals = await featureManager.idealStore.loadIdeals("local");
+                    const ideals = await aspectRegistry.idealStore.loadIdeals("local");
 
-                    const importantFeatures: AspectForDisplay[] = featureManager.features
+                    const importantFeatures: AspectForDisplay[] = aspectRegistry.features
                         .filter(f => !!f.displayName)
                         .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
                         .map(feature => ({
@@ -129,7 +129,7 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                         }
                     }
 
-                    const unfoundFeatures: BaseFeature[] = featureManager.features
+                    const unfoundFeatures: BaseFeature[] = aspectRegistry.features
                         .filter(f => !!f.displayName)
                         .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 
@@ -173,7 +173,7 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                 return res.send(`No project at ${JSON.stringify(id)}`);
             }
 
-            const aspectsAndFingerprints = await projectFingerprints(featureManager, await store.fingerprintsForProject(id));
+            const aspectsAndFingerprints = await projectFingerprints(aspectRegistry, await store.fingerprintsForProject(id));
 
             // assign style based on ideal
             const ffd: ProjectFeatureForDisplay[] = aspectsAndFingerprints.map(featureAndFingerprints => ({
@@ -197,7 +197,6 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                 let currentIdealForDisplay: CurrentIdealForDisplay;
                 const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
-                let fingerprintDisplayName: string = "";
                 const workspaceId = req.query.workspaceId || "*";
                 const queryString = jsonToQueryString(req.query);
 
@@ -213,8 +212,8 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                 }
 
                 // tslint:disable-next-line
-                const feature = featureManager.aspectOf(req.query.type);
-                fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
+                const feature = aspectRegistry.aspectOf(req.query.type);
+                const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
 
                 function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
                     if (!ideal) {
@@ -226,7 +225,7 @@ export function orgPage(featureManager: AspectRegistry, store: ProjectAnalysisRe
                     return { displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal) };
                 }
 
-                currentIdealForDisplay = idealDisplayValue(await featureManager.idealStore
+                currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
                     .loadIdeal("local", req.query.type, req.query.name));
 
                 logger.info("Data url=%s", dataUrl);

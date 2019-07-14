@@ -22,6 +22,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as child_process from "child_process";
 import * as util from "util";
+import { daysSince } from "./dateUtils";
 
 const exec = util.promisify(child_process.exec);
 
@@ -43,10 +44,18 @@ const gitRecencyExtractor: ExtractFingerprint =
         };
     };
 
+/**
+ * Classify since last commit
+ */
 export const GitRecency: Feature = {
     name: "git-recency",
-    displayName: undefined,
+    displayName: "Recency of git activity",
     extract: gitRecencyExtractor,
+    toDisplayableFingerprintName: () => "Recency of git activity",
+    toDisplayableFingerprint: fp => {
+        const date = new Date(fp.data);
+        return lastDateToActivityBand(date);
+    },
 };
 
 // export const gitActivityExtractor: ExtractFingerprint =
@@ -72,4 +81,18 @@ export const GitRecency: Feature = {
  */
 function sinceDays(days: number): string {
     return `git log --all --since=${days}.days --pretty=oneline | wc -l`;
+}
+
+function lastDateToActivityBand(date: Date): string {
+    const days = daysSince(date);
+    if (days > 500) {
+        return "prehistoric";
+    }
+    if (days > 365) {
+        return "ancient";
+    }
+    if (days > 30) {
+        return "slow";
+    }
+    return "active";
 }

@@ -20,7 +20,7 @@ import * as assert from "power-assert";
 import {
     CodeOfConduct,
     CodeOfConductData,
-} from "../../lib/element/codeOfConduct";
+} from "../../lib/feature/community/codeOfConduct";
 
 describe("codeOfConduct", () => {
 

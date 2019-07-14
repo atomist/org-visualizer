@@ -121,7 +121,7 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
 export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div><h2>No projects analyzed</h2>
-            Use the `spider` command to investigate some projects.
+            Use the <pre>spider</pre> command to investigate some projects.
             See <a href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the README</a> for details.
         </div>;
     }
@@ -168,19 +168,16 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         <ul>
             <li key="code-1"><a href="./query?skew=true&byOrg=true">Entropy explorer</a></li>
 
-            <li key="code-2"><a href="./query?filter=true&name=featureCount&byOrg=true">Feature count by project</a></li>
+            <li key="code-2"><a href="./query?filter=true&name=featureCount&byOrg=true">Aspect count by project</a></li>
 
             <li key="code-3"><a href="./query?filter=true&name=fileCount&byOrg=true">Repo filecount</a></li>
             <li key="code-4"><a href="./query?filter=true&name=branchCount&byOrg=true">Branch count</a></li>
-
-            <li key="code-4a"><a href="./query?filter=true&name=recency&byOrg=true">Commit recency</a></li>
 
             <li key="code-5"><a href="./query?filter=true&name=langs&byOrg=true">Language breakdown for all projects</a></li>
             <li key="code-6"><a href="./query?filter=true&name=loc&byOrg=true">Repo sizes</a></li>
             <li key="code-7"><a href="./query?filter=true&name=mavenDependencyCount&byOrg=true">Number of Maven dependencies</a></li>
             <li key="code-8"><a href="./query?filter=true&name=npmDependencyCount&byOrg=true">Number of npm dependencies</a></li>
 
-            <li key="code-9"><a href="./query?filter=true&name=licenses&byOrg=true">package.json license</a></li>
         </ul>
 
         <h2>Custom fingerprint</h2>

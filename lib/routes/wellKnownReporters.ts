@@ -97,52 +97,6 @@ export const WellKnownReporters: Reporters = {
                     };
                 }),
 
-        recency: params =>
-            treeBuilderFor<Analyzed>("recency", params)
-                .group({
-                    name: "size",
-                    by: ar => {
-                        const fp = ar.fingerprints.find(f => f.name === "git-recency");
-                        if (!fp) {
-                            return "unknown";
-                        }
-                        const date = new Date(fp.data);
-                        const days = daysSince(date);
-                        if (days > 500) {
-                            return "prehistoric";
-                        }
-                        if (days > 365) {
-                            return "ancient";
-                        }
-                        if (days > 30) {
-                            return "slow";
-                        }
-                        return "active";
-                    },
-                })
-                .renderWith(defaultAnalyzedRenderer(ar => {
-                    const fp = ar.fingerprints.find(f => f.name === "git-recency");
-                    if (!fp) {
-                        return 1;
-                    }
-                    const date = new Date(fp.data);
-                    return date ?
-                        daysSince(date) : 1;
-                })),
-
-        licenses: params =>
-            treeBuilderFor<ProjectAnalysis>("licenses", params)
-                .group({
-                    name: "license",
-                    by: ar => {
-                        if (!ar.elements.node) {
-                            return "not npm";
-                        }
-                        return _.get(ar, "elements.node.packageJson.license", "No license");
-                    },
-                })
-                .renderWith(defaultAnalyzedRenderer()),
-
         skew: () => {
             return {
                 toSunburstTree: async originalQuery => {
@@ -457,11 +411,4 @@ export function featureReport(type: string, fm: AspectRegistry, allMatching: FP[
                 size: allMatching.filter(a => fp.sha === a.sha).length,
             };
         });
-}
-
-const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-
-function daysSince(date: Date): number {
-    const now = new Date();
-    return Math.round(Math.abs((now.getTime() - date.getTime()) / oneDay));
 }

@@ -39,11 +39,6 @@ export async function computeAnalytics(persister: ProjectAnalysisResultStore, wo
 
 /**
  * Calculate and persist entropy for one fingerprint kind
- * @param {ClientFactory} clientFactory
- * @param {string} workspaceId
- * @param {string} type
- * @param {string} name
- * @return {Promise<void>}
  */
 export async function computeAnalyticsForFingerprintKind(persister: ProjectAnalysisResultStore,
                                                          workspaceId: string,
@@ -54,6 +49,9 @@ export async function computeAnalyticsForFingerprintKind(persister: ProjectAnaly
     await persister.persistAnalytics([{ workspaceId, kind: { type, name }, cohortAnalysis }]);
 }
 
+/**
+ * Result of analyzing a cohort of fingerprints.
+ */
 export interface CohortAnalysis {
     count: number;
     variants: number;
@@ -62,8 +60,6 @@ export interface CohortAnalysis {
 
 /**
  * Analyze a cohort of the same kind of fingerprints
- * @param {() => Promise<FP[]>} typeAndNameQuery
- * @return {Promise<CohortAnalysis>}
  */
 function analyzeCohort(fps: FP[]): CohortAnalysis {
     const groups: Record<string, FP[]> = _.groupBy(fps, fp => fp.sha);

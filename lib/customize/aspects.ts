@@ -23,7 +23,6 @@ import {
     filesFeature,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { CodeOfConduct } from "../element/codeOfConduct";
 import { CodeOwnership } from "../element/codeOwnership";
 import { ManagedAspect } from "../feature/AspectRegistry";
 import {
@@ -35,8 +34,10 @@ import {
     JavaBuild,
     StackFeature,
 } from "../feature/common/stackFeature";
+import { CodeOfConduct } from "../feature/community/codeOfConduct";
+import { License } from "../feature/community/license";
 import { conditionalize } from "../feature/compose/conditionalize";
-import { GitRecency } from "../feature/git/gitActivityScanner";
+import { GitRecency } from "../feature/git/gitActivity";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
@@ -54,6 +55,7 @@ export const Aspects: ManagedAspect[] = [
     DockerFrom,
     DockerfilePath,
     DockerPorts,
+    License,
     SpringBootStarter,
     TypeScriptVersion,
     new CodeOwnership(),
