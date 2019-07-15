@@ -41,7 +41,8 @@ import {
     descendants,
     introduceClassificationLayer,
     mergeSiblings,
-    SunburstTree, trimOuterRim,
+    SunburstTree,
+    trimOuterRim,
     visit,
 } from "../tree/sunburst";
 import {
