@@ -68,8 +68,8 @@ import { reportersAgainst } from "../feature/reportersAgainst";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
