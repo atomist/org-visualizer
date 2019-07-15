@@ -36,7 +36,7 @@ export interface TreeQuery {
 }
 
 /**
- * Without fingerprints
+ * Return rows for non-matching fingerprints
  */
 function without(byName: boolean) {
     return `UNION ALL
@@ -57,7 +57,6 @@ function without(byName: boolean) {
          children`;
 }
 
-// Returns children
 export function fingerprintsChildrenQuery(byName: boolean, includeWithout: boolean) {
     const sql = `
 SELECT row_to_json(fingerprint_groups) FROM (SELECT json_agg(fp) children
