@@ -29,7 +29,7 @@ describe("splitBy", () => {
         };
         const split = splitBy(t1, {
             descendantClassifier: () => "x",
-            targetDepth: 0,
+            newLayerDepth: 0,
         });
         assert.deepStrictEqual(split, t1);
     });
@@ -46,7 +46,7 @@ describe("splitBy", () => {
         };
         const split = splitBy(t1, {
             descendantClassifier: () => "x",
-            targetDepth: 0,
+            newLayerDepth: 0,
         });
         assert.deepStrictEqual(split, {
             name: "name",
@@ -77,7 +77,7 @@ describe("splitBy", () => {
         };
         const split = splitBy(t1, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
-            targetDepth: 0,
+            newLayerDepth: 0,
         });
         assert.deepStrictEqual(split, {
             name: "name",
@@ -97,6 +97,61 @@ describe("splitBy", () => {
                     }],
             }],
         });
+    });
+
+    it("should split tree with two nodes at level 3", () => {
+        const t1: SunburstTree = {
+            name: "name",
+            children: [
+                {
+                    name: "Labour", children: [
+                        {
+                            name: "tony",
+                            size: 1,
+                        },
+                        {
+                            name: "jeremy",
+                            size: 1,
+                        },
+                    ],
+                },
+            ],
+        };
+        const split = splitBy(t1, {
+            descendantClassifier: n => n.name === "tony" ? "center" : "left",
+            newLayerDepth: 0,
+        });
+        assert.deepStrictEqual(split, {
+            name: "name",
+            children: [
+                {
+                    name: "center",
+                    children: [
+                        {
+                            name: "Labour",
+                            children: [
+                                {
+                                    name: "tony",
+                                    size: 1,
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    name: "left",
+                    children: [
+                        {
+                            name: "Labour",
+                            children: [
+                                {
+                                    name: "jeremy",
+                                    size: 1,
+                                },
+                            ],
+                        }],
+                }],
+        }, JSON.stringify(split, undefined, 2));
     });
 
 });

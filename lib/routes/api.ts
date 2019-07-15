@@ -127,13 +127,15 @@ export function api(clientFactory: ClientFactory,
                     tree = splitBy<{ data: any, type: string }>(tree,
                         {
                             descendantClassifier: l => {
+                                if (!(l as any).sha) {
+                                    return undefined;
+                                }
                                 const aspect: BaseFeature = aspectRegistry.aspectOf(l.type);
                                 return !aspect || !aspect.toDisplayableFingerprintName ?
                                     l.name :
                                     aspect.toDisplayableFingerprintName(l.name);
                             },
-                            targetDepth: 0,
-                            descendantPicker: l => descendants(l).filter(n => !!_.get(n, "sha")),
+                            newLayerDepth: 0,
                         });
                 }
                 resolveAspectNames(aspectRegistry, tree);
@@ -141,7 +143,7 @@ export function api(clientFactory: ClientFactory,
                     tree = splitBy<{ owner: string }>(tree,
                         {
                             descendantClassifier: l => l.owner,
-                            targetDepth: 0,
+                            newLayerDepth: 0,
                         });
                 }
                 if (req.query.presence === "true") {

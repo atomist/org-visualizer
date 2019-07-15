@@ -208,7 +208,8 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         `/api/v1/${workspaceId}/fingerprint/${
                             encodeURIComponent(req.query.type)}/${
                             encodeURIComponent(req.query.name)}?byOrg=${
-                        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
+                        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+                        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
                 }
 
                 // tslint:disable-next-line

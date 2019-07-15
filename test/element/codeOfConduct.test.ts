@@ -26,7 +26,7 @@ describe("codeOfConduct", () => {
 
     it("should find no code of conduct", async () => {
         const p = InMemoryProject.of();
-        const s = await CodeOfConduct.extract(p);
+        const s = await CodeOfConduct.extract(p) as TypedFP<CodeOfConductData>;
         assert(!s);
     });
 
