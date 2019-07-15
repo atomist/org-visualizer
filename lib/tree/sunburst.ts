@@ -81,7 +81,7 @@ export function mergeSiblings(tr: SunburstTree,
         if (isSunburstTree(l) && parentSelector(l)) {
             const grouped: Record<string, SunburstLevel[]> = _.groupBy(l.children, grouper);
             if (Object.values(grouped).every(a => a.length === 1)) {
-                console.log("JESS WAS HERE");
+                // Nothing needs merged
                 return false;
             }
             l.children = [];
