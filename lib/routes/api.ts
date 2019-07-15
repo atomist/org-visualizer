@@ -61,8 +61,8 @@ import {
  * Public API routes, returning JSON
  */
 export function api(clientFactory: ClientFactory,
-                    store: ProjectAnalysisResultStore,
-                    aspectRegistry: AspectRegistry): ExpressCustomizer {
+    store: ProjectAnalysisResultStore,
+    aspectRegistry: AspectRegistry): ExpressCustomizer {
     return (express: Express, ...handlers: RequestHandler[]) => {
 
         express.use(bodyParser.json());       // to support JSON-encoded bodies
