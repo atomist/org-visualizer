@@ -24,7 +24,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
     const y = d3.scaleSqrt()
         .range([maxRadius * .1, maxRadius]);
 
-    const color = d3.scaleOrdinal((d3 as any).schemeCategory20);
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const partition = d3.partition();
 
@@ -67,9 +67,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         .attr("viewBox", `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
         .on("click", focusOn); // Reset zoom on canvas click
 
-    (d3 as any).json(dataUrl, (error, root) => {
-        if (error) { throw error; }
-
+    d3.json(dataUrl).then((root) => {
         console.log("This is a thing: " + JSON.stringify(root));
 
         if (root.children.length === 0) {

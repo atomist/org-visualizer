@@ -17,5 +17,5 @@ node_modules/
 /log/
 git-info.json
 spidered
-!d3.v4.min.js
+!d3.*.min.js
 !jquery-3.4.1.min.js

@@ -68,8 +68,8 @@ import { reportersAgainst } from "../feature/reportersAgainst";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -243,7 +243,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                 }),
                 "Atomist Aspect",
                 [
-                    "/lib/d3.v4.min.js",
+                    "/lib/d3.v5.min.js",
                     "/js/sunburstScript.js",
                 ]));
         },
