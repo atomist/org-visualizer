@@ -30,7 +30,7 @@ export interface TreeQuery {
     rootName: string;
 
     /**
-     * SQL query. Must return form of value, repo info - Must be sorted by repo
+     * SQL query. Must return a tree.
      */
     query: string;
 }
@@ -40,7 +40,7 @@ export interface TreeQuery {
  */
 function without(byName: boolean) {
     return `UNION ALL
-            SELECT  null as id, $1 as name, null as sha, null as data, $1 as type,
+            SELECT  null as id, $3 as name, null as sha, null as data, $1 as type,
             (
            SELECT json_agg(row_to_json(repo))
            FROM (

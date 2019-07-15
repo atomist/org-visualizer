@@ -23,7 +23,7 @@ interface SunburstLevel {
     children: SunburstLevel[];
 }
 
-function sunburst(name, dataUrl, pWidth, pHeight) {
+function sunburst(name, dataUrl: string, pWidth, pHeight) {
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
