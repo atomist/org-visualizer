@@ -16,18 +16,18 @@
 
 import * as assert from "assert";
 import {
-    splitBy,
+    introduceClassificationLayer,
     SunburstTree,
 } from "../../lib/tree/sunburst";
 
-describe("splitBy", () => {
+describe("introduceClassificationLayer", () => {
 
     it("should not split empty tree", () => {
         const t1: SunburstTree = {
             name: "name",
             children: [],
         };
-        const split = splitBy(t1, {
+        const split = introduceClassificationLayer(t1, {
             descendantClassifier: () => "x",
             newLayerDepth: 0,
         });
@@ -44,7 +44,7 @@ describe("splitBy", () => {
                 },
             ],
         };
-        const split = splitBy(t1, {
+        const split = introduceClassificationLayer(t1, {
             descendantClassifier: () => "x",
             newLayerDepth: 0,
         });
@@ -75,7 +75,7 @@ describe("splitBy", () => {
                 },
             ],
         };
-        const split = splitBy(t1, {
+        const split = introduceClassificationLayer(t1, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
             newLayerDepth: 0,
         });
@@ -117,7 +117,7 @@ describe("splitBy", () => {
                 },
             ],
         };
-        const split = splitBy(t1, {
+        const split = introduceClassificationLayer(t1, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
             newLayerDepth: 0,
         });

@@ -39,8 +39,8 @@ import {
 } from "../feature/repoTree";
 import {
     descendants,
+    introduceClassificationLayer,
     mergeSiblings,
-    splitBy,
     SunburstTree,
     visit,
 } from "../tree/sunburst";
@@ -124,7 +124,7 @@ export function api(clientFactory: ClientFactory,
                 logger.debug("Returning fingerprint '%s': %j", req.params.name, tree);
                 if (!byName) {
                     // Show all aspects, splitting by name
-                    tree = splitBy<{ data: any, type: string }>(tree,
+                    tree = introduceClassificationLayer<{ data: any, type: string }>(tree,
                         {
                             descendantClassifier: l => {
                                 if (!(l as any).sha) {
@@ -140,7 +140,7 @@ export function api(clientFactory: ClientFactory,
                 }
                 resolveAspectNames(aspectRegistry, tree);
                 if (req.query.byOrg === "true") {
-                    tree = splitBy<{ owner: string }>(tree,
+                    tree = introduceClassificationLayer<{ owner: string }>(tree,
                         {
                             descendantClassifier: l => l.owner,
                             newLayerDepth: 0,

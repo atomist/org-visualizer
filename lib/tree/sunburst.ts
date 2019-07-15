@@ -113,7 +113,7 @@ export function trimOuterRim(tr: SunburstTree): SunburstTree {
     return t;
 }
 
-export interface SplitByOptions<T> {
+export interface ClassificationLayerOptions<T> {
 
     /**
      * Classify a descendant. Undefined means this descendant is irrelevant.
@@ -138,9 +138,8 @@ export interface SplitByOptions<T> {
 /**
  * Introduce a new level splitting by by the given classifier for descendants
  */
-// TODO introduce level?
-export function splitBy<T = {}>(tr: SunburstTree,
-                                how: SplitByOptions<T>): SunburstTree {
+export function introduceClassificationLayer<T = {}>(tr: SunburstTree,
+                                                     how: ClassificationLayerOptions<T>): SunburstTree {
     const opts = {
         descendantFinder: descendants,
         ...how,

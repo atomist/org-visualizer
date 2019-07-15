@@ -22,6 +22,9 @@ import {
     CodeOfConductData,
 } from "../../lib/feature/community/codeOfConduct";
 
+// Otherwise necessary type casts are removed
+// tslint:disable
+
 describe("codeOfConduct", () => {
 
     it("should find no code of conduct", async () => {
