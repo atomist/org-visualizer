@@ -27,6 +27,7 @@ import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ide
 import * as bodyParser from "body-parser";
 import {
     Express,
+    Request,
     RequestHandler,
 } from "express";
 import * as _ from "lodash";
@@ -98,54 +99,54 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
         });
         /* the org page itself */
         express.get("/org", ...handlers, async (req, res) => {
-                try {
-                    const repos = await store.loadWhere(whereFor(req));
+            try {
+                const repos = await store.loadWhere(whereFor(req));
 
-                    const fingerprintUsage = await store.fingerprintUsageForType("*");
+                const fingerprintUsage = await store.fingerprintUsageForType("*");
 
-                    const actionableFingerprints = [];
-                    const ideals = await aspectRegistry.idealStore.loadIdeals("local");
+                const actionableFingerprints = [];
+                const ideals = await aspectRegistry.idealStore.loadIdeals("local");
 
-                    const importantFeatures: AspectForDisplay[] = aspectRegistry.features
-                        .filter(f => !!f.displayName)
-                        .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
-                        .map(feature => ({
-                            feature,
-                            fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
-                                .map(fu => ({
-                                    ...fu,
-                                    featureName: feature.name,
-                                })),
-                        }));
-                    for (const ffd of importantFeatures) {
-                        for (const fp of ffd.fingerprints) {
-                            const ideal = ideals.find(id => {
-                                const c = idealCoordinates(id);
-                                return c.type === fp.type && c.name === fp.name;
-                            });
-                            if (ideal && isConcreteIdeal(ideal) && ffd.feature.toDisplayableFingerprint) {
-                                fp.ideal = { displayValue: ffd.feature.toDisplayableFingerprint(ideal.ideal) };
-                            }
+                const importantFeatures: AspectForDisplay[] = aspectRegistry.features
+                    .filter(f => !!f.displayName)
+                    .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
+                    .map(feature => ({
+                        feature,
+                        fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
+                            .map(fu => ({
+                                ...fu,
+                                featureName: feature.name,
+                            })),
+                    }));
+                for (const ffd of importantFeatures) {
+                    for (const fp of ffd.fingerprints) {
+                        const ideal = ideals.find(id => {
+                            const c = idealCoordinates(id);
+                            return c.type === fp.type && c.name === fp.name;
+                        });
+                        if (ideal && isConcreteIdeal(ideal) && ffd.feature.toDisplayableFingerprint) {
+                            fp.ideal = { displayValue: ffd.feature.toDisplayableFingerprint(ideal.ideal) };
                         }
                     }
-
-                    const unfoundFeatures: BaseFeature[] = aspectRegistry.features
-                        .filter(f => !!f.displayName)
-                        .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
-
-                    res.send(renderStaticReactNode(OrgExplorer({
-                        actionableFingerprints,
-                        projectsAnalyzed: repos.length,
-                        importantAspects: importantFeatures,
-                        unfoundAspects: unfoundFeatures,
-                        projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
-                    })));
-                } catch
-                    (e) {
-                    logger.error(e.stack);
-                    res.status(500).send("failure");
                 }
-            },
+
+                const unfoundFeatures: BaseFeature[] = aspectRegistry.features
+                    .filter(f => !!f.displayName)
+                    .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
+
+                res.send(renderStaticReactNode(OrgExplorer({
+                    actionableFingerprints,
+                    projectsAnalyzed: repos.length,
+                    importantAspects: importantFeatures,
+                    unfoundAspects: unfoundFeatures,
+                    projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
+                })));
+            } catch
+            (e) {
+                logger.error(e.stack);
+                res.status(500).send("failure");
+            }
+        },
         );
 
         /* Project list page */
@@ -193,66 +194,66 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
 
         /* the query page */
         express.get("/query", ...handlers, async (req, res) => {
-                let dataUrl: string;
-                let currentIdealForDisplay: CurrentIdealForDisplay;
-                const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
+            let dataUrl: string;
+            let currentIdealForDisplay: CurrentIdealForDisplay;
+            const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
-                const workspaceId = req.query.workspaceId || "*";
-                const queryString = jsonToQueryString(req.query);
+            const workspaceId = req.query.workspaceId || "*";
+            const queryString = jsonToQueryString(req.query);
 
-                if (req.query.skew) {
-                    dataUrl = `/api/v1/${workspaceId}/filter/skew`;
-                } else {
-                    dataUrl = !!req.query.filter ?
-                        `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
-                        `/api/v1/${workspaceId}/fingerprint/${
-                            encodeURIComponent(req.query.type)}/${
-                            encodeURIComponent(req.query.name)}?byOrg=${
-                        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-                        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
-                        req.query.trim === "true"}`;
+            if (req.query.skew) {
+                dataUrl = `/api/v1/${workspaceId}/filter/skew`;
+            } else {
+                dataUrl = !!req.query.filter ?
+                    `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
+                    `/api/v1/${workspaceId}/fingerprint/${
+                    encodeURIComponent(req.query.type)}/${
+                    encodeURIComponent(req.query.name)}?byOrg=${
+                    req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+                    req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+                    req.query.trim === "true"}`;
+            }
+
+            // tslint:disable-next-line
+            const feature = aspectRegistry.aspectOf(req.query.type);
+            const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
+
+            function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
+                if (!ideal) {
+                    return undefined;
                 }
-
-                // tslint:disable-next-line
-                const feature = aspectRegistry.aspectOf(req.query.type);
-                const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
-
-                function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
-                    if (!ideal) {
-                        return undefined;
-                    }
-                    if (!isConcreteIdeal(ideal)) {
-                        return { displayValue: "eliminate" };
-                    }
-                    return { displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal) };
+                if (!isConcreteIdeal(ideal)) {
+                    return { displayValue: "eliminate" };
                 }
+                return { displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal) };
+            }
 
-                currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
-                    .loadIdeal("local", req.query.type, req.query.name));
+            currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
+                .loadIdeal("local", req.query.type, req.query.name));
 
-                logger.info("Data url=%s", dataUrl);
+            logger.info("Data url=%s", dataUrl);
 
-                res.send(renderStaticReactNode(
-                    SunburstQuery({
-                        fingerprintDisplayName,
-                        currentIdeal: currentIdealForDisplay,
-                        possibleIdeals: possibleIdealsForDisplay,
-                        query: req.params.query,
-                        dataUrl,
-                    }),
-                    "Atomist Aspect",
-                    [
-                        "/lib/d3.v4.min.js",
-                        "/js/sunburst.js",
-                    ]));
-            },
+            res.send(renderStaticReactNode(
+                SunburstQuery({
+                    fingerprintDisplayName,
+                    currentIdeal: currentIdealForDisplay,
+                    possibleIdeals: possibleIdealsForDisplay,
+                    query: req.params.query,
+                    dataUrl,
+                }),
+                "Atomist Aspect",
+                [
+                    "/lib/d3.v4.min.js",
+                    "/js/sunburstScript.js",
+                ]));
+        },
         );
 
     }
         ;
 }
 
-export function whereFor(req): string {
+export function whereFor(req: Request): string {
     const wsid = req.query.workspace || req.params.workspace_id;
     if (wsid === "*") {
         return "true";

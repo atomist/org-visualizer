@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@atomist/sdm-local": "^1.0.9",
+    "@types/d3": "^5.7.2",
     "@types/mocha": "^5.2.7",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^9.0.2",

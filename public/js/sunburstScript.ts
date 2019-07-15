@@ -1,3 +1,12 @@
+// I am avoiding imports because this compiles nicely as a script.
+// It does not participate in the module system.
+// tslint:disable
+interface SunburstLevel {
+    data: { name: string; };
+    parent: SunburstLevel;
+    children: SunburstLevel[];
+}
+
 function sunburst(name, dataUrl, pWidth, pHeight) {
     const minDiameterInPixels = 100;
 
@@ -6,7 +15,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         maxRadius = (Math.min(width, height) / 2) - 5;
     const viewBoxSide = maxRadius * 2 + 10;
 
-    const formatNumber = d3.format(',d');
+    const formatNumber = d3.format(",d");
 
     const x = d3.scaleLinear()
         .range([0, 2 * Math.PI])
@@ -15,15 +24,15 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
     const y = d3.scaleSqrt()
         .range([maxRadius * .1, maxRadius]);
 
-    const color = d3.scaleOrdinal(d3.schemeCategory20);
+    const color = d3.scaleOrdinal((d3 as any).schemeCategory20);
 
     const partition = d3.partition();
 
     const arc = d3.arc()
-        .startAngle(d => x(d.x0))
-        .endAngle(d => x(d.x1))
-        .innerRadius(d => Math.max(0, y(d.y0)))
-        .outerRadius(d => Math.max(0, y(d.y1)));
+        .startAngle((d: any) => x(d.x0))
+        .endAngle((d: any) => x(d.x1))
+        .innerRadius((d: any) => Math.max(0, y(d.y0)))
+        .outerRadius((d: any) => Math.max(0, y(d.y1)));
 
     const middleArcLine = d => {
         const halfPi = Math.PI / 2;
@@ -53,15 +62,15 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
 
     const dataDiv = d3.select("#dataAboutWhatYouClicked");
 
-    const svg = d3.select('#putSvgHere').append('svg')
-        .style('width', viewBoxSide + "px")
-        .attr('viewBox', `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
-        .on('click', () => focusOn()); // Reset zoom on canvas click
+    const svg = d3.select("#putSvgHere").append("svg")
+        .style("width", viewBoxSide + "px")
+        .attr("viewBox", `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
+        .on("click", focusOn); // Reset zoom on canvas click
 
-    d3.json(dataUrl, (error, root) => {
-        if (error) throw error;
+    (d3 as any).json(dataUrl, (error, root) => {
+        if (error) { throw error; }
 
-        console.log(JSON.stringify(root));
+        console.log("This is a thing: " + JSON.stringify(root));
 
         if (root.children.length === 0) {
             alert("No data for " + name);
@@ -71,46 +80,46 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
         root = d3.hierarchy(root);
         root.sum(d => d.size);
 
-        const slice = svg.selectAll('g.slice')
+        const slice = svg.selectAll("g.slice")
             .data(partition(root).descendants());
 
         slice.exit().remove();
 
         const newSlice = slice.enter()
-            .append('g').attr('class', 'slice')
-            .on('click', d => {
+            .append("g").attr("class", "slice")
+            .on("click", d => {
                 d3.event.stopPropagation();
                 dataDiv.html(constructDescription(d));
                 focusOn(d);
             });
 
-        newSlice.append('title')
-            .text(d => d.data.name + '\n' + formatNumber(d.value));
+        newSlice.append("title")
+            .text(d => (d as SunburstLevel).data.name + "\n" + formatNumber(d.value));
 
-        newSlice.append('path')
-            .attr('class', 'main-arc')
-            .style('fill', d => color((d.children ? d : d.parent).data.name))
-            .attr('d', arc);
+        newSlice.append("path")
+            .attr("class", "main-arc")
+            .style("fill", (d: any) => (color as any)((d.children ? d : d.parent).data.name))
+            .attr("d", arc as any);
 
-        newSlice.append('path')
-            .attr('class', 'hidden-arc')
-            .attr('id', (_, i) => `hiddenArc${i}`)
-            .attr('d', middleArcLine);
+        newSlice.append("path")
+            .attr("class", "hidden-arc")
+            .attr("id", (_, i) => `hiddenArc${i}`)
+            .attr("d", middleArcLine);
 
-        const text = newSlice.append('text')
-            .attr('display', d => textFits(d) ? null : 'none');
+        const text = newSlice.append("text")
+            .attr("display", d => textFits(d) ? null : "none");
 
         // Add white contour
-        text.append('textPath')
-            .attr('class', 'textOutline')
-            .attr('startOffset', '50%')
-            .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
-            .text(d => d.data.name);
+        text.append("textPath")
+            .attr("class", "textOutline")
+            .attr("startOffset", "50%")
+            .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
+            .text(d => (d as SunburstLevel).data.name);
 
-        text.append('textPath')
-            .attr('startOffset', '50%')
-            .attr('xlink:href', (_, i) => `#hiddenArc${i}`)
-            .text(d => d.data.name);
+        text.append("textPath")
+            .attr("startOffset", "50%")
+            .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
+            .text(d => (d as SunburstLevel).data.name);
     });
 
     function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
@@ -118,7 +127,7 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
 
         const transition = svg.transition()
             .duration(750)
-            .tween('scale', () => {
+            .tween("scale", () => {
                 const xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
                     yd = d3.interpolate(y.domain(), [d.y0, 1]);
                 return t => {
@@ -127,28 +136,28 @@ function sunburst(name, dataUrl, pWidth, pHeight) {
                 };
             });
 
-        transition.selectAll('path.main-arc')
-            .attrTween('d', d => () => arc(d));
+        transition.selectAll("path.main-arc")
+            .attrTween("d", d => () => arc(d as any));
 
-        transition.selectAll('path.hidden-arc')
-            .attrTween('d', d => () => middleArcLine(d));
+        transition.selectAll("path.hidden-arc")
+            .attrTween("d", d => () => middleArcLine(d));
 
-        transition.selectAll('text')
-            .attrTween('display', d => () => textFits(d) ? null : 'none');
+        transition.selectAll("text")
+            .attrTween("display", d => () => textFits(d) ? null : "none");
 
         moveStackToFront(d);
 
         function moveStackToFront(elD) {
-            svg.selectAll('.slice').filter(d => d === elD)
+            svg.selectAll(".slice").filter(d => d === elD)
                 .each(function (d) {
-                    this.parentNode.appendChild(this); // move all parents to the end of the line
-                    if (d.parent) {
-                        moveStackToFront(d.parent);
+                    (this as any).parentNode.appendChild(this); // move all parents to the end of the line
+                    if ((d as SunburstLevel).parent) {
+                        moveStackToFront((d as SunburstLevel).parent);
                     }
-                })
+                });
         }
     }
-};
+}
 
 function constructDescription(d) {
     const workspaceId = "local";
@@ -156,7 +165,7 @@ function constructDescription(d) {
     for (let place = d; place = place.parent; !!place) {
         descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
     }
-    console.log("Clicked on " + d.data.name);
+    console.log("Clicked on yo " + d.data.name);
     if (d.data.size === 1) {
         descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
             `<br/><a href="${d.data.url}">${d.data.url}</a>`;
@@ -174,14 +183,13 @@ function constructDescription(d) {
 function postSetIdeal(workspaceId, fingerprintId) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
     const labelElement = document.getElementById("setIdealLabel");
-    fetch(postUrl, { method: 'PUT' }).then(response => {
+    fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            console.log("yay")
+            console.log("yay");
             labelElement.textContent = "ideal set!";
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
-        }
-        else {
+        } else {
             console.log("oh no");
             labelElement.textContent = "failed to set. consult the server logaments";
             labelElement.setAttribute("class", "error");

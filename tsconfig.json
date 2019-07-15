@@ -29,6 +29,7 @@
     "lib/**/*.ts",
     "test/**/*.ts",
     "types/**/*.ts",
+    "public/**/*.ts",
     "views/projectList.tsx"
   ],
   "exclude": [
