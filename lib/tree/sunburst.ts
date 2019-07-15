@@ -104,9 +104,9 @@ export function mergeSiblings(tr: SunburstTree,
 export function trimOuterRim(tr: SunburstTree): SunburstTree {
     const t = _.cloneDeep(tr);
     visit(t, l => {
-        if (isSunburstTree(l) && !l.children.some(c => leavesUnder(c).length > 1)) {
+        if (isSunburstTree(l) && !l.children.some(isSunburstTree)) {
             (l as any as SunburstLeaf).size = l.children.length;
-            l.children = undefined;
+            delete (l.children);
         }
         return true;
     });

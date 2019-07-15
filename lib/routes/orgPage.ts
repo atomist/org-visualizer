@@ -209,7 +209,8 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                             encodeURIComponent(req.query.type)}/${
                             encodeURIComponent(req.query.name)}?byOrg=${
                         req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-                        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}`;
+                        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+                        req.query.trim === "true"}`;
                 }
 
                 // tslint:disable-next-line

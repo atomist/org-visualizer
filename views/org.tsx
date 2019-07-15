@@ -64,13 +64,14 @@ function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElem
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
 
-    const allLink: string = `./query?type=${f.feature.name}&name=*&byOrg=true`;
+    const allLink: (trim: boolean) => string = trim => `./query?type=${f.feature.name}&name=*&byOrg=true&trim=${trim}`;
     const about = !f.feature.documentationUrl ? "" :
         <a href={f.feature.documentationUrl}>About</a>;
 
-    const graphAll = f.fingerprints.length <= 1 ? "" : <a href={allLink}>All fingerprints</a>;
+    const graphAll = f.fingerprints.length <= 1 ? "" : <a href={allLink(true)}>All fingerprints</a>;
+    const graphAllExpanded = f.fingerprints.length <= 1 ? "" : <a href={allLink(false)}>Expanded</a>;
 
-    const summaryListItem = about || graphAll ? <li key={"all" + i}>{about} {graphAll}</li> : "";
+    const summaryListItem = about || graphAll || graphAllExpanded ? <li key={"all" + i}>{about} {graphAll} {graphAllExpanded}</li> : "";
 
     return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>

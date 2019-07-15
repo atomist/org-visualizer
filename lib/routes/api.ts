@@ -41,7 +41,7 @@ import {
     descendants,
     introduceClassificationLayer,
     mergeSiblings,
-    SunburstTree,
+    SunburstTree, trimOuterRim,
     visit,
 } from "../tree/sunburst";
 import {
@@ -162,6 +162,11 @@ export function api(clientFactory: ClientFactory,
                 tree = mergeSiblings(tree,
                     parent => parent.children.some(c => (c as any).sha),
                     l => l.name);
+
+                if (req.query.trim === "true") {
+                    tree = trimOuterRim(tree);
+                }
+
                 res.json(tree);
             } catch (e) {
                 logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
