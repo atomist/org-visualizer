@@ -173,6 +173,13 @@ export function api(clientFactory: ClientFactory,
                     tree = groupSiblings(tree, {
                         parentSelector: parent => parent.children.some(c => (c as any).sha),
                         childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
+                        groupLayerDecorator: l => {
+                            if (l.name === "Ideal") {
+                                (l as any).color = "#168115";
+                            } else {
+                                (l as any).color = "#811824";
+                            }
+                        }
                     });
                 }
 

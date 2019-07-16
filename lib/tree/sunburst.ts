@@ -80,6 +80,12 @@ export interface GroupSiblingsOptions {
     childClassifier: (l: SunburstLevel) => string;
 
     /**
+     * Decorator the new levels
+     * @param {SunburstLevel} l
+     */
+    groupLayerDecorator?: (l: SunburstLevel) => void;
+
+    /**
      * If provided, identifies new grouped node names to collapse under
      */
     collapseUnderName?: (name: string) => boolean ;
@@ -108,10 +114,14 @@ export function groupSiblings(tr: SunburstTree,
                 if (opts.collapseUnderName(name)) {
                     children = _.flatten(children.map(childrenOf));
                 }
-                l.children.push({
+                const newLayer = {
                     name,
                     children,
-                });
+                };
+                if (opts.groupLayerDecorator) {
+                    opts.groupLayerDecorator(newLayer);
+                }
+                l.children.push(newLayer);
             }
             return false;
         }
