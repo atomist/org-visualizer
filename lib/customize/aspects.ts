@@ -37,7 +37,10 @@ import {
 import { CodeOfConduct } from "../feature/community/codeOfConduct";
 import { License } from "../feature/community/license";
 import { conditionalize } from "../feature/compose/conditionalize";
-import { gitActiveCommitters, GitRecency } from "../feature/git/gitActivity";
+import {
+    gitActiveCommitters,
+    GitRecency,
+} from "../feature/git/gitActivity";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
