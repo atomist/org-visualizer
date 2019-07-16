@@ -4,30 +4,42 @@
 
 # @atomist/org-visualizer
 
-Visualize aspects of your organization. See [Rod Johnson's blog](https://blog.atomist.com/this-will-surprise-you/) for discussion of the motivation.
+A tool for visualizing technology usage and drift across an organization.
 
-This app digs through your code and shows you how your projects differ in their language versions, library versions, docker open ports, etc.
+The cloud native era has led to an explosion of repositories, which we lack tools for understanding and managing at scale. See Rod Johnson's blog [This Will Surprise You](https://blog.atomist.com/this-will-surprise-you/) for further discussion.
 
-Extensible, with out of the box
+An Atomist **aspect** captures a concern in your project, in anything available from git: repository content (code and configuration) and git data such as branch counts and committer activity. Aspects support the following use cases:
+
+1. *Visualization* (all aspects): See usage and drift across your organization.
+2. *Convergence* (some aspects): Help drive code changes to achieve consistency on an "ideal" state of an aspect, such as a particularly version of a library.
+3. *Reaction to change* (some aspects): React to changes in aspect usage within a project: for example, to a library upgrade, removing the Spring Boot Security starter or exposing an additional port in a Docker container.
+
+This project focuses on the visualization use case.
+
+Analysis is extensible using the Atomist `Project` API. There is out of the box
 support for investigating the following aspects of your project:
 
-- TypeScript
-- Spring Boot (with Maven)
-- Docker
-- Library versions (npm, maven, python)
+- TypeScript level
+- Spring Boot version and starters (with Maven)
+- Docker base images, Dockerfile path and exposed ports
+- Java build tool (Maven, Gradle)
+- Library versions (npm, Maven, Python)
 - Inclusion of a code of conduct
+- Common CI tools
+- git activity and branch count
 
-An example visualization, showing Docker images:
+An example visualization, showing Docker images used across two GitHub organizations:
 
 ![Docker image visualization](images/dockerImageSunburst.png "Docker image skew")
 
 ## Running
 
-To visualize your org, you can:
+To visualize your org:
 
 1. Clone and build this project
+2. Set up the required PostreSQL database
 2. Run analysis on your repositories
-3. Run the org_visualizer and hit its web interface.
+3. Run the `org-visualizer` and hit its web interface.
 4. If you have more ideas, add code to study more aspects of your projects
 
 ### Building
@@ -44,13 +56,13 @@ Next, `npm link` to out the `spider` command in your path.
 
 #### Creating the Database
 
-Data about each repository is stored locally in a Postgres database.
+Data about each repository is stored locally in a PostgreSQL database.
 
 Start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database. You can do this within the `psql` shell, or use the Postgres admin tool to create a database named `org_viz` and run all commands in that script after the line beginning with `\connect`.
 
 #### Connecting to the Database
 
-For anything other than the default Postgres [connection parameters](https://node-postgres.com/features/connecting) and db "org_viz":
+For anything other than the default Postgres [connection parameters](https://node-postgres.com/features/connecting) and db `org_viz`:
 
 Configure the Postgres database details in `client.config.json` in your `~/.atomist`:
 
@@ -72,7 +84,7 @@ If `~/.atomist/client.config.json` does not exist, create it with the above cont
 
 ### Other Dependencies
 
-You will need the following installed on your machine for the out of the box visualizations to work:
+You will need the following installed on your machine for the out of the box aspects to work:
 
 - The `git` binary
 - Java
@@ -120,7 +132,7 @@ Go to [http://localhost:2866](http://localhost:2866).
 
 There are three architectural layers:
 
-1. **Analysis**. This is predominantly done by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take fingerprints (extractions of small relevant bits) of the code, compare them, and even update them.
+1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them.
 2. **Query** functionality.
 3. Simple **UI** using static React and d3 exposing Sunburst charts.
 
@@ -142,7 +154,7 @@ export const Aspects: ManagedAspect[] = [
 >After updating your code you will need to rerun existing analyses. Run the spider again with the `--u` flag to force updates on existing data.
 
 ## Next Steps
-The [Atomist](https://www.atomist.com) service is capable of keeping analyses up to date automatically, across all your repositories. It can also help to achieve consistency and convergence in eligible aspects by updating projects.
+The [Atomist](https://www.atomist.com) service keeps analyses up to date automatically across all your repositories. It can also help to achieve consistency and convergence in eligible aspects by updating projects, and enabling workflows on change.
 
 See [https://atomist.com/developer.html](https://atomist.com/developer.html) for further information.
 
