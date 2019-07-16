@@ -16,6 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
@@ -55,7 +56,6 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
-import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 
 /**
  * Public API routes, returning JSON
