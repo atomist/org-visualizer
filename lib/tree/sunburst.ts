@@ -44,6 +44,15 @@ export function visit(t: SunburstLevel,
     }
 }
 
+export async function visitAsync(t: SunburstLevel,
+                                 visitor: (sl: SunburstLevel, depth: number) => Promise<boolean>,
+                                 depth: number = 0): Promise<void> {
+    const r = await visitor(t, depth);
+    if (r && isSunburstTree(t)) {
+        await Promise.all(t.children.map(c => visitAsync(c, visitor, depth + 1)));
+    }
+}
+
 /**
  * Suppress branches that meet a condition
  */
@@ -88,7 +97,7 @@ export interface GroupSiblingsOptions {
     /**
      * If provided, identifies new grouped node names to collapse under
      */
-    collapseUnderName?: (name: string) => boolean ;
+    collapseUnderName?: (name: string) => boolean;
 }
 
 /**

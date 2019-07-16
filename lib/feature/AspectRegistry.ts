@@ -49,7 +49,7 @@ export interface IdealStore {
     loadIdeals(workspaceId: string): Promise<Ideal[]>;
 }
 
-export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<UndesirableUsage | UndesirableUsage[]>;
+export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<UndesirableUsage>;
 
 /**
  * Function that can flag an issue with a fingerprint
@@ -59,7 +59,7 @@ export interface UndesirableUsageChecker {
 }
 
 export const PermitAllUsageChecker: UndesirableUsageChecker = {
-    check: async () => [],
+    check: async () => undefined,
 };
 
 export interface FingerprintsWithManagingFeature<ProcessedFingerprint> {
@@ -153,7 +153,7 @@ export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck
                     return flagged;
                 }
             }
-            return [];
+            return undefined;
         },
     };
 }

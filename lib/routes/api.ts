@@ -42,7 +42,7 @@ import {
     introduceClassificationLayer,
     SunburstTree,
     trimOuterRim,
-    visit,
+    visit, visitAsync,
 } from "../tree/sunburst";
 import {
     authHandlers,
@@ -55,6 +55,7 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 
 /**
  * Public API routes, returning JSON
@@ -123,6 +124,15 @@ export function api(clientFactory: ClientFactory,
                     featureName: req.params.type,
                 });
                 logger.debug("Returning fingerprint tree '%s': %j", req.params.name, tree);
+
+                // Flag bad fingerprints with a special color
+                await visitAsync(tree, async l => {
+                    if ((l as any).sha && await aspectRegistry.undesirableUsageChecker.check("local", l)) {
+                        (l as any).color = "#810325";
+                    }
+                    return true;
+                });
+
                 if (!byName) {
                     // Show all aspects, splitting by name
                     const aspect = aspectRegistry.aspectOf(req.params.type);
