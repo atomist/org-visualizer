@@ -38,9 +38,8 @@ import {
     repoTree,
 } from "../feature/repoTree";
 import {
-    descendants,
+    groupSiblings,
     introduceClassificationLayer,
-    mergeSiblings,
     SunburstTree,
     trimOuterRim,
     visit,
@@ -148,21 +147,29 @@ export function api(clientFactory: ClientFactory,
                         });
                 }
                 if (req.query.presence === "true") {
-                    tree = mergeSiblings(tree,
-                        parent => parent.children.some(c => (c as any).sha),
-                        kid => (kid as any).sha ? "Yes" : "No");
+                    tree = groupSiblings(tree,
+                        {
+                            parentSelector: parent => parent.children.some(c => (c as any).sha),
+                            childClassifier: kid => (kid as any).sha ? "Yes" : "No",
+                            collapseUnderName: name => name === "No",
+                        });
                 } else if (req.query.progress === "true") {
                     const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
                     if (!ideal || !isConcreteIdeal(ideal)) {
                         throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name}`);
                     }
-                    tree = mergeSiblings(tree,
-                        parent => parent.children.some(c => (c as any).sha),
-                        kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No");
+                    tree = groupSiblings(tree, {
+                        parentSelector: parent => parent.children.some(c => (c as any).sha),
+                        childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
+                    });
                 }
-                tree = mergeSiblings(tree,
-                    parent => parent.children.some(c => (c as any).sha),
-                    l => l.name);
+
+                // Group all fingerprint nodes by their name at the first level
+                tree = groupSiblings(tree, {
+                    parentSelector: parent => parent.children.some(c => (c as any).sha),
+                    childClassifier: l => l.name,
+                    collapseUnderName: () => true,
+                });
 
                 if (req.query.trim === "true") {
                     tree = trimOuterRim(tree);

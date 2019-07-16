@@ -67,19 +67,37 @@ function killChildren(tr: SunburstTree,
     return t;
 }
 
+export interface GroupSiblingsOptions {
+
+    /**
+     * Selector for parents to merge
+     */
+    parentSelector: (l: SunburstTree) => boolean;
+
+    /**
+     * Group siblings to merge under selected parents
+     */
+    childClassifier: (l: SunburstLevel) => string;
+
+    /**
+     * If provided, identifies new grouped node names to collapse under
+     */
+    collapseUnderName?: (name: string) => boolean ;
+}
+
 /**
- * Merge siblings
- * @param tr tree to operate on
- * @param {(l: SunburstTree) => boolean} parentSelector selector parents to merge
- * @param {(l: SunburstLevel) => string} grouper grouping function for children of selected parents
+ * Merge siblings into groups by the grouper
  */
-export function mergeSiblings(tr: SunburstTree,
-                              parentSelector: (l: SunburstTree) => boolean,
-                              grouper: (l: SunburstLevel) => string): SunburstTree {
+export function groupSiblings(tr: SunburstTree,
+                              params: GroupSiblingsOptions): SunburstTree {
+    const opts = {
+        collapseUnderName: () => false,
+        ...params,
+    };
     const t = _.cloneDeep(tr);
     visit(t, l => {
-        if (isSunburstTree(l) && parentSelector(l)) {
-            const grouped: Record<string, SunburstLevel[]> = _.groupBy(l.children, grouper);
+        if (isSunburstTree(l) && opts.parentSelector(l)) {
+            const grouped: Record<string, SunburstLevel[]> = _.groupBy(l.children, opts.childClassifier);
             if (Object.values(grouped).every(a => a.length === 1)) {
                 // Nothing needs merged
                 return false;
@@ -87,7 +105,7 @@ export function mergeSiblings(tr: SunburstTree,
             l.children = [];
             for (const name of Object.keys(grouped)) {
                 let children: SunburstLevel[] = _.flatten(grouped[name]);
-                if (!children.some(c => c.name !== name)) {
+                if (opts.collapseUnderName(name)) {
                     children = _.flatten(children.map(childrenOf));
                 }
                 l.children.push({
