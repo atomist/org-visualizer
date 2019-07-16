@@ -70,7 +70,7 @@ export const Aspects: ManagedAspect[] = [
     branchCount,
     GitRecency,
     // This is expensive as it requires deeper cloning
-    //gitActiveCommitters(50),
+    // gitActiveCommitters(50),
     StackFeature,
     CiFeature,
     JavaBuild,

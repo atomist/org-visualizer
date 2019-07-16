@@ -61,7 +61,7 @@ export const GitRecency: Feature = {
 function committersCommands(commitDepth: number): string[] {
     return [
         `git fetch --depth=${commitDepth}`,
-        `git shortlog -s -n --all --max-count ${commitDepth}`
+        `git shortlog -s -n --all --max-count ${commitDepth}`,
     ];
 }
 
