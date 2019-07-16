@@ -37,7 +37,7 @@ import {
 import { CodeOfConduct } from "../feature/community/codeOfConduct";
 import { License } from "../feature/community/license";
 import { conditionalize } from "../feature/compose/conditionalize";
-import { GitRecency } from "../feature/git/gitActivity";
+import { gitActiveCommitters, GitRecency } from "../feature/git/gitActivity";
 import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
@@ -69,6 +69,8 @@ export const Aspects: ManagedAspect[] = [
     fileCountFeature,
     branchCount,
     GitRecency,
+    // This is expensive as it requires deeper cloning
+    //gitActiveCommitters(50),
     StackFeature,
     CiFeature,
     JavaBuild,

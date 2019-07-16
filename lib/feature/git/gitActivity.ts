@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocalProject } from "@atomist/automation-client";
+import { LocalProject, logger } from "@atomist/automation-client";
 import {
     ExtractFingerprint,
     Feature,
@@ -57,6 +57,51 @@ export const GitRecency: Feature = {
         return lastDateToActivityBand(date);
     },
 };
+
+function committersCommands(commitDepth: number): string[] {
+    return [
+        `git fetch --depth=${commitDepth}`,
+        `git shortlog -s -n --all --max-count ${commitDepth}`
+    ];
+}
+
+function activeCommittersExtractor(commitDepth: number): ExtractFingerprint {
+    return async p => {
+        const cwd = (p as LocalProject).baseDir;
+        const cmds = committersCommands(commitDepth);
+        logger.debug("Running commands %s in %s", cwd, cmds);
+        await exec(cmds[0], { cwd });
+        const r = await exec(cmds[1], { cwd });
+        if (!r.stdout) {
+            return undefined;
+        }
+        const count = r.stdout.trim().split("\n").length;
+        const data = { count };
+
+        return {
+            type: "git-actives",
+            name: "git-actives",
+            data,
+            sha: sha256(JSON.stringify(data)),
+        };
+    };
+}
+
+/**
+ * Active committers. This is expensive as it requires cloning the
+ * last commitDepth commits
+ */
+export function gitActiveCommitters(commitDepth: number): Feature {
+    return {
+        name: "git-actives",
+        displayName: "Active git committers",
+        extract: activeCommittersExtractor(commitDepth),
+        toDisplayableFingerprintName: () => "Active git committers",
+        toDisplayableFingerprint: fp => {
+            return fp.data.count + "";
+        },
+    };
+}
 
 // export const gitActivityExtractor: ExtractFingerprint =
 //     async p => {
