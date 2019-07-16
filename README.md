@@ -16,7 +16,7 @@ An Atomist **aspect** captures a concern in your project, in anything available 
 
 This project focuses on the visualization use case.
 
-Analysis is extensible using the Atomist `Project` API. There is out of the box
+There is out of the box
 support for investigating the following aspects of your project:
 
 - TypeScript level
@@ -27,6 +27,8 @@ support for investigating the following aspects of your project:
 - Inclusion of a code of conduct
 - Common CI tools
 - git activity and branch count
+
+Analysis is extensible using the Atomist `Project` API. Implementing and registering additional aspects will result in additional visualization links after re-analysis and restarting the application.
 
 An example visualization, showing Docker images used across two GitHub organizations:
 
