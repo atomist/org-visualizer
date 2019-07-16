@@ -35,7 +35,7 @@ import {
     Analyzed,
     AspectRegistry,
 } from "../feature/AspectRegistry";
-import { fingerprintsFrom } from "../feature/DefaultFeatureManager";
+import { fingerprintsFrom } from "../feature/DefaultAspectRegistry";
 import { Reporters } from "../feature/reporters";
 import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
 import {

@@ -63,7 +63,7 @@ import {
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
-} from "../feature/DefaultFeatureManager";
+} from "../feature/DefaultAspectRegistry";
 import { reportersAgainst } from "../feature/reportersAgainst";
 import { WellKnownReporters } from "./wellKnownReporters";
 

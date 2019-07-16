@@ -40,7 +40,7 @@ import {
     JavaBuild,
     StackFeature,
 } from "./lib/feature/common/stackFeature";
-import { DefaultFeatureManager } from "./lib/feature/DefaultFeatureManager";
+import { DefaultAspectRegistry } from "./lib/feature/DefaultAspectRegistry";
 import { TypeScriptVersion } from "./lib/feature/node/TypeScriptVersion";
 import { DirectMavenDependencies } from "./lib/feature/spring/directMavenDependencies";
 import { SpringBootStarter } from "./lib/feature/spring/springBootStarter";
@@ -140,18 +140,18 @@ export const configuration: Configuration = configure(async sdm => {
             configureHumio,
             async cfg => {
                 const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
-                const featureManager = new DefaultFeatureManager({
+                const aspectRegistry = new DefaultAspectRegistry({
                     idealStore: resultStore,
                     features: Aspects,
                     undesirableUsageChecker: demoUndesirableUsageChecker,
                 });
                 const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
-                        orgPage(featureManager, resultStore)] :
+                        orgPage(aspectRegistry, resultStore)] :
                     [];
 
                 cfg.http.customizers = [
                     ...staticPages,
-                    api(sdmConfigClientFactory(cfg), resultStore, featureManager),
+                    api(sdmConfigClientFactory(cfg), resultStore, aspectRegistry),
                 ];
                 return cfg;
             },

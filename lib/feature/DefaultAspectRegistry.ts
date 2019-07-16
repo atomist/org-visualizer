@@ -52,7 +52,7 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
 /**
  * Features must have unique names
  */
-export class DefaultFeatureManager implements AspectRegistry {
+export class DefaultAspectRegistry implements AspectRegistry {
 
     get features() {
         return this.opts.features;

@@ -125,23 +125,23 @@ export function api(clientFactory: ClientFactory,
                 logger.debug("Returning fingerprint tree '%s': %j", req.params.name, tree);
                 if (!byName) {
                     // Show all aspects, splitting by name
+                    const aspect = aspectRegistry.aspectOf(req.params.type);
+                    if (!!aspect) {
+                        tree.name = aspect.displayName;
+                    }
                     tree = introduceClassificationLayer<{ data: any, type: string }>(tree,
                         {
                             descendantClassifier: l => {
                                 if (!(l as any).sha) {
                                     return undefined;
                                 }
-                                const aspect: BaseFeature = aspectRegistry.aspectOf(l.type);
                                 return !aspect || !aspect.toDisplayableFingerprintName ?
                                     l.name :
                                     aspect.toDisplayableFingerprintName(l.name);
                             },
                             newLayerDepth: 0,
                         });
-                    const aspect = aspectRegistry.aspectOf(req.params.type);
-                    if (!!aspect) {
-                        tree.name = aspect.displayName;
-                    }
+
                 } else {
                     // We are showing a particular aspect
                     const aspect = aspectRegistry.aspectOf(tree.name);
