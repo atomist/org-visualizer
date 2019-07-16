@@ -179,12 +179,12 @@ function constructDescription(d) {
     for (let place = d; place = place.parent; !!place) {
         descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
     }
-    console.log("Clicked on yo " + d.data.name);
     if (d.data.size === 1) {
         descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
             `<br/><a href="${d.data.url}">${d.data.url}</a>`;
     }
     if (!!d.data.sha) {
+        // This is a fingerprint with a sha
         const setIdealLink = `<button id="setIdeal"
                     onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
                     >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay">&nbsp;</label>`;
@@ -199,18 +199,15 @@ function postSetIdeal(workspaceId, fingerprintId) {
     const labelElement = document.getElementById("setIdealLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            console.log("yay");
             labelElement.textContent = "ideal set!";
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         } else {
-            console.log("oh no");
             labelElement.textContent = "failed to set. consult the server logaments";
             labelElement.setAttribute("class", "error");
         }
     },
         e => {
-            console.log("boo");
             labelElement.textContent = "Network error";
             labelElement.setAttribute("class", "error");
         });
