@@ -26,13 +26,11 @@ export const License: Feature = {
     displayName: "License",
     extract: async p => {
         const licenseFile = await p.getFile("LICENSE");
-        let classification: string;
+        let classification: string = "None";
         let content: string;
-        if (!licenseFile) {
-            classification = "None";
-        } else {
+        if (!!licenseFile) {
             content = await licenseFile.getContent();
-            classification = content.split("\n")[0].trim();
+            classification = content.trim().split("\n")[0].trim();
         }
         const data: LicenseData = { classification, content };
         return {
