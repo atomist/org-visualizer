@@ -43,7 +43,7 @@ export const fileCountFeature: Feature = {
 
 export const branchCount: Feature = {
     name: "branches",
-    displayName: undefined,
+    displayName: "Branch count",
     extract: async p => {
         const lp = p as LocalProject;
         const bp = await execPromise("git", ["branch", "-a"], {
@@ -58,6 +58,19 @@ export const branchCount: Feature = {
             sha: sha256(data),
         };
     },
-    toDisplayableFingerprint: fp => fp.data,
-    toDisplayableFingerprintName: () => "size",
+    toDisplayableFingerprintName: () => "branch count",
+    toDisplayableFingerprint: fp => {
+        const count = parseInt(fp.data);
+        if (count > 20) {
+            return "crazy (>20)";
+        }
+        if (count > 12) {
+            return "excessive (12-20)";
+        }
+        if (count > 5) {
+            return "high (5-12)";
+        }
+        return "ok (<=5)";
+    },
+
 };
