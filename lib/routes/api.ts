@@ -179,7 +179,7 @@ export function api(clientFactory: ClientFactory,
                             } else {
                                 (l as any).color = "#811824";
                             }
-                        }
+                        },
                     });
                 }
 

@@ -18,17 +18,16 @@
  * Color palette for d3 to use
  */
 const palette = [
-    '#56b06f',
-    '#3bbaa8',
-    '#35848c',
-    '#173d6d',
-    '#846473',
-    '#5F7186',
-    '#0d560d',
-    '#1f8045',
-    '#173d48',
+    "#56b06f",
+    "#3bbaa8",
+    "#35848c",
+    "#173d6d",
+    "#846473",
+    "#5F7186",
+    "#0d560d",
+    "#1f8045",
+    "#173d48",
 ];
-
 
 // I am avoiding imports because this compiles nicely as a script.
 // It does not participate in the module system.
