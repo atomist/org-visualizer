@@ -43,8 +43,7 @@ export const License: Feature = {
     toDisplayableFingerprintName: () => "License",
     toDisplayableFingerprint: fp => {
         try {
-            const d = JSON.parse(fp.data) as LicenseData;
-            return d.classification || "None";
+            return (fp.data && fp.data.classification) || "None";
         } catch (err) {
             return "Unknown";
         }
