@@ -142,7 +142,7 @@ export const configuration: Configuration = configure(async sdm => {
                 const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
                 const aspectRegistry = new DefaultAspectRegistry({
                     idealStore: resultStore,
-                    features: Aspects,
+                    aspects: Aspects,
                     undesirableUsageChecker: demoUndesirableUsageChecker,
                 });
                 const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [

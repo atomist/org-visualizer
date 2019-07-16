@@ -54,12 +54,12 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
  */
 export class DefaultAspectRegistry implements AspectRegistry {
 
-    get features() {
-        return this.opts.features;
+    get aspects() {
+        return this.opts.aspects;
     }
 
     public aspectOf(type: string): ManagedAspect | undefined {
-        return type ? this.features.find(f => f.name === type) : undefined;
+        return type ? this.aspects.find(f => f.name === type) : undefined;
     }
 
     public get undesirableUsageChecker(): UndesirableUsageChecker {
@@ -77,10 +77,10 @@ export class DefaultAspectRegistry implements AspectRegistry {
 
     constructor(private readonly opts: {
         idealStore: IdealStore,
-        features: ManagedAspect[],
+        aspects: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
     }) {
-        opts.features.forEach(f => {
+        opts.aspects.forEach(f => {
             if (!f) {
                 throw new Error("A null aspect was passed in");
             }

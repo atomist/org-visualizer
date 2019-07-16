@@ -115,9 +115,9 @@ export interface UndesirableUsage {
 export interface AspectRegistry {
 
     /**
-     * All the features we are managing
+     * All the aspects we are managing
      */
-    readonly features: ManagedAspect[];
+    readonly aspects: ManagedAspect[];
 
     /**
      * Find the feature that manages fingerprints of this type
