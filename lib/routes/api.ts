@@ -128,7 +128,7 @@ export function api(clientFactory: ClientFactory,
 
                 // Flag bad fingerprints with a special color
                 await visitAsync(tree, async l => {
-                    if ((l as any).sha && await aspectRegistry.undesirableUsageChecker.check("local", l)) {
+                    if ((l as any).sha && await aspectRegistry.undesirableUsageChecker.check("local", l as any)) {
                         (l as any).color = "#810325";
                     }
                     return true;
