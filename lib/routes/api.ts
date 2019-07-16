@@ -43,7 +43,8 @@ import {
     introduceClassificationLayer,
     SunburstTree,
     trimOuterRim,
-    visit, visitAsync,
+    visit,
+    visitAsync,
 } from "../tree/sunburst";
 import {
     authHandlers,
