@@ -109,7 +109,7 @@
     "spider": "npm run compile:ts && node ./lib/script/spider.js -o Azure-Samples -s cognitive"
   },
   "engines": {
-    "node": ">=8.1.0",
+    "node": ">=10.0.0",
     "npm": ">=5.0.0"
   }
 }

@@ -17,6 +17,7 @@
 import { Feature, sha256, TypedFP } from "@atomist/sdm-pack-fingerprints";
 
 export interface LicenseData {
+    path: string;
     classification: string;
     content?: string;
 }
@@ -25,14 +26,23 @@ export const License: Feature = {
     name: "license",
     displayName: "License",
     extract: async p => {
-        const licenseFile = await p.getFile("LICENSE");
+        let path;
+        let licenseFile = await p.getFile("LICENSE");
+        if (!!licenseFile) {
+            path = "LICENSE"
+        } else {
+            licenseFile = await p.getFile("LICENSE.txt");
+            if (!!licenseFile) {
+                path = "LICENSE.txt";
+            }
+        }
         let classification: string = "None";
         let content: string;
         if (!!licenseFile) {
             content = await licenseFile.getContent();
             classification = content.trim().split("\n")[0].trim();
         }
-        const data: LicenseData = { classification, content };
+        const data: LicenseData = { classification, content, path };
         return {
             type: "license",
             name: "license",
@@ -43,7 +53,7 @@ export const License: Feature = {
     toDisplayableFingerprintName: () => "License",
     toDisplayableFingerprint: fp => {
         try {
-            return (fp.data && fp.data.classification) || "None";
+            return (!!fp.data && !!fp.data.classification) ? `${fp.data.path}:${fp.data.classification}` : "None";
         } catch (err) {
             return "Unknown";
         }
