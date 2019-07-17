@@ -29,7 +29,7 @@ export const License: Feature = {
         let path;
         let licenseFile = await p.getFile("LICENSE");
         if (!!licenseFile) {
-            path = "LICENSE"
+            path = "LICENSE";
         } else {
             licenseFile = await p.getFile("LICENSE.txt");
             if (!!licenseFile) {
