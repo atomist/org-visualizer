@@ -36,6 +36,7 @@ import {
     ReactElement,
 } from "react";
 import * as ReactDOMServer from "react-dom/server";
+import serveStatic = require("serve-static");
 import {
     AspectForDisplay,
     OrgExplorer,
@@ -63,7 +64,6 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
-import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
