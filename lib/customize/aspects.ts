@@ -49,6 +49,7 @@ import { DirectMavenDependencies } from "../feature/spring/directMavenDependenci
 import { SpringBootStarter } from "../feature/spring/springBootStarter";
 import { SpringBootVersion } from "../feature/spring/springBootVersion";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+import { ExposedSecrets } from "../feature/secret/exposedSecrets";
 
 /**
  * The features managed by this SDM.
@@ -67,6 +68,7 @@ export const Aspects: ManagedAspect[] = [
         suggestedIdeals: (type, name) => idealsFromNpm(name),
     },
     CodeOfConduct,
+    ExposedSecrets,
     new TsLintPropertyFeature(),
     TravisScriptsFeature,
     fileCountFeature,
