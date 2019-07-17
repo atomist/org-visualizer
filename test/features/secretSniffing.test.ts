@@ -16,7 +16,10 @@
 
 import { InMemoryProject } from "@atomist/automation-client";
 import * as assert from "power-assert";
-import { sniffFileContent, sniffProject } from "../../lib/feature/secret/secretSniffing";
+import {
+    sniffFileContent,
+    sniffProject,
+} from "../../lib/feature/secret/secretSniffing";
 import { loadSnifferOptions } from "../../lib/feature/secret/snifferOptionsLoader";
 
 describe("secret sniffing", () => {

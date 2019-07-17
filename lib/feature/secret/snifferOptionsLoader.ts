@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { SecretDefinition, SnifferOptions } from "./secretSniffing";
+import {
+    SecretDefinition,
+    SnifferOptions,
+} from "./secretSniffing";
 
 import * as yaml from "yamljs";
 

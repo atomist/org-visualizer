@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Project, projectUtils, RepoRef } from "@atomist/automation-client";
+import {
+    Project,
+    projectUtils,
+    RepoRef,
+} from "@atomist/automation-client";
 import * as _ from "lodash";
 
 export interface ExposedSecret {
