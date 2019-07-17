@@ -17,6 +17,7 @@
 import * as assert from "assert";
 import {
     introduceClassificationLayer,
+    PlantedTree,
     SunburstTree,
 } from "../../lib/tree/sunburst";
 
@@ -27,11 +28,16 @@ describe("introduceClassificationLayer", () => {
             name: "name",
             children: [],
         };
-        const split = introduceClassificationLayer(t1, {
+        const pt: PlantedTree = {
+            tree: t1,
+            circles: [{ meaning: "something" }],
+        };
+        const split = introduceClassificationLayer(pt, {
             descendantClassifier: () => "x",
             newLayerDepth: 0,
+            newLayerMeaning: "an x",
         });
-        assert.deepStrictEqual(split, t1);
+        assert.deepStrictEqual(split.tree, t1);
     });
 
     it("should split tree with single node", () => {
@@ -44,11 +50,17 @@ describe("introduceClassificationLayer", () => {
                 },
             ],
         };
-        const split = introduceClassificationLayer(t1, {
+
+        const pt: PlantedTree = {
+            tree: t1,
+            circles: [{ meaning: "something" }, { meaning: "person" }],
+        };
+        const split = introduceClassificationLayer(pt, {
             descendantClassifier: () => "x",
             newLayerDepth: 0,
+            newLayerMeaning: "just an x",
         });
-        assert.deepStrictEqual(split, {
+        assert.deepStrictEqual(split.tree, {
             name: "name",
             children: [{
                 name: "x",
@@ -75,11 +87,16 @@ describe("introduceClassificationLayer", () => {
                 },
             ],
         };
-        const split = introduceClassificationLayer(t1, {
+        const pt: PlantedTree = {
+            tree: t1,
+            circles: [{ meaning: "something" }, { meaning: "person" }],
+        };
+        const split = introduceClassificationLayer(pt, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
             newLayerDepth: 0,
+            newLayerMeaning: "political leaning",
         });
-        assert.deepStrictEqual(split, {
+        assert.deepStrictEqual(split.tree, {
             name: "name",
             children: [{
                 name: "center",
@@ -101,7 +118,7 @@ describe("introduceClassificationLayer", () => {
 
     it("should split tree with two nodes at level 3", () => {
         const t1: SunburstTree = {
-            name: "name",
+            name: "nougat",
             children: [
                 {
                     name: "Labour", children: [
@@ -117,12 +134,17 @@ describe("introduceClassificationLayer", () => {
                 },
             ],
         };
-        const split = introduceClassificationLayer(t1, {
+        const pt: PlantedTree = {
+            tree: t1,
+            circles: [{ meaning: "chewy center" }, { meaning: "party" }, { meaning: "person" }],
+        };
+        const split = introduceClassificationLayer(pt, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
             newLayerDepth: 0,
+            newLayerMeaning: "political leanings",
         });
-        assert.deepStrictEqual(split, {
-            name: "name",
+        assert.deepStrictEqual(split.tree, {
+            name: "nougat",
             children: [
                 {
                     name: "center",

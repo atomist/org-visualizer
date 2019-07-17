@@ -16,8 +16,16 @@
 
 import { logger } from "@atomist/automation-client";
 
-import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
+
+export interface PlantedTree {
+    tree: SunburstTree;
+    circles: SunburstCircleMetadata[];
+}
+
+export interface SunburstCircleMetadata {
+    meaning: string;
+}
 
 export interface SunburstTree {
     name: string;
@@ -36,10 +44,12 @@ export function isSunburstTree(level: SunburstLevel): level is SunburstTree {
     return !!maybe.children;
 }
 
-export function visit(t: SunburstLevel,
-                      visitor: (sl: SunburstLevel, depth: number) => boolean, depth: number = 0): void {
-    const r = visitor(t, depth);
-    if (r && isSunburstTree(t)) {
+export function visit(
+    t: SunburstLevel,
+    visitor: (sl: SunburstLevel, depth: number) => boolean,
+    depth: number = 0): void {
+    const keepGoing = visitor(t, depth);
+    if (keepGoing && isSunburstTree(t)) {
         t.children.forEach(c => visit(c, visitor, depth + 1));
     }
 }
@@ -167,6 +177,11 @@ export interface ClassificationLayerOptions<T> {
     newLayerDepth: number;
 
     /**
+     * What does this new layer mean?
+     */
+    newLayerMeaning: string;
+
+    /**
      * Source all descendants we may be interested in classifying on.
      * Default is leaves
      * @param {SunburstTree} l
@@ -176,27 +191,38 @@ export interface ClassificationLayerOptions<T> {
 
 }
 
+function insertAt<A>(arr: A[], index: number, item: A): A[] {
+    arr.splice(index, 0, item);
+    return arr;
+}
+
 /**
  * Introduce a new level splitting by by the given classifier for descendants
  */
-export function introduceClassificationLayer<T = {}>(tr: SunburstTree,
-                                                     how: ClassificationLayerOptions<T>): SunburstTree {
+export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
+                                                     how: ClassificationLayerOptions<T>): PlantedTree {
     const opts = {
         descendantFinder: descendants,
         ...how,
     };
+    const tr = pt.tree;
+    if (tr.children.length === 0) {
+        return pt;
+    }
+    const circles = insertAt(pt.circles, opts.newLayerDepth, { meaning: opts.newLayerMeaning });
+
     // Find descendants we're introduced in
     const descendantPicker = tree => opts.descendantFinder(tree).filter(n => !!opts.descendantClassifier(n as any));
     const t = _.cloneDeep(tr);
-    visit(t, (l, depth) => {
-        if (depth === opts.newLayerDepth && isSunburstTree(l)) {
+    visit(t, (node, depth) => {
+        if (depth === opts.newLayerDepth && isSunburstTree(node)) {
             // Split children
-            const descendantsToClassifyBy = descendantPicker(l);
+            const descendantsToClassifyBy = descendantPicker(node);
             logger.info("Found %d leaves for %s", descendantsToClassifyBy.length, t.name);
-            // Introduce a new level for each classification
+            // Introduce a new node for each classification
             const distinctNames = _.uniq(descendantsToClassifyBy.map(d => opts.descendantClassifier(d as any)));
-            const oldKids = l.children;
-            l.children = [];
+            const oldKids = node.children;
+            node.children = [];
             for (const name of distinctNames.sort()) {
                 const children = oldKids
                     .filter(k =>
@@ -215,14 +241,17 @@ export function introduceClassificationLayer<T = {}>(tr: SunburstTree,
                             const classification = opts.descendantClassifier(tt as any);
                             return !!classification && classification !== name;
                         });
-                    l.children.push(prunedSubTree);
+                    node.children.push(prunedSubTree);
                 }
             }
             return false;
         }
         return true;
     });
-    return t;
+
+    const result = { tree: t, circles };
+    checkPlantedTreeInvariants(result);
+    return result;
 }
 
 export function pruneLeaves(tr: SunburstTree, toPrune: (l: SunburstLeaf) => boolean): SunburstTree {
@@ -320,4 +349,19 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
 
     // console.log(JSON.stringify(result));
     return result;
+}
+
+export function checkPlantedTreeInvariants(pt: PlantedTree): void {
+    let depth = 0;
+    visit(pt.tree, (l, d) => {
+        if (d > depth) {
+            depth = d;
+        }
+        return true;
+    });
+    // the tree counts depth from zero
+    if ((depth + 1) !== pt.circles.length) {
+        logger.error("Tree: " + JSON.stringify(pt.tree, undefined, 2));
+        throw new Error(`Expected a depth of ${pt.circles.length} but saw a tree of depth ${depth + 1}`);
+    }
 }

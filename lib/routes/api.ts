@@ -16,7 +16,6 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
@@ -34,17 +33,13 @@ import {
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../feature/AspectRegistry";
 import { reportersAgainst } from "../feature/reportersAgainst";
-import {
-    fingerprintsChildrenQuery,
-    repoTree,
-} from "../feature/repoTree";
+import { repoTree } from "../feature/repoTree";
 import {
     groupSiblings,
     introduceClassificationLayer,
     SunburstTree,
     trimOuterRim,
-    visit,
-    visitAsync,
+    visit, visitAsync,
 } from "../tree/sunburst";
 import {
     authHandlers,
@@ -117,17 +112,18 @@ export function api(clientFactory: ClientFactory,
             }
             try {
                 // Get the tree and then perform post processing on it
-                let tree = await repoTree({
+                let pt = await repoTree({
                     workspaceId,
                     clientFactory,
-                    query: fingerprintsChildrenQuery(byName, req.query.otherLabel === "true"),
+                    byName,
+                    includeWithout: req.query.otherLabel === "true",
                     rootName: req.params.name,
                     featureName: req.params.type,
                 });
-                logger.debug("Returning fingerprint tree '%s': %j", req.params.name, tree);
+                logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
 
                 // Flag bad fingerprints with a special color
-                await visitAsync(tree, async l => {
+                await visitAsync(pt.tree, async l => {
                     if ((l as any).sha && await aspectRegistry.undesirableUsageChecker.check("local", l as any)) {
                         (l as any).color = "#810325";
                     }
@@ -135,42 +131,44 @@ export function api(clientFactory: ClientFactory,
                 });
 
                 if (!byName) {
-                    // Show all aspects, splitting by name
-                    const aspect = aspectRegistry.aspectOf(req.params.type);
-                    if (!!aspect) {
-                        tree.name = aspect.displayName;
-                    }
-                    tree = introduceClassificationLayer<{ data: any, type: string }>(tree,
+                    // Show all fingerprints in one aspect, splitting by fingerprint name
+                    pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
                         {
                             descendantClassifier: l => {
                                 if (!(l as any).sha) {
                                     return undefined;
                                 }
-                                return !aspect || !aspect.toDisplayableFingerprintName ?
+                                const aspect2: BaseFeature = aspectRegistry.aspectOf(l.type);
+                                return !aspect2 || !aspect2.toDisplayableFingerprintName ?
                                     l.name :
-                                    aspect.toDisplayableFingerprintName(l.name);
+                                    aspect2.toDisplayableFingerprintName(l.name);
                             },
                             newLayerDepth: 0,
+                            newLayerMeaning: "fingerprint name",
                         });
-
-                } else {
-                    // We are showing a particular aspect
-                    const aspect = aspectRegistry.aspectOf(tree.name);
+                    const aspect = aspectRegistry.aspectOf(req.params.type);
                     if (!!aspect) {
-                        tree.name = aspect.displayName;
+                        pt.tree.name = aspect.displayName;
+                    }
+                } else {
+                    // We are showing a particular fingerprint
+                    const aspect = aspectRegistry.aspectOf(pt.tree.name);
+                    if (!!aspect) {
+                        pt.tree.name = aspect.displayName;
                     }
                 }
-                resolveAspectNames(aspectRegistry, tree);
+                resolveAspectNames(aspectRegistry, pt.tree);
                 if (req.query.byOrg === "true") {
                     // Group by organization via an additional layer at the center
-                    tree = introduceClassificationLayer<{ owner: string }>(tree,
+                    pt = introduceClassificationLayer<{ owner: string }>(pt,
                         {
                             descendantClassifier: l => l.owner,
                             newLayerDepth: 0,
+                            newLayerMeaning: "owner",
                         });
                 }
                 if (req.query.presence === "true") {
-                    tree = groupSiblings(tree,
+                    pt.tree = groupSiblings(pt.tree,
                         {
                             parentSelector: parent => parent.children.some(c => (c as any).sha),
                             childClassifier: kid => (kid as any).sha ? "Yes" : "No",
@@ -181,7 +179,7 @@ export function api(clientFactory: ClientFactory,
                     if (!ideal || !isConcreteIdeal(ideal)) {
                         throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name}`);
                     }
-                    tree = groupSiblings(tree, {
+                    pt.tree = groupSiblings(pt.tree, {
                         parentSelector: parent => parent.children.some(c => (c as any).sha),
                         childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
                         groupLayerDecorator: l => {
@@ -195,17 +193,17 @@ export function api(clientFactory: ClientFactory,
                 }
 
                 // Group all fingerprint nodes by their name at the first level
-                tree = groupSiblings(tree, {
+                pt.tree = groupSiblings(pt.tree, {
                     parentSelector: parent => parent.children.some(c => (c as any).sha),
                     childClassifier: l => l.name,
                     collapseUnderName: () => true,
                 });
 
                 if (req.query.trim === "true") {
-                    tree = trimOuterRim(tree);
+                    pt.tree = trimOuterRim(pt.tree);
                 }
 
-                res.json(tree);
+                res.json(pt.tree);
             } catch (e) {
                 logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
                 res.sendStatus(500);

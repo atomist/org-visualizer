@@ -60,7 +60,7 @@ export const branchCount: Feature = {
     },
     toDisplayableFingerprintName: () => "branch count",
     toDisplayableFingerprint: fp => {
-        const count = parseInt(fp.data);
+        const count = parseInt(fp.data, 10);
         if (count > 20) {
             return "crazy (>20)";
         }
