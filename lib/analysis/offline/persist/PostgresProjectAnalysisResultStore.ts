@@ -31,7 +31,7 @@ import { getCategories } from "../../../customize/categories";
 import {
     Analyzed,
     IdealStore,
-} from "../../../feature/AspectRegistry";
+} from "../../../aspect/AspectRegistry";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
@@ -289,13 +289,13 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
     // Persist the fingerprints for this analysis
     private async persistFingerprints(pa: Analyzed, id: string, client: Client): Promise<void> {
         for (const fp of pa.fingerprints) {
-            const featureName = fp.type || "unknown";
-            const fingerprintId = featureName + "_" + fp.name + "_" + fp.sha;
+            const aspectName = fp.type || "unknown";
+            const fingerprintId = aspectName + "_" + fp.name + "_" + fp.sha;
             //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
             await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
-`, [fingerprintId, fp.name, featureName, fp.sha, JSON.stringify(fp.data)]);
+`, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
             await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
 values ($1, $2) ON CONFLICT DO NOTHING
 `, [id, fingerprintId]);
@@ -390,7 +390,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             variants: +r.variants,
             count: +r.count,
             entropy: +r.entropy,
-            // This is really confusing but the Feature.name is feature_name alias type in the db
+            // This is really confusing but the Aspect.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));
     }, []);

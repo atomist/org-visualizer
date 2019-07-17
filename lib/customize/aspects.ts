@@ -20,40 +20,40 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
-    filesFeature,
+    filesAspect,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import { CodeOwnership } from "../element/codeOwnership";
-import { ManagedAspect } from "../feature/AspectRegistry";
+import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
     branchCount,
-    fileCountFeature,
-} from "../feature/common/count";
+    fileCount,
+} from "../aspect/common/count";
 import {
-    CiFeature,
+    CiAspect,
     JavaBuild,
-    StackFeature,
-} from "../feature/common/stackFeature";
-import { CodeOfConduct } from "../feature/community/codeOfConduct";
-import { License } from "../feature/community/license";
-import { conditionalize } from "../feature/compose/conditionalize";
+    StackAspect,
+} from "../aspect/common/stackAspect";
+import { CodeOfConduct } from "../aspect/community/codeOfConduct";
+import { License } from "../aspect/community/license";
+import { conditionalize } from "../aspect/compose/conditionalize";
 import {
     gitActiveCommitters,
     GitRecency,
-} from "../feature/git/gitActivity";
-import { idealsFromNpm } from "../feature/node/idealFromNpm";
-import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
-import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
-import { PythonDependencies } from "../feature/python/pythonDependencies";
-import { ExposedSecrets } from "../feature/secret/exposedSecrets";
-import { DirectMavenDependencies } from "../feature/spring/directMavenDependencies";
-import { SpringBootStarter } from "../feature/spring/springBootStarter";
-import { SpringBootVersion } from "../feature/spring/springBootVersion";
-import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
+} from "../aspect/git/gitActivity";
+import { idealsFromNpm } from "../aspect/node/idealFromNpm";
+import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
+import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
+import { PythonDependencies } from "../aspect/python/pythonDependencies";
+import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
+import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
+import { SpringBootStarter } from "../aspect/spring/springBootStarter";
+import { SpringBootVersion } from "../aspect/spring/springBootVersion";
+import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 
 /**
- * The features managed by this SDM.
- * Modify this list to customize with your own features.
+ * The aspects anaged by this SDM.
+ * Modify this list to customize with your own aspects.
  */
 export const Aspects: ManagedAspect[] = [
     DockerFrom,
@@ -69,17 +69,17 @@ export const Aspects: ManagedAspect[] = [
     },
     CodeOfConduct,
     ExposedSecrets,
-    new TsLintPropertyFeature(),
-    TravisScriptsFeature,
-    fileCountFeature,
+    new TsLintPropertyAspect(),
+    TravisScriptsAspect,
+    fileCount,
     branchCount,
     GitRecency,
     // This is expensive as it requires deeper cloning
     // gitActiveCommitters(50),
-    StackFeature,
-    CiFeature,
+    StackAspect,
+    CiAspect,
     JavaBuild,
-    conditionalize(filesFeature({
+    conditionalize(filesAspect({
             name: "node-git-ignore",
             displayName: "Node git ignore",
             type: "node-gitignore",
@@ -92,7 +92,7 @@ export const Aspects: ManagedAspect[] = [
         toDisplayableFingerprintName: () => "Node git ignore",
         toDisplayableFingerprint: fp => fp.sha,
     }, async p => p.hasFile("package.json")),
-    conditionalize(filesFeature({
+    conditionalize(filesAspect({
             name: "spring-git-ignore",
             displayName: "git ignore",
             type: "spring-gitignore",

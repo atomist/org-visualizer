@@ -1,4 +1,4 @@
-import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import { BaseAspect } from "@atomist/sdm-pack-fingerprints";
 import * as React from "react";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
@@ -12,14 +12,14 @@ export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
 }
 
 export interface AspectForDisplay {
-    feature: BaseFeature;
+    feature: BaseAspect;
     fingerprints: FingerprintForDisplay[];
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
     importantAspects: AspectForDisplay[];
-    unfoundAspects: BaseFeature[];
+    unfoundAspects: BaseAspect[];
     projects: ProjectForDisplay[];
 }
 
@@ -85,7 +85,7 @@ function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElem
             </div></div></div>;
 }
 
-function displayUnfoundAspects(mfs: BaseFeature[]): React.ReactElement {
+function displayUnfoundAspects(mfs: BaseAspect[]): React.ReactElement {
     if (mfs.length === 0) {
         return <div></div>;
     }
@@ -98,7 +98,7 @@ function displayUnfoundAspects(mfs: BaseFeature[]): React.ReactElement {
     </div>;
 }
 
-function displayUnfoundAspect(mf: BaseFeature, i: number): React.ReactElement {
+function displayUnfoundAspect(mf: BaseAspect, i: number): React.ReactElement {
     const link = !!mf.documentationUrl ?
         <a href={mf.documentationUrl}>{mf.displayName}</a> : mf.displayName;
     return <li className="unfound">

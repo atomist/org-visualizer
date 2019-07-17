@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
+import { Project } from "@atomist/automation-client";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
 
-const AspectCategories: Record<string, string[]> = {};
+// TODO move to fingerprints pack
 
 /**
- * Store a categories for a given Aspects
+ * Make this aspect conditional
  */
-export function registerCategories(aspect: Pick<Aspect<any>, "name">,
-                                   ...categories: string[]): void {
-    AspectCategories[aspect.name] = categories;
-}
-
-/**
- * Retrieve categories or undefined for a given Aspect
- */
-export function getCategories(aspect: Pick<Aspect<any>, "name">): string[] | undefined {
-    return AspectCategories[aspect.name];
+export function conditionalize(f: Aspect,
+                               details: Pick<Aspect, "name" | "displayName" |
+        "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
+                               test: (p: Project) => Promise<boolean>): Aspect {
+    return {
+        ...f,
+        ...details,
+        extract: async p => {
+            const testResult = await test(p);
+            return testResult ?
+                f.extract(p) :
+                undefined;
+        },
+    };
 }

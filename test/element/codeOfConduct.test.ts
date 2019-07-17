@@ -20,7 +20,7 @@ import * as assert from "power-assert";
 import {
     CodeOfConduct,
     CodeOfConductData,
-} from "../../lib/feature/community/codeOfConduct";
+} from "../../lib/aspect/community/codeOfConduct";
 
 // Otherwise necessary type casts are removed
 // tslint:disable

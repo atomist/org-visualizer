@@ -15,7 +15,12 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { ExtractFingerprint, Feature, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    ExtractFingerprint,
+    FP,
+    sha256,
+} from "@atomist/sdm-pack-fingerprints";
 
 export interface CodeOwnershipData {
 
@@ -56,7 +61,7 @@ export const CodeOwnershipExtractor: ExtractFingerprint =
         return undefined;
     };
 
-export class CodeOwnership implements Feature {
+export class CodeOwnership implements Aspect {
 
     public readonly displayName: string = "Code Ownership";
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Analyzed } from "../feature/AspectRegistry";
+import { Analyzed } from "../aspect/AspectRegistry";
 
 export interface Term {
     name: string;

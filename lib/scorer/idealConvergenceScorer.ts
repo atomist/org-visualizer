@@ -15,7 +15,7 @@
  */
 
 import { Scorer } from "@atomist/sdm-pack-analysis";
-import { AspectRegistry } from "../feature/AspectRegistry";
+import { AspectRegistry } from "../aspect/AspectRegistry";
 
 export function idealConvergenceScorer(fm: AspectRegistry): Scorer {
     return async i => {

@@ -16,8 +16,10 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import { FP } from "@atomist/sdm-pack-fingerprints";
-import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import {
+    BaseAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
 import {
@@ -31,9 +33,9 @@ import {
     ProjectAnalysisResultStore,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
-import { AspectRegistry } from "../feature/AspectRegistry";
-import { reportersAgainst } from "../feature/reportersAgainst";
-import { repoTree } from "../feature/repoTree";
+import { AspectRegistry } from "../aspect/AspectRegistry";
+import { reportersAgainst } from "../aspect/reportersAgainst";
+import { repoTree } from "../aspect/repoTree";
 import {
     groupSiblings,
     introduceClassificationLayer,
@@ -49,7 +51,7 @@ import {
 } from "./auth";
 import { whereFor } from "./orgPage";
 import {
-    featureReport,
+    aspectReport,
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
@@ -119,7 +121,7 @@ export function api(clientFactory: ClientFactory,
                     byName,
                     includeWithout: req.query.otherLabel === "true",
                     rootName: req.params.name,
-                    featureName: req.params.type,
+                    aspectName: req.params.type,
                 });
                 logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
 
@@ -139,7 +141,7 @@ export function api(clientFactory: ClientFactory,
                                 if (!(l as any).sha) {
                                     return undefined;
                                 }
-                                const aspect2: BaseFeature = aspectRegistry.aspectOf(l.type);
+                                const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
                                 return !aspect2 || !aspect2.toDisplayableFingerprintName ?
                                     l.name :
                                     aspect2.toDisplayableFingerprintName(l.name);
@@ -223,12 +225,12 @@ export function api(clientFactory: ClientFactory,
                     return res.json(skewTree);
                 }
 
-                if (req.params.name === "featureReport") {
+                if (req.params.name === "aspectReport") {
                     const type = req.query.type;
                     const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                     const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);
                     logger.info("Found %d fingerprints", fingerprints.length);
-                    const featureTree = await featureReport(type, aspectRegistry, withDups).toSunburstTree(
+                    const featureTree = await aspectReport(type, aspectRegistry, withDups).toSunburstTree(
                         () => fingerprints);
                     return res.json(featureTree);
                 }

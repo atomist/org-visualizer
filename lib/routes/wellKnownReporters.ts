@@ -17,7 +17,7 @@
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
 import {
-    BaseFeature,
+    BaseAspect,
     FP,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
@@ -34,16 +34,16 @@ import { PackageLock } from "../element/packageLock";
 import {
     Analyzed,
     AspectRegistry,
-} from "../feature/AspectRegistry";
-import { fingerprintsFrom } from "../feature/DefaultAspectRegistry";
-import { Reporters } from "../feature/reporters";
-import { allMavenDependenciesFeature } from "../feature/spring/allMavenDependenciesFeature";
+} from "../aspect/AspectRegistry";
+import { fingerprintsFrom } from "../aspect/DefaultAspectRegistry";
+import { Reporters } from "../aspect/reporters";
+import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
 import {
     AnalyzedGrouper,
     defaultAnalyzedRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
-} from "../feature/support/groupingUtils";
+} from "../aspect/support/groupingUtils";
 import {
     ReportBuilder,
     treeBuilder,
@@ -211,10 +211,10 @@ export const WellKnownReporters: Reporters = {
                     .renderWith(defaultAnalyzedRenderer()),
 
         npmDependencyCount:
-            params => featureGroup("Maven dependency count", params, NpmDeps),
+            params => aspectGroup("Maven dependency count", params, NpmDeps),
 
         mavenDependencyCount:
-            params => featureGroup("Maven dependency count", params, allMavenDependenciesFeature),
+            params => aspectGroup("Maven dependency count", params, allMavenDependenciesAspect),
 
         loc: params =>
             treeBuilderFor<ProjectAnalysis>("loc", params)
@@ -234,9 +234,9 @@ export const WellKnownReporters: Reporters = {
                     };
                 }),
 
-        // Features found in this project
-        featureCount: params =>
-            treeBuilderFor("featureCount", params)
+        // Aspets found in this project
+        aspectCount: params =>
+            treeBuilderFor("aspectCount", params)
                 .renderWith(ar => {
                     // TODO fix this using new support
                     const rendered = defaultAnalyzedRenderer()(ar);
@@ -316,11 +316,11 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-function featureGroup(name: string, params: any, feature: BaseFeature) {
+function aspectGroup(name: string, params: any, aspect: BaseAspect) {
     return treeBuilderFor<ProjectAnalysis>(name, params)
-        .group({ name: "size", by: groupByFingerprintCount(feature) })
+        .group({ name: "size", by: groupByFingerprintCount(aspect) })
         .renderWith(ar => {
-            const size = ar.fingerprints.filter(fp => feature.name === (fp.type || fp.name)).length;
+            const size = ar.fingerprints.filter(fp => aspect.name === (fp.type || fp.name)).length;
             return {
                 name: `${ar.id.repo} (${size})`,
                 url: ar.id.url,
@@ -330,13 +330,11 @@ function featureGroup(name: string, params: any, feature: BaseFeature) {
 }
 
 /**
- * Group by the number of fingerprints from this feature
- * @param {BaseFeature} feature
- * @return {AnalyzedGrouper}
+ * Group by the number of fingerprints from this aspects
  */
-function groupByFingerprintCount(feature: BaseFeature): AnalyzedGrouper {
+function groupByFingerprintCount(aspect: BaseAspect): AnalyzedGrouper {
     return ar => {
-        const cm = ar.fingerprints.filter(fp => feature.name === (fp.type || fp.name)).length;
+        const cm = ar.fingerprints.filter(fp => aspect.name === (fp.type || fp.name)).length;
         if (!cm) {
             return undefined;
         }
@@ -380,10 +378,10 @@ export function skewReport(fm: AspectRegistry): ReportBuilder<FingerprintUsage> 
         .group({
             name: "type",
             by: fp => {
-                // Suppress features without display names
-                const feature = fm.aspectOf(fp.type);
-                return !!feature && feature.displayName ?
-                    feature.displayName :
+                // Suppress aspects without display names
+                const aspect = fm.aspectOf(fp.type);
+                return !!aspect && aspect.displayName ?
+                    aspect.displayName :
                     undefined;
             },
         })
@@ -398,16 +396,16 @@ export function skewReport(fm: AspectRegistry): ReportBuilder<FingerprintUsage> 
 /**
  * Report on all fingerprints of a particular type
  */
-export function featureReport(type: string, fm: AspectRegistry, allMatching: FP[]): ReportBuilder<FP> {
+export function aspectReport(type: string, fm: AspectRegistry, allMatching: FP[]): ReportBuilder<FP> {
     return treeBuilder<FP>(type)
         .group({
             name: "name",
             by: fp => fp.type === type ? fp.name : undefined,
         })
         .renderWith(fp => {
-            const feature = fm.aspectOf(fp.type);
+            const aspect = fm.aspectOf(fp.type);
             return {
-                name: feature ? feature.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
+                name: aspect ? aspect.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
                 size: allMatching.filter(a => fp.sha === a.sha).length,
             };
         });

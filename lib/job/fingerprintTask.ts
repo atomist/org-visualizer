@@ -28,10 +28,10 @@ import {
     PushImpactListenerInvocation,
 } from "@atomist/sdm";
 import {
-    Feature,
+    Aspect,
     fingerprintRunner,
 } from "@atomist/sdm-pack-fingerprints";
-import { FingerprintHandler } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
+import { FingerprintHandler } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import { computeFingerprints } from "@atomist/sdm-pack-fingerprints/lib/machine/runner";
 import * as _ from "lodash";
 import {
@@ -49,7 +49,7 @@ export type CalculateFingerprintTaskParameters = {
     branch: string,
 };
 
-export function calculateFingerprintTask(fingerprinters: Feature[],
+export function calculateFingerprintTask(fingerprinters: Aspect[],
                                          handlers: FingerprintHandler[])
     : CommandHandlerRegistration<CalculateFingerprintTaskParameters> {
     return {

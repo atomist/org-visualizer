@@ -16,9 +16,9 @@
 
 import { InMemoryProject } from "@atomist/automation-client";
 import * as assert from "assert";
-import { travisScanner } from "../../lib/feature/travis/travisFeatures";
+import { travisScanner } from "../../lib/aspect/travis/travisAspects";
 
-describe("travis features", () => {
+describe("travis aspects", () => {
 
     it("should return undefined if no travis file", async () => {
         const p = InMemoryProject.of();

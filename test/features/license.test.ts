@@ -15,8 +15,8 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
-import { FP } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
-import { License } from "../../lib/feature/community/license";
+import { FP } from "@atomist/sdm-pack-fingerprints";
+import { License } from "../../lib/aspect/community/license";
 
 import * as assert from "assert";
 

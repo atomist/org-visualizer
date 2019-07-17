@@ -33,7 +33,7 @@ import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Aspects } from "../customize/aspects";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
-import { IdealStore } from "../feature/AspectRegistry";
+import { IdealStore } from "../aspect/AspectRegistry";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -42,11 +42,9 @@ import { IdealStore } from "../feature/AspectRegistry";
  */
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
-        // .withScanner(packageLockScanner)
-        .withFeatures(Aspects)
+        .withAspects(Aspects)
         // This one is crazy expensive so may want to skip it
          .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
-        // .withScorer(idealConvergenceScorer(featureManager))
         .build();
 }
 

@@ -17,12 +17,12 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
+    BaseAspect,
     ConcreteIdeal,
     FP,
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
-import { BaseFeature } from "@atomist/sdm-pack-fingerprints/lib/machine/Feature";
 import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
 import {
@@ -59,11 +59,11 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import {
     AspectRegistry,
     ManagedAspect,
-} from "../feature/AspectRegistry";
+} from "../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
-} from "../feature/DefaultAspectRegistry";
+} from "../aspect/DefaultAspectRegistry";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -128,7 +128,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         }
                     }
 
-                    const unfoundFeatures: BaseFeature[] = aspectRegistry.aspects
+                    const unfoundFeatures: BaseAspect[] = aspectRegistry.aspects
                         .filter(f => !!f.displayName)
                         .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 

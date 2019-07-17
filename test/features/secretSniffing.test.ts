@@ -19,8 +19,8 @@ import * as assert from "power-assert";
 import {
     sniffFileContent,
     sniffProject,
-} from "../../lib/feature/secret/secretSniffing";
-import { loadSnifferOptions } from "../../lib/feature/secret/snifferOptionsLoader";
+} from "../../lib/aspect/secret/secretSniffing";
+import { loadSnifferOptions } from "../../lib/aspect/secret/snifferOptionsLoader";
 
 describe("secret sniffing", () => {
 

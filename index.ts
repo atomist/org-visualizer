@@ -36,16 +36,16 @@ import { Aspects } from "./lib/customize/aspects";
 import { registerCategories } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 import {
-    CiFeature,
+    CiAspect,
     JavaBuild,
-    StackFeature,
-} from "./lib/feature/common/stackFeature";
-import { DefaultAspectRegistry } from "./lib/feature/DefaultAspectRegistry";
-import { TypeScriptVersion } from "./lib/feature/node/TypeScriptVersion";
-import { DirectMavenDependencies } from "./lib/feature/spring/directMavenDependencies";
-import { SpringBootStarter } from "./lib/feature/spring/springBootStarter";
-import { SpringBootVersion } from "./lib/feature/spring/springBootVersion";
-import { TravisScriptsFeature } from "./lib/feature/travis/travisFeatures";
+    StackAspect,
+} from "./lib/aspect/common/stackAspect";
+import { DefaultAspectRegistry } from "./lib/aspect/DefaultAspectRegistry";
+import { TypeScriptVersion } from "./lib/aspect/node/TypeScriptVersion";
+import { DirectMavenDependencies } from "./lib/aspect/spring/directMavenDependencies";
+import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
+import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
+import { TravisScriptsAspect } from "./lib/aspect/travis/travisAspects";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
@@ -60,16 +60,16 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 
 export const configuration: Configuration = configure(async sdm => {
 
-        const jobFeatures = [
+        const jobAspects = [
             DockerFrom,
             DockerfilePath,
             DockerPorts,
             SpringBootStarter,
             TypeScriptVersion,
             NpmDeps,
-            TravisScriptsFeature,
-            StackFeature,
-            CiFeature,
+            TravisScriptsAspect,
+            StackAspect,
+            CiAspect,
             JavaBuild,
             SpringBootVersion,
             DirectMavenDependencies,
@@ -92,7 +92,7 @@ export const configuration: Configuration = configure(async sdm => {
             sdm.addExtensionPacks(
                 fingerprintSupport({
                     pushImpactGoal: pushImpact,
-                    features: jobFeatures,
+                    aspects: jobAspects,
                     handlers,
                 }));
 
@@ -103,7 +103,7 @@ export const configuration: Configuration = configure(async sdm => {
             };
         } else {
             sdm.addEvent(CreateFingerprintJob);
-            sdm.addCommand(calculateFingerprintTask(jobFeatures, handlers));
+            sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
             return {};
         }
 
