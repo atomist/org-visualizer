@@ -230,14 +230,14 @@ export function api(clientFactory: ClientFactory,
                     const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                     const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);
                     logger.info("Found %d fingerprints", fingerprints.length);
-                    const featureTree = await aspectReport(type, aspectRegistry, withDups).toSunburstTree(
+                    const aspectTree = await aspectReport(type, aspectRegistry, withDups).toSunburstTree(
                         () => fingerprints);
-                    return res.json(featureTree);
+                    return res.json(aspectTree);
                 }
 
-                const featureQueries = await reportersAgainst(
+                const aspectQueries = await reportersAgainst(
                     () => store.distinctFingerprintKinds(req.params.workspace_id), aspectRegistry);
-                const allQueries = _.merge(featureQueries, WellKnownReporters);
+                const allQueries = _.merge(aspectQueries, WellKnownReporters);
 
                 const cannedQuery = allQueries[req.params.name]({
                     ...req.query,

@@ -106,7 +106,7 @@ export const Aspects: ManagedAspect[] = [
         toDisplayableFingerprint: fp => fp.sha,
     }, async p => p.hasFile("pom.xml")),
     SpringBootVersion,
-    // allMavenDependenciesFeature,    // This is expensive
+    // allMavenDependenciesAspect,    // This is expensive
     DirectMavenDependencies,
     PythonDependencies,
 ];

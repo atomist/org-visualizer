@@ -120,7 +120,7 @@ export interface AspectRegistry {
     readonly aspects: ManagedAspect[];
 
     /**
-     * Find the feature that manages fingerprints of this type
+     * Find the aspect that manages fingerprints of this type
      */
     aspectOf(type: string): ManagedAspect | undefined;
 

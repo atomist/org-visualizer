@@ -8,11 +8,11 @@ export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     displayName?: string;
     name: string;
 
-    featureName: string;
+    aspectName: string;
 }
 
 export interface AspectForDisplay {
-    feature: BaseAspect;
+    aspect: BaseAspect;
     fingerprints: FingerprintForDisplay[];
 }
 export interface OrgExplorerProps {
@@ -64,9 +64,9 @@ function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElem
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
 
-    const allLink: (trim: boolean) => string = trim => `./query?type=${f.feature.name}&name=*&byOrg=true&trim=${trim}`;
-    const about = !f.feature.documentationUrl ? "" :
-        <a href={f.feature.documentationUrl}>About</a>;
+    const allLink: (trim: boolean) => string = trim => `./query?type=${f.aspect.name}&name=*&byOrg=true&trim=${trim}`;
+    const about = !f.aspect.documentationUrl ? "" :
+        <a href={f.aspect.documentationUrl}>About</a>;
 
     const graphAll = f.fingerprints.length <= 1 ? "" : <a href={allLink(true)}>All fingerprints</a>;
     const graphAllExpanded = f.fingerprints.length <= 1 ? "" : <a href={allLink(false)}>Expanded</a>;
@@ -75,7 +75,7 @@ function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElem
 
     return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
-        <label htmlFor={key} className="lbl-toggle fp-list">{f.feature.displayName} ({f.fingerprints.length})</label>
+        <label htmlFor={key} className="lbl-toggle fp-list">{f.aspect.displayName} ({f.fingerprints.length})</label>
         <div className="collapsible-content">
             <div className="content-inner">
                 <ul>

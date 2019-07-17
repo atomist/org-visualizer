@@ -10,14 +10,14 @@ export interface ProjectFingerprintForDisplay {
     style: React.CSSProperties;
 }
 
-export interface ProjectFeatureForDisplay {
-    feature: { displayName: DisplayName };
+export interface ProjectAspectForDisplay {
+    aspect: { displayName: DisplayName };
     fingerprints: ProjectFingerprintForDisplay[];
 }
 
 export interface ProjectExplorerProps {
     analysisResult: ProjectAnalysisResult;
-    features: ProjectFeatureForDisplay[];
+    aspects: ProjectAspectForDisplay[];
 }
 
 export function ProjectExplorer(props: ProjectExplorerProps): React.ReactElement {
@@ -28,13 +28,13 @@ export function ProjectExplorer(props: ProjectExplorerProps): React.ReactElement
 
         <h2>Architectural Concerns</h2>
 
-        {props.features.map(displayFeature)}
+        {props.aspects.map(displayFeature)}
     </div>;
 }
 
-function displayFeature(feature: ProjectFeatureForDisplay): React.ReactElement {
+function displayFeature(feature: ProjectAspectForDisplay): React.ReactElement {
     return <div>
-        <h3>{feature.feature.displayName}</h3>
+        <h3>{feature.aspect.displayName}</h3>
         <ul>
             {feature.fingerprints.map(displayFingerprint)}
         </ul>

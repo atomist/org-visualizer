@@ -36,14 +36,13 @@ import {
     ReactElement,
 } from "react";
 import * as ReactDOMServer from "react-dom/server";
-import serveStatic = require("serve-static");
 import {
     AspectForDisplay,
     OrgExplorer,
 } from "../../views/org";
 import {
+    ProjectAspectForDisplay,
     ProjectExplorer,
-    ProjectFeatureForDisplay,
 } from "../../views/project";
 import {
     ProjectForDisplay,
@@ -64,6 +63,7 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
+import serveStatic = require("serve-static");
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -108,12 +108,12 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                     const importAspects: AspectForDisplay[] = _.sortBy(aspectRegistry.aspects, a => a.displayName || a.name)
                         .filter(f => !!f.displayName)
                         .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
-                        .map(feature => ({
-                            feature,
-                            fingerprints: fingerprintUsage.filter(fu => fu.type === feature.name)
+                        .map(aspect => ({
+                            aspect,
+                            fingerprints: fingerprintUsage.filter(fu => fu.type === aspect.name)
                                 .map(fu => ({
                                     ...fu,
-                                    featureName: feature.name,
+                                    aspectName: aspect.name,
                                 })),
                         }));
                     for (const ffd of importAspects) {
@@ -122,13 +122,13 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                                 const c = idealCoordinates(id);
                                 return c.type === fp.type && c.name === fp.name;
                             });
-                            if (ideal && isConcreteIdeal(ideal) && ffd.feature.toDisplayableFingerprint) {
-                                fp.ideal = { displayValue: ffd.feature.toDisplayableFingerprint(ideal.ideal) };
+                            if (ideal && isConcreteIdeal(ideal) && ffd.aspect.toDisplayableFingerprint) {
+                                fp.ideal = { displayValue: ffd.aspect.toDisplayableFingerprint(ideal.ideal) };
                             }
                         }
                     }
 
-                    const unfoundFeatures: BaseAspect[] = aspectRegistry.aspects
+                    const unfoundAspects: BaseAspect[] = aspectRegistry.aspects
                         .filter(f => !!f.displayName)
                         .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 
@@ -136,7 +136,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         actionableFingerprints,
                         projectsAnalyzed: repos.length,
                         importantAspects: importAspects,
-                        unfoundAspects: unfoundFeatures,
+                        unfoundAspects,
                         projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                     })));
                 } catch
@@ -175,18 +175,18 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
             const aspectsAndFingerprints = await projectFingerprints(aspectRegistry, await store.fingerprintsForProject(id));
 
             // assign style based on ideal
-            const ffd: ProjectFeatureForDisplay[] = aspectsAndFingerprints.map(featureAndFingerprints => ({
-                ...featureAndFingerprints,
-                fingerprints: featureAndFingerprints.fingerprints.map(fp => ({
+            const ffd: ProjectAspectForDisplay[] = aspectsAndFingerprints.map(aspectAndFingerprints => ({
+                ...aspectAndFingerprints,
+                fingerprints: aspectAndFingerprints.fingerprints.map(fp => ({
                     ...fp,
-                    idealDisplayString: displayIdeal(fp, featureAndFingerprints.feature),
+                    idealDisplayString: displayIdeal(fp, aspectAndFingerprints.aspect),
                     style: displayStyleAccordingToIdeal(fp),
                 })),
             }));
 
             return res.send(renderStaticReactNode(ProjectExplorer({
                 analysisResult,
-                features: _.sortBy(ffd.filter(f => !!f.feature.displayName), f => f.feature.displayName),
+                aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
             })));
         });
 
@@ -213,8 +213,8 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                 }
 
                 // tslint:disable-next-line
-                const feature = aspectRegistry.aspectOf(req.query.type);
-                const fingerprintDisplayName = defaultedToDisplayableFingerprintName(feature)(req.query.name);
+                const aspect = aspectRegistry.aspectOf(req.query.type);
+                const fingerprintDisplayName = defaultedToDisplayableFingerprintName(aspect)(req.query.name);
 
                 function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
                     if (!ideal) {
@@ -223,7 +223,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                     if (!isConcreteIdeal(ideal)) {
                         return { displayValue: "eliminate" };
                     }
-                    return { displayValue: defaultedToDisplayableFingerprint(feature)(ideal.ideal) };
+                    return { displayValue: defaultedToDisplayableFingerprint(aspect)(ideal.ideal) };
                 }
 
                 currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
@@ -265,9 +265,9 @@ export function jsonToQueryString(json: object): string {
     ).join("&");
 }
 
-function displayIdeal(fingerprint: MelbaFingerprintForDisplay, feature: ManagedAspect): string {
+function displayIdeal(fingerprint: MelbaFingerprintForDisplay, aspect: ManagedAspect): string {
     if (idealIsDifferentFromActual(fingerprint)) {
-        return defaultedToDisplayableFingerprint(feature)((fingerprint.ideal as ConcreteIdeal).ideal);
+        return defaultedToDisplayableFingerprint(aspect)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
     if (idealIsElimination(fingerprint)) {
         return "eliminate";
@@ -310,7 +310,7 @@ export type MelbaFingerprintForDisplay = FP & {
 };
 
 export interface MelbaAspectForDisplay {
-    feature: ManagedAspect;
+    aspect: ManagedAspect;
     fingerprints: MelbaFingerprintForDisplay[];
 }
 
@@ -330,7 +330,7 @@ async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProje
                 });
             }
             result.push({
-                feature: aspect,
+                aspect,
                 fingerprints,
             });
         }
