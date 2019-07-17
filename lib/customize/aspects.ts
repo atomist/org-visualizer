@@ -45,11 +45,11 @@ import { idealsFromNpm } from "../feature/node/idealFromNpm";
 import { TsLintPropertyFeature } from "../feature/node/TsLintFeature";
 import { TypeScriptVersion } from "../feature/node/TypeScriptVersion";
 import { PythonDependencies } from "../feature/python/pythonDependencies";
+import { ExposedSecrets } from "../feature/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../feature/spring/directMavenDependencies";
 import { SpringBootStarter } from "../feature/spring/springBootStarter";
 import { SpringBootVersion } from "../feature/spring/springBootVersion";
 import { TravisScriptsFeature } from "../feature/travis/travisFeatures";
-import { ExposedSecrets } from "../feature/secret/exposedSecrets";
 
 /**
  * The features managed by this SDM.

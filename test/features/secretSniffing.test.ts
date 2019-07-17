@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as assert from "power-assert";
 import { InMemoryProject } from "@atomist/automation-client";
+import * as assert from "power-assert";
 import { sniffFileContent, sniffProject } from "../../lib/feature/secret/secretSniffing";
 import { loadSnifferOptions } from "../../lib/feature/secret/snifferOptionsLoader";
 

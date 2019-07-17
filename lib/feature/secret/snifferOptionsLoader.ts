@@ -18,9 +18,9 @@ import { SecretDefinition, SnifferOptions } from "./secretSniffing";
 
 import * as yaml from "yamljs";
 
+import { AllFiles } from "@atomist/automation-client";
 import * as fs from "fs";
 import * as path from "path";
-import { AllFiles } from "@atomist/automation-client";
 
 /**
  * Based on regular expressions in https://www.ndss-symposium.org/wp-content/uploads/2019/02/ndss2019_04B-3_Meli_paper.pdf
@@ -28,7 +28,7 @@ import { AllFiles } from "@atomist/automation-client";
  */
 export async function loadSnifferOptions(): Promise<SnifferOptions> {
     const secretsYmlPath = path.join(__dirname, "..", "..", "..", "secrets.yml");
-    const yamlString = fs.readFileSync(secretsYmlPath, 'utf8');
+    const yamlString = fs.readFileSync(secretsYmlPath, "utf8");
     try {
         const native = await yaml.parse(yamlString);
 

@@ -36,8 +36,8 @@ export const ExposedSecrets: Feature = {
                 name: ExposedSecretsType,
                 data,
                 sha: sha256(data),
-            }
-        })
+            };
+        });
     },
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => `${fp.data.path}:${fp.data.description}`,

@@ -41,7 +41,7 @@ export interface SecretDefinition {
     /**
      * Regexp for the secret
      */
-    pattern: RegExp,
+    pattern: RegExp;
 
     /**
      * Description of the problem. For example, what kind of secret this is.
