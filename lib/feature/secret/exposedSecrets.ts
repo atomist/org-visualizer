@@ -35,7 +35,7 @@ export const ExposedSecrets: Feature = {
                 type: ExposedSecretsType,
                 name: ExposedSecretsType,
                 data,
-                sha: sha256(data),
+                sha: sha256(JSON.stringify(data)),
             };
         });
     },
