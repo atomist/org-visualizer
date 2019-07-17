@@ -31,9 +31,9 @@ import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { IdealStore } from "../aspect/AspectRegistry";
 import { Aspects } from "../customize/aspects";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
-import { IdealStore } from "../aspect/AspectRegistry";
 
 /**
  * Add scanners to the analyzer to extract data

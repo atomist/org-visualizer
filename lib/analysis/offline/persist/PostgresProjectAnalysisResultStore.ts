@@ -27,11 +27,11 @@ import {
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import { Client } from "pg";
-import { getCategories } from "../../../customize/categories";
 import {
     Analyzed,
     IdealStore,
 } from "../../../aspect/AspectRegistry";
+import { getCategories } from "../../../customize/categories";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,

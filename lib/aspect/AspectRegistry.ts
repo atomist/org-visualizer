@@ -16,8 +16,8 @@
 
 import { RemoteRepoRef } from "@atomist/automation-client";
 import {
-    AtomicAspect,
     Aspect,
+    AtomicAspect,
     FP,
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";

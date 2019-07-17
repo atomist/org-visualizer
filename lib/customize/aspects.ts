@@ -23,7 +23,6 @@ import {
     filesAspect,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { CodeOwnership } from "../element/codeOwnership";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
     branchCount,
@@ -50,6 +49,7 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { CodeOwnership } from "../element/codeOwnership";
 
 /**
  * The aspects anaged by this SDM.

@@ -29,8 +29,6 @@ import {
 import * as _ from "lodash";
 import * as path from "path";
 import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { CodeMetricsElement } from "../element/codeMetricsElement";
-import { PackageLock } from "../element/packageLock";
 import {
     Analyzed,
     AspectRegistry,
@@ -44,6 +42,8 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
+import { CodeMetricsElement } from "../element/codeMetricsElement";
+import { PackageLock } from "../element/packageLock";
 import {
     ReportBuilder,
     treeBuilder,

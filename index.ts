@@ -32,9 +32,6 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
-import { Aspects } from "./lib/customize/aspects";
-import { registerCategories } from "./lib/customize/categories";
-import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 import {
     CiAspect,
     JavaBuild,
@@ -46,6 +43,9 @@ import { DirectMavenDependencies } from "./lib/aspect/spring/directMavenDependen
 import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
 import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "./lib/aspect/travis/travisAspects";
+import { Aspects } from "./lib/customize/aspects";
+import { registerCategories } from "./lib/customize/categories";
+import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
