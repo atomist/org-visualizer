@@ -16,6 +16,7 @@
 
 import {
     configurationValue,
+    EventFired,
     GraphQL,
     HandlerContext,
     logger,
@@ -47,10 +48,10 @@ export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subsc
         const job = e.data.AtmJob[0];
 
         if (job.name.startsWith("RepositoryDiscovery")) {
-            const event = JSON.parse(job.data);
+            const event = JSON.parse(job.data) as EventFired<OnGitHubAppInstallation.Subscription>;
 
-            if (!!event.GitHubAppInstallation) {
-                await fingerprintGitHubAppInstallation(event, ctx);
+            if (!!event.data.GitHubAppInstallation) {
+                await fingerprintGitHubAppInstallation(event.data, ctx);
             } else {
                 await fingerprintGitHubResourceProvider(ctx);
             }
