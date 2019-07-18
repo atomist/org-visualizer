@@ -35,6 +35,7 @@ import { FingerprintHandler } from "@atomist/sdm-pack-fingerprints/lib/machine/A
 import { computeFingerprints } from "@atomist/sdm-pack-fingerprints/lib/machine/runner";
 import * as _ from "lodash";
 import {
+    GitHubAppInstallationByOwner,
     IngestScmCommit,
     ScmCommitInput,
     ScmProviderById,
@@ -72,7 +73,16 @@ export function calculateFingerprintTask(fingerprinters: Aspect[],
                 options: QueryNoCacheOptions,
             }), "SCMProvider[0]");
 
-            if (!provider || !provider.credential || !provider.credential.secret) {
+            const app = _.get(await ci.context.graphClient.query<GitHubAppInstallationByOwner.Query, GitHubAppInstallationByOwner.Variables>({
+                name: "GitHubAppInstallationByOwner",
+                variables: {
+                    name: ci.parameters.owner,
+                },
+            }), "GitHubAppInstallation[0]");
+
+            const token = _.get(provider, "credential.secret") || _.get(app, "token.secret");
+
+            if (!token) {
                 return;
             }
 
@@ -82,7 +92,7 @@ export function calculateFingerprintTask(fingerprinters: Aspect[],
                 branch: ci.parameters.branch,
                 rawApiBase: provider.apiUrl,
             });
-            const credentials = { token: provider.credential.secret };
+            const credentials = { token };
 
             await ci.configuration.sdm.projectLoader.doWithProject({ ...ci, id, credentials }, async p => {
 
