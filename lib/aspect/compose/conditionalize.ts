@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Project } from "@atomist/automation-client";
+import {
+    logger,
+    Project,
+} from "@atomist/automation-client";
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
 
 // TODO move to fingerprints pack
@@ -22,18 +26,30 @@ import { Aspect } from "@atomist/sdm-pack-fingerprints";
 /**
  * Make this aspect conditional
  */
-export function conditionalize(f: Aspect,
-                               details: Pick<Aspect, "name" | "displayName" |
-        "toDisplayableFingerprint" | "toDisplayableFingerprintName">,
-                               test: (p: Project) => Promise<boolean>): Aspect {
+export function conditionalize(aspect: Aspect,
+                               test: (p: Project) => Promise<boolean>,
+                               details: Partial<Pick<Aspect, "name" | "displayName" |
+                                   "toDisplayableFingerprint" | "toDisplayableFingerprintName">> = {}): Aspect {
     return {
-        ...f,
-        ...details,
+        ...aspect,
+        name: details.name || aspect.name,
+        displayName: details.displayName || aspect.displayName,
+        toDisplayableFingerprintName: details.toDisplayableFingerprintName || aspect.toDisplayableFingerprintName,
+        toDisplayableFingerprint: details.toDisplayableFingerprint || aspect.toDisplayableFingerprint,
         extract: async p => {
             const testResult = await test(p);
-            return testResult ?
-                f.extract(p) :
-                undefined;
+            if (testResult) {
+                const rawFingerprints = toArray(await aspect.extract(p));
+                return rawFingerprints.map(raw => {
+                    const merged = {
+                        ...raw,
+                        ...details,
+                    };
+                    logger.debug("Merged fingerprints=%j", merged);
+                    return merged;
+                });
+            }
+            return undefined;
         },
     };
 }

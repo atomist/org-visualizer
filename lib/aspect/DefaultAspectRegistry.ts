@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
@@ -29,18 +30,6 @@ export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
     return _.flatMap(toArray(ar), a => a.fingerprints);
 }
 
-function toArray<T>(value: T | T[]): T[] {
-    if (!!value) {
-        if (Array.isArray(value)) {
-            return value;
-        } else {
-            return [value];
-        }
-    } else {
-        return undefined;
-    }
-}
-
 export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<HasFingerprints>): AsyncIterable<FP> {
     for await (const hf of ar) {
         for (const fp of hf.fingerprints) {
@@ -54,7 +43,7 @@ export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<Ha
  */
 export class DefaultAspectRegistry implements AspectRegistry {
 
-    get aspects() {
+    get aspects(): ManagedAspect[] {
         return this.opts.aspects;
     }
 

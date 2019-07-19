@@ -148,7 +148,7 @@ function cloneWithCredentialsFromEnv(sourceData: GitHubSearchResult): Promise<Pr
             repo: sourceData.name,
             rawApiBase: "https://api.github.com", // for GitHub Enterprise, make this something like github.yourcompany.com/api/v3
         }), {
-            alwaysDeep: false,
+            alwaysDeep: true,
             depth: 1,
         });
 }

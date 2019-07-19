@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { LocalProject } from "@atomist/automation-client";
-import { execPromise } from "@atomist/sdm";
-import {
-    Aspect,
-    sha256,
-} from "@atomist/sdm-pack-fingerprints";
+import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Size in terms of files
@@ -39,38 +34,4 @@ export const fileCount: Aspect = {
     },
     toDisplayableFingerprint: fp => fp.data,
     toDisplayableFingerprintName: () => "size",
-};
-
-export const branchCount: Aspect = {
-    name: "branches",
-    displayName: "Branch count",
-    extract: async p => {
-        const lp = p as LocalProject;
-        const bp = await execPromise("git", ["branch", "-a"], {
-            cwd: lp.baseDir,
-        });
-        const brCount = bp.stdout.split("\n").length;
-        const data = brCount + "";
-        return {
-            type: "branches",
-            name: "branches",
-            data,
-            sha: sha256(data),
-        };
-    },
-    toDisplayableFingerprintName: () => "branch count",
-    toDisplayableFingerprint: fp => {
-        const count = parseInt(fp.data, 10);
-        if (count > 20) {
-            return "crazy (>20)";
-        }
-        if (count > 12) {
-            return "excessive (12-20)";
-        }
-        if (count > 5) {
-            return "high (5-12)";
-        }
-        return "ok (<=5)";
-    },
-
 };

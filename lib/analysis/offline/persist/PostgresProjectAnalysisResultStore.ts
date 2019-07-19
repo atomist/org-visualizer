@@ -16,6 +16,7 @@
 
 import {
     GitHubRepoRef,
+    logger,
     RemoteRepoRef,
     RepoRef,
 } from "@atomist/automation-client";
@@ -266,8 +267,14 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
                     analysisResult.analysis,
                     (analysisResult as SpideredRepo).query,
                 ]);
-            await this.persistFingerprints(analysisResult.analysis, id, client);
+            const fingerprintPersistResults = await this.persistFingerprints(analysisResult.analysis, id, client);
 
+            fingerprintPersistResults.failures.forEach(f => {
+                logger.error(`Could not persist fingerprint.
+                Error: ${f.error.message}
+                Repo: ${repoRef.url}
+                Fingerprint: ${JSON.stringify(f.failedFingerprint, undefined, 2)}`);
+            });
             return {
                 succeeded: [id],
                 attemptedCount: 1,
@@ -287,19 +294,33 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
     }
 
     // Persist the fingerprints for this analysis
-    private async persistFingerprints(pa: Analyzed, id: string, client: Client): Promise<void> {
+    private async persistFingerprints(pa: Analyzed, id: string, client: Client): Promise<{
+        insertedCount: number,
+        failures: Array<{ failedFingerprint: FP; error: Error }>,
+    }> {
+        let insertedCount = 0;
+        const failures: Array<{ failedFingerprint: FP; error: Error }> = [];
         for (const fp of pa.fingerprints) {
             const aspectName = fp.type || "unknown";
             const fingerprintId = aspectName + "_" + fp.name + "_" + fp.sha;
             //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
-            await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
+            try {
+                await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
 `, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
-            await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
+                await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
 values ($1, $2) ON CONFLICT DO NOTHING
 `, [id, fingerprintId]);
+                insertedCount++;
+            } catch (error) {
+                failures.push({ failedFingerprint: fp, error });
+            }
         }
+        return {
+            insertedCount,
+            failures,
+        };
     }
 
     constructor(public readonly clientFactory: ClientFactory) {

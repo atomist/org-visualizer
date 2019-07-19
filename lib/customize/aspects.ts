@@ -25,7 +25,6 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
-    branchCount,
     fileCount,
 } from "../aspect/common/count";
 import {
@@ -36,6 +35,7 @@ import {
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
 import { conditionalize } from "../aspect/compose/conditionalize";
+import { branchCount } from "../aspect/git/branchCount";
 import {
     gitActiveCommitters,
     GitRecency,
@@ -75,36 +75,26 @@ export const Aspects: ManagedAspect[] = [
     branchCount,
     GitRecency,
     // This is expensive as it requires deeper cloning
-    // gitActiveCommitters(50),
+    gitActiveCommitters(50),
     StackAspect,
     CiAspect,
     JavaBuild,
     conditionalize(filesAspect({
-            name: "node-git-ignore",
+            name: "node-gitignore",
             displayName: "Node git ignore",
             type: "node-gitignore",
             toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",
-    ), {
-        name: "node-git-ignore",
-        displayName: "Node git ignore",
-        toDisplayableFingerprintName: () => "Node git ignore",
-        toDisplayableFingerprint: fp => fp.sha,
-    }, async p => p.hasFile("package.json")),
+    ), async p => p.hasFile("package.json")),
     conditionalize(filesAspect({
-            name: "spring-git-ignore",
+            name: "spring-gitignore",
             displayName: "git ignore",
             type: "spring-gitignore",
             toDisplayableFingerprint: fp => fp.sha,
             canonicalize: c => c,
         }, ".gitignore",
-    ), {
-        name: "spring-git-ignore",
-        displayName: "Spring git ignore",
-        toDisplayableFingerprintName: () => "Spring git ignore",
-        toDisplayableFingerprint: fp => fp.sha,
-    }, async p => p.hasFile("pom.xml")),
+    ), async p => p.hasFile("pom.xml")),
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive
     DirectMavenDependencies,

@@ -42,7 +42,7 @@ export function suggestPartitions(repos: Analyzed[], terms: Terms): Partition[] 
         });
     }
 
-    function rate(partition: Partition) {
+    function rate(partition: Partition): number {
         return Math.abs(partition.matching - partition.total / 2);
     }
 

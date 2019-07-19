@@ -16,13 +16,15 @@
 
 import { AbstractFingerprint } from "@atomist/sdm";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import { ExtractFingerprint } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as _ from "lodash";
+import { Error } from "tslint/lib/error";
 
-const TsLintAspecteName = "tslint";
+const TsLintAspectName = "tslint";
 
 export class TsLintProperty extends AbstractFingerprint {
 
-    public readonly type = TsLintAspecteName;
+    public readonly type: string = TsLintAspectName;
 
     constructor(public readonly path: string, public readonly property: string, data: any) {
         super(`${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
@@ -32,9 +34,9 @@ export class TsLintProperty extends AbstractFingerprint {
 
 export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
 
-    public readonly displayName = "TSLint";
+    public readonly displayName: string = "TSLint";
 
-    public readonly name = TsLintAspecteName;
+    public readonly name: string = TsLintAspectName;
 
     get apply() {
         return async (p, tsi) => {
@@ -42,7 +44,7 @@ export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
         };
     }
 
-    public extract = async p => {
+    public extract: ExtractFingerprint<TsLintProperty> = async p => {
         const tslint = await p.getFile("tslint.json");
         if (!tslint) {
             return undefined;
@@ -59,7 +61,7 @@ export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
             });
     }
 
-    constructor(public readonly path = "rules") {
+    constructor(public readonly path: string = "rules") {
     }
 
 }
