@@ -136,7 +136,7 @@ async function spider(params: SpiderAppOptions) {
             poolSize: 40,
             workspaceId,
         });
-    console.log("Now to compute analytics over all fingerprints...")
+    console.log("Computing analytics over all fingerprints...");
     await computeAnalytics(persister, workspaceId);
     return spiderResult;
 }
