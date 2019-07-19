@@ -163,7 +163,8 @@ export const WellKnownReporters: Reporters = {
                         },
                     })
                     .map<ProjectAnalysis & { lang: string }>({
-                        async* mapping(cs: AsyncIterable<CodeStats>, originalQuery: () => AsyncIterable<ProjectAnalysis>) {
+                        async* mapping(cs: AsyncIterable<CodeStats>,
+                                       originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
                             // TODO don't materialize this
                             const source: ProjectAnalysis[] = [];
                             for await (const pa of originalQuery()) {
@@ -316,7 +317,7 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-function aspectGroup(name: string, params: any, aspect: BaseAspect) {
+function aspectGroup(name: string, params: any, aspect: BaseAspect): ReportBuilder<ProjectAnalysis> {
     return treeBuilderFor<ProjectAnalysis>(name, params)
         .group({ name: "size", by: groupByFingerprintCount(aspect) })
         .renderWith(ar => {

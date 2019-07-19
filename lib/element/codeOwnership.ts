@@ -21,6 +21,7 @@ import {
     FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
+import { ApplyFingerprint } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 export interface CodeOwnershipData {
 
@@ -67,15 +68,13 @@ export class CodeOwnership implements Aspect {
 
     public readonly name: string = "codeOwnership";
 
-    get apply() {
+    get apply(): ApplyFingerprint {
         return async (p, tsi) => {
             throw new Error(`Applying code ownership is not yet supported. But it could be.`);
         };
     }
 
-    public selector = fp => fp.name === codeOwnershipFingerprintName;
-
-    public extract = CodeOwnershipExtractor;
+    public extract: ExtractFingerprint = CodeOwnershipExtractor;
 
     public toDisplayableFingerprint(fp: FP): string {
         return fp.data;

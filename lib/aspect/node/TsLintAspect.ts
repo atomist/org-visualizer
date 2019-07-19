@@ -16,7 +16,7 @@
 
 import { AbstractFingerprint } from "@atomist/sdm";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
-import { ExtractFingerprint } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
+import { ApplyFingerprint, ExtractFingerprint } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as _ from "lodash";
 import { Error } from "tslint/lib/error";
 
@@ -38,9 +38,9 @@ export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
 
     public readonly name: string = TsLintAspectName;
 
-    get apply() {
+    get apply(): ApplyFingerprint<TsLintProperty> {
         return async (p, tsi) => {
-            throw new Error(`Applying TSlint version ${tsi.typeScriptVersion} not yet supported`);
+            throw new Error(`Applying TSlint version not yet supported`);
         };
     }
 
