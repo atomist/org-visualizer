@@ -16,7 +16,10 @@
 
 import { AbstractFingerprint } from "@atomist/sdm";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
-import { ApplyFingerprint, ExtractFingerprint } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
+import {
+    ApplyFingerprint,
+    ExtractFingerprint,
+} from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as _ from "lodash";
 import { Error } from "tslint/lib/error";
 
