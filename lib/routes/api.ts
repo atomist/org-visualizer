@@ -27,6 +27,7 @@ import {
     RequestHandler,
 } from "express";
 import * as _ from "lodash";
+import * as path from "path";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
@@ -55,7 +56,6 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
-import * as path from "path";
 
 import * as  swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
