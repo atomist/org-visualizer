@@ -1,12 +1,11 @@
-<p align="center">
-  <img src="https://images.atomist.com/sdm/SDM-Logo-Dark.png">
-</p>
+  <img src="./images/dockerImageSunburst.png"
+  width="130" hight="130" align="right" />
 
 # @atomist/org-visualizer
 
-A tool for visualizing technology usage and drift across an organization.
+A tool for visualizing technology usage and drift across an organization. 
 
-The cloud native era has led to an explosion of repositories, which we lack tools for understanding and managing at scale. See Rod Johnson's blog [This Will Surprise You](https://blog.atomist.com/this-will-surprise-you/) for further discussion.
+The cloud native era has led to an explosion of repositories, which we lack tools to understand and manage at scale. See Rod Johnson's blog [This Will Surprise You](https://blog.atomist.com/this-will-surprise-you/) for further discussion.
 
 An Atomist **aspect** captures a concern in your project, in anything available from git: repository content (code and configuration) and git data such as branch counts and committer activity. Aspects support the following use cases:
 
@@ -14,12 +13,12 @@ An Atomist **aspect** captures a concern in your project, in anything available 
 2. *Convergence* (some aspects): Help drive code changes to achieve consistency on an "ideal" state of an aspect, such as a particularly version of a library.
 3. *Reaction to change* (some aspects): React to changes in aspect usage within a project: for example, to a library upgrade, removing the Spring Boot Security starter or exposing an additional port in a Docker container.
 
-This project focuses on the visualization use case.
+This project focuses on the visualization use case. Visualizations are exposed via d3 sunburst charts and via a REST API returning JSON documents.
 
 There is out of the box
 support for investigating the following aspects of your project:
 
-- TypeScript level
+- TypeScript version
 - Spring Boot version and starters (with Maven)
 - Docker base images, Dockerfile path and exposed ports
 - Java build tool (Maven, Gradle)
@@ -32,7 +31,7 @@ Analysis is extensible using the Atomist `Project` API. Implementing and registe
 
 An example visualization, showing Docker images used across two GitHub organizations:
 
-![Docker image visualization](images/dockerImageSunburst.png "Docker image skew")
+![Docker image visualization](images/dockerImageSunburst.png "Docker image drift")
 
 ## Running
 
@@ -41,7 +40,7 @@ To visualize your org:
 1. Clone and build this project
 2. Set up the required PostreSQL database
 2. Run analysis on your repositories
-3. Run the `org-visualizer` and hit its web interface.
+3. Run the `org-visualizer` and hit its web interface at [http://localhost:2866](http://localhost:2866)
 4. If you have more ideas, add code to study more aspects of your projects
 
 ### Building
@@ -132,13 +131,12 @@ Go to [http://localhost:2866](http://localhost:2866).
 
 ## Architecture
 
-There are three architectural layers:
+There are four architectural layers:
 
-1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them.
+1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by spidering or, in regular use, by an [Atomist SDM](https://github.com/atomist/sdm).
 2. **Query** functionality.
-3. Simple **UI** using static React and d3 exposing Sunburst charts.
-
-All three layers are extensible and customizable.
+3. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866](http://localhost:2866/api-docs)
+4. Simple **UI** using static React and d3 exposing sunburst charts based on the API.
 
 ## Extending
 
