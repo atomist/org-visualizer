@@ -1,0 +1,105 @@
+swagger: "2.0"
+info:
+  description: "Atomist Explorer"
+  version: 1.0.0
+  title: Atomist Explorer
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "info@atomist.com"
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: /api/v1
+tags:
+  - name: atomist
+    description: Explore your projects
+    externalDocs:
+      description: Find out more
+      url: "https://www.atomist.com"
+schemes:
+  - http
+paths:
+  /{workspace}/fingerprints:
+    get:
+          tags:
+            - fingerprints
+          summary: Find all fingerprints in workspace
+          description: Find fingerprints in workspace
+          operationId: findPetsByStatus
+          consumes:
+            - application/xml
+            - application/json
+          produces:
+            - application/xml
+            - application/json
+          parameters:
+            - name: workspace
+              in: path
+              description: Workspace id. * for all.
+              required: true
+              type: string
+          responses:
+            "200":
+              description: successful operation
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/Fingerprint"
+            "400":
+              description: Invalid workspace id
+  /{workspace}/fingerprint/{type}/{name}:
+    get:
+          tags:
+            - fingerprints
+          summary: Describe a fingerprint in the workspace
+          description: Find fingerprint in workspace
+          operationId: findPetsByStatus
+          consumes:
+            - application/xml
+            - application/json
+          produces:
+            - application/xml
+            - application/json
+          parameters:
+            - name: workspace
+              in: path
+              description: Workspace id. * for all.
+              required: true
+              type: string
+            - name: type
+              in: path
+              description: Fingerprint type
+              required: true
+              type: string
+            - name: name
+              in: path
+              description: Fingerprint name
+              required: true
+              type: string
+          responses:
+            "200":
+              description: successful operation
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/Fingerprint"
+            "400":
+              description: Invalid status value
+definitions:
+  Fingerprint:
+    properties:
+      type:
+        type: string
+        description: Fingerprint type
+      name:
+        type: string
+        description: Fingerprint name
+      variants:
+        type: integer
+        format: int32
+      count:
+        type: integer
+        format: int32
+      entropy:
+        type: float
+        description: Entropy across the organization for this fingerprint.

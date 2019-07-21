@@ -55,6 +55,10 @@ import {
     skewReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
+import * as path from "path";
+
+import * as  swaggerUi from "swagger-ui-express";
+import * as yaml from "yamljs";
 
 /**
  * Public API routes, returning JSON
@@ -68,6 +72,11 @@ export function api(clientFactory: ClientFactory,
         express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
             extended: true,
         }));
+
+        const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
+        const swaggerDocument = yaml.load(swaggerDocPath);
+
+        express.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
         configureAuth(express);
 
