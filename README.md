@@ -135,7 +135,7 @@ There are four architectural layers:
 
 1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by spidering or, in regular use, by an [Atomist SDM](https://github.com/atomist/sdm).
 2. **Query** functionality.
-3. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866](http://localhost:2866/api-docs)
+3. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866/apidocs](http://localhost:2866/api-docs)
 4. Simple **UI** using static React and d3 exposing sunburst charts based on the API.
 
 ## Extending

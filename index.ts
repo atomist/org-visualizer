@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
+import { Configuration, BannerSection } from "@atomist/automation-client";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
 import {
     CachingProjectLoader,
@@ -57,70 +57,72 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
+import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
+import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 
 export const configuration: Configuration = configure(async sdm => {
 
-        const jobAspects = [
-            DockerFrom,
-            DockerfilePath,
-            DockerPorts,
-            SpringBootStarter,
-            TypeScriptVersion,
-            NpmDeps,
-            TravisScriptsAspect,
-            StackAspect,
-            CiAspect,
-            JavaBuild,
-            SpringBootVersion,
-            DirectMavenDependencies,
-        ];
-        const handlers = [];
+    const jobAspects = [
+        DockerFrom,
+        DockerfilePath,
+        DockerPorts,
+        SpringBootStarter,
+        TypeScriptVersion,
+        NpmDeps,
+        TravisScriptsAspect,
+        StackAspect,
+        CiAspect,
+        JavaBuild,
+        SpringBootVersion,
+        DirectMavenDependencies,
+    ];
+    const handlers = [];
 
-        // TODO cd merge into one call
-        registerCategories(TypeScriptVersion, "Node.js");
-        registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
-        registerCategories(NpmDeps, "Node.js");
-        registerReportDetails(NpmDeps);
-        registerCategories(SpringBootStarter, "Java");
-        registerReportDetails(SpringBootStarter);
-        registerCategories(JavaBuild, "Java");
-        registerReportDetails(JavaBuild);
-        registerCategories(SpringBootVersion, "Java");
-        registerReportDetails(SpringBootVersion);
-        registerCategories(DirectMavenDependencies, "Java");
-        registerReportDetails(DirectMavenDependencies);
-        registerCategories(DockerFrom, "Docker");
-        registerReportDetails(DockerFrom);
-        registerCategories(DockerfilePath, "Docker");
-        registerReportDetails(DockerfilePath);
-        registerCategories(DockerPorts, "Docker");
-        registerReportDetails(DockerPorts);
+    // TODO cd merge into one call
+    registerCategories(TypeScriptVersion, "Node.js");
+    registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
+    registerCategories(NpmDeps, "Node.js");
+    registerReportDetails(NpmDeps);
+    registerCategories(SpringBootStarter, "Java");
+    registerReportDetails(SpringBootStarter);
+    registerCategories(JavaBuild, "Java");
+    registerReportDetails(JavaBuild);
+    registerCategories(SpringBootVersion, "Java");
+    registerReportDetails(SpringBootVersion);
+    registerCategories(DirectMavenDependencies, "Java");
+    registerReportDetails(DirectMavenDependencies);
+    registerCategories(DockerFrom, "Docker");
+    registerReportDetails(DockerFrom);
+    registerCategories(DockerfilePath, "Docker");
+    registerReportDetails(DockerfilePath);
+    registerCategories(DockerPorts, "Docker");
+    registerReportDetails(DockerPorts);
 
-        if (mode === "online") {
-            const pushImpact = new PushImpact();
+    if (mode === "online") {
+        const pushImpact = new PushImpact();
 
-            sdm.addExtensionPacks(
-                fingerprintSupport({
-                    pushImpactGoal: pushImpact,
-                    aspects: jobAspects,
-                    handlers,
-                }));
+        sdm.addExtensionPacks(
+            fingerprintSupport({
+                pushImpactGoal: pushImpact,
+                aspects: jobAspects,
+                handlers,
+            }));
 
-            return {
-                analyze: {
-                    goals: pushImpact,
-                },
-            };
-        } else {
-            sdm.addEvent(CreateFingerprintJob);
-            sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
-            return {};
-        }
+        return {
+            analyze: {
+                goals: pushImpact,
+            },
+        };
+    } else {
+        sdm.addEvent(CreateFingerprintJob);
+        sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
+        return {};
+    }
 
-    },
+},
     {
         name: "Analysis Software Delivery Machine",
         preProcessors: async cfg => {
@@ -149,24 +151,55 @@ export const configuration: Configuration = configure(async sdm => {
 
             return cfg;
         },
+
         postProcessors: [
             configureHumio,
             async cfg => {
-                const resultStore = analysisResultStore(sdmConfigClientFactory(cfg));
-                const aspectRegistry = new DefaultAspectRegistry({
-                    idealStore: resultStore,
-                    aspects: Aspects,
-                    undesirableUsageChecker: demoUndesirableUsageChecker,
+                const { customizers, routesToSuggestOnStartup } =
+                    orgVisualizationEndpoints(sdmConfigClientFactory(cfg));
+                cfg.http.customizers = customizers;
+                routesToSuggestOnStartup.forEach(rtsos => {
+                    cfg.logging.banner.contributors.push(suggestRoute(rtsos));
                 });
-                const staticPages = !["production", "testing"].includes(process.env.NODE_ENV) ? [
-                        orgPage(aspectRegistry, resultStore)] :
-                    [];
-
-                cfg.http.customizers = [
-                    ...staticPages,
-                    api(sdmConfigClientFactory(cfg), resultStore, aspectRegistry),
-                ];
                 return cfg;
             },
         ],
     });
+
+function suggestRoute({ title, route }: { title: string, route: string }):
+    (c: Configuration) => BannerSection {
+    return cfg => ({
+        title,
+        body: `http://localhost:${cfg.http.port}${route}`,
+    });
+}
+
+function orgVisualizationEndpoints(clientFactory: ClientFactory): {
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    customizers: ExpressCustomizer[],
+} {
+    const resultStore = analysisResultStore(clientFactory);
+    const aspectRegistry = new DefaultAspectRegistry({
+        idealStore: resultStore,
+        aspects: Aspects,
+        undesirableUsageChecker: demoUndesirableUsageChecker,
+    });
+
+    const aboutTheApi = api(clientFactory, resultStore, aspectRegistry);
+
+    if (["production", "testing"].includes(process.env.NODE_ENV)) {
+        return {
+            routesToSuggestOnStartup: aboutTheApi.routesToSuggestOnStartup,
+            customizers: [aboutTheApi.customizer],
+        };
+    }
+
+    const aboutStaticPages = orgPage(aspectRegistry, resultStore);
+
+    return {
+        routesToSuggestOnStartup:
+            [...aboutStaticPages.routesToSuggestOnStartup,
+            ...aboutTheApi.routesToSuggestOnStartup],
+        customizers: [aboutStaticPages.customizer, aboutTheApi.customizer],
+    };
+}

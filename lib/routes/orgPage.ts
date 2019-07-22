@@ -80,23 +80,29 @@ function renderStaticReactNode(body: ReactElement,
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): ExpressCustomizer {
-    return (express: Express, ...handlers: RequestHandler[]) => {
-        express.use(bodyParser.json());       // to support JSON-encoded bodies
-        express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-            extended: true,
-        }));
+export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
+    const orgRoute = "/org";
+    return {
+        routesToSuggestOnStartup: [{ title: "Org Visualizations", route: orgRoute }],
+        customizer: (express: Express, ...handlers: RequestHandler[]) => {
+            express.use(bodyParser.json());       // to support JSON-encoded bodies
+            express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+                extended: true,
+            }));
 
-        express.use(serveStatic("public", { index: false }));
+            express.use(serveStatic("public", { index: false }));
 
-        /* redirect / to the org page. This way we can go right here
-         * for now, and later make a higher-level page if we want.
-         */
-        express.get("/", ...handlers, async (req, res) => {
-            res.redirect("/org");
-        });
-        /* the org page itself */
-        express.get("/org", ...handlers, async (req, res) => {
+            /* redirect / to the org page. This way we can go right here
+             * for now, and later make a higher-level page if we want.
+             */
+            express.get("/", ...handlers, async (req, res) => {
+                res.redirect(orgRoute);
+            });
+            /* the org page itself */
+            express.get(orgRoute, ...handlers, async (req, res) => {
                 try {
                     const repos = await store.loadWhere(whereFor(req));
 
@@ -140,58 +146,58 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                     })));
                 } catch
-                    (e) {
+                (e) {
                     logger.error(e.stack);
                     res.status(500).send("failure");
                 }
             },
-        );
+            );
 
-        /* Project list page */
-        express.get("/projects", ...handlers, async (req, res) => {
-            const allAnalysisResults = await store.loadWhere(whereFor(req));
+            /* Project list page */
+            express.get("/projects", ...handlers, async (req, res) => {
+                const allAnalysisResults = await store.loadWhere(whereFor(req));
 
-            // optional query parameter: owner
-            const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
-            if (relevantAnalysisResults.length === 0) {
-                return res.send(`No matching repos for organization ${req.query.owner}`);
-            }
+                // optional query parameter: owner
+                const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
+                if (relevantAnalysisResults.length === 0) {
+                    return res.send(`No matching repos for organization ${req.query.owner}`);
+                }
 
-            const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id }));
+                const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id }));
 
-            return res.send(renderStaticReactNode(
-                ProjectList({ projects: projectsForDisplay }),
-                "Project list"));
-        });
+                return res.send(renderStaticReactNode(
+                    ProjectList({ projects: projectsForDisplay }),
+                    "Project list"));
+            });
 
-        /* the project page */
-        express.get("/project", ...handlers, async (req, res) => {
-            const id = req.query.id;
-            const analysisResult = await store.loadById(id);
-            if (!analysisResult) {
-                return res.send(`No project at ${JSON.stringify(id)}`);
-            }
+            /* the project page */
+            express.get("/project", ...handlers, async (req, res) => {
+                const id = req.query.id;
+                const analysisResult = await store.loadById(id);
+                if (!analysisResult) {
+                    return res.send(`No project at ${JSON.stringify(id)}`);
+                }
 
-            const aspectsAndFingerprints = await projectFingerprints(aspectRegistry, await store.fingerprintsForProject(id));
+                const aspectsAndFingerprints = await projectFingerprints(aspectRegistry, await store.fingerprintsForProject(id));
 
-            // assign style based on ideal
-            const ffd: ProjectAspectForDisplay[] = aspectsAndFingerprints.map(aspectAndFingerprints => ({
-                ...aspectAndFingerprints,
-                fingerprints: aspectAndFingerprints.fingerprints.map(fp => ({
-                    ...fp,
-                    idealDisplayString: displayIdeal(fp, aspectAndFingerprints.aspect),
-                    style: displayStyleAccordingToIdeal(fp),
-                })),
-            }));
+                // assign style based on ideal
+                const ffd: ProjectAspectForDisplay[] = aspectsAndFingerprints.map(aspectAndFingerprints => ({
+                    ...aspectAndFingerprints,
+                    fingerprints: aspectAndFingerprints.fingerprints.map(fp => ({
+                        ...fp,
+                        idealDisplayString: displayIdeal(fp, aspectAndFingerprints.aspect),
+                        style: displayStyleAccordingToIdeal(fp),
+                    })),
+                }));
 
-            return res.send(renderStaticReactNode(ProjectExplorer({
-                analysisResult,
-                aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
-            })));
-        });
+                return res.send(renderStaticReactNode(ProjectExplorer({
+                    analysisResult,
+                    aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
+                })));
+            });
 
-        /* the query page */
-        express.get("/query", ...handlers, async (req, res) => {
+            /* the query page */
+            express.get("/query", ...handlers, async (req, res) => {
                 let dataUrl: string;
                 let currentIdealForDisplay: CurrentIdealForDisplay;
                 const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
@@ -205,8 +211,8 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                     dataUrl = !!req.query.filter ?
                         `/api/v1/${workspaceId}/filter/${req.query.name}?${queryString}` :
                         `/api/v1/${workspaceId}/fingerprint/${
-                            encodeURIComponent(req.query.type)}/${
-                            encodeURIComponent(req.query.name)}?byOrg=${
+                        encodeURIComponent(req.query.type)}/${
+                        encodeURIComponent(req.query.name)}?byOrg=${
                         req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
                         req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
                         req.query.trim === "true"}`;
@@ -244,11 +250,9 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         "/lib/d3.v5.min.js",
                         "/js/sunburstScript.js",
                     ]));
-            },
-        );
-
-    }
-        ;
+            });
+        },
+    };
 }
 
 export function whereFor(req: Request): string {
