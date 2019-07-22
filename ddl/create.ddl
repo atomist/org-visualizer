@@ -20,6 +20,9 @@ DROP TABLE IF EXISTS fingerprint_analytics;
 
 DROP TABLE IF EXISTS ideal_fingerprints;
 
+-- Contains the latest snapshot for the given repository
+-- Application code should delete any previously held data for this
+-- repository so we only have one snapshot for every repository
 CREATE TABLE repo_snapshots (
  id varchar NOT NULL PRIMARY KEY,
  workspace_id varchar NOT NULL,
@@ -35,7 +38,7 @@ CREATE TABLE repo_snapshots (
  query text
 );
 
--- One instance for each fingerprint
+-- Each fingerprint we've seen
 CREATE TABLE fingerprints (
   name text NOT NULL,
   feature_name text NOT NULL,
@@ -44,12 +47,14 @@ CREATE TABLE fingerprints (
   id varchar NOT NULL PRIMARY KEY
 );
 
+-- Join table between repo_snapshots and fingerprints
 CREATE TABLE IF NOT EXISTS repo_fingerprints (
   repo_snapshot_id varchar references repo_snapshots(id),
   fingerprint_id varchar references fingerprints(id),
   PRIMARY KEY (repo_snapshot_id, fingerprint_id)
 );
 
+-- Usage information about fingerprints
 -- This table must be kept up to date by application code
 -- whenever a fingerprint is inserted
 CREATE TABLE fingerprint_analytics (

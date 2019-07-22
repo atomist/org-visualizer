@@ -131,8 +131,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                 const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
 values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
-                        workspaceId, id, ideal.ideal.name,
-                        ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+                    workspaceId, id, ideal.ideal.name,
+                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -198,7 +198,7 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
                 await client.query(sql, [kind.type, kind.name, workspaceId,
-                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                    cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
             }
             return true;
         });
@@ -243,13 +243,12 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
             };
         }
 
-        // Use this as unique database id
-        const id = repoRef.url.replace("/", "") + "_" + repoRef.sha;
-
         try {
-            // Whack any joins
-            await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id = $1`, [id]);
-            await client.query(`DELETE from repo_snapshots WHERE id = $1`, [id]);
+            // Whack any snapshot we already hold for this repository
+            await deleteOldSnapshotForRepository(repoRef, client);
+
+            // Use this as unique database id
+            const id = repoRef.url.replace("/", "") + "_" + repoRef.sha;
 
             const shaToUse = !!(analysisResult.analysis as ProjectAnalysis).gitStatus ?
                 (analysisResult.analysis as ProjectAnalysis).gitStatus.sha :
@@ -415,6 +414,17 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             categories: getCategories({ name: r.type }),
         }));
     }, []);
+}
+
+/**
+ * Delete the data we hold for this repository.
+ */
+async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: Client) {
+    await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN 
+            (SELECT id from repo_snapshots WHERE url = $1)`,
+        [repoRef.url]);
+    await client.query(`DELETE from repo_snapshots WHERE url = $1`,
+        [repoRef.url]);
 }
 
 // TODO GitHub only

@@ -62,7 +62,7 @@ export interface FingerprintUsage extends CohortAnalysis {
 export interface ProjectAnalysisResultStore {
 
     /**
-     * How many analyses we have stored. This includes multiple analyses of the same repo.
+     * How many analyses we have stored.
      * @return {Promise<number>}
      */
     count(): Promise<number>;
