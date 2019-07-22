@@ -11,7 +11,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 | License | Count |
 |---------|-------|
 |[AFLv2.1](#aflv21)|1|
-|[Apache-2.0](#apache-20)|37|
+|[Apache-2.0](#apache-20)|38|
 |[BSD-2-Clause](#bsd-2-clause)|12|
 |[BSD-3-Clause](#bsd-3-clause)|26|
 |[BSD](#bsd)|7|
@@ -23,7 +23,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 |[GPL-3.0](#gpl-30)|4|
 |[ISC](#isc)|86|
 |[MIT AND BSD-3-Clause](#mit-and-bsd-3-clause)|1|
-|[MIT](#mit)|953|
+|[MIT](#mit)|954|
 |[Unlicense](#unlicense)|1|
 |[WTFPL](#wtfpl)|1|
 
@@ -71,6 +71,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`request`|`2.88.0`|Mikeal Rogers|[https://github.com/request/request](https://github.com/request/request)|
 |`rxjs`|`6.5.2`|Ben Lesh|[https://github.com/reactivex/rxjs](https://github.com/reactivex/rxjs)|
 |`spdx-correct`|`3.1.0`|Kyle E. Mitchell|[https://github.com/jslicense/spdx-correct.js](https://github.com/jslicense/spdx-correct.js)|
+|`swagger-ui-dist`|`3.23.1`||[https://github.com/swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)|
 |`tslib`|`1.10.0`|Microsoft Corp.|[https://github.com/Microsoft/tslib](https://github.com/Microsoft/tslib)|
 |`tunnel-agent`|`0.6.0`|Mikeal Rogers|[https://github.com/mikeal/tunnel-agent](https://github.com/mikeal/tunnel-agent)|
 |`typescript`|`3.5.3`|Microsoft Corp.|[https://github.com/Microsoft/TypeScript](https://github.com/Microsoft/TypeScript)|
@@ -1138,6 +1139,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`supports-color`|`2.0.0`|Sindre Sorhus|[https://github.com/chalk/supports-color](https://github.com/chalk/supports-color)|
 |`supports-color`|`5.5.0`|Sindre Sorhus|[https://github.com/chalk/supports-color](https://github.com/chalk/supports-color)|
 |`supports-hyperlinks`|`1.0.1`|James Talmage|[https://github.com/jamestalmage/supports-hyperlinks](https://github.com/jamestalmage/supports-hyperlinks)|
+|`swagger-ui-express`|`4.0.7`|Stephen Scott|[https://github.com/scottie1984/swagger-ui-express](https://github.com/scottie1984/swagger-ui-express)|
 |`swap-case`|`1.1.2`|Blake Embrey|[https://github.com/blakeembrey/swap-case](https://github.com/blakeembrey/swap-case)|
 |`symbol-observable`|`1.2.0`|Ben Lesh|[https://github.com/blesh/symbol-observable](https://github.com/blesh/symbol-observable)|
 |`tapable`|`0.2.9`|Tobias Koppers @sokra|[https://github.com/webpack/tapable](https://github.com/webpack/tapable)|
