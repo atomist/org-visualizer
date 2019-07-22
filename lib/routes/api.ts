@@ -66,8 +66,8 @@ import {
  * Also expose Swagger API documentation.
  */
 export function api(clientFactory: ClientFactory,
-    store: ProjectAnalysisResultStore,
-    aspectRegistry: AspectRegistry): {
+                    store: ProjectAnalysisResultStore,
+                    aspectRegistry: AspectRegistry): {
         customizer: ExpressCustomizer,
         routesToSuggestOnStartup: Array<{ title: string, route: string }>,
     } {

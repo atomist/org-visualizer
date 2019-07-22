@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Configuration, BannerSection } from "@atomist/automation-client";
+import { BannerSection, Configuration } from "@atomist/automation-client";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
+import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
     CachingProjectLoader,
     GitHubLazyProjectLoader,
@@ -32,6 +33,7 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
 import {
     CiAspect,
     JavaBuild,
@@ -57,8 +59,6 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { orgPage } from "./lib/routes/orgPage";
-import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
-import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
