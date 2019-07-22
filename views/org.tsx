@@ -192,6 +192,9 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         </form>
 
         <h2>Data</h2>
-        <a href="./api/v1/*/fingerprint/npm-project-deps/tslint?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a>
+        <ul>
+            <li><a href="./api-docs">Swagger documentation</a></li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a></li>
+        </ul>
     </div>;
 }

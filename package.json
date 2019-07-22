@@ -61,6 +61,7 @@
     "recursive-readdir": "^2.2.2",
     "serve-static": "^1.14.1",
     "stringify-tree": "^1.0.2",
+    "swagger-ui-express": "^4.0.7",
     "yamljs": "^0.3.0",
     "yargs": "^13.2.4",
     "zip-a-folder": "0.0.8"

@@ -27,6 +27,7 @@ import {
     RequestHandler,
 } from "express";
 import * as _ from "lodash";
+import * as path from "path";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
@@ -56,8 +57,12 @@ import {
     WellKnownReporters,
 } from "./wellKnownReporters";
 
+import * as  swaggerUi from "swagger-ui-express";
+import * as yaml from "yamljs";
+
 /**
- * Public API routes, returning JSON
+ * Public API routes, returning JSON.
+ * Also expose Swagger API documentation.
  */
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
@@ -69,9 +74,14 @@ export function api(clientFactory: ClientFactory,
             extended: true,
         }));
 
+        const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
+        const swaggerDocument = yaml.load(swaggerDocPath);
+
+        express.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
         configureAuth(express);
 
-        express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
+        express.options("/api/v1/:workspace_id/ideal/:id", corsHandler());
         express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
             await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
             logger.info(`Set ideal to ${req.params.id}`);
