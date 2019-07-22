@@ -80,24 +80,24 @@ export const configuration: Configuration = configure(async sdm => {
         const handlers = [];
 
         // TODO cd merge into one call
-        registerCategories(DockerFrom, "Docker");
-        registerReportDetails(DockerFrom);
-        registerCategories(DockerfilePath, "Docker");
-        registerReportDetails(DockerfilePath);
-        registerCategories(DockerPorts, "Docker");
-        registerReportDetails(DockerPorts);
-        registerCategories(SpringBootStarter, "Java");
-        registerReportDetails(SpringBootStarter);
         registerCategories(TypeScriptVersion, "Node.js");
         registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
         registerCategories(NpmDeps, "Node.js");
         registerReportDetails(NpmDeps);
+        registerCategories(SpringBootStarter, "Java");
+        registerReportDetails(SpringBootStarter);
         registerCategories(JavaBuild, "Java");
         registerReportDetails(JavaBuild);
         registerCategories(SpringBootVersion, "Java");
         registerReportDetails(SpringBootVersion);
         registerCategories(DirectMavenDependencies, "Java");
         registerReportDetails(DirectMavenDependencies);
+        registerCategories(DockerFrom, "Docker");
+        registerReportDetails(DockerFrom);
+        registerCategories(DockerfilePath, "Docker");
+        registerReportDetails(DockerfilePath);
+        registerCategories(DockerPorts, "Docker");
+        registerReportDetails(DockerPorts);
 
         if (mode === "online") {
             const pushImpact = new PushImpact();
