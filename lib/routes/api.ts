@@ -40,6 +40,7 @@ import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/a
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { reportersAgainst } from "../aspect/reportersAgainst";
 import { repoTree } from "../aspect/repoTree";
+import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
     introduceClassificationLayer,
@@ -89,6 +90,21 @@ export function api(clientFactory: ClientFactory,
             await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
             logger.info(`Set ideal to ${req.params.id}`);
             res.sendStatus(201);
+        });
+
+        // Return the aspects metadata
+        express.options("/api/v1/:workspace_id/aspects", corsHandler());
+        express.get("/api/v1/:workspace_id/aspects", [corsHandler(), ...authHandlers()], async (req, res) => {
+            try {
+                const workspaceId = req.params.workspace_id || "local";
+                const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
+                const reports = getAspectReports(fingerprintUsage, workspaceId);
+                logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
+                res.json(reports);
+            } catch (e) {
+                logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
+                res.sendStatus(500);
+            }
         });
 
         // Return all fingerprints
@@ -238,7 +254,7 @@ export function api(clientFactory: ClientFactory,
                     return res.json(skewTree);
                 }
 
-                if (req.params.name === "aspectReport") {
+                if (req.params.name === "") {
                     const type = req.query.type;
                     const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                     const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);

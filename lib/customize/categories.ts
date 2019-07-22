@@ -15,8 +15,17 @@
  */
 
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
+import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+
+export interface ReportDetails {
+    name?: string;
+    description?: string;
+    url?: string;
+}
 
 const AspectCategories: Record<string, string[]> = {};
+const AspectReportDetails: Record<string, ReportDetails> = {};
 
 /**
  * Store a categories for a given Aspects
@@ -27,8 +36,55 @@ export function registerCategories(aspect: Pick<Aspect<any>, "name">,
 }
 
 /**
+ * Store a details for a given Aspects
+ */
+export function registerReportDetails(aspect: Aspect<any>,
+                                      details: ReportDetails = {}): void {
+    AspectReportDetails[aspect.name] = {
+        name: aspect.displayName,
+        description: `Details about the ${aspect.displayName} aspect`,
+        url: `filter/aspectReport?type=${aspect.name}`,
+        ...details,
+    };
+}
+
+/**
  * Retrieve categories or undefined for a given Aspect
  */
 export function getCategories(aspect: Pick<Aspect<any>, "name">): string[] | undefined {
     return AspectCategories[aspect.name];
+}
+
+export interface AspectReport {
+    category: string;
+    count: number;
+    aspects: ReportDetails[];
+}
+
+export function getAspectReports(fus: FingerprintUsage[],
+                                 workspaceId: string): AspectReport[] {
+
+    const reports: AspectReport[] = [];
+
+    const categories = _.uniq(_.flatten(_.values(AspectCategories)));
+
+    categories.forEach(k => {
+        const fu = fus.filter(f => (f.categories || []).includes(k));
+        if (fu.length > 0) {
+            reports.push({
+                category: k,
+                count: fu.length,
+                aspects: _.uniqBy(fu.filter(f => !!AspectReportDetails[f.type]).map(f => {
+                    const rd = AspectReportDetails[f.type];
+                    return {
+                        ...rd,
+                        url: `/api/v1/${workspaceId}/${rd.url}`,
+                    };
+                }), "url"),
+            });
+        }
+    });
+
+    return reports;
+
 }

@@ -44,7 +44,10 @@ import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
 import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "./lib/aspect/travis/travisAspects";
 import { Aspects } from "./lib/customize/aspects";
-import { registerCategories } from "./lib/customize/categories";
+import {
+    registerCategories,
+    registerReportDetails,
+} from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
 import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
@@ -76,15 +79,25 @@ export const configuration: Configuration = configure(async sdm => {
         ];
         const handlers = [];
 
+        // TODO cd merge into one call
         registerCategories(DockerFrom, "Docker");
+        registerReportDetails(DockerFrom);
         registerCategories(DockerfilePath, "Docker");
+        registerReportDetails(DockerfilePath);
         registerCategories(DockerPorts, "Docker");
+        registerReportDetails(DockerPorts);
         registerCategories(SpringBootStarter, "Java");
-        registerCategories(TypeScriptVersion, "TypeScript");
+        registerReportDetails(SpringBootStarter);
+        registerCategories(TypeScriptVersion, "Node.js");
+        registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
         registerCategories(NpmDeps, "Node.js");
+        registerReportDetails(NpmDeps);
         registerCategories(JavaBuild, "Java");
+        registerReportDetails(JavaBuild);
         registerCategories(SpringBootVersion, "Java");
+        registerReportDetails(SpringBootVersion);
         registerCategories(DirectMavenDependencies, "Java");
+        registerReportDetails(DirectMavenDependencies);
 
         if (mode === "online") {
             const pushImpact = new PushImpact();
