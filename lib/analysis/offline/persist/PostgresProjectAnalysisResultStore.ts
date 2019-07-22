@@ -420,7 +420,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
  * Delete the data we hold for this repository.
  */
 async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: Client) {
-    await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN 
+    await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN
             (SELECT id from repo_snapshots WHERE url = $1)`,
         [repoRef.url]);
     await client.query(`DELETE from repo_snapshots WHERE url = $1`,
