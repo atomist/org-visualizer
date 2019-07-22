@@ -87,7 +87,7 @@ export function api(clientFactory: ClientFactory,
                 const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
                 const swaggerDocument = yaml.load(swaggerDocPath);
 
-                express.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+                express.use(docRoute, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
             }
 
             configureAuth(express);

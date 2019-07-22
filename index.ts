@@ -68,64 +68,64 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 
 export const configuration: Configuration = configure(async sdm => {
 
-    const jobAspects = [
-        DockerFrom,
-        DockerfilePath,
-        DockerPorts,
-        SpringBootStarter,
-        TypeScriptVersion,
-        NpmDeps,
-        TravisScriptsAspect,
-        StackAspect,
-        CiAspect,
-        JavaBuild,
-        SpringBootVersion,
-        DirectMavenDependencies,
-    ];
-    const handlers = [];
+        const jobAspects = [
+            DockerFrom,
+            DockerfilePath,
+            DockerPorts,
+            SpringBootStarter,
+            TypeScriptVersion,
+            NpmDeps,
+            TravisScriptsAspect,
+            StackAspect,
+            CiAspect,
+            JavaBuild,
+            SpringBootVersion,
+            DirectMavenDependencies,
+        ];
+        const handlers = [];
 
-    // TODO cd merge into one call
-    registerCategories(TypeScriptVersion, "Node.js");
-    registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
-    registerCategories(NpmDeps, "Node.js");
-    registerReportDetails(NpmDeps);
-    registerCategories(SpringBootStarter, "Java");
-    registerReportDetails(SpringBootStarter);
-    registerCategories(JavaBuild, "Java");
-    registerReportDetails(JavaBuild);
-    registerCategories(SpringBootVersion, "Java");
-    registerReportDetails(SpringBootVersion);
-    registerCategories(DirectMavenDependencies, "Java");
-    registerReportDetails(DirectMavenDependencies);
-    registerCategories(DockerFrom, "Docker");
-    registerReportDetails(DockerFrom);
-    registerCategories(DockerfilePath, "Docker");
-    registerReportDetails(DockerfilePath);
-    registerCategories(DockerPorts, "Docker");
-    registerReportDetails(DockerPorts);
+        // TODO cd merge into one call
+        registerCategories(TypeScriptVersion, "Node.js");
+        registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
+        registerCategories(NpmDeps, "Node.js");
+        registerReportDetails(NpmDeps);
+        registerCategories(SpringBootStarter, "Java");
+        registerReportDetails(SpringBootStarter);
+        registerCategories(JavaBuild, "Java");
+        registerReportDetails(JavaBuild);
+        registerCategories(SpringBootVersion, "Java");
+        registerReportDetails(SpringBootVersion);
+        registerCategories(DirectMavenDependencies, "Java");
+        registerReportDetails(DirectMavenDependencies);
+        registerCategories(DockerFrom, "Docker");
+        registerReportDetails(DockerFrom);
+        registerCategories(DockerfilePath, "Docker");
+        registerReportDetails(DockerfilePath);
+        registerCategories(DockerPorts, "Docker");
+        registerReportDetails(DockerPorts);
 
-    if (mode === "online") {
-        const pushImpact = new PushImpact();
+        if (mode === "online") {
+            const pushImpact = new PushImpact();
 
-        sdm.addExtensionPacks(
-            fingerprintSupport({
-                pushImpactGoal: pushImpact,
-                aspects: jobAspects,
-                handlers,
-            }));
+            sdm.addExtensionPacks(
+                fingerprintSupport({
+                    pushImpactGoal: pushImpact,
+                    aspects: jobAspects,
+                    handlers,
+                }));
 
-        return {
-            analyze: {
-                goals: pushImpact,
-            },
-        };
-    } else {
-        sdm.addEvent(CreateFingerprintJob);
-        sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
-        return {};
-    }
+            return {
+                analyze: {
+                    goals: pushImpact,
+                },
+            };
+        } else {
+            sdm.addEvent(CreateFingerprintJob);
+            sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
+            return {};
+        }
 
-},
+    },
     {
         name: "Analysis Software Delivery Machine",
         preProcessors: async cfg => {
@@ -202,7 +202,7 @@ function orgVisualizationEndpoints(clientFactory: ClientFactory): {
     return {
         routesToSuggestOnStartup:
             [...aboutStaticPages.routesToSuggestOnStartup,
-            ...aboutTheApi.routesToSuggestOnStartup],
+                ...aboutTheApi.routesToSuggestOnStartup],
         customizers: [aboutStaticPages.customizer, aboutTheApi.customizer],
     };
 }
