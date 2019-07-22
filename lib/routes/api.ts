@@ -16,6 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
+import { isInLocalMode } from "@atomist/sdm-core";
 import {
     BaseAspect,
     FP,
@@ -28,6 +29,8 @@ import {
 } from "express";
 import * as _ from "lodash";
 import * as path from "path";
+import * as swaggerUi from "swagger-ui-express";
+import * as yaml from "yamljs";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
@@ -57,9 +60,6 @@ import {
     WellKnownReporters,
 } from "./wellKnownReporters";
 
-import * as  swaggerUi from "swagger-ui-express";
-import * as yaml from "yamljs";
-
 /**
  * Public API routes, returning JSON.
  * Also expose Swagger API documentation.
@@ -74,10 +74,13 @@ export function api(clientFactory: ClientFactory,
             extended: true,
         }));
 
-        const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
-        const swaggerDocument = yaml.load(swaggerDocPath);
+        // We currently only enable api-docs when in local mode
+        if (isInLocalMode()) {
+            const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
+            const swaggerDocument = yaml.load(swaggerDocPath);
 
-        express.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+            express.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        }
 
         configureAuth(express);
 
