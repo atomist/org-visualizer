@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BannerSection, Configuration } from "@atomist/automation-client";
+import {
+    BannerSection,
+    Configuration,
+} from "@atomist/automation-client";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
