@@ -20,6 +20,7 @@ import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisRes
 
 export interface ReportDetails {
     name?: string;
+    type?: string;
     description?: string;
     url?: string;
 }
@@ -42,6 +43,7 @@ export function registerReportDetails(aspect: Aspect<any>,
                                       details: ReportDetails = {}): void {
     AspectReportDetails[aspect.name] = {
         name: aspect.displayName,
+        type: aspect.name,
         description: `Details about the ${aspect.displayName} aspect`,
         url: `filter/aspectReport?type=${aspect.name}`,
         ...details,
