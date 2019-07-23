@@ -24,7 +24,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "^1.6.2",
+    "@atomist/automation-client": "^1.6.3-master.20190723055410",
     "@atomist/automation-client-ext-humio": "^0.2.0",
     "@atomist/sdm": "^1.6.1",
     "@atomist/sdm-core": "1.6.2-master.20190718103648",
