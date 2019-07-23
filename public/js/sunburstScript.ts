@@ -98,15 +98,15 @@ function sunburst(name, dataUrl: string, pWidth, pHeight) {
         .attr("viewBox", `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
         .on("click", focusOn); // Reset zoom on canvas click
 
-    d3.json(dataUrl).then((root) => {
-        console.log("This is a thing: " + JSON.stringify(root));
+    d3.json(dataUrl).then((d) => {
+        console.log("This is a thing: " + JSON.stringify(d));
 
-        if (root.children.length === 0) {
+        if (!d.tree || d.tree.children.length === 0) {
             alert("No data for " + name);
             return;
         }
 
-        root = d3.hierarchy(root);
+        const root = d3.hierarchy(d.tree);
         root.sum(d => d.size);
 
         const slice = svg.selectAll("g.slice")
@@ -235,15 +235,15 @@ function postNoteProblem(workspaceId, fingerprintId) {
     const postUrl = `./api/v1/${workspaceId}/problem/${fingerprintId}`;
     const labelElement = document.getElementById("noteProblemLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
-            if (response.ok) {
-                labelElement.textContent = "problm noted!";
-                labelElement.setAttribute("class", "success");
-                labelElement.setAttribute("display", "static");
-            } else {
-                labelElement.textContent = "failed to set. consult the server logaments";
-                labelElement.setAttribute("class", "error");
-            }
-        },
+        if (response.ok) {
+            labelElement.textContent = "problm noted!";
+            labelElement.setAttribute("class", "success");
+            labelElement.setAttribute("display", "static");
+        } else {
+            labelElement.textContent = "failed to set. consult the server logaments";
+            labelElement.setAttribute("class", "error");
+        }
+    },
         e => {
             labelElement.textContent = "Network error";
             labelElement.setAttribute("class", "error");

@@ -253,7 +253,7 @@ export function api(clientFactory: ClientFactory,
                         pt.tree = trimOuterRim(pt.tree);
                     }
 
-                    res.json(pt.tree);
+                    res.json(pt);
                 } catch (e) {
                     logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
                     res.sendStatus(500);
