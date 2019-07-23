@@ -30,7 +30,8 @@ import {
 import { Client } from "pg";
 import {
     Analyzed,
-    IdealStore, ProblemInfo,
+    IdealStore,
+    ProblemInfo,
 } from "../../../aspect/AspectRegistry";
 import { getCategories } from "../../../customize/categories";
 import {
