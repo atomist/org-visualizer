@@ -22,6 +22,11 @@ import {
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
 
+export interface ProblemInfo {
+    authority: string;
+    severity: "info" | "warn" | "error";
+}
+
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
  * While an Aspect can suggest multiple ideals in the suggestedIdeals method,
@@ -39,6 +44,8 @@ export interface IdealStore {
      */
     setIdeal(workspaceId: string, fingerprintId: string): Promise<void>;
 
+    noteProblem(workspaceId: string, fingerprintId: string): Promise<void>;
+
     loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
 
     /**
@@ -47,6 +54,8 @@ export interface IdealStore {
      * @return {Promise<Ideal[]>}
      */
     loadIdeals(workspaceId: string): Promise<Ideal[]>;
+
+    storeProblemFingerprint(workspaceId: string, problemFingerprint: FP, why: ProblemInfo): Promise<void>;
 }
 
 export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<UndesirableUsage>;

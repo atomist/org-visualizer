@@ -92,10 +92,19 @@ export function api(clientFactory: ClientFactory,
 
             configureAuth(express);
 
+            // Set an ideal
             express.options("/api/v1/:workspace_id/ideal/:id", corsHandler());
             express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
                 await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
                 logger.info(`Set ideal to ${req.params.id}`);
+                res.sendStatus(201);
+            });
+
+            // Note this fingerprint as a problem
+            express.options("/api/v1/:workspace_id/problem/:id", corsHandler());
+            express.put("/api/v1/:workspace_id/problem/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
+                await aspectRegistry.idealStore.noteProblem(req.params.workspace_id, req.params.id);
+                logger.info(`Set problem at ${req.params.id}`);
                 res.sendStatus(201);
             });
 

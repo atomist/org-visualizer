@@ -30,7 +30,7 @@ import {
 import { Client } from "pg";
 import {
     Analyzed,
-    IdealStore,
+    IdealStore, ProblemInfo,
 } from "../../../aspect/AspectRegistry";
 import { getCategories } from "../../../customize/categories";
 import {
@@ -126,13 +126,13 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         if (isConcreteIdeal(ideal)) {
             await doWithClient(this.clientFactory, async client => {
                 // Clear out any existing ideal
-                await client.query("DELETE FROM ideal_fingerprints WHERE workspace_id = $1 AND feature_name = $2 AND name = $3",
+                await client.query("DELETE FROM ideal_fingerprints WHERE workspace_id = $1 AND fingerprint_id IN " +
+                    "(SELECT id from fingerprints where feature_name = $2 AND name = $3)",
                     [workspaceId, ideal.ideal.type, ideal.ideal.name]);
-                const id = workspaceId + "_" + ideal.ideal.type + "_" + ideal.ideal.name;
-                await client.query(`INSERT INTO ideal_fingerprints (workspace_id, id, name, feature_name, sha, data)
-values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
-                    workspaceId, id, ideal.ideal.name,
-                    ideal.ideal.type, ideal.ideal.sha, JSON.stringify(ideal.ideal.data)]);
+                const fid = await this.ensureFingerprintStored(ideal.ideal, client);
+                await client.query(`INSERT INTO ideal_fingerprints (workspace_id, fingerprint_id, authority)
+values ($1, $2, 'local-user')`, [
+                    workspaceId, fid]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -142,7 +142,7 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
     public async setIdeal(workspaceId: string, fingerprintId: string): Promise<void> {
         const ideal = await this.loadFingerprintById(fingerprintId);
         if (!ideal) {
-            throw new Error(`Fingerprint with id=${fingerprintId} not found`);
+            throw new Error(`Fingerprint with id=${fingerprintId} not found and cannot be used as an ideal`);
         }
         const ci: ConcreteIdeal = {
             reason: "Local database",
@@ -153,8 +153,9 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
 
     public async loadIdeals(workspaceId: string): Promise<Ideal[]> {
         return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
-            WHERE workspace_id = $1`, [workspaceId]);
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
+            FROM ideal_fingerprints, fingerprints
+            WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id`, [workspaceId]);
             if (!rows.rows) {
                 return [];
             }
@@ -162,10 +163,30 @@ values ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING`, [
         }, []);
     }
 
+    public async noteProblem(workspaceId: string, fingerprintId: string): Promise<void> {
+        const problemFingerprint = await this.loadFingerprintById(fingerprintId);
+        if (!problemFingerprint) {
+            throw new Error(`Fingerprint with id=${fingerprintId} not found and cannot be noted as problem`);
+        }
+        await this.storeProblemFingerprint(workspaceId, problemFingerprint, { severity: "warn", authority: "local-user" });
+    }
+
+    public async storeProblemFingerprint(workspaceId: string, fp: FP, why: ProblemInfo): Promise<void> {
+        await doWithClient(this.clientFactory, async client => {
+            // Clear out any existing ideal
+            const fid = await this.ensureFingerprintStored(fp, client);
+            await client.query(`INSERT INTO problem_fingerprints (workspace_id, fingerprint_id, severity, authority, date_added)
+values ($1, $2, $3, $4, current_timestamp)`, [
+                workspaceId, fid, why.severity, why.authority]);
+        });
+    }
+
     public async loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
         const rawRow = await doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM ideal_fingerprints
-            WHERE workspace_id = $1 AND feature_name = $2 AND name = $3`, [workspaceId, type, name]);
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
+            FROM ideal_fingerprints, fingerprints
+            WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id
+            AND feature_name = $2 AND name = $3`, [workspaceId, type, name]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
         if (!rawRow) {
@@ -305,9 +326,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
             //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
             // Create fp record if it doesn't exist
             try {
-                await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
-values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
-`, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
+                await this.ensureFingerprintStored(fp, client);
                 await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
 values ($1, $2) ON CONFLICT DO NOTHING
 `, [id, fingerprintId]);
@@ -320,6 +339,23 @@ values ($1, $2) ON CONFLICT DO NOTHING
             insertedCount,
             failures,
         };
+    }
+
+    /**
+     * Persist the given fingerprint if it's not already known
+     * @param {FP} fp
+     * @param {Client} client
+     * @return {Promise<void>}
+     */
+    private async ensureFingerprintStored(fp: FP, client: Client): Promise<string> {
+        const aspectName = fp.type || "unknown";
+        const fingerprintId = aspectName + "_" + fp.name + "_" + fp.sha;
+        //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
+        // Create fp record if it doesn't exist
+        await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
+values ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+`, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
+        return fingerprintId;
     }
 
     constructor(public readonly clientFactory: ClientFactory) {
@@ -419,7 +455,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
 /**
  * Delete the data we hold for this repository.
  */
-async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: Client) {
+async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: Client): Promise<void> {
     await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN
             (SELECT id from repo_snapshots WHERE url = $1)`,
         [repoRef.url]);

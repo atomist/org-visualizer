@@ -10,7 +10,7 @@
 
 DROP TABLE IF EXISTS repo_fingerprints;
 
-DROP TYPE IF EXISTS SEVERITY;
+DROP TYPE IF EXISTS severity;
 
 DROP TABLE IF EXISTS fingerprints;
 
@@ -19,6 +19,8 @@ DROP TABLE IF EXISTS repo_snapshots;
 DROP TABLE IF EXISTS fingerprint_analytics;
 
 DROP TABLE IF EXISTS ideal_fingerprints;
+
+DROP TABLE IF EXISTS problem_fingerprints;
 
 -- Contains the latest snapshot for the given repository
 -- Application code should delete any previously held data for this
@@ -69,13 +71,33 @@ CREATE TABLE fingerprint_analytics (
 
 -- For each name/feature_name combination, the ideal for the given workspace
 CREATE TABLE ideal_fingerprints (
-  name text NOT NULL,
-  feature_name text NOT NULL,
+  fingerprint_id varchar references fingerprints(id),
   -- Workspace this ideal applies to
   workspace_id varchar NOT NULL,
-  sha varchar NOT NULL,
-  data jsonb,
-  id varchar NOT NULL PRIMARY KEY
+  -- Who says this is the ideal?
+  authority varchar NOT NULL,
+  -- URL relating to the ideal, if available
+  url varchar,
+  PRIMARY KEY (fingerprint_id, workspace_id)
+);
+
+CREATE TYPE severity AS ENUM ('info', 'warn', 'error');
+
+-- Fingerprints with known problems. For example, security risks.
+CREATE TABLE problem_fingerprints (
+  fingerprint_id varchar references fingerprints(id),
+  -- Workspace this problem report applies to.
+  workspace_id varchar NOT NULL,
+  -- Severity of this problem
+  severity severity NOT NULL,
+  authority varchar NOT NULL,
+  -- Third party identifier if available, such as a CVE identifier
+  identifier varchar,
+  description text,
+  -- URL relating to the problem, if available
+  url varchar,
+  date_added timestamp NOT NULL,
+  PRIMARY KEY (fingerprint_id, workspace_id)
 );
 
 CREATE INDEX ON repo_snapshots (workspace_id);
