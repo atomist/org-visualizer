@@ -280,7 +280,7 @@ export function api(clientFactory: ClientFactory,
                         }
                     }
 
-                    if (req.params.name === "") {
+                    if (req.params.name === "aspectReport") {
                         const type = req.query.type;
                         const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
                         const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);

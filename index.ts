@@ -90,19 +90,14 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(NpmDeps, "Node.js");
         registerReportDetails(NpmDeps, { url: "filter/skew?type=npm-project-deps"});
         registerCategories(SpringBootStarter, "Java");
-        registerReportDetails(SpringBootStarter);
         registerCategories(JavaBuild, "Java");
-        registerReportDetails(JavaBuild);
         registerCategories(SpringBootVersion, "Java");
-        registerReportDetails(SpringBootVersion);
         registerCategories(DirectMavenDependencies, "Java");
-        registerReportDetails(DirectMavenDependencies);
+        registerReportDetails(DirectMavenDependencies, { url: "filter/skew?type=maven-direct-dep" });
         registerCategories(DockerFrom, "Docker");
-        registerReportDetails(DockerFrom);
-        registerCategories(DockerfilePath, "Docker");
-        registerReportDetails(DockerfilePath);
+        registerReportDetails(DockerFrom, { url: "filter/aspectReport?type=docker-base-image" });
         registerCategories(DockerPorts, "Docker");
-        registerReportDetails(DockerPorts);
+        registerReportDetails(DockerPorts, { url: "filter/aspectReport?type=docker-ports"});
 
         if (mode === "online") {
             const pushImpact = new PushImpact();
