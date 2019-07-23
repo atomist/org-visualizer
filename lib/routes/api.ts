@@ -103,7 +103,7 @@ export function api(clientFactory: ClientFactory,
             // Note this fingerprint as a problem
             express.options("/api/v1/:workspace_id/problem/:id", corsHandler());
             express.put("/api/v1/:workspace_id/problem/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
-                await aspectRegistry.idealStore.noteProblem(req.params.workspace_id, req.params.id);
+                await aspectRegistry.problemStore.noteProblem(req.params.workspace_id, req.params.id);
                 logger.info(`Set problem at ${req.params.id}`);
                 res.sendStatus(201);
             });
@@ -170,9 +170,10 @@ export function api(clientFactory: ClientFactory,
                     });
                     logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
 
+                    const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
                     // Flag bad fingerprints with a special color
                     await visitAsync(pt.tree, async l => {
-                        if ((l as any).sha && await aspectRegistry.undesirableUsageChecker.check("local", l as any)) {
+                        if ((l as any).sha && await usageChecker.check("local", l as any)) {
                             (l as any).color = "#810325";
                         }
                         return true;

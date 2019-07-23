@@ -31,7 +31,7 @@ import { Client } from "pg";
 import {
     Analyzed,
     IdealStore,
-    ProblemInfo,
+    ProblemUsage,
 } from "../../../aspect/AspectRegistry";
 import { getCategories } from "../../../customize/categories";
 import {
@@ -165,21 +165,33 @@ values ($1, $2, 'local-user')`, [
     }
 
     public async noteProblem(workspaceId: string, fingerprintId: string): Promise<void> {
-        const problemFingerprint = await this.loadFingerprintById(fingerprintId);
-        if (!problemFingerprint) {
+        const fingerprint = await this.loadFingerprintById(fingerprintId);
+        if (!fingerprint) {
             throw new Error(`Fingerprint with id=${fingerprintId} not found and cannot be noted as problem`);
         }
-        await this.storeProblemFingerprint(workspaceId, problemFingerprint, { severity: "warn", authority: "local-user" });
+        await this.storeProblemFingerprint(workspaceId, { fingerprint, severity: "warn", authority: "local-user" });
     }
 
-    public async storeProblemFingerprint(workspaceId: string, fp: FP, why: ProblemInfo): Promise<void> {
+    public async storeProblemFingerprint(workspaceId: string, fp: ProblemUsage): Promise<void> {
         await doWithClient(this.clientFactory, async client => {
             // Clear out any existing ideal
-            const fid = await this.ensureFingerprintStored(fp, client);
+            const fid = await this.ensureFingerprintStored(fp.fingerprint, client);
             await client.query(`INSERT INTO problem_fingerprints (workspace_id, fingerprint_id, severity, authority, date_added)
 values ($1, $2, $3, $4, current_timestamp)`, [
-                workspaceId, fid, why.severity, why.authority]);
+                workspaceId, fid, fp.severity, fp.authority]);
         });
+    }
+
+    public async loadProblems(workspaceId: string): Promise<ProblemUsage[]> {
+        return doWithClient(this.clientFactory, async client => {
+            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
+            FROM problem_fingerprints, fingerprints
+            WHERE workspace_id = $1 AND problem_fingerprints.fingerprint_id = fingerprints.id`, [workspaceId]);
+            if (!rows.rows) {
+                return [];
+            }
+            return rows.rows.map(problemRowToProblem);
+        }, []);
     }
 
     public async loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
@@ -373,6 +385,13 @@ function idealRowToIdeal(rawRow: any): Ideal {
         return result;
     }
     throw new Error("Elimination ideals not yet supported");
+}
+
+function problemRowToProblem(rawRow: any): ProblemUsage {
+    return {
+        fingerprint: rawRow,
+        ...rawRow,
+    };
 }
 
 /**

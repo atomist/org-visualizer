@@ -19,11 +19,10 @@ import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import {
     AspectRegistry,
+    chainUndesirableUsageCheckers,
     HasFingerprints,
-    IdealStore,
-    ManagedAspect,
-    UndesirableUsage,
-    UndesirableUsageChecker,
+    IdealStore, ManagedAspect, ProblemStore,
+    problemStoreBackedUndesirableUsageCheckerFor, ProblemUsage, UndesirableUsageChecker,
 } from "./AspectRegistry";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
@@ -51,21 +50,30 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return type ? this.aspects.find(f => f.name === type) : undefined;
     }
 
-    public get undesirableUsageChecker(): UndesirableUsageChecker {
-        return this.opts.undesirableUsageChecker;
+    public async undesirableUsageCheckerFor(workspaceId: string): Promise<UndesirableUsageChecker> {
+        // TODO going for check functions is inelegant
+        return chainUndesirableUsageCheckers(
+            (await problemStoreBackedUndesirableUsageCheckerFor(this.problemStore, workspaceId)).check,
+            this.opts.undesirableUsageChecker.check);
     }
 
-    public async findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<UndesirableUsage[]> {
+    public async findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<ProblemUsage[]> {
+        const usageChecker = await this.undesirableUsageCheckerFor(workspaceId);
         return _.flatten(await Promise.all(allFingerprints(hf).map(fp =>
-            this.undesirableUsageChecker.check(workspaceId, fp))));
+            usageChecker.check(workspaceId, fp))));
     }
 
     get idealStore(): IdealStore {
         return this.opts.idealStore;
     }
 
+    get problemStore(): ProblemStore {
+        return this.opts.problemStore;
+    }
+
     constructor(private readonly opts: {
         idealStore: IdealStore,
+        problemStore: ProblemStore,
         aspects: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
     }) {

@@ -31,7 +31,7 @@ import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { IdealStore } from "../aspect/AspectRegistry";
+import { IdealStore, ProblemStore } from "../aspect/AspectRegistry";
 import { Aspects } from "../customize/aspects";
 import { codeMetricsScanner } from "../element/codeMetricsElement";
 
@@ -55,7 +55,7 @@ export function sdmConfigClientFactory(config: Configuration): ClientFactory {
     });
 }
 
-export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore & IdealStore {
+export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore & IdealStore & ProblemStore {
     return new PostgresProjectAnalysisResultStore(factory);
 }
 

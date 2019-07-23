@@ -203,8 +203,11 @@ function constructDescription(d) {
         const setIdealLink = `<button id="setIdeal"
                     onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
                     >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay">&nbsp;</label>`;
+        const noteProblemLink = `<button id="noteProblem"
+                    onclick="postNoteProblem('${workspaceId}','${d.data.id}')"
+                    >Note as problem</button><label for="noteProblem" id="noteProblemLabel" class="nothingToSay">&nbsp;</label>`;
         descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-            "<br/>" + setIdealLink;
+            "<br/>" + setIdealLink + "<br/>" + noteProblemLink;
     }
     return descriptionOfWhereYouClicked;
 }
@@ -222,6 +225,25 @@ function postSetIdeal(workspaceId, fingerprintId) {
             labelElement.setAttribute("class", "error");
         }
     },
+        e => {
+            labelElement.textContent = "Network error";
+            labelElement.setAttribute("class", "error");
+        });
+}
+
+function postNoteProblem(workspaceId, fingerprintId) {
+    const postUrl = `./api/v1/${workspaceId}/problem/${fingerprintId}`;
+    const labelElement = document.getElementById("noteProblemLabel");
+    fetch(postUrl, { method: "PUT" }).then(response => {
+            if (response.ok) {
+                labelElement.textContent = "problm noted!";
+                labelElement.setAttribute("class", "success");
+                labelElement.setAttribute("display", "static");
+            } else {
+                labelElement.textContent = "failed to set. consult the server logaments";
+                labelElement.setAttribute("class", "error");
+            }
+        },
         e => {
             labelElement.textContent = "Network error";
             labelElement.setAttribute("class", "error");

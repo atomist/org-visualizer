@@ -23,38 +23,42 @@ import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
  * @type {UndesirableUsageChecker}
  */
 export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
-    async (wsid, fp) => fp.type === TypeScriptVersionType && fp.name === TypeScriptVersionType
-        && fp.data.some(v => v.startsWith("2")) ?
+    async (wsid, fingerprint) => fingerprint.type === TypeScriptVersionType && fingerprint.name === TypeScriptVersionType
+        && fingerprint.data.some(v => v.startsWith("2")) ?
         {
             severity: "warn",
             authority: "Rod",
             message: "Old TypeScript",
+            fingerprint,
         } :
         undefined,
-    async (wsid, fp) => fp.type === NpmDeps.name && fp.name === "axios" ?
+    async (wsid, fingerprint) => fingerprint.type === NpmDeps.name && fingerprint.name === "axios" ?
         {
             severity: "warn",
             authority: "Christian",
             message: "Axios",
+            fingerprint,
         } :
         undefined,
-    async (wsid, fp) => fp.type === NpmDeps.name &&
-        fp.data[1].length > "15" ?
+    async (wsid, fingerprint) => fingerprint.type === NpmDeps.name &&
+        fingerprint.data[1].length > "15" ?
         {
             severity: "warn",
             authority: "Rod",
             message: "Pre-release npm",
+            fingerprint,
         } :
         undefined,
-    async (wsid, fp) => {
-        if (fp.type === "tslintproperty" && fp.name === "rules:max-file-line-count") {
+    async (wsid, fingerprint) => {
+        if (fingerprint.type === "tslintproperty" && fingerprint.name === "rules:max-file-line-count") {
             try {
-                const obj = JSON.parse(fp.data);
+                const obj = JSON.parse(fingerprint.data);
                 if (obj.options && obj.options.some(parseInt) > 500) {
                     return {
                         severity: "warn",
                         authority: "Rod",
                         message: "Allow long files",
+                        fingerprint,
                     };
                 }
             } catch {

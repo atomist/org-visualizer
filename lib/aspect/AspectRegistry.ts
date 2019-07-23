@@ -21,11 +21,7 @@ import {
     FP,
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
-
-export interface ProblemInfo {
-    authority: string;
-    severity: "info" | "warn" | "error";
-}
+import { accessSync } from "fs";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
@@ -44,8 +40,6 @@ export interface IdealStore {
      */
     setIdeal(workspaceId: string, fingerprintId: string): Promise<void>;
 
-    noteProblem(workspaceId: string, fingerprintId: string): Promise<void>;
-
     loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
 
     /**
@@ -55,13 +49,52 @@ export interface IdealStore {
      */
     loadIdeals(workspaceId: string): Promise<Ideal[]>;
 
-    storeProblemFingerprint(workspaceId: string, problemFingerprint: FP, why: ProblemInfo): Promise<void>;
 }
 
-export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<UndesirableUsage>;
+/**
+ * Flag for an undesirable usage
+ */
+export interface ProblemUsage {
+
+    readonly severity: "info" | "warn" | "error";
+
+    /**
+     * Authority this comes from
+     */
+    readonly authority: string;
+
+    /**
+     * Message to the user
+     */
+    readonly description?: string;
+
+    /**
+     * URL associated with this if one is available.
+     * For example, a security advisory.
+     */
+    readonly url?: string;
+
+    readonly fingerprint: FP;
+}
 
 /**
- * Function that can flag an issue with a fingerprint
+ * Store of problem fingerprints
+ */
+export interface ProblemStore {
+
+    noteProblem(workspaceId: string, fingerprintId: string): Promise<void>;
+
+    storeProblemFingerprint(workspaceId: string, problem: ProblemUsage): Promise<void>;
+
+    loadProblems(workspaceId: string): Promise<ProblemUsage[]>;
+
+}
+
+export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<ProblemUsage | undefined>;
+
+/**
+ * Function that can flag an issue with a fingerprint.
+ * This is a programmatic complement to ProblemStore.
  */
 export interface UndesirableUsageChecker {
     check: UndesirableUsageCheck;
@@ -95,30 +128,6 @@ export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
 export type ManagedAspect<FPI extends FP = FP> = Aspect<FPI> | AtomicAspect<FPI>;
 
 /**
- * Flag for an undesirable usage
- */
-export interface UndesirableUsage {
-
-    readonly severity: "error" | "warn";
-
-    /**
-     * Authority this comes from
-     */
-    readonly authority: string;
-
-    /**
-     * Message to the user
-     */
-    readonly message: string;
-
-    /**
-     * URL associated with this if one is available.
-     * For example, a security advisory.
-     */
-    readonly url?: string;
-}
-
-/**
  * Manage a number of aspects.
  */
 export interface AspectRegistry {
@@ -138,13 +147,14 @@ export interface AspectRegistry {
      */
     readonly idealStore: IdealStore;
 
-    /**
-     * Is this fingerprint flagged as bad?
-     * Return the empty array if no undesirableUsageChecker are found
-     */
-    undesirableUsageChecker: UndesirableUsageChecker;
+    readonly problemStore: ProblemStore;
 
-    findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<UndesirableUsage[]>;
+    /**
+     * Return an UndesirableUsageChecker for this workspace
+     */
+    undesirableUsageCheckerFor(workspaceId: string): Promise<UndesirableUsageChecker>;
+
+    findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<ProblemUsage[]>;
 
 }
 
@@ -163,6 +173,22 @@ export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck
                 }
             }
             return undefined;
+        },
+    };
+}
+
+/**
+ * Undesirable usageChecker backed by a ProblemStore
+ * @param {ProblemStore} problemStore
+ * @param {string} workspaceId
+ * @return {Promise<UndesirableUsageChecker>}
+ */
+export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore: ProblemStore,
+                                                                   workspaceId: string): Promise<UndesirableUsageChecker> {
+    const problems: ProblemUsage[] = await problemStore.loadProblems(workspaceId);
+    return {
+        check: async (wsid, fp) => {
+            return problems.find(p => p.fingerprint.sha === fp.sha);
         },
     };
 }

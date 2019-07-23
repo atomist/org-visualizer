@@ -184,6 +184,7 @@ function orgVisualizationEndpoints(clientFactory: ClientFactory): {
     const resultStore = analysisResultStore(clientFactory);
     const aspectRegistry = new DefaultAspectRegistry({
         idealStore: resultStore,
+        problemStore: resultStore,
         aspects: Aspects,
         undesirableUsageChecker: demoUndesirableUsageChecker,
     });

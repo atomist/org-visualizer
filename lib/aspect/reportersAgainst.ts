@@ -53,7 +53,7 @@ export async function reportersAgainst(
                     const knownBad = await aspectManager.findUndesirableUsages("local", hf);
                     return knownBad.length === 0 ?
                         params.otherLabel :
-                        _.uniq(knownBad.map(bad => bad.message)).join(",");
+                        _.uniq(knownBad.map(bad => bad.description)).join(",");
                 },
             })
             .renderWith(defaultAnalyzedRenderer());
