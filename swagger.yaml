@@ -19,6 +19,30 @@ tags:
 schemes:
   - http
 paths:
+  /{workspace}/aspects:
+    get:
+          tags:
+            - aspects
+          summary: Find all aspects in workspace
+          description: Find aspects in workspace
+          operationId: findAspects
+          produces:
+            - application/json
+          parameters:
+            - name: workspace
+              in: path
+              description: Workspace id. * for all.
+              required: true
+              type: string
+          responses:
+            "200":
+              description: successful operation
+              schema:
+                type: array
+                items:
+                  $ref: "#/definitions/Category"
+            "400":
+              description: Invalid workspace id
   /{workspace}/fingerprints:
     get:
           tags:
@@ -198,7 +222,38 @@ paths:
               "400":
                 description: Invalid status value
 
+components:
+  schemas:
+    Aspect:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Human readable aspect name
+        type:
+          type: string
+          description: Aspect name
+        description:
+          type: string
+          description: Description
+        url:
+          type: string
+          description: URL for futher information
+
 definitions:
+  Category:
+    properties:
+      category:
+        type: string
+        description: Category tag
+      count:
+        type: integer
+        format: int32
+      aspects:
+        type: array
+        items:
+          $ref: "#/components/schemas/Aspect"
+        description: Aspects in this category
   Fingerprint:
     properties:
       type:
