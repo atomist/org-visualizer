@@ -21,8 +21,12 @@ import {
     AspectRegistry,
     chainUndesirableUsageCheckers,
     HasFingerprints,
-    IdealStore, ManagedAspect, ProblemStore,
-    problemStoreBackedUndesirableUsageCheckerFor, ProblemUsage, UndesirableUsageChecker,
+    IdealStore,
+    ManagedAspect,
+    ProblemStore,
+    problemStoreBackedUndesirableUsageCheckerFor,
+    ProblemUsage,
+    UndesirableUsageChecker,
 } from "./AspectRegistry";
 
 export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
