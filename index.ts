@@ -88,7 +88,7 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(TypeScriptVersion, "Node.js");
         registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
         registerCategories(NpmDeps, "Node.js");
-        registerReportDetails(NpmDeps);
+        registerReportDetails(NpmDeps, { url: "filter/skew?type=npm-project-deps"});
         registerCategories(SpringBootStarter, "Java");
         registerReportDetails(SpringBootStarter);
         registerCategories(JavaBuild, "Java");

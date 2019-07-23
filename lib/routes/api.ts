@@ -58,6 +58,7 @@ import { whereFor } from "./orgPage";
 import {
     aspectReport,
     skewReport,
+    skewReportForSingleAspect,
     WellKnownReporters,
 } from "./wellKnownReporters";
 
@@ -264,11 +265,19 @@ export function api(clientFactory: ClientFactory,
             express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
                 try {
                     if (req.params.name === "skew") {
-                        const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id);
+                        const type = req.query.type;
+                        const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id, type);
                         logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
-                        const skewTree = await skewReport(aspectRegistry).toSunburstTree(
-                            () => fingerprintUsage);
-                        return res.json(skewTree);
+
+                        if (!type) {
+                            const skewTree = await skewReport(aspectRegistry).toSunburstTree(
+                                () => fingerprintUsage);
+                            return res.json(skewTree);
+                        } else {
+                            const skewTree = await skewReportForSingleAspect(aspectRegistry, type).toSunburstTree(
+                                () => fingerprintUsage);
+                            return res.json(skewTree);
+                        }
                     }
 
                     if (req.params.name === "") {
