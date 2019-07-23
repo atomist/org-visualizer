@@ -56,245 +56,245 @@ import {
  */
 export const WellKnownReporters: Reporters = {
 
-        fileCount: params =>
-            treeBuilderFor<Analyzed>("fileCount", params)
-                .renderWith(ar => {
-                    const sizeFp = ar.fingerprints.find(fp => fp.name === "size");
-                    const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
-                    const projectName = ar.id.path ?
-                        ar.id.repo + path.sep + ar.id.path :
-                        ar.id.repo;
-                    const url = ar.id.path ?
-                        ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
-                        ar.id.url;
+    fileCount: params =>
+        treeBuilderFor<Analyzed>("fileCount", params)
+            .renderWith(ar => {
+                const sizeFp = ar.fingerprints.find(fp => fp.name === "size");
+                const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
+                const projectName = ar.id.path ?
+                    ar.id.repo + path.sep + ar.id.path :
+                    ar.id.repo;
+                const url = ar.id.path ?
+                    ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
+                    ar.id.url;
 
-                    return {
-                        name: projectName,
-                        size,
-                        url,
-                        repoUrl: ar.id.url,
-                    };
-                }),
+                return {
+                    name: projectName,
+                    size,
+                    url,
+                    repoUrl: ar.id.url,
+                };
+            }),
 
-        // TODO this could be more generic for sized things
-        branchCount: params =>
-            treeBuilderFor<Analyzed>("branchCount", params)
-                .renderWith(ar => {
-                    const sizeFp = ar.fingerprints.find(fp => fp.name === "branches");
-                    const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
-                    const projectName = ar.id.path ?
-                        ar.id.repo + path.sep + ar.id.path :
-                        ar.id.repo;
-                    const url = ar.id.path ?
-                        ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
-                        ar.id.url;
+    // TODO this could be more generic for sized things
+    branchCount: params =>
+        treeBuilderFor<Analyzed>("branchCount", params)
+            .renderWith(ar => {
+                const sizeFp = ar.fingerprints.find(fp => fp.name === "branches");
+                const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
+                const projectName = ar.id.path ?
+                    ar.id.repo + path.sep + ar.id.path :
+                    ar.id.repo;
+                const url = ar.id.path ?
+                    ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
+                    ar.id.url;
 
-                    return {
-                        name: projectName,
-                        size,
-                        url,
-                        repoUrl: ar.id.url,
-                    };
-                }),
+                return {
+                    name: projectName,
+                    size,
+                    url,
+                    repoUrl: ar.id.url,
+                };
+            }),
 
-        skew: () => {
-            return {
-                toSunburstTree: async originalQuery => {
-                    const fingerprints: FP[] = [];
-                    for await (const fp of fingerprintsFrom(originalQuery())) {
-                        if (!fingerprints.some(f => f.sha === fp.sha)) {
-                            fingerprints.push(fp);
-                        }
+    skew: () => {
+        return {
+            toSunburstTree: async originalQuery => {
+                const fingerprints: FP[] = [];
+                for await (const fp of fingerprintsFrom(originalQuery())) {
+                    if (!fingerprints.some(f => f.sha === fp.sha)) {
+                        fingerprints.push(fp);
                     }
-                    const grouped = _.groupBy(fingerprints, fp => fp.type);
+                }
+                const grouped = _.groupBy(fingerprints, fp => fp.type);
 
-                    return {
-                        name: "skew",
-                        children: Object.getOwnPropertyNames(grouped).map(name => {
-                            return {
-                                name,
-                                children: grouped[name].map(g => {
-                                    return {
-                                        name: g.name,
-                                        size: 1,
-                                    };
-                                }),
-                            };
-                        }),
-                    };
-                },
-            };
-        },
+                return {
+                    name: "skew",
+                    children: Object.getOwnPropertyNames(grouped).map(name => {
+                        return {
+                            name,
+                            children: grouped[name].map(g => {
+                                return {
+                                    name: g.name,
+                                    size: 1,
+                                };
+                            }),
+                        };
+                    }),
+                };
+            },
+        };
+    },
 
-        typeScriptVersions:
-            params =>
-                treeBuilderFor("TypeScript versions", params)
-                    .group({
-                        name: "version",
-                        by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
-                    })
-                    .renderWith(defaultAnalyzedRenderer()),
-
-        springVersions: params =>
-            treeBuilderFor("Spring Boot version", params)
+    typeScriptVersions:
+        params =>
+            treeBuilderFor("TypeScript versions", params)
                 .group({
                     name: "version",
-                    by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
+                    by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
                 })
                 .renderWith(defaultAnalyzedRenderer()),
 
-        langs:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("languages", params)
-                    .customGroup<CodeStats>({
-                        name: "language", to: async ars => {
-                            const cms: CodeStats[] = [];
-                            for await (const ar of ars) {
-                                const cm = ar.elements.codemetrics as CodeMetricsElement;
-                                if (cm) {
-                                    cms.push(...cm.languages);
-                                }
+    springVersions: params =>
+        treeBuilderFor("Spring Boot version", params)
+            .group({
+                name: "version",
+                by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
+            })
+            .renderWith(defaultAnalyzedRenderer()),
+
+    langs:
+        params =>
+            treeBuilderFor<ProjectAnalysis>("languages", params)
+                .customGroup<CodeStats>({
+                    name: "language", to: async ars => {
+                        const cms: CodeStats[] = [];
+                        for await (const ar of ars) {
+                            const cm = ar.elements.codemetrics as CodeMetricsElement;
+                            if (cm) {
+                                cms.push(...cm.languages);
                             }
-
-                            const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
-                            const s: Record<string, CodeStats[]> = {};
-                            distinctLanguages.forEach(lang => s[lang.name] = [consolidate(lang, cms)]);
-                            return s;
-                        },
-                    })
-                    .map<ProjectAnalysis & { lang: string }>({
-                        async* mapping(cs: AsyncIterable<CodeStats>,
-                                       originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
-                            // TODO don't materialize this
-                            const source: ProjectAnalysis[] = [];
-                            for await (const pa of originalQuery()) {
-                                source.push(pa);
-                            }
-                            for await (const s of cs) {
-                                for (const r of source.filter(ar => {
-                                    const cm = ar.elements.codemetrics as CodeMetricsElement;
-                                    return cm.languages.some(l => l.language.name === s.language.name);
-                                })
-                                    .map(ar => ({ ...ar, lang: s.language.name }))) {
-                                    yield r;
-                                }
-                            }
-                        },
-                    })
-                    .renderWith(ar => ({
-                        name: ar.id.repo,
-                        size: (ar.elements.codemetrics as CodeMetricsElement).languages.find(l => l.language.name === ar.lang).total,
-                        url: `/projects/${ar.id.owner}/${ar.id.repo}`,
-                        repoUrl: ar.id.url,
-                    })),
-
-        // Version of a particular library
-        libraryVersions:
-            params =>
-                treeBuilderFor<ProjectAnalysis>(`Versions of ${params.artifact}`, params)
-                    .group({
-                        name: "version",
-                        by: ar => {
-                            const dep = _.get(ar, "analysis.dependencies", []).find(d => d.artifact === params.artifact);
-                            return !!dep ? dep.version : params.otherLabel;
-                        },
-                    })
-                    .group({
-                        name: "resolved",
-                        by: ar => {
-                            const pl = ar.elements.packageLock as PackageLock;
-                            if (!pl) {
-                                return params.artifact;
-                            }
-                            return pl.packageLock.dependencies[params.artifact].version;
-                        },
-                    })
-                    .renderWith(defaultAnalyzedRenderer()),
-
-        npmDependencyCount:
-            params => aspectGroup("Maven dependency count", params, NpmDeps),
-
-        mavenDependencyCount:
-            params => aspectGroup("Maven dependency count", params, allMavenDependenciesAspect),
-
-        loc: params =>
-            treeBuilderFor<ProjectAnalysis>("loc", params)
-                .group({ name: "size", by: groupByLoc })
-                .split<CodeStats>({
-                    splitter: ar => {
-                        const cm = ar.elements.codemetrics as CodeMetricsElement;
-                        return cm.languages;
-                    },
-                    namer: a => a.id.repo,
-                })
-                .renderWith(cs => {
-                    return {
-                        name: `${cs.language.name} (${cs.source})`,
-                        // url: ar.analysis.id.url,
-                        size: cs.source,
-                    };
-                }),
-
-        // Aspets found in this project
-        aspectCount: params =>
-            treeBuilderFor("aspectCount", params)
-                .renderWith(ar => {
-                    // TODO fix this using new support
-                    const rendered = defaultAnalyzedRenderer()(ar);
-                    rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
-                    return rendered;
-                }),
-
-        uhura:
-            params =>
-                treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
-                    .group({
-                        // Group by count of Uhura
-                        name: "level", by: a => {
-                            const ps = _.get(a, "analysis.phaseStatus") as Record<keyof DeliveryPhases, boolean>;
-                            if (!ps) {
-                                return undefined;
-                            }
-                            let count = 0;
-                            Object.getOwnPropertyNames(ps).forEach(key => {
-                                if (ps[key]) {
-                                    count++;
-                                }
-                            });
-                            return "" + count;
-                        },
-                    })
-                    .group({
-                        name: "phaseStatus",
-                        by: a => {
-                            const ps = a.phaseStatus;
-                            if (!ps) {
-                                return undefined;
-                            }
-                            return Object.getOwnPropertyNames(ps)
-                                .filter(k => ps[k])
-                                .map(k => k.replace("Goals", ""))
-                                .join(",");
-                        },
-                    })
-                    .renderWith(defaultAnalyzedRenderer()),
-
-        // Generic path
-        path: params =>
-            treeBuilderFor(`Path ${params.path}`, params)
-                .group({
-                    name: params.path,
-                    by: ar => {
-                        const raw = _.get(ar, params.path, params.otherLabel);
-                        if (!raw) {
-                            return raw;
                         }
-                        return typeof raw === "string" ? raw : JSON.stringify(raw);
+
+                        const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
+                        const s: Record<string, CodeStats[]> = {};
+                        distinctLanguages.forEach(lang => s[lang.name] = [consolidate(lang, cms)]);
+                        return s;
+                    },
+                })
+                .map<ProjectAnalysis & { lang: string }>({
+                    async* mapping(cs: AsyncIterable<CodeStats>,
+                        originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
+                        // TODO don't materialize this
+                        const source: ProjectAnalysis[] = [];
+                        for await (const pa of originalQuery()) {
+                            source.push(pa);
+                        }
+                        for await (const s of cs) {
+                            for (const r of source.filter(ar => {
+                                const cm = ar.elements.codemetrics as CodeMetricsElement;
+                                return cm.languages.some(l => l.language.name === s.language.name);
+                            })
+                                .map(ar => ({ ...ar, lang: s.language.name }))) {
+                                yield r;
+                            }
+                        }
+                    },
+                })
+                .renderWith(ar => ({
+                    name: ar.id.repo,
+                    size: (ar.elements.codemetrics as CodeMetricsElement).languages.find(l => l.language.name === ar.lang).total,
+                    url: `/projects/${ar.id.owner}/${ar.id.repo}`,
+                    repoUrl: ar.id.url,
+                })),
+
+    // Version of a particular library
+    libraryVersions:
+        params =>
+            treeBuilderFor<ProjectAnalysis>(`Versions of ${params.artifact}`, params)
+                .group({
+                    name: "version",
+                    by: ar => {
+                        const dep = _.get(ar, "analysis.dependencies", []).find(d => d.artifact === params.artifact);
+                        return !!dep ? dep.version : params.otherLabel;
+                    },
+                })
+                .group({
+                    name: "resolved",
+                    by: ar => {
+                        const pl = ar.elements.packageLock as PackageLock;
+                        if (!pl) {
+                            return params.artifact;
+                        }
+                        return pl.packageLock.dependencies[params.artifact].version;
                     },
                 })
                 .renderWith(defaultAnalyzedRenderer()),
-    }
-;
+
+    npmDependencyCount:
+        params => aspectGroup("Maven dependency count", params, NpmDeps),
+
+    mavenDependencyCount:
+        params => aspectGroup("Maven dependency count", params, allMavenDependenciesAspect),
+
+    loc: params =>
+        treeBuilderFor<ProjectAnalysis>("loc", params)
+            .group({ name: "size", by: groupByLoc })
+            .split<CodeStats>({
+                splitter: ar => {
+                    const cm = ar.elements.codemetrics as CodeMetricsElement;
+                    return cm.languages;
+                },
+                namer: a => a.id.repo,
+            })
+            .renderWith(cs => {
+                return {
+                    name: `${cs.language.name} (${cs.source})`,
+                    // url: ar.analysis.id.url,
+                    size: cs.source,
+                };
+            }),
+
+    // Aspects found in this project
+    aspectCount: params =>
+        treeBuilderFor("aspectCount", params)
+            .renderWith(ar => {
+                // TODO fix this using new support
+                const rendered = defaultAnalyzedRenderer()(ar);
+                rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
+                return rendered;
+            }),
+
+    uhura:
+        params =>
+            treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
+                .group({
+                    // Group by count of Uhura
+                    name: "level", by: a => {
+                        const ps = _.get(a, "analysis.phaseStatus") as Record<keyof DeliveryPhases, boolean>;
+                        if (!ps) {
+                            return undefined;
+                        }
+                        let count = 0;
+                        Object.getOwnPropertyNames(ps).forEach(key => {
+                            if (ps[key]) {
+                                count++;
+                            }
+                        });
+                        return "" + count;
+                    },
+                })
+                .group({
+                    name: "phaseStatus",
+                    by: a => {
+                        const ps = a.phaseStatus;
+                        if (!ps) {
+                            return undefined;
+                        }
+                        return Object.getOwnPropertyNames(ps)
+                            .filter(k => ps[k])
+                            .map(k => k.replace("Goals", ""))
+                            .join(",");
+                    },
+                })
+                .renderWith(defaultAnalyzedRenderer()),
+
+    // Generic path
+    path: params =>
+        treeBuilderFor(`Path ${params.path}`, params)
+            .group({
+                name: params.path,
+                by: ar => {
+                    const raw = _.get(ar, params.path, params.otherLabel);
+                    if (!raw) {
+                        return raw;
+                    }
+                    return typeof raw === "string" ? raw : JSON.stringify(raw);
+                },
+            })
+            .renderWith(defaultAnalyzedRenderer()),
+}
+    ;
 
 const byDocker: ProjectAnalysisGrouper = ar => {
     return !!ar.elements.docker ? "Yes" : "No";
