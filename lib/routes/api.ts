@@ -274,9 +274,12 @@ export function api(clientFactory: ClientFactory,
                                 () => fingerprintUsage);
                             return res.json(skewTree);
                         } else {
-                            const skewTree = await skewReportForSingleAspect(aspectRegistry, type).toSunburstTree(
+                            const skewTree = await skewReportForSingleAspect(aspectRegistry).toSunburstTree(
                                 () => fingerprintUsage);
-                            return res.json(skewTree);
+                            return res.json({
+                                type,
+                                ...skewTree,
+                            });
                         }
                     }
 

@@ -394,30 +394,32 @@ export function skewReport(fm: AspectRegistry): ReportBuilder<FingerprintUsage> 
         });
 }
 
-export function skewReportForSingleAspect(fm: AspectRegistry, type: string): ReportBuilder<FingerprintUsage> {
-    return treeBuilder<FingerprintUsage>(fm.aspectOf(type).displayName)
+export function skewReportForSingleAspect(fm: AspectRegistry): ReportBuilder<FingerprintUsage> {
+    return treeBuilder<FingerprintUsage>("entropy")
         .group({
             name: "entropy-band",
             by: fp => {
-                if (fp.entropy > 2) {
-                    return "random (>2)";
+                if (fp.entropy === 0) {
+                    return "None";
                 }
-                if (fp.entropy > 1) {
-                    return "wild (>1)";
+                if (fp.entropy < 1) {
+                    return "Low";
                 }
-                if (fp.entropy > .5) {
-                    return "loose (>.5)";
+                if (fp.entropy < 2) {
+                    return "Medium";
                 }
-                if (fp.entropy >= 0) {
-                    return "tight (=0)";
+                if (fp.entropy >= 2) {
+                    return "High";
                 }
+
                 return undefined;
             },
         })
         .renderWith(fp => {
             return {
-                name: `${fp.name} (${fp.entropy})`,
+                name: fp.name,
                 size: fp.variants,
+                entropy: fp.entropy,
             };
         });
 }
