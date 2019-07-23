@@ -164,7 +164,7 @@ export const WellKnownReporters: Reporters = {
                 })
                 .map<ProjectAnalysis & { lang: string }>({
                     async* mapping(cs: AsyncIterable<CodeStats>,
-                        originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
+                                   originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
                         // TODO don't materialize this
                         const source: ProjectAnalysis[] = [];
                         for await (const pa of originalQuery()) {
