@@ -117,7 +117,7 @@ export function api(clientFactory: ClientFactory,
                     const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
                     const reports = getAspectReports(fingerprintUsage, workspaceId);
                     logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
-                    res.json(reports);
+                    res.json({ list: reports });
                 } catch (e) {
                     logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
                     res.sendStatus(500);
@@ -131,7 +131,7 @@ export function api(clientFactory: ClientFactory,
                     const workspaceId = req.params.workspace_id || "local";
                     const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
                     logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
-                    res.json(fingerprintUsage);
+                    res.json({ list: fingerprintUsage });
                 } catch (e) {
                     logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
                     res.sendStatus(500);
@@ -142,9 +142,9 @@ export function api(clientFactory: ClientFactory,
             express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
                 try {
                     const workspaceId = req.params.workspace_id || "local";
-                    const fps = await store.fingerprintUsageForType(workspaceId, req.params.type);
+                    const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, req.params.type);
                     logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
-                    res.json(fps);
+                    res.json({ list: fps });
                 } catch (e) {
                     logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
                     res.sendStatus(500);
@@ -304,7 +304,7 @@ export function api(clientFactory: ClientFactory,
                     const repos = await store.loadWhere(whereFor(req));
                     const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
                     const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-                    return res.json(data);
+                    return res.json({ tree: data });
                 } catch (e) {
                     logger.warn("Error occurred getting fingerprint: %s %s", e.message, e.stack);
                     res.sendStatus(500);
