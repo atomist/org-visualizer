@@ -17,16 +17,24 @@
 import {
     BannerSection,
     Configuration,
+    logger,
 } from "@atomist/automation-client";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
-import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
+import {
+    ExpressCustomizer,
+    writeUserConfig,
+} from "@atomist/automation-client/lib/configuration";
 import {
     CachingProjectLoader,
+    execPromise,
     GitHubLazyProjectLoader,
     GoalSigningScope,
     PushImpact,
 } from "@atomist/sdm";
-import { configure } from "@atomist/sdm-core";
+import {
+    configure,
+    isInLocalMode,
+} from "@atomist/sdm-core";
 import {
     DockerfilePath,
     DockerFrom,
@@ -36,6 +44,7 @@ import {
     fingerprintSupport,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
 import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
 import {
     CiAspect,
@@ -88,7 +97,7 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(TypeScriptVersion, "Node.js");
         registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
         registerCategories(NpmDeps, "Node.js");
-        registerReportDetails(NpmDeps, { url: "filter/skew?type=npm-project-deps"});
+        registerReportDetails(NpmDeps, { url: "filter/skew?type=npm-project-deps" });
         registerCategories(SpringBootStarter, "Java");
         registerCategories(JavaBuild, "Java");
         registerCategories(SpringBootVersion, "Java");
@@ -97,7 +106,7 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(DockerFrom, "Docker");
         registerReportDetails(DockerFrom, { url: "filter/aspectReport?type=docker-base-image" });
         registerCategories(DockerPorts, "Docker");
-        registerReportDetails(DockerPorts, { url: "filter/aspectReport?type=docker-ports"});
+        registerReportDetails(DockerPorts, { url: "filter/aspectReport?type=docker-ports" });
 
         if (mode === "online") {
             const pushImpact = new PushImpact();
@@ -159,6 +168,24 @@ export const configuration: Configuration = configure(async sdm => {
                 routesToSuggestOnStartup.forEach(rtsos => {
                     cfg.logging.banner.contributors.push(suggestRoute(rtsos));
                 });
+
+                // start up embedded postgres if needed
+                if (process.env.ATOMIST_POSTGRES === "start" && !_.get(cfg, "sdm.postgres")) {
+                    logger.info("Starting embedded Postgres");
+                    await execPromise("/etc/init.d/postgresql", ["start"]);
+
+                    const postgresCfg = {
+                        user: "org_viz",
+                        password: "atomist",
+                    };
+                    _.set(cfg, "sdm.postgres", postgresCfg);
+                    await writeUserConfig({
+                        sdm: {
+                            postgres: postgresCfg,
+                        },
+                    });
+                }
+
                 return cfg;
             },
         ],
@@ -186,7 +213,7 @@ function orgVisualizationEndpoints(clientFactory: ClientFactory): {
 
     const aboutTheApi = api(clientFactory, resultStore, aspectRegistry);
 
-    if (["production", "testing"].includes(process.env.NODE_ENV)) {
+    if (!isInLocalMode()) {
         return {
             routesToSuggestOnStartup: aboutTheApi.routesToSuggestOnStartup,
             customizers: [aboutTheApi.customizer],
