@@ -64,7 +64,7 @@ function without(byName: boolean): string {
          children`;
 }
 
-function fingerprintsChildrenQuery(byName: boolean, includeWithout: boolean): string {
+function fingerprintsChildrenQuery(workspaceId: string, byName: boolean, includeWithout: boolean): string {
     // we always select by aspect (aka feature_name, aka type), and sometimes also by fingerprint name.
     const sql = `
 SELECT row_to_json(fingerprint_groups) FROM (
@@ -78,7 +78,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
                   FROM repo_fingerprints, repo_snapshots
                    WHERE repo_fingerprints.fingerprint_id = fingerprints.id
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
-                    AND workspace_id = $1
+                    AND workspace_id ${workspaceId === "*" ? "<>" : "=" } $1
                 ) repo
          ) as children FROM fingerprints WHERE fingerprints.feature_name = $2 and fingerprints.name ${byName ? "=" : "<>"} $3
          ${includeWithout ? without(byName) : ""}
@@ -95,7 +95,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
  */
 export async function repoTree(opts: TreeQuery): Promise<PlantedTree> {
     const children = await doWithClient(opts.clientFactory, async client => {
-        const sql = fingerprintsChildrenQuery(opts.byName, opts.includeWithout);
+        const sql = fingerprintsChildrenQuery(opts.workspaceId, opts.byName, opts.includeWithout);
         try {
             const results = await client.query(sql,
                 [opts.workspaceId, opts.aspectName, opts.rootName]);

@@ -155,10 +155,7 @@ export function api(clientFactory: ClientFactory,
             express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
             express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
                 const byName = req.params.name !== "*";
-                let workspaceId = req.params.workspace_id;
-                if (workspaceId === "*") {
-                    workspaceId = "local";
-                }
+                const workspaceId = req.params.workspace_id;
                 try {
                     // Get the tree and then perform post processing on it
                     let pt = await repoTree({
