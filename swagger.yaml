@@ -38,9 +38,12 @@ paths:
             "200":
               description: successful operation
               schema:
-                type: array
-                items:
-                  $ref: "#/definitions/Category"
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: "#/definitions/Category"
             "400":
               description: Invalid workspace id
   /{workspace}/fingerprints:
@@ -62,9 +65,12 @@ paths:
             "200":
               description: successful operation
               schema:
-                type: array
-                items:
-                  $ref: "#/definitions/Fingerprint"
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: "#/definitions/Fingerprint"
             "400":
               description: Invalid workspace id
   /{workspace}/fingerprint/{type}:
@@ -91,11 +97,14 @@ paths:
             "200":
               description: successful operation
               schema:
-                type: array
-                items:
-                  $ref: "#/definitions/Fingerprint"
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: "#/definitions/Fingerprint"
             "400":
-              description: Invalid status value
+              description: Invalid status value 
   /{workspace}/fingerprint/{type}/{name}:
     get:
           tags:
@@ -161,9 +170,10 @@ paths:
             "200":
               description: successful operation
               schema:
-                type: array
-                items:
-                  $ref: "#/definitions/Tree"
+                type: object
+                properties:
+                  tree:
+                    $ref: "#/definitions/Tree"
             "400":
               description: Invalid status value
   /{workspace}/ideal/{id}:
