@@ -150,7 +150,7 @@ paths:
               default: false
             - name: presence
               in: query
-              description: Show presence. Returns a response for all repos
+              description: Show presence. Returns a response for all repos, whether or not the technology is present
               type: string
               enum:
                 - true
@@ -159,7 +159,7 @@ paths:
               default: false
             - name: trim
               in: query
-              description: Trim outer ring. Only relevant if name=*
+              description: Trim outer ring (repositories). Only relevant if name=*
               type: string
               enum:
                 - true

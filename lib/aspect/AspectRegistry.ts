@@ -104,11 +104,6 @@ export const PermitAllUsageChecker: UndesirableUsageChecker = {
     check: async () => undefined,
 };
 
-export interface FingerprintsWithManagingAspect<ProcessedFingerprint> {
-    aspect: ManagedAspect;
-    fingerprints: ProcessedFingerprint[];
-}
-
 /**
  * Implemented by ProjectAnalysis or any other structure
  * representing a repo exposing fingerprint data
