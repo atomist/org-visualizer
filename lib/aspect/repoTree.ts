@@ -82,7 +82,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
                 ) repo
          ) as children FROM fingerprints WHERE fingerprints.feature_name = $2 and fingerprints.name ${byName ? "=" : "<>"} $3
          ${includeWithout ? without(byName) : ""}
-) fp) as fingerprint_groups
+) fp WHERE children is not NULL) as fingerprint_groups
 `;
     logger.debug("Running SQL\n%s", sql);
     return sql;

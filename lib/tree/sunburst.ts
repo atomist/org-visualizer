@@ -382,6 +382,6 @@ function checkNullChildrenInvariant(pt: PlantedTree): void {
     // the tree counts depth from zero
     if (haveNullChildren.length > 0) {
         logger.error("Tree: " + JSON.stringify(pt.tree, undefined, 2));
-        throw new Error(`${haveNullChildren.length} tree nodes have null children`);
+        throw new Error(`${haveNullChildren.length} tree nodes have null children: ${JSON.stringify(haveNullChildren)}`);
     }
 }
