@@ -25,7 +25,6 @@ import {
     ManagedAspect,
     ProblemStore,
     problemStoreBackedUndesirableUsageCheckerFor,
-    ProblemUsage,
     UndesirableUsageChecker,
 } from "./AspectRegistry";
 
@@ -59,12 +58,6 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return chainUndesirableUsageCheckers(
             (await problemStoreBackedUndesirableUsageCheckerFor(this.problemStore, workspaceId)).check,
             this.opts.undesirableUsageChecker.check);
-    }
-
-    public async findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<ProblemUsage[]> {
-        const usageChecker = await this.undesirableUsageCheckerFor(workspaceId);
-        return _.flatten(await Promise.all(allFingerprints(hf).map(fp =>
-            usageChecker.check(workspaceId, fp))));
     }
 
     get idealStore(): IdealStore {

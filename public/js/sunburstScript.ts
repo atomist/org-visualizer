@@ -102,7 +102,7 @@ function sunburst(name, dataUrl: string, pWidth, pHeight) {
         console.log("This is a thing: " + JSON.stringify(d));
 
         if (!d.tree || d.tree.children.length === 0) {
-            alert("No data for " + name);
+            alert(`No data at ${dataUrl}`);
             return;
         }
 

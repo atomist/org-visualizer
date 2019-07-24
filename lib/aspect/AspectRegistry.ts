@@ -149,8 +149,6 @@ export interface AspectRegistry {
      */
     undesirableUsageCheckerFor(workspaceId: string): Promise<UndesirableUsageChecker>;
 
-    findUndesirableUsages(workspaceId: string, hf: HasFingerprints): Promise<ProblemUsage[]>;
-
 }
 
 /**

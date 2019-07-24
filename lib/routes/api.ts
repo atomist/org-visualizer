@@ -27,7 +27,6 @@ import {
     Express,
     RequestHandler,
 } from "express";
-import * as _ from "lodash";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
@@ -38,7 +37,6 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { reportersAgainst } from "../aspect/reportersAgainst";
 import { repoTree } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
@@ -69,9 +67,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -111,13 +109,13 @@ export function api(clientFactory: ClientFactory,
                         if (!type) {
                             const skewTree = await skewReport(aspectRegistry).toSunburstTree(
                                 () => fingerprintUsage);
-                            return res.json(skewTree);
+                            return res.json({ tree: skewTree });
                         } else {
                             const skewTree = await skewReportForSingleAspect(aspectRegistry).toSunburstTree(
                                 () => fingerprintUsage);
                             return res.json({
                                 type,
-                                ...skewTree,
+                                tree: skewTree,
                             });
                         }
                     }
@@ -129,14 +127,17 @@ export function api(clientFactory: ClientFactory,
                         logger.info("Found %d fingerprints", fingerprints.length);
                         const aspectTree = await aspectReport(type, aspectRegistry, withDups).toSunburstTree(
                             () => fingerprints);
-                        return res.json(aspectTree);
+                        return res.json({ tree: aspectTree });
                     }
 
-                    const aspectQueries = await reportersAgainst(
-                        () => store.distinctFingerprintKinds(req.params.workspace_id), aspectRegistry);
-                    const allQueries = _.merge(aspectQueries, WellKnownReporters);
+                    const allQueries = WellKnownReporters;
 
-                    const cannedQuery = allQueries[req.params.name]({
+                    const q = allQueries[req.params.name];
+                    if (!q) {
+                        throw new Error(`No query named '${req.params.name}'`);
+                    }
+
+                    const cannedQuery = q({
                         ...req.query,
                     });
 
@@ -145,7 +146,7 @@ export function api(clientFactory: ClientFactory,
                     const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
                     return res.json({ tree: data });
                 } catch (e) {
-                    logger.warn("Error occurred getting fingerprint: %s %s", e.message, e.stack);
+                    logger.warn("Error occurred getting report: %s %s", e.message, e.stack);
                     res.sendStatus(500);
                 }
             });
@@ -173,13 +174,13 @@ function resolveAspectNames(fm: AspectRegistry, t: SunburstTree): void {
     });
 }
 
-function exposeSwaggerDoc(express: Express, docRoute: string) {
+function exposeSwaggerDoc(express: Express, docRoute: string): void {
     const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
     const swaggerDocument = yaml.load(swaggerDocPath);
     express.use(docRoute, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
-function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStore) {
+function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStore): void {
     // Return the aspects metadata
     express.options("/api/v1/:workspace_id/aspects", corsHandler());
     express.get("/api/v1/:workspace_id/aspects", [corsHandler(), ...authHandlers()], async (req, res) => {
@@ -196,7 +197,7 @@ function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStor
     });
 }
 
-function exposeListFingerprints(express: Express, store: ProjectAnalysisResultStore) {
+function exposeListFingerprints(express: Express, store: ProjectAnalysisResultStore): void {
     // Return all fingerprints
     express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
@@ -212,7 +213,7 @@ function exposeListFingerprints(express: Express, store: ProjectAnalysisResultSt
     });
 }
 
-function exposeFingerprintByType(express: Express, store: ProjectAnalysisResultStore) {
+function exposeFingerprintByType(express: Express, store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
         try {
@@ -229,7 +230,7 @@ function exposeFingerprintByType(express: Express, store: ProjectAnalysisResultS
 
 function exposeFingerprintByTypeAndName(express: Express,
                                         aspectRegistry: AspectRegistry,
-                                        clientFactory: ClientFactory) {
+                                        clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
         const byName = req.params.name !== "*";
@@ -346,7 +347,7 @@ function exposeFingerprintByTypeAndName(express: Express,
     });
 }
 
-function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRegistry) {
+function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRegistry): void {
     // Set an ideal
     express.options("/api/v1/:workspace_id/ideal/:id", corsHandler());
     express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
