@@ -15,24 +15,12 @@
  */
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { DeliveryPhases } from "@atomist/sdm-pack-analysis/lib/analysis/phases";
-import {
-    BaseAspect,
-    FP,
-    NpmDeps,
-} from "@atomist/sdm-pack-fingerprints";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { BaseAspect, FP, NpmDeps, } from "@atomist/sdm-pack-fingerprints";
+import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
 import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    Analyzed,
-    AspectRegistry,
-} from "../aspect/AspectRegistry";
+import { Analyzed, AspectRegistry, } from "../aspect/AspectRegistry";
 import { fingerprintsFrom } from "../aspect/DefaultAspectRegistry";
 import { Reporters } from "../aspect/reporters";
 import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
@@ -43,12 +31,7 @@ import {
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import { PackageLock } from "../element/packageLock";
-import {
-    ReportBuilder,
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { ReportBuilder, treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -60,27 +43,6 @@ export const WellKnownReporters: Reporters = {
         treeBuilderFor<Analyzed>("fileCount", params)
             .renderWith(ar => {
                 const sizeFp = ar.fingerprints.find(fp => fp.name === "size");
-                const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
-                const projectName = ar.id.path ?
-                    ar.id.repo + path.sep + ar.id.path :
-                    ar.id.repo;
-                const url = ar.id.path ?
-                    ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
-                    ar.id.url;
-
-                return {
-                    name: projectName,
-                    size,
-                    url,
-                    repoUrl: ar.id.url,
-                };
-            }),
-
-    // TODO this could be more generic for sized things
-    branchCount: params =>
-        treeBuilderFor<Analyzed>("branchCount", params)
-            .renderWith(ar => {
-                const sizeFp = ar.fingerprints.find(fp => fp.name === "branches");
                 const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
                 const projectName = ar.id.path ?
                     ar.id.repo + path.sep + ar.id.path :
@@ -125,23 +87,6 @@ export const WellKnownReporters: Reporters = {
             },
         };
     },
-
-    typeScriptVersions:
-        params =>
-            treeBuilderFor("TypeScript versions", params)
-                .group({
-                    name: "version",
-                    by: ar => _.get(ar, "elements.node.typeScript.version", params.otherLabel),
-                })
-                .renderWith(defaultAnalyzedRenderer()),
-
-    springVersions: params =>
-        treeBuilderFor("Spring Boot version", params)
-            .group({
-                name: "version",
-                by: ar => _.get(ar, "elements.node.springboot.version", params.otherLabel),
-            })
-            .renderWith(defaultAnalyzedRenderer()),
 
     langs:
         params =>
@@ -188,29 +133,6 @@ export const WellKnownReporters: Reporters = {
                     repoUrl: ar.id.url,
                 })),
 
-    // Version of a particular library
-    libraryVersions:
-        params =>
-            treeBuilderFor<ProjectAnalysis>(`Versions of ${params.artifact}`, params)
-                .group({
-                    name: "version",
-                    by: ar => {
-                        const dep = _.get(ar, "analysis.dependencies", []).find(d => d.artifact === params.artifact);
-                        return !!dep ? dep.version : params.otherLabel;
-                    },
-                })
-                .group({
-                    name: "resolved",
-                    by: ar => {
-                        const pl = ar.elements.packageLock as PackageLock;
-                        if (!pl) {
-                            return params.artifact;
-                        }
-                        return pl.packageLock.dependencies[params.artifact].version;
-                    },
-                })
-                .renderWith(defaultAnalyzedRenderer()),
-
     npmDependencyCount:
         params => aspectGroup("Maven dependency count", params, NpmDeps),
 
@@ -244,60 +166,6 @@ export const WellKnownReporters: Reporters = {
                 rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
                 return rendered;
             }),
-
-    uhura:
-        params =>
-            treeBuilderFor<ProjectAnalysis>("Uhura readiness", params)
-                .group({
-                    // Group by count of Uhura
-                    name: "level", by: a => {
-                        const ps = _.get(a, "analysis.phaseStatus") as Record<keyof DeliveryPhases, boolean>;
-                        if (!ps) {
-                            return undefined;
-                        }
-                        let count = 0;
-                        Object.getOwnPropertyNames(ps).forEach(key => {
-                            if (ps[key]) {
-                                count++;
-                            }
-                        });
-                        return "" + count;
-                    },
-                })
-                .group({
-                    name: "phaseStatus",
-                    by: a => {
-                        const ps = a.phaseStatus;
-                        if (!ps) {
-                            return undefined;
-                        }
-                        return Object.getOwnPropertyNames(ps)
-                            .filter(k => ps[k])
-                            .map(k => k.replace("Goals", ""))
-                            .join(",");
-                    },
-                })
-                .renderWith(defaultAnalyzedRenderer()),
-
-    // Generic path
-    path: params =>
-        treeBuilderFor(`Path ${params.path}`, params)
-            .group({
-                name: params.path,
-                by: ar => {
-                    const raw = _.get(ar, params.path, params.otherLabel);
-                    if (!raw) {
-                        return raw;
-                    }
-                    return typeof raw === "string" ? raw : JSON.stringify(raw);
-                },
-            })
-            .renderWith(defaultAnalyzedRenderer()),
-}
-    ;
-
-const byDocker: ProjectAnalysisGrouper = ar => {
-    return !!ar.elements.docker ? "Yes" : "No";
 };
 
 const groupByLoc: ProjectAnalysisGrouper = ar => {
