@@ -78,194 +78,26 @@ export function api(clientFactory: ClientFactory,
     return {
         routesToSuggestOnStartup,
         customizer: (express: Express, ...handlers: RequestHandler[]) => {
-
             express.use(bodyParser.json());       // to support JSON-encoded bodies
             express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
                 extended: true,
             }));
 
             if (serveSwagger) {
-                const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
-                const swaggerDocument = yaml.load(swaggerDocPath);
-
-                express.use(docRoute, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+                exposeSwaggerDoc(express, docRoute);
             }
 
             configureAuth(express);
 
-            // Set an ideal
-            express.options("/api/v1/:workspace_id/ideal/:id", corsHandler());
-            express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
-                await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
-                logger.info(`Set ideal to ${req.params.id}`);
-                res.sendStatus(201);
-            });
+            exposeIdealAndProblemSetting(express, aspectRegistry);
 
-            // Note this fingerprint as a problem
-            express.options("/api/v1/:workspace_id/problem/:id", corsHandler());
-            express.put("/api/v1/:workspace_id/problem/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
-                await aspectRegistry.problemStore.noteProblem(req.params.workspace_id, req.params.id);
-                logger.info(`Set problem at ${req.params.id}`);
-                res.sendStatus(201);
-            });
+            exposeAspectMetadata(express, store);
 
-            // Return the aspects metadata
-            express.options("/api/v1/:workspace_id/aspects", corsHandler());
-            express.get("/api/v1/:workspace_id/aspects", [corsHandler(), ...authHandlers()], async (req, res) => {
-                try {
-                    const workspaceId = req.params.workspace_id || "local";
-                    const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
-                    const reports = getAspectReports(fingerprintUsage, workspaceId);
-                    logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
-                    res.json({ list: reports });
-                } catch (e) {
-                    logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
-                    res.sendStatus(500);
-                }
-            });
+            exposeListFingerprints(express, store);
 
-            // Return all fingerprints
-            express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
-            express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
-                try {
-                    const workspaceId = req.params.workspace_id || "local";
-                    const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
-                    logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
-                    res.json({ list: fingerprintUsage });
-                } catch (e) {
-                    logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
-                    res.sendStatus(500);
-                }
-            });
+            exposeFingerprintByType(express, store);
 
-            express.options("/api/v1/:workspace_id/fingerprint/:type", corsHandler());
-            express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
-                try {
-                    const workspaceId = req.params.workspace_id || "local";
-                    const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, req.params.type);
-                    logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
-                    res.json({ list: fps });
-                } catch (e) {
-                    logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
-                    res.sendStatus(500);
-                }
-            });
-
-            /* the d3 sunburst on the /query page uses this */
-            express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
-            express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
-                const byName = req.params.name !== "*";
-                const workspaceId = req.params.workspace_id;
-                try {
-                    // Get the tree and then perform post processing on it
-                    let pt = await repoTree({
-                        workspaceId,
-                        clientFactory,
-                        byName,
-                        includeWithout: req.query.otherLabel === "true",
-                        rootName: req.params.name,
-                        aspectName: req.params.type,
-                    });
-                    logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
-
-                    const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
-                    // Flag bad fingerprints with a special color
-                    await visitAsync(pt.tree, async l => {
-                        if ((l as any).sha) {
-                            const problem = await usageChecker.check("local", l as any);
-                            if (problem) {
-                                (l as any).color = "#810325";
-                                (l as any).problem = {
-                                    // Need to dispense with the fingerprint, which would make this circular
-                                    description: problem.description,
-                                    severity: problem.severity,
-                                    authority: problem.authority,
-                                    url: problem.url,
-                                };
-                            }
-                        }
-                        return true;
-                    });
-
-                    if (!byName) {
-                        // Show all fingerprints in one aspect, splitting by fingerprint name
-                        pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
-                            {
-                                descendantClassifier: l => {
-                                    if (!(l as any).sha) {
-                                        return undefined;
-                                    }
-                                    const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
-                                    return !aspect2 || !aspect2.toDisplayableFingerprintName ?
-                                        l.name :
-                                        aspect2.toDisplayableFingerprintName(l.name);
-                                },
-                                newLayerDepth: 0,
-                                newLayerMeaning: "fingerprint name",
-                            });
-                        const aspect = aspectRegistry.aspectOf(req.params.type);
-                        if (!!aspect) {
-                            pt.tree.name = aspect.displayName;
-                        }
-                    } else {
-                        // We are showing a particular fingerprint
-                        const aspect = aspectRegistry.aspectOf(pt.tree.name);
-                        if (!!aspect) {
-                            pt.tree.name = aspect.displayName;
-                        }
-                    }
-                    resolveAspectNames(aspectRegistry, pt.tree);
-                    if (req.query.byOrg === "true") {
-                        // Group by organization via an additional layer at the center
-                        pt = introduceClassificationLayer<{ owner: string }>(pt,
-                            {
-                                descendantClassifier: l => l.owner,
-                                newLayerDepth: 0,
-                                newLayerMeaning: "owner",
-                            });
-                    }
-                    if (req.query.presence === "true") {
-                        pt.tree = groupSiblings(pt.tree,
-                            {
-                                parentSelector: parent => parent.children.some(c => (c as any).sha),
-                                childClassifier: kid => (kid as any).sha ? "Yes" : "No",
-                                collapseUnderName: name => name === "No",
-                            });
-                    } else if (req.query.progress === "true") {
-                        const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
-                        if (!ideal || !isConcreteIdeal(ideal)) {
-                            throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name} in workspace '${workspaceId}'`);
-                        }
-                        pt.tree = groupSiblings(pt.tree, {
-                            parentSelector: parent => parent.children.some(c => (c as any).sha),
-                            childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
-                            groupLayerDecorator: l => {
-                                if (l.name === "Ideal") {
-                                    (l as any).color = "#168115";
-                                } else {
-                                    (l as any).color = "#811824";
-                                }
-                            },
-                        });
-                    }
-
-                    // Group all fingerprint nodes by their name at the first level
-                    pt.tree = groupSiblings(pt.tree, {
-                        parentSelector: parent => parent.children.some(c => (c as any).sha),
-                        childClassifier: l => l.name,
-                        collapseUnderName: () => true,
-                    });
-
-                    if (req.query.trim === "true") {
-                        pt.tree = trimOuterRim(pt.tree);
-                    }
-
-                    res.json(pt);
-                } catch (e) {
-                    logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
-                    res.sendStatus(500);
-                }
-            });
+            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory);
 
             // In memory queries against returns
             express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
@@ -338,5 +170,196 @@ function resolveAspectNames(fm: AspectRegistry, t: SunburstTree): void {
             }
         }
         return true;
+    });
+}
+
+function exposeSwaggerDoc(express: Express, docRoute: string) {
+    const swaggerDocPath = path.join(__dirname, "..", "..", "swagger.yaml");
+    const swaggerDocument = yaml.load(swaggerDocPath);
+    express.use(docRoute, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
+
+function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStore) {
+    // Return the aspects metadata
+    express.options("/api/v1/:workspace_id/aspects", corsHandler());
+    express.get("/api/v1/:workspace_id/aspects", [corsHandler(), ...authHandlers()], async (req, res) => {
+        try {
+            const workspaceId = req.params.workspace_id || "local";
+            const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
+            const reports = getAspectReports(fingerprintUsage, workspaceId);
+            logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
+            res.json({ list: reports });
+        } catch (e) {
+            logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
+            res.sendStatus(500);
+        }
+    });
+}
+
+function exposeListFingerprints(express: Express, store: ProjectAnalysisResultStore) {
+    // Return all fingerprints
+    express.options("/api/v1/:workspace_id/fingerprints", corsHandler());
+    express.get("/api/v1/:workspace_id/fingerprints", [corsHandler(), ...authHandlers()], async (req, res) => {
+        try {
+            const workspaceId = req.params.workspace_id || "local";
+            const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
+            logger.debug("Returning fingerprints for '%s': %j", workspaceId, fingerprintUsage);
+            res.json({ list: fingerprintUsage });
+        } catch (e) {
+            logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
+            res.sendStatus(500);
+        }
+    });
+}
+
+function exposeFingerprintByType(express: Express, store: ProjectAnalysisResultStore) {
+    express.options("/api/v1/:workspace_id/fingerprint/:type", corsHandler());
+    express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
+        try {
+            const workspaceId = req.params.workspace_id || "*";
+            const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, req.params.type);
+            logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
+            res.json({ list: fps });
+        } catch (e) {
+            logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
+            res.sendStatus(500);
+        }
+    });
+}
+
+function exposeFingerprintByTypeAndName(express: Express,
+                                        aspectRegistry: AspectRegistry,
+                                        clientFactory: ClientFactory) {
+    express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
+    express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+        const byName = req.params.name !== "*";
+        const workspaceId = req.params.workspace_id;
+        try {
+            // Get the tree and then perform post processing on it
+            let pt = await repoTree({
+                workspaceId,
+                clientFactory,
+                byName,
+                includeWithout: req.query.otherLabel === "true",
+                rootName: req.params.name,
+                aspectName: req.params.type,
+            });
+            logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
+
+            const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
+            // Flag bad fingerprints with a special color
+            await visitAsync(pt.tree, async l => {
+                if ((l as any).sha) {
+                    const problem = await usageChecker.check("local", l as any);
+                    if (problem) {
+                        (l as any).color = "#810325";
+                        (l as any).problem = {
+                            // Need to dispense with the fingerprint, which would make this circular
+                            description: problem.description,
+                            severity: problem.severity,
+                            authority: problem.authority,
+                            url: problem.url,
+                        };
+                    }
+                }
+                return true;
+            });
+
+            if (!byName) {
+                // Show all fingerprints in one aspect, splitting by fingerprint name
+                pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
+                    {
+                        descendantClassifier: l => {
+                            if (!(l as any).sha) {
+                                return undefined;
+                            }
+                            const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
+                            return !aspect2 || !aspect2.toDisplayableFingerprintName ?
+                                l.name :
+                                aspect2.toDisplayableFingerprintName(l.name);
+                        },
+                        newLayerDepth: 0,
+                        newLayerMeaning: "fingerprint name",
+                    });
+                const aspect = aspectRegistry.aspectOf(req.params.type);
+                if (!!aspect) {
+                    pt.tree.name = aspect.displayName;
+                }
+            } else {
+                // We are showing a particular fingerprint
+                const aspect = aspectRegistry.aspectOf(pt.tree.name);
+                if (!!aspect) {
+                    pt.tree.name = aspect.displayName;
+                }
+            }
+            resolveAspectNames(aspectRegistry, pt.tree);
+            if (req.query.byOrg === "true") {
+                // Group by organization via an additional layer at the center
+                pt = introduceClassificationLayer<{ owner: string }>(pt,
+                    {
+                        descendantClassifier: l => l.owner,
+                        newLayerDepth: 0,
+                        newLayerMeaning: "owner",
+                    });
+            }
+            if (req.query.presence === "true") {
+                pt.tree = groupSiblings(pt.tree,
+                    {
+                        parentSelector: parent => parent.children.some(c => (c as any).sha),
+                        childClassifier: kid => (kid as any).sha ? "Yes" : "No",
+                        collapseUnderName: name => name === "No",
+                    });
+            } else if (req.query.progress === "true") {
+                const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
+                if (!ideal || !isConcreteIdeal(ideal)) {
+                    throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name} in workspace '${workspaceId}'`);
+                }
+                pt.tree = groupSiblings(pt.tree, {
+                    parentSelector: parent => parent.children.some(c => (c as any).sha),
+                    childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
+                    groupLayerDecorator: l => {
+                        if (l.name === "Ideal") {
+                            (l as any).color = "#168115";
+                        } else {
+                            (l as any).color = "#811824";
+                        }
+                    },
+                });
+            }
+
+            // Group all fingerprint nodes by their name at the first level
+            pt.tree = groupSiblings(pt.tree, {
+                parentSelector: parent => parent.children.some(c => (c as any).sha),
+                childClassifier: l => l.name,
+                collapseUnderName: () => true,
+            });
+
+            if (req.query.trim === "true") {
+                pt.tree = trimOuterRim(pt.tree);
+            }
+
+            res.json(pt);
+        } catch (e) {
+            logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
+            res.sendStatus(500);
+        }
+    });
+}
+
+function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRegistry) {
+    // Set an ideal
+    express.options("/api/v1/:workspace_id/ideal/:id", corsHandler());
+    express.put("/api/v1/:workspace_id/ideal/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
+        await aspectRegistry.idealStore.setIdeal(req.params.workspace_id, req.params.id);
+        logger.info(`Set ideal to ${req.params.id}`);
+        res.sendStatus(201);
+    });
+
+    // Note this fingerprint as a problem
+    express.options("/api/v1/:workspace_id/problem/:id", corsHandler());
+    express.put("/api/v1/:workspace_id/problem/:id", [corsHandler(), ...authHandlers()], async (req, res) => {
+        await aspectRegistry.problemStore.noteProblem(req.params.workspace_id, req.params.id);
+        logger.info(`Set problem at ${req.params.id}`);
+        res.sendStatus(201);
     });
 }
