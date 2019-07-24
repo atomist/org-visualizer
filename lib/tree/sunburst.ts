@@ -41,7 +41,7 @@ export type SunburstLevel = SunburstTree | SunburstLeaf;
 
 export function isSunburstTree(level: SunburstLevel): level is SunburstTree {
     const maybe = level as SunburstTree;
-    return !!maybe.children;
+    return maybe.children !== undefined;
 }
 
 export function visit(
@@ -50,7 +50,7 @@ export function visit(
     depth: number = 0): void {
     const keepGoing = visitor(t, depth);
     if (keepGoing && isSunburstTree(t)) {
-        t.children.forEach(c => visit(c, visitor, depth + 1));
+        (t.children || []).forEach(c => visit(c, visitor, depth + 1));
     }
 }
 
@@ -352,6 +352,11 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
 }
 
 export function checkPlantedTreeInvariants(pt: PlantedTree): void {
+    checkNullChildrenInvariant(pt);
+    checkDepthInvariant(pt);
+}
+
+function checkDepthInvariant(pt: PlantedTree): void {
     let depth = 0;
     visit(pt.tree, (l, d) => {
         if (d > depth) {
@@ -363,5 +368,20 @@ export function checkPlantedTreeInvariants(pt: PlantedTree): void {
     if ((depth + 1) !== pt.circles.length) {
         logger.error("Tree: " + JSON.stringify(pt.tree, undefined, 2));
         throw new Error(`Expected a depth of ${pt.circles.length} but saw a tree of depth ${depth + 1}`);
+    }
+}
+
+function checkNullChildrenInvariant(pt: PlantedTree): void {
+    const haveNullChildren: SunburstTree[] = [];
+    visit(pt.tree, (l, d) => {
+        if (isSunburstTree(l) && l.children === null) {
+            haveNullChildren.push(l);
+        }
+        return true;
+    });
+    // the tree counts depth from zero
+    if (haveNullChildren.length > 0) {
+        logger.error("Tree: " + JSON.stringify(pt.tree, undefined, 2));
+        throw new Error(`${haveNullChildren.length} tree nodes have null children`);
     }
 }
