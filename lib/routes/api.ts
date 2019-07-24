@@ -188,9 +188,9 @@ function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStor
             const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
             const reports = getAspectReports(fingerprintUsage, workspaceId);
             logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
-            res.json({ list: reports });
+            res.json(reports);
         } catch (e) {
-            logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
+            logger.warn("Error occurred getting aspect metadata: %s %s", e.message, e.stack);
             res.sendStatus(500);
         }
     });
