@@ -102,6 +102,9 @@ CREATE TABLE problem_fingerprints (
 
 CREATE INDEX ON repo_snapshots (workspace_id);
 
+CREATE INDEX ON repo_fingerprints (repo_snapshot_id);
+CREATE INDEX ON repo_fingerprints (fingerprint_id);
+
 CREATE INDEX ON fingerprints (name);
 CREATE INDEX ON fingerprints (feature_name);
 
