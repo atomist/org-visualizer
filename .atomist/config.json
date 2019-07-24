@@ -1,0 +1,7 @@
+{
+  "docker": {
+    "tag": {
+      "latest": true
+    }
+  }
+}
