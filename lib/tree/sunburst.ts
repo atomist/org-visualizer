@@ -27,6 +27,9 @@ export interface SunburstCircleMetadata {
     meaning: string;
 }
 
+/**
+ * Tree with leafs with a size element
+ */
 export interface SunburstTree {
     name: string;
     children: Array<SunburstTree | SunburstLeaf>;

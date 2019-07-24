@@ -109,7 +109,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                     const fingerprintUsage = await store.fingerprintUsageForType("*");
 
                     const actionableFingerprints = [];
-                    const ideals = await aspectRegistry.idealStore.loadIdeals("local");
+                    const ideals = await aspectRegistry.idealStore.loadIdeals("*");
 
                     const importAspects: AspectForDisplay[] = _.sortBy(aspectRegistry.aspects, a => a.displayName || a.name)
                         .filter(f => !!f.displayName)

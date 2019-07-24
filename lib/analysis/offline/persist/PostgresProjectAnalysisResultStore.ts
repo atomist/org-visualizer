@@ -184,7 +184,8 @@ values ($1, $2, $3, $4, current_timestamp)`, [
 
     public async loadProblems(workspaceId: string): Promise<ProblemUsage[]> {
         return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
+            const rows = await client.query(
+                `SELECT id, name, feature_name as type, sha, data, authority, severity, description, url
             FROM problem_fingerprints, fingerprints
             WHERE workspace_id = $1 AND problem_fingerprints.fingerprint_id = fingerprints.id`, [workspaceId]);
             if (!rows.rows) {
@@ -283,7 +284,6 @@ values ($1, $2, $3, $4, current_timestamp)`, [
 
             // Use this as unique database id
             const id = repoRef.url.replace("/", "") + "_" + repoRef.sha;
-
             const shaToUse = !!(analysisResult.analysis as ProjectAnalysis).gitStatus ?
                 (analysisResult.analysis as ProjectAnalysis).gitStatus.sha :
                 repoRef.sha;
@@ -301,7 +301,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
                     (analysisResult as SpideredRepo).query,
                 ]);
             const fingerprintPersistResults = await this.persistFingerprints(analysisResult.analysis, id, client);
-
             fingerprintPersistResults.failures.forEach(f => {
                 logger.error(`Could not persist fingerprint.
                 Error: ${f.error.message}
@@ -389,8 +388,16 @@ function idealRowToIdeal(rawRow: any): Ideal {
 
 function problemRowToProblem(rawRow: any): ProblemUsage {
     return {
-        fingerprint: rawRow,
-        ...rawRow,
+        fingerprint: {
+            name: rawRow.name,
+            type: rawRow.feature_name,
+            data: rawRow.data,
+            sha: rawRow.sha,
+        },
+        authority: rawRow.authority,
+        severity: rawRow.severity,
+        description: rawRow.description,
+        url: rawRow.url,
     };
 }
 

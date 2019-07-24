@@ -189,7 +189,8 @@ function sunburst(name, dataUrl: string, pWidth, pHeight) {
 }
 
 function constructDescription(d) {
-    const workspaceId = "local";
+    // TODO this is not good
+    const workspaceId = "*";
     let descriptionOfWhereYouClicked = `${d.data.name}`;
     for (let place = d; place = place.parent; !!place) {
         descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
@@ -212,16 +213,16 @@ function constructDescription(d) {
     return descriptionOfWhereYouClicked;
 }
 
-function postSetIdeal(workspaceId, fingerprintId) {
+function postSetIdeal(workspaceId: string, fingerprintId: string) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
     const labelElement = document.getElementById("setIdealLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            labelElement.textContent = "ideal set!";
+            labelElement.textContent = `Ideal set for workspace '${workspaceId}'`;
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         } else {
-            labelElement.textContent = "failed to set. consult the server logaments";
+            labelElement.textContent = "Failed to set. consult the server logaments";
             labelElement.setAttribute("class", "error");
         }
     },
@@ -231,16 +232,16 @@ function postSetIdeal(workspaceId, fingerprintId) {
         });
 }
 
-function postNoteProblem(workspaceId, fingerprintId) {
+function postNoteProblem(workspaceId: string, fingerprintId: string) {
     const postUrl = `./api/v1/${workspaceId}/problem/${fingerprintId}`;
     const labelElement = document.getElementById("noteProblemLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            labelElement.textContent = "problm noted!";
+            labelElement.textContent = `Problem noted for workspace '${workspaceId}'`;
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         } else {
-            labelElement.textContent = "failed to set. consult the server logaments";
+            labelElement.textContent = "Failed to set. consult the server logaments";
             labelElement.setAttribute("class", "error");
         }
     },

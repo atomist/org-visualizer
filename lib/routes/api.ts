@@ -171,8 +171,18 @@ export function api(clientFactory: ClientFactory,
                     const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
                     // Flag bad fingerprints with a special color
                     await visitAsync(pt.tree, async l => {
-                        if ((l as any).sha && await usageChecker.check("local", l as any)) {
-                            (l as any).color = "#810325";
+                        if ((l as any).sha) {
+                            const problem = await usageChecker.check("local", l as any);
+                            if (problem) {
+                                (l as any).color = "#810325";
+                                (l as any).problem = {
+                                    // Need to dispense with the fingerprint, which would make this circular
+                                    description: problem.description,
+                                    severity: problem.severity,
+                                    authority: problem.authority,
+                                    url: problem.url,
+                                };
+                            }
                         }
                         return true;
                     });
@@ -224,7 +234,7 @@ export function api(clientFactory: ClientFactory,
                     } else if (req.query.progress === "true") {
                         const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
                         if (!ideal || !isConcreteIdeal(ideal)) {
-                            throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name}`);
+                            throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name} in workspace '${workspaceId}'`);
                         }
                         pt.tree = groupSiblings(pt.tree, {
                             parentSelector: parent => parent.children.some(c => (c as any).sha),

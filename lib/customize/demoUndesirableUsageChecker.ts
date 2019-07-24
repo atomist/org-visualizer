@@ -28,7 +28,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
         {
             severity: "warn",
             authority: "Rod",
-            message: "Old TypeScript",
+            description: "Old TypeScript",
             fingerprint,
         } :
         undefined,
@@ -36,7 +36,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
         {
             severity: "warn",
             authority: "Christian",
-            message: "Axios",
+            description: "Don't use Axios",
             fingerprint,
         } :
         undefined,
@@ -45,7 +45,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
         {
             severity: "warn",
             authority: "Rod",
-            message: "Pre-release npm",
+            description: "Pre-release npm",
             fingerprint,
         } :
         undefined,
@@ -57,7 +57,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
                     return {
                         severity: "warn",
                         authority: "Rod",
-                        message: "Allow long files",
+                        description: "Allow long files",
                         fingerprint,
                     };
                 }
