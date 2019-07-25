@@ -109,4 +109,6 @@ CREATE INDEX ON fingerprints (name);
 CREATE INDEX ON fingerprints (feature_name);
 
 CREATE INDEX ON fingerprint_analytics (workspace_id);
+CREATE INDEX ON fingerprint_analytics (feature_name);
+
 

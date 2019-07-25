@@ -53,3 +53,12 @@ FROM (
          )
          children
 ) fp) as fingerprint_groups;
+
+SELECT row_to_json(data) FROM (SELECT f0.type, json_agg(aspects) as children FROM
+(SELECT distinct feature_name as type from fingerprint_analytics) f0, (
+    SELECT name, feature_name as type, variants, count, entropy
+    from fingerprint_analytics f1
+    WHERE ENTROPY > 0
+    ORDER BY entropy desc) as aspects
+    WHERE aspects.type = f0.type
+    GROUP by f0.type) as data;
