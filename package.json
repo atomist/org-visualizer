@@ -80,7 +80,9 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "webpack": "^4.37.0",
+    "webpack-cli": "^3.3.6"
   },
   "directories": {
     "test": "test"
