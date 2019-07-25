@@ -79,7 +79,7 @@ function renderStaticReactNode(body: ReactElement,
 /**
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
- */x;
+ */
 export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): {
     customizer: ExpressCustomizer,
     routesToSuggestOnStartup: Array<{ title: string, route: string }>,
