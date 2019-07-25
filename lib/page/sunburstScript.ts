@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import { PlantedTree } from "../tree/sunburst";
+import { PlantedTree, SunburstLeaf, SunburstTree } from "../tree/sunburst";
 
 /**
  * Color palette for d3 to use
@@ -110,7 +110,7 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
         }
 
         const root = d3.hierarchy(d.tree);
-        root.sum(d => d.size);
+        root.sum((d: SunburstTree | SunburstLeaf) => (d as SunburstLeaf).size || 0);
 
         const slice = svg.selectAll("g.slice")
             .data(partition(root).descendants());
