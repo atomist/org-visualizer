@@ -15,12 +15,23 @@
  */
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { BaseAspect, FP, NpmDeps } from "@atomist/sdm-pack-fingerprints";
-import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    BaseAspect,
+    FP,
+    NpmDeps,
+} from "@atomist/sdm-pack-fingerprints";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
 import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { Analyzed, AspectRegistry } from "../aspect/AspectRegistry";
+import {
+    Analyzed,
+    AspectRegistry,
+} from "../aspect/AspectRegistry";
 import { fingerprintsFrom } from "../aspect/DefaultAspectRegistry";
 import { Reporters } from "../aspect/reporters";
 import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
@@ -31,7 +42,11 @@ import {
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import { ReportBuilder, treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
+import {
+    ReportBuilder,
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
