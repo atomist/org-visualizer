@@ -53,7 +53,7 @@ import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
     SunburstPage,
-} from "../../views/SunburstPage";
+} from "../../views/sunburstPage";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
@@ -79,7 +79,7 @@ function renderStaticReactNode(body: ReactElement,
 /**
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
- */
+ */x
 export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): {
     customizer: ExpressCustomizer,
     routesToSuggestOnStartup: Array<{ title: string, route: string }>,
