@@ -24,13 +24,10 @@
   },
   "include": [
     "index.ts",
-    "bin/*.ts",
     "views/**/*.tsx",
     "lib/**/*.ts",
     "test/**/*.ts",
-    "types/**/*.ts",
-    "public/**/*.ts",
-    "views/projectList.tsx"
+    "public/**/*.ts"
   ],
   "exclude": [
     ".#*"
