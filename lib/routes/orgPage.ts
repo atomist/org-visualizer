@@ -66,8 +66,8 @@ import {
 } from "../aspect/DefaultAspectRegistry";
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
