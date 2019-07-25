@@ -13,7 +13,7 @@ This page details all runtime OSS dependencies of `@atomist/org-visualizer`.
 |[AFLv2.1](#aflv21)|1|
 |[Apache-2.0](#apache-20)|36|
 |[BSD-2-Clause](#bsd-2-clause)|10|
-|[BSD-3-Clause](#bsd-3-clause)|26|
+|[BSD-3-Clause](#bsd-3-clause)|59|
 |[BSD](#bsd)|6|
 |[CC-BY-3.0](#cc-by-30)|2|
 |[CC0-1.0](#cc0-10)|3|
@@ -111,6 +111,38 @@ BSD 3-Clause "New" or "Revised" License - [http://www.opensource.org/licenses/BS
 |`antlr4ts`|`0.5.0-alpha.3`|Terence Parr, Sam Harwell, and Burt Harris|[https://github.com/tunnelvisionlabs/antlr4ts](https://github.com/tunnelvisionlabs/antlr4ts)|
 |`bcrypt-pbkdf`|`1.0.2`||[https://github.com/joyent/node-bcrypt-pbkdf](https://github.com/joyent/node-bcrypt-pbkdf)|
 |`boom`|`7.3.0`||[https://github.com/hapijs/boom](https://github.com/hapijs/boom)|
+|`d3-array`|`1.2.4`|Mike Bostock|[https://github.com/d3/d3-array](https://github.com/d3/d3-array)|
+|`d3-axis`|`1.0.12`|Mike Bostock|[https://github.com/d3/d3-axis](https://github.com/d3/d3-axis)|
+|`d3-brush`|`1.0.6`|Mike Bostock|[https://github.com/d3/d3-brush](https://github.com/d3/d3-brush)|
+|`d3-chord`|`1.0.6`|Mike Bostock|[https://github.com/d3/d3-chord](https://github.com/d3/d3-chord)|
+|`d3-collection`|`1.0.7`|Mike Bostock|[https://github.com/d3/d3-collection](https://github.com/d3/d3-collection)|
+|`d3-color`|`1.2.8`|Mike Bostock|[https://github.com/d3/d3-color](https://github.com/d3/d3-color)|
+|`d3-contour`|`1.3.2`|Mike Bostock|[https://github.com/d3/d3-contour](https://github.com/d3/d3-contour)|
+|`d3-dispatch`|`1.0.5`|Mike Bostock|[https://github.com/d3/d3-dispatch](https://github.com/d3/d3-dispatch)|
+|`d3-drag`|`1.2.3`|Mike Bostock|[https://github.com/d3/d3-drag](https://github.com/d3/d3-drag)|
+|`d3-dsv`|`1.1.1`|Mike Bostock|[https://github.com/d3/d3-dsv](https://github.com/d3/d3-dsv)|
+|`d3-ease`|`1.0.5`|Mike Bostock|[https://github.com/d3/d3-ease](https://github.com/d3/d3-ease)|
+|`d3-fetch`|`1.1.2`|Mike Bostock|[https://github.com/d3/d3-fetch](https://github.com/d3/d3-fetch)|
+|`d3-force`|`1.2.1`|Mike Bostock|[https://github.com/d3/d3-force](https://github.com/d3/d3-force)|
+|`d3-format`|`1.3.2`|Mike Bostock|[https://github.com/d3/d3-format](https://github.com/d3/d3-format)|
+|`d3-geo`|`1.11.6`|Mike Bostock|[https://github.com/d3/d3-geo](https://github.com/d3/d3-geo)|
+|`d3-hierarchy`|`1.1.8`|Mike Bostock|[https://github.com/d3/d3-hierarchy](https://github.com/d3/d3-hierarchy)|
+|`d3-interpolate`|`1.3.2`|Mike Bostock|[https://github.com/d3/d3-interpolate](https://github.com/d3/d3-interpolate)|
+|`d3-path`|`1.0.7`|Mike Bostock|[https://github.com/d3/d3-path](https://github.com/d3/d3-path)|
+|`d3-polygon`|`1.0.5`|Mike Bostock|[https://github.com/d3/d3-polygon](https://github.com/d3/d3-polygon)|
+|`d3-quadtree`|`1.0.6`|Mike Bostock|[https://github.com/d3/d3-quadtree](https://github.com/d3/d3-quadtree)|
+|`d3-random`|`1.1.2`|Mike Bostock|[https://github.com/d3/d3-random](https://github.com/d3/d3-random)|
+|`d3-scale-chromatic`|`1.3.3`|Mike Bostock|[https://github.com/d3/d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic)|
+|`d3-scale`|`2.2.2`|Mike Bostock|[https://github.com/d3/d3-scale](https://github.com/d3/d3-scale)|
+|`d3-selection`|`1.4.0`|Mike Bostock|[https://github.com/d3/d3-selection](https://github.com/d3/d3-selection)|
+|`d3-shape`|`1.3.5`|Mike Bostock|[https://github.com/d3/d3-shape](https://github.com/d3/d3-shape)|
+|`d3-time-format`|`2.1.3`|Mike Bostock|[https://github.com/d3/d3-time-format](https://github.com/d3/d3-time-format)|
+|`d3-time`|`1.0.11`|Mike Bostock|[https://github.com/d3/d3-time](https://github.com/d3/d3-time)|
+|`d3-timer`|`1.0.9`|Mike Bostock|[https://github.com/d3/d3-timer](https://github.com/d3/d3-timer)|
+|`d3-transition`|`1.2.0`|Mike Bostock|[https://github.com/d3/d3-transition](https://github.com/d3/d3-transition)|
+|`d3-voronoi`|`1.1.4`|Mike Bostock|[https://github.com/d3/d3-voronoi](https://github.com/d3/d3-voronoi)|
+|`d3-zoom`|`1.7.3`|Mike Bostock|[https://github.com/d3/d3-zoom](https://github.com/d3/d3-zoom)|
+|`d3`|`5.9.7`|Mike Bostock|[https://github.com/d3/d3](https://github.com/d3/d3)|
 |`diff`|`4.0.1`||[https://github.com/kpdecker/jsdiff](https://github.com/kpdecker/jsdiff)|
 |`duplexer2`|`0.1.4`|Conrad Pankoff|[https://github.com/deoxxa/duplexer2](https://github.com/deoxxa/duplexer2)|
 |`duplexer3`|`0.1.4`|Conrad Pankoff|[https://github.com/floatdrop/duplexer3](https://github.com/floatdrop/duplexer3)|
@@ -125,6 +157,7 @@ BSD 3-Clause "New" or "Revised" License - [http://www.opensource.org/licenses/BS
 |`node-pre-gyp`|`0.12.0`|Dane Springmeyer|[https://github.com/mapbox/node-pre-gyp](https://github.com/mapbox/node-pre-gyp)|
 |`qs`|`6.5.2`||[https://github.com/ljharb/qs](https://github.com/ljharb/qs)|
 |`qs`|`6.7.0`||[https://github.com/ljharb/qs](https://github.com/ljharb/qs)|
+|`rw`|`1.3.3`|Mike Bostock|[https://github.com/mbostock/rw](https://github.com/mbostock/rw)|
 |`shelljs`|`0.7.7`||[https://github.com/shelljs/shelljs](https://github.com/shelljs/shelljs)|
 |`shelljs`|`0.8.3`||[https://github.com/shelljs/shelljs](https://github.com/shelljs/shelljs)|
 |`source-map`|`0.5.7`|Nick Fitzgerald|[https://github.com/mozilla/source-map](https://github.com/mozilla/source-map)|
