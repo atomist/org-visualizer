@@ -28,6 +28,7 @@ import {
     RequestHandler,
 } from "express";
 import * as path from "path";
+import { Client } from "pg";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -42,6 +43,7 @@ import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
     introduceClassificationLayer,
+    PlantedTree,
     SunburstTree,
     trimOuterRim,
     visit,
@@ -67,9 +69,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-    customizer: ExpressCustomizer,
-    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-} {
+        customizer: ExpressCustomizer,
+        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    } {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -233,111 +235,20 @@ function exposeFingerprintByTypeAndName(express: Express,
                                         clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
-        const byName = req.params.name !== "*";
         const workspaceId = req.params.workspace_id;
+        const fingerprintType = req.params.type;
+        const fingerprintName = req.params.name;
+        const byName = req.params.name !== "*";
+        const showPresence = req.query.presence === "true";
+        const showProgress = req.query.progress === "true";
+        const trim = req.query.trim === "true";
+        const byOrg = req.query.byOrg === "true";
+        const otherLabel = req.query.otherLabel === "true";
+
         try {
-            // Get the tree and then perform post processing on it
-            let pt = await repoTree({
-                workspaceId,
-                clientFactory,
-                byName,
-                includeWithout: req.query.otherLabel === "true",
-                rootName: req.params.name,
-                aspectName: req.params.type,
+            const pt = await buildFingerprintTree({ aspectRegistry, clientFactory }, {
+                showPresence, otherLabel, showProgress, byOrg, trim, fingerprintType, fingerprintName, workspaceId, byName,
             });
-            logger.debug("Returning fingerprint tree '%s': %j", req.params.name, pt);
-
-            const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
-            // Flag bad fingerprints with a special color
-            await visitAsync(pt.tree, async l => {
-                if ((l as any).sha) {
-                    const problem = await usageChecker.check("local", l as any);
-                    if (problem) {
-                        (l as any).color = "#810325";
-                        (l as any).problem = {
-                            // Need to dispense with the fingerprint, which would make this circular
-                            description: problem.description,
-                            severity: problem.severity,
-                            authority: problem.authority,
-                            url: problem.url,
-                        };
-                    }
-                }
-                return true;
-            });
-
-            if (!byName) {
-                // Show all fingerprints in one aspect, splitting by fingerprint name
-                pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
-                    {
-                        descendantClassifier: l => {
-                            if (!(l as any).sha) {
-                                return undefined;
-                            }
-                            const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
-                            return !aspect2 || !aspect2.toDisplayableFingerprintName ?
-                                l.name :
-                                aspect2.toDisplayableFingerprintName(l.name);
-                        },
-                        newLayerDepth: 0,
-                        newLayerMeaning: "fingerprint name",
-                    });
-                const aspect = aspectRegistry.aspectOf(req.params.type);
-                if (!!aspect) {
-                    pt.tree.name = aspect.displayName;
-                }
-            } else {
-                // We are showing a particular fingerprint
-                const aspect = aspectRegistry.aspectOf(pt.tree.name);
-                if (!!aspect) {
-                    pt.tree.name = aspect.displayName;
-                }
-            }
-            resolveAspectNames(aspectRegistry, pt.tree);
-            if (req.query.byOrg === "true") {
-                // Group by organization via an additional layer at the center
-                pt = introduceClassificationLayer<{ owner: string }>(pt,
-                    {
-                        descendantClassifier: l => l.owner,
-                        newLayerDepth: 0,
-                        newLayerMeaning: "owner",
-                    });
-            }
-            if (req.query.presence === "true") {
-                pt.tree = groupSiblings(pt.tree,
-                    {
-                        parentSelector: parent => parent.children.some(c => (c as any).sha),
-                        childClassifier: kid => (kid as any).sha ? "Yes" : "No",
-                        collapseUnderName: name => name === "No",
-                    });
-            } else if (req.query.progress === "true") {
-                const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, req.params.type, req.params.name);
-                if (!ideal || !isConcreteIdeal(ideal)) {
-                    throw new Error(`No ideal to aspire to for ${req.params.type}/${req.params.name} in workspace '${workspaceId}'`);
-                }
-                pt.tree = groupSiblings(pt.tree, {
-                    parentSelector: parent => parent.children.some(c => (c as any).sha),
-                    childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
-                    groupLayerDecorator: l => {
-                        if (l.name === "Ideal") {
-                            (l as any).color = "#168115";
-                        } else {
-                            (l as any).color = "#811824";
-                        }
-                    },
-                });
-            }
-
-            // Group all fingerprint nodes by their name at the first level
-            pt.tree = groupSiblings(pt.tree, {
-                parentSelector: parent => parent.children.some(c => (c as any).sha),
-                childClassifier: l => l.name,
-                collapseUnderName: () => true,
-            });
-
-            if (req.query.trim === "true") {
-                pt.tree = trimOuterRim(pt.tree);
-            }
 
             res.json(pt);
         } catch (e) {
@@ -345,6 +256,132 @@ function exposeFingerprintByTypeAndName(express: Express,
             res.sendStatus(500);
         }
     });
+}
+
+async function buildFingerprintTree(
+    world: {
+        aspectRegistry: AspectRegistry,
+        clientFactory: () => Client,
+    },
+    params: {
+        workspaceId: string,
+        fingerprintName: string,
+        fingerprintType: string,
+        byName: boolean,
+        otherLabel: boolean,
+        showPresence: boolean,
+        byOrg: boolean,
+        trim: boolean,
+        showProgress: boolean,
+    }): Promise<PlantedTree> {
+
+    const { workspaceId, byName, fingerprintName, fingerprintType, otherLabel, showPresence, byOrg, trim, showProgress } = params;
+    const { clientFactory, aspectRegistry } = world;
+
+    // Get the tree and then perform post processing on it
+    let pt = await repoTree({
+        workspaceId,
+        clientFactory,
+        byName,
+        includeWithout: otherLabel,
+        rootName: fingerprintName,
+        aspectName: fingerprintType,
+    });
+    logger.debug("Returning fingerprint tree '%s': %j", fingerprintName, pt);
+
+    const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
+    // Flag bad fingerprints with a special color
+    await visitAsync(pt.tree, async l => {
+        if ((l as any).sha) {
+            const problem = await usageChecker.check("local", l as any);
+            if (problem) {
+                (l as any).color = "#810325";
+                (l as any).problem = {
+                    // Need to dispense with the fingerprint, which would make this circular
+                    description: problem.description,
+                    severity: problem.severity,
+                    authority: problem.authority,
+                    url: problem.url,
+                };
+            }
+        }
+        return true;
+    });
+    if (!byName) {
+        // Show all fingerprints in one aspect, splitting by fingerprint name
+        pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
+            {
+                descendantClassifier: l => {
+                    if (!(l as any).sha) {
+                        return undefined;
+                    }
+                    const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
+                    return !aspect2 || !aspect2.toDisplayableFingerprintName ?
+                        l.name :
+                        aspect2.toDisplayableFingerprintName(l.name);
+                },
+                newLayerDepth: 0,
+                newLayerMeaning: "fingerprint name",
+            });
+        const aspect = aspectRegistry.aspectOf(fingerprintType);
+        if (!!aspect) {
+            pt.tree.name = aspect.displayName;
+        }
+    } else {
+        // We are showing a particular fingerprint
+        const aspect = aspectRegistry.aspectOf(pt.tree.name);
+        if (!!aspect) {
+            pt.tree.name = aspect.displayName;
+        }
+    }
+
+    resolveAspectNames(aspectRegistry, pt.tree);
+    if (byOrg) {
+        // Group by organization via an additional layer at the center
+        pt = introduceClassificationLayer<{ owner: string }>(pt,
+            {
+                descendantClassifier: l => l.owner,
+                newLayerDepth: 0,
+                newLayerMeaning: "owner",
+            });
+    }
+    if (showPresence) {
+        pt.tree = groupSiblings(pt.tree,
+            {
+                parentSelector: parent => parent.children.some(c => (c as any).sha),
+                childClassifier: kid => (kid as any).sha ? "Yes" : "No",
+                collapseUnderName: name => name === "No",
+            });
+    } else if (showProgress) {
+        const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, fingerprintType, fingerprintName);
+        if (!ideal || !isConcreteIdeal(ideal)) {
+            throw new Error(`No ideal to aspire to for ${fingerprintType}/${fingerprintName} in workspace '${workspaceId}'`);
+        }
+        pt.tree = groupSiblings(pt.tree, {
+            parentSelector: parent => parent.children.some(c => (c as any).sha),
+            childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
+            groupLayerDecorator: l => {
+                if (l.name === "Ideal") {
+                    (l as any).color = "#168115";
+                } else {
+                    (l as any).color = "#811824";
+                }
+            },
+        });
+    }
+
+    // Group all fingerprint nodes by their name at the first level
+    pt.tree = groupSiblings(pt.tree, {
+        parentSelector: parent => parent.children.some(c => (c as any).sha),
+        childClassifier: l => l.name,
+        collapseUnderName: () => true,
+    });
+
+    if (trim) {
+        pt.tree = trimOuterRim(pt.tree);
+    }
+
+    return pt;
 }
 
 function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRegistry): void {
