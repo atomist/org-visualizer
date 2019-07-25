@@ -66,8 +66,8 @@ import {
 } from "../aspect/DefaultAspectRegistry";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -94,6 +94,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
             }));
 
             express.use(serveStatic("public", { index: false }));
+            express.use(serveStatic("dist", { index: false }));
 
             /* redirect / to the org page. This way we can go right here
              * for now, and later make a higher-level page if we want.
@@ -247,8 +248,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                     }),
                     "Atomist Aspect",
                     [
-                        "/lib/d3.v5.min.js",
-                        "/js/sunburstScript.js",
+                        "/sunburstScript-bundle.js",
                     ]));
             });
         },

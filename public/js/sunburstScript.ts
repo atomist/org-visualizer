@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as d3 from "d3";
+
 /**
  * Color palette for d3 to use
  */
@@ -38,7 +40,7 @@ interface SunburstLevel {
     children: SunburstLevel[];
 }
 
-function sunburst(name, dataUrl: string, pWidth, pHeight) {
+export function sunburst(name, dataUrl: string, pWidth, pHeight) {
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),

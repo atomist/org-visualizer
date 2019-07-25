@@ -41,7 +41,7 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
 export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
 
     const d3ScriptCall = `<script>
-    sunburst("${props.query || ""}",
+    SunburstYo.sunburst("${props.query || ""}",
         "${props.dataUrl}",
         window.innerWidth - 250,
         window.innerHeight - 100);

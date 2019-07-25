@@ -1,4 +1,10 @@
 module.exports = {
     mode: "development",
-    entry: "./public/js/sunburstScript.js"
+    entry: {
+        sunburstScript: "./public/js/sunburstScript.js"
+    },
+    output: {
+        filename: "[name]-bundle.js",
+        library: "SunburstYo"
+    }
 }
