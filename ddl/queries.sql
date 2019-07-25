@@ -54,6 +54,7 @@ FROM (
          children
 ) fp) as fingerprint_groups;
 
+-- Entropy tree
 SELECT row_to_json(data) FROM (SELECT f0.type, json_agg(aspects) as children FROM
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
     SELECT name, feature_name as type, variants, count, entropy

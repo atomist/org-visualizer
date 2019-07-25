@@ -14,31 +14,16 @@
  * limitations under the License.
  */
 
-import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import { FP } from "@atomist/sdm-pack-fingerprints";
-import * as _ from "lodash";
 import {
     AspectRegistry,
     chainUndesirableUsageCheckers,
-    HasFingerprints,
     IdealStore,
     ManagedAspect,
     ProblemStore,
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./AspectRegistry";
-
-export function allFingerprints(ar: HasFingerprints | HasFingerprints[]): FP[] {
-    return _.flatMap(toArray(ar), a => a.fingerprints);
-}
-
-export async function* fingerprintsFrom(ar: HasFingerprints[] | AsyncIterable<HasFingerprints>): AsyncIterable<FP> {
-    for await (const hf of ar) {
-        for (const fp of hf.fingerprints) {
-            yield fp;
-        }
-    }
-}
 
 /**
  * Aspects must have unique names

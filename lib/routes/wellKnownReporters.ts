@@ -32,7 +32,6 @@ import {
     Analyzed,
     AspectRegistry,
 } from "../aspect/AspectRegistry";
-import { fingerprintsFrom } from "../aspect/DefaultAspectRegistry";
 import { Reporters } from "../aspect/reporters";
 import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
 import {
@@ -73,35 +72,6 @@ export const WellKnownReporters: Reporters = {
                     repoUrl: ar.id.url,
                 };
             }),
-
-    skew: () => {
-        return {
-            toSunburstTree: async originalQuery => {
-                const fingerprints: FP[] = [];
-                for await (const fp of fingerprintsFrom(originalQuery())) {
-                    if (!fingerprints.some(f => f.sha === fp.sha)) {
-                        fingerprints.push(fp);
-                    }
-                }
-                const grouped = _.groupBy(fingerprints, fp => fp.type);
-
-                return {
-                    name: "skew",
-                    children: Object.getOwnPropertyNames(grouped).map(name => {
-                        return {
-                            name,
-                            children: grouped[name].map(g => {
-                                return {
-                                    name: g.name,
-                                    size: 1,
-                                };
-                            }),
-                        };
-                    }),
-                };
-            },
-        };
-    },
 
     langs:
         params =>
