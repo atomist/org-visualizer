@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import { PlantedTree } from "../../lib/tree/sunburst";
+import { PlantedTree } from "../tree/sunburst";
 
 /**
  * Color palette for d3 to use

@@ -1,7 +1,7 @@
 module.exports = {
     mode: "development",
     entry: {
-        sunburstScript: "./public/js/sunburstScript.js"
+        sunburstScript: "./lib/page/sunburstScript.js"
     },
     output: {
         filename: "[name]-bundle.js",
