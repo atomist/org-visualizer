@@ -15,7 +15,6 @@
  */
 
 import { logger } from "@atomist/automation-client";
-
 import * as _ from "lodash";
 
 export interface PlantedTree {

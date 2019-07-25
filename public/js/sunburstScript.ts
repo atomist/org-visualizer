@@ -15,6 +15,7 @@
  */
 
 import * as d3 from "d3";
+import { PlantedTree } from "../../lib/tree/sunburst";
 
 /**
  * Color palette for d3 to use
@@ -100,7 +101,7 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
         .attr("viewBox", `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
         .on("click", focusOn); // Reset zoom on canvas click
 
-    d3.json(dataUrl).then((d) => {
+    d3.json(dataUrl).then((d: PlantedTree) => {
         console.log("This is a thing: " + JSON.stringify(d));
 
         if (!d.tree || d.tree.children.length === 0) {
