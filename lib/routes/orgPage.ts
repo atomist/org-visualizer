@@ -52,8 +52,8 @@ import {
 import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
-    SunburstQuery,
-} from "../../views/sunburstQuery";
+    SunburstPage,
+} from "../../views/SunburstPage";
 import { TopLevelPage } from "../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
@@ -66,8 +66,8 @@ import {
 } from "../aspect/DefaultAspectRegistry";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -239,7 +239,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                 logger.info("Data url=%s", dataUrl);
 
                 res.send(renderStaticReactNode(
-                    SunburstQuery({
+                    SunburstPage({
                         fingerprintDisplayName,
                         currentIdeal: currentIdealForDisplay,
                         possibleIdeals: possibleIdealsForDisplay,

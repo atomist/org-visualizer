@@ -12,7 +12,7 @@ export interface PossibleIdealForDisplay {
     stringified: string;
 }
 
-export interface SunburstQueryProps {
+export interface SunburstPageProps {
     fingerprintDisplayName: string;
     currentIdeal: CurrentIdealForDisplay;
     possibleIdeals: PossibleIdealForDisplay[];
@@ -38,7 +38,7 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
     </li>;
 }
 
-export function SunburstQuery(props: SunburstQueryProps): React.ReactElement {
+export function SunburstPage(props: SunburstPageProps): React.ReactElement {
 
     const d3ScriptCall = `<script>
     SunburstYo.sunburst("${props.query || ""}",
