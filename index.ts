@@ -35,7 +35,7 @@ import {
     configure,
     isInLocalMode,
 } from "@atomist/sdm-core";
-import { LeinDeps } from "@atomist/sdm-pack-clojure";
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import {
     DockerfilePath,
     DockerFrom,
