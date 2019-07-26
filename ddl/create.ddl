@@ -1,15 +1,12 @@
+## create the database if needed (in psql):
 
-\set ON_ERROR_STOP true
+# DROP DATABASE org_viz;
+# CREATE DATABASE org_viz;
 
--- create the database if needed (in psql):
+## Connect to that database (in psql)
+# \connect org_viz
 
-DROP DATABASE org_viz;
-CREATE DATABASE org_viz;
-
--- Connect to that database (in psql)
-\connect org_viz
-
--- Run this DDL in either psql or pgadmin:
+## Run this DDL in either psql or pgadmin:
 
 DROP TABLE IF EXISTS repo_fingerprints;
 
