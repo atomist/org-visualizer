@@ -97,12 +97,12 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(TypeScriptVersion, "Node.js");
         registerReportDetails(TypeScriptVersion, { url: "fingerprint/typescript-version/typescript-version?byOrg=true" });
         registerCategories(NpmDeps, "Node.js");
-        registerReportDetails(NpmDeps, { url: "filter/skew?type=npm-project-deps" });
+        registerReportDetails(NpmDeps, { url: "drift?type=npm-project-deps" });
         registerCategories(SpringBootStarter, "Java");
         registerCategories(JavaBuild, "Java");
         registerCategories(SpringBootVersion, "Java");
         registerCategories(DirectMavenDependencies, "Java");
-        registerReportDetails(DirectMavenDependencies, { url: "filter/skew?type=maven-direct-dep" });
+        registerReportDetails(DirectMavenDependencies, { url: "drift?type=maven-direct-dep" });
         registerCategories(DockerFrom, "Docker");
         registerReportDetails(DockerFrom, { url: "filter/aspectReport?type=docker-base-image" });
         registerCategories(DockerPorts, "Docker");

@@ -40,6 +40,7 @@ import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/a
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import {
     driftTree,
+    driftTreeForSingleAspect,
     fingerprintsToReposTree,
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
@@ -387,13 +388,8 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
                 const skewTree = await driftTree(req.params.workspace_id, clientFactory);
                 return res.json(skewTree);
             } else {
-                // const skewTree = await skewReportForSingleAspect(aspectRegistry).toSunburstTree(
-                //     () => fingerprintUsage);
-                // return res.json({
-                //     type,
-                //     tree: skewTree,
-                // });
-                throw new Error("not implemented");
+                const skewTree = await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory);
+                return res.json(skewTree);
             }
         } catch (err) {
             logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
