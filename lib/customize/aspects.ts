@@ -50,6 +50,7 @@ import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import { CodeOwnership } from "../element/codeOwnership";
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 
 /**
  * The aspects anaged by this SDM.
@@ -99,4 +100,5 @@ export const Aspects: ManagedAspect[] = [
     // allMavenDependenciesAspect,    // This is expensive
     DirectMavenDependencies,
     PythonDependencies,
+    LeinDeps,
 ];
