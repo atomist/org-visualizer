@@ -115,7 +115,7 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
     const existsLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true&presence=true&otherLabel=true`;
-    const ent = <span>{displayEntropy(f.aspect) && `entropy=${f.entropy}`}</span>;
+    const ent = <span>{displayEntropy(f.aspect) && `entropy=${f.entropy.toFixed(2)}`}</span>;
 
     return <li key={displayName}>
         <i>{displayName}</i>: {f.count} projects, {" "}
