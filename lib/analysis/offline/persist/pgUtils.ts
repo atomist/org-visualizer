@@ -26,9 +26,9 @@ export type ClientFactory = () => Client;
  * Errors thrown by the passed-in function result are logged, and the
  * provided defaultResult is returned (or else undefined).
  *
- * @param {() => } clientFactory
- * @param {(c: ) => Promise<R>} a function to run with the client
- * @param {R} defaultResult return this in case of error (if not provided, return undefined)
+ * @param {() => } clientFactory factory for clients
+ * @param {(c: ) => Promise<R>} what a function to run with the client
+ * @param {R} defaultResult return this in case of error. If not provided, return undefined
  * @return {Promise<R>}
  */
 export async function doWithClient<R>(clientFactory: () => Client,
