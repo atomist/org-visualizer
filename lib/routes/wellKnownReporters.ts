@@ -15,23 +15,11 @@
  */
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import {
-    BaseAspect,
-    FP,
-    NpmDeps,
-} from "@atomist/sdm-pack-fingerprints";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { BaseAspect, FP, NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import * as path from "path";
-import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    Analyzed,
-    AspectRegistry,
-} from "../aspect/AspectRegistry";
+import { Analyzed, AspectRegistry } from "../aspect/AspectRegistry";
 import { Reporters } from "../aspect/reporters";
 import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
 import {
@@ -41,11 +29,7 @@ import {
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import {
-    ReportBuilder,
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { ReportBuilder, treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -210,71 +194,6 @@ export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, para
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;
-}
-
-export function skewReport(fm: AspectRegistry): ReportBuilder<FingerprintUsage> {
-    return treeBuilder<FingerprintUsage>("entropy")
-        .group({
-            name: "entropy-band",
-            by: fp => {
-                if (fp.entropy > 2) {
-                    return "random (>2)";
-                }
-                if (fp.entropy > 1) {
-                    return "wild (>1)";
-                }
-                if (fp.entropy > .5) {
-                    return "loose (>.5)";
-                }
-                return undefined;
-            },
-        })
-        .group({
-            name: "type",
-            by: fp => {
-                // Suppress aspects without display names
-                const aspect = fm.aspectOf(fp.type);
-                return !!aspect && aspect.displayName ?
-                    aspect.displayName :
-                    undefined;
-            },
-        })
-        .renderWith(fp => {
-            return {
-                name: `${fp.name} (${fp.entropy})`,
-                size: fp.variants,
-            };
-        });
-}
-
-export function skewReportForSingleAspect(fm: AspectRegistry): ReportBuilder<FingerprintUsage> {
-    return treeBuilder<FingerprintUsage>("entropy")
-        .group({
-            name: "entropy-band",
-            by: fp => {
-                if (fp.entropy === 0) {
-                    return "None";
-                }
-                if (fp.entropy < 1) {
-                    return "Low";
-                }
-                if (fp.entropy < 2) {
-                    return "Medium";
-                }
-                if (fp.entropy >= 2) {
-                    return "High";
-                }
-
-                return undefined;
-            },
-        })
-        .renderWith(fp => {
-            return {
-                name: fp.name,
-                size: fp.variants,
-                entropy: fp.entropy,
-            };
-        });
 }
 
 /**

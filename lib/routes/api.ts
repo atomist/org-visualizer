@@ -38,7 +38,7 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { fingerprintsToReposTree } from "../aspect/repoTree";
+import { driftTree, fingerprintsToReposTree } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
@@ -57,8 +57,6 @@ import {
 import { whereFor } from "./orgPage";
 import {
     aspectReport,
-    skewReport,
-    skewReportForSingleAspect,
     WellKnownReporters,
 } from "./wellKnownReporters";
 
@@ -105,20 +103,18 @@ export function api(clientFactory: ClientFactory,
                 try {
                     if (req.params.name === "skew") {
                         const type = req.query.type;
-                        const fingerprintUsage = await store.fingerprintUsageForType(req.params.workspace_id, type);
-                        logger.info("Found %d fingerprint kinds used", fingerprintUsage.length);
 
                         if (!type) {
-                            const skewTree = await skewReport(aspectRegistry).toSunburstTree(
-                                () => fingerprintUsage);
-                            return res.json({ tree: skewTree });
+                            const skewTree = await driftTree(req.params.workspace_id, clientFactory);
+                            return res.json(skewTree);
                         } else {
-                            const skewTree = await skewReportForSingleAspect(aspectRegistry).toSunburstTree(
-                                () => fingerprintUsage);
-                            return res.json({
-                                type,
-                                tree: skewTree,
-                            });
+                            // const skewTree = await skewReportForSingleAspect(aspectRegistry).toSunburstTree(
+                            //     () => fingerprintUsage);
+                            // return res.json({
+                            //     type,
+                            //     tree: skewTree,
+                            // });
+                            throw new Error("not implemented");
                         }
                     }
 

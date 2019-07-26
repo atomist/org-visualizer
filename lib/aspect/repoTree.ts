@@ -16,12 +16,12 @@
 
 import { logger } from "@atomist/automation-client";
 import { Client } from "pg";
-import { doWithClient } from "../analysis/offline/persist/pgUtils";
+import { ClientFactory, doWithClient } from "../analysis/offline/persist/pgUtils";
 import {
-    validatePlantedTree,
+    introduceClassificationLayer,
     PlantedTree,
     SunburstTree,
-    visit,
+    validatePlantedTree, visit,
 } from "../tree/sunburst";
 
 export interface TreeQuery {
@@ -69,7 +69,7 @@ function fingerprintsToReposQuery(tq: TreeQuery): string {
 SELECT row_to_json(fingerprint_groups) FROM (
     SELECT json_agg(fp) as children FROM (
        SELECT
-         fingerprints.id as id, fingerprints.name as name, fingerprints.sha as sha, 
+         fingerprints.id as id, fingerprints.name as name, fingerprints.sha as sha,
             fingerprints.data as data, fingerprints.feature_name as type,
          (
              SELECT json_agg(row_to_json(repo)) FROM (
@@ -80,7 +80,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
                     AND workspace_id ${tq.workspaceId === "*" ? "<>" : "=" } $1
                 ) repo
-         ) as children FROM fingerprints 
+         ) as children FROM fingerprints
          WHERE fingerprints.feature_name = $2 and fingerprints.name ${tq.byName ? "=" : "<>"} $3
          ${tq.includeWithout ? ("UNION ALL " + nonMatchingRepos(tq)) : ""}
 ) fp WHERE children is not NULL) as fingerprint_groups
@@ -120,4 +120,50 @@ export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTre
     };
     validatePlantedTree(result);
     return result;
+}
+
+export async function driftTree(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
+    const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
+(SELECT distinct feature_name as type from fingerprint_analytics) f0, (
+    SELECT name, feature_name as type, variants, count, entropy, variants as size
+    from fingerprint_analytics f1
+    WHERE workspace_id ${workspaceId === "*" ? "<>" : "=" } $1 AND ENTROPY > 0
+    ORDER BY entropy desc) as aspects
+    WHERE aspects.type = f0.type
+    GROUP by f0.type) as data`;
+    logger.debug(sql);
+    return doWithClient(clientFactory, async client => {
+        const result = await client.query(sql,
+            [workspaceId]);
+        let tree: PlantedTree = {
+            circles: [
+                { meaning: "type" },
+                { meaning: "fingerprint name" },
+                { meaning: "fingerprint entropy" },
+            ],
+            tree: {
+                name: "drift",
+                children: result.rows.map(r => r.children),
+            },
+        };
+        tree = introduceClassificationLayer(tree, {
+            newLayerMeaning: "entropy band",
+            newLayerDepth: 0,
+            descendantClassifier: toEntropyBand,
+        });
+        return tree;
+    });
+}
+
+function toEntropyBand(fp: { entropy: number }): string | undefined {
+    if (fp.entropy > 2) {
+        return "random (>2)";
+    }
+    if (fp.entropy > 1) {
+        return "wild (>1)";
+    }
+    if (fp.entropy > .5) {
+        return "loose (>.5)";
+    }
+    return undefined;
 }
