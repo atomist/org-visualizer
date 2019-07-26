@@ -176,6 +176,31 @@ paths:
                     $ref: "#/definitions/Tree"
             "400":
               description: Invalid status value
+  /{workspace}/drift:
+    get:
+        tags:
+          - drift
+        summary: Show drift in the workspace
+        description: Show drift in the workspace, in a tree structure where the outer ring is fingerprint
+        operationId: drift
+        produces:
+          - application/json
+        parameters:
+          - name: workspace
+            in: path
+            description: Workspace id. * for all.
+            required: true
+            type: string
+        responses:
+          "200":
+            description: successful operation
+            schema:
+              type: object
+              properties:
+                tree:
+                  $ref: "#/definitions/Tree"
+          "400":
+            description: Invalid status value
   /{workspace}/ideal/{id}:
         put:
             tags:
