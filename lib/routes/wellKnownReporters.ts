@@ -18,7 +18,6 @@ import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import {
     BaseAspect,
     FP,
-    NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     CodeStats,
@@ -32,7 +31,6 @@ import {
     AspectRegistry,
 } from "../aspect/AspectRegistry";
 import { Reporters } from "../aspect/reporters";
-import { allMavenDependenciesAspect } from "../aspect/spring/allMavenDependenciesAspect";
 import {
     AnalyzedGrouper,
     defaultAnalyzedRenderer,
@@ -117,12 +115,6 @@ export const WellKnownReporters: Reporters = {
                     repoUrl: ar.id.url,
                 })),
 
-    npmDependencyCount:
-        params => aspectGroup("Maven dependency count", params, NpmDeps),
-
-    mavenDependencyCount:
-        params => aspectGroup("Maven dependency count", params, allMavenDependenciesAspect),
-
     loc: params =>
         treeBuilderFor<ProjectAnalysis>("loc", params)
             .group({ name: "size", by: groupByLoc })
@@ -168,19 +160,6 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     }
     return "small";
 };
-
-function aspectGroup(name: string, params: any, aspect: BaseAspect): ReportBuilder<ProjectAnalysis> {
-    return treeBuilderFor<ProjectAnalysis>(name, params)
-        .group({ name: "size", by: groupByFingerprintCount(aspect) })
-        .renderWith(ar => {
-            const size = ar.fingerprints.filter(fp => aspect.name === (fp.type || fp.name)).length;
-            return {
-                name: `${ar.id.repo} (${size})`,
-                url: ar.id.url,
-                size,
-            };
-        });
-}
 
 /**
  * Group by the number of fingerprints from this aspects
