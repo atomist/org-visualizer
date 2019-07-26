@@ -62,5 +62,9 @@ export const branchCount: Aspect = {
         }
         return "ok (<=5)";
     },
-
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
+    },
 };

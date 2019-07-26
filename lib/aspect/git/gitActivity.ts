@@ -26,6 +26,7 @@ import {
 import * as child_process from "child_process";
 import * as util from "util";
 import { daysSince } from "./dateUtils";
+import { DefaultStat } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 const exec = util.promisify(child_process.exec);
 
@@ -58,6 +59,11 @@ export const GitRecency: Aspect = {
     toDisplayableFingerprint: fp => {
         const date = new Date(fp.data);
         return lastDateToActivityBand(date);
+    },
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
     },
 };
 

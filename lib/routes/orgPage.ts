@@ -120,7 +120,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                             fingerprints: fingerprintUsage.filter(fu => fu.type === aspect.name)
                                 .map(fu => ({
                                     ...fu,
-                                    aspectName: aspect.name,
+                                    aspect,
                                 })),
                         }));
                     for (const ffd of importAspects) {

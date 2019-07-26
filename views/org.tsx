@@ -3,12 +3,13 @@ import * as React from "react";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 
+import * as _ from "lodash";
+
 export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
     type: string;
     displayName?: string;
     name: string;
-
-    aspectName: string;
+    aspect: BaseAspect;
 }
 
 export interface AspectForDisplay {
@@ -106,14 +107,19 @@ function displayUnfoundAspect(mf: BaseAspect, i: number): React.ReactElement {
     </li>;
 }
 
+function displayEntropy(ba: BaseAspect): boolean {
+    return _.get(ba, "stats.defaultStatStatus.entropy", true) !== false;
+}
+
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
     const existsLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true&presence=true&otherLabel=true`;
+    const ent = <span>{displayEntropy(f.aspect) && `entropy=${f.entropy}`}</span>;
 
     return <li key={displayName}>
         <i>{displayName}</i>: {f.count} projects, {" "}
-        <a href={variantsQueryLink}>{f.variants} variants</a> ({f.entropy}){" "}
+        <a href={variantsQueryLink}>{f.variants} variants</a>{" "}{ent}{" "}
         <a href={existsLink}>Presence</a> {" "}
         {idealDisplay(f)}
     </li>;
