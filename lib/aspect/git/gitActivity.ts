@@ -23,10 +23,10 @@ import {
     ExtractFingerprint,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
+import { DefaultStat } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as child_process from "child_process";
 import * as util from "util";
 import { daysSince } from "./dateUtils";
-import { DefaultStat } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 const exec = util.promisify(child_process.exec);
 

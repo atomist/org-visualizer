@@ -25,7 +25,6 @@ import {
     PlantedTree,
     SunburstTree,
     validatePlantedTree,
-    visit,
 } from "../tree/sunburst";
 
 export interface TreeQuery {
@@ -159,6 +158,40 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
     });
 }
 
+export async function driftTreeForSingleAspect(workspaceId: string,
+                                               type: string,
+                                               clientFactory: ClientFactory): Promise<PlantedTree> {
+    const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
+(SELECT distinct feature_name as type from fingerprint_analytics) f0, (
+    SELECT name, feature_name as type, variants, count, entropy, variants as size
+    from fingerprint_analytics f1
+    WHERE workspace_id ${workspaceId === "*" ? "<>" : "=" } $1
+    ORDER BY entropy desc) as aspects
+    WHERE aspects.type = f0.type AND aspects.type = $2
+    GROUP by f0.type) as data`;
+    logger.debug(sql);
+    return doWithClient(clientFactory, async client => {
+        const result = await client.query(sql,
+            [workspaceId, type]);
+        let tree: PlantedTree = {
+            circles: [
+                { meaning: "type" },
+                { meaning: "fingerprint entropy" },
+            ],
+            tree: {
+                name: type,
+                children: result.rows[0].children.children,
+            },
+        };
+        tree = introduceClassificationLayer(tree, {
+            newLayerMeaning: "entropy band",
+            newLayerDepth: 0,
+            descendantClassifier: toEntropyBandForSingleAspect,
+        });
+        return tree;
+    });
+}
+
 function toEntropyBand(fp: { entropy: number }): string | undefined {
     if (fp.entropy > 2) {
         return "random (>2)";
@@ -168,6 +201,28 @@ function toEntropyBand(fp: { entropy: number }): string | undefined {
     }
     if (fp.entropy > .5) {
         return "loose (>.5)";
+    }
+    return undefined;
+}
+
+function toEntropyBandForSingleAspect(fp: { entropy: number }): string | undefined {
+    /*
+    None: = 0
+Low: < 1
+Medium: < 2
+High: >=*2*
+     */
+    if (fp.entropy === 0) {
+        return "None";
+    }
+    if (fp.entropy < 1) {
+        return "Low";
+    }
+    if (fp.entropy < 2) {
+        return "Medium";
+    }
+    if (fp.entropy >= 2) {
+        return "High";
     }
     return undefined;
 }
