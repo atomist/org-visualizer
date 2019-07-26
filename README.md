@@ -59,7 +59,14 @@ Next, `npm link` to out the `spider` command in your path.
 
 Data about each repository is stored locally in a PostgreSQL database.
 
-Start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database. You can do this within the `psql` shell, or use the Postgres admin tool to create a database named `org_viz` and run all commands in that script after the line beginning with `\connect`.
+Start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database.
+
+If you want to wipe out your data and start over, this will also accomplish that.
+
+```
+> psql
+psql> \i ddl/create.ddl
+```
 
 #### Connecting to the Database
 

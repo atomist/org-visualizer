@@ -33,7 +33,7 @@ export type ClientFactory = () => Client;
  */
 export async function doWithClient<R>(clientFactory: () => Client,
                                       what: (c: Client) => Promise<R>,
-                                      defaultResult?: R): Promise<R> {
+                                      defaultResult?: R | ((e: Error) => R)): Promise<R> {
     const client = clientFactory();
     let result: R;
     try {
@@ -45,6 +45,11 @@ export async function doWithClient<R>(clientFactory: () => Client,
         result = await what(client);
     } catch (err) {
         logger.warn("Error accessing database: ", err);
+        if (typeof defaultResult === "function") {
+            // if you really want a default value that is a function,
+            // then pass a function of error that returns that function, please.
+            return (defaultResult as (e: Error) => R)(err);
+        }
         return defaultResult;
     } finally {
         await client.end();

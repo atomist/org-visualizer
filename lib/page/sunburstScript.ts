@@ -16,6 +16,10 @@
 
 import * as d3 from "d3";
 import {
+    BaseType,
+    HierarchyNode,
+} from "d3";
+import {
     PlantedTree,
     SunburstLeaf,
     SunburstTree,
@@ -36,16 +40,9 @@ const palette = [
     "#173d48",
 ];
 
-// I am avoiding imports because this compiles nicely as a script.
-// It does not participate in the module system.
 // tslint:disable
-interface SunburstLevel {
-    data: { name: string; };
-    parent: SunburstLevel;
-    children: SunburstLevel[];
-}
 
-export function sunburst(name, dataUrl: string, pWidth, pHeight) {
+export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDataElementIds: string[]) {
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
@@ -63,8 +60,6 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
         .range([maxRadius * .1, maxRadius]);
 
     const color = d3.scaleOrdinal(palette);
-
-    const partition = d3.partition();
 
     const arc = d3.arc()
         .startAngle((d: any) => x(d.x0))
@@ -113,24 +108,28 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
             return;
         }
 
-        const root = d3.hierarchy(d.tree);
-        root.sum((d: SunburstTree | SunburstLeaf) => (d as SunburstLeaf).size || 0);
+        const root = d3.hierarchy<SunburstTree | SunburstLeaf>(d.tree);
+        root.sum(d => (d as SunburstLeaf).size || 0); // sets a "value" property on each node
 
-        const slice = svg.selectAll("g.slice")
-            .data(partition(root).descendants());
+        const slice = svg.selectAll<BaseType, SunburstTree | SunburstLeaf>("g.slice")
+            .data(d3.partition<SunburstTree | SunburstLeaf>()(root).descendants());
 
         slice.exit().remove();
+
+        const perLevelDataElements = perLevelDataElementIds.map(id => d3.select("#" + id)).filter(a => !!a);
 
         const newSlice = slice.enter()
             .append("g").attr("class", "slice")
             .on("click", d => {
                 d3.event.stopPropagation();
-                dataDiv.html(constructDescription(d));
                 focusOn(d);
+            })
+            .on("mouseover", (d: HierarchyNode<SunburstTree | SunburstLeaf>) => {
+                populatePerLevelData(perLevelDataElements, d);
             });
 
         newSlice.append("title")
-            .text(d => (d as SunburstLevel).data.name + "\n" + formatNumber(d.value));
+            .text(d => d.data.name + "\n" + formatNumber(d.value));
 
         newSlice.append("path")
             .attr("class", "main-arc")
@@ -150,12 +149,12 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
             .attr("class", "textOutline")
             .attr("startOffset", "50%")
             .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
-            .text(d => (d as SunburstLevel).data.name);
+            .text(d => d.data.name);
 
         text.append("textPath")
             .attr("startOffset", "50%")
             .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
-            .text(d => (d as SunburstLevel).data.name);
+            .text(d => d.data.name);
     });
 
     function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
@@ -184,15 +183,31 @@ export function sunburst(name, dataUrl: string, pWidth, pHeight) {
         moveStackToFront(d);
 
         function moveStackToFront(elD) {
-            svg.selectAll(".slice").filter(d => d === elD)
+            svg.selectAll<BaseType, HierarchyNode<SunburstTree | SunburstLeaf>>(".slice").filter(d => d === elD)
                 .each(function (d) {
                     (this as any).parentNode.appendChild(this); // move all parents to the end of the line
-                    if ((d as SunburstLevel).parent) {
-                        moveStackToFront((d as SunburstLevel).parent);
+                    if (d.parent) {
+                        moveStackToFront(d.parent);
                     }
                 });
         }
     }
+}
+
+function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: HierarchyNode<SunburstTree | SunburstLeaf>) {
+    console.log("I will now populate some data for " + d.data.name);
+
+    const namesUpTree = [d.data.name];
+    for (let place: any = d; place = place.parent; !!place) {
+        namesUpTree.push(place.data.name);
+    }
+
+    const namesDown = namesUpTree.reverse();
+    perLevelDataElements.forEach((e, i) => {
+        const value = namesDown[i] || "";
+        console.log("Trying to set something to " + value);
+        e.html(value);
+    });
 }
 
 function constructDescription(d) {

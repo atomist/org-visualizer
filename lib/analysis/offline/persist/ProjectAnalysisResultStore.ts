@@ -111,3 +111,11 @@ export interface ProjectAnalysisResultStore {
 
     fingerprintsForProject(id: string): Promise<FP[]>;
 }
+
+export function whereFor(...possibleWorkspaceIds: string[]): string {
+    const wsid = possibleWorkspaceIds.find(a => !!a);
+    if (wsid === "*") {
+        return "true";
+    }
+    return wsid ? `workspace_id = '${wsid}'` : "true";
+}

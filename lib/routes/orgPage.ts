@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
+import {
+    HttpClientFactory,
+    logger,
+} from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
     BaseAspect,
@@ -55,7 +58,10 @@ import {
     SunburstPage,
 } from "../../views/sunburstPage";
 import { TopLevelPage } from "../../views/topLevelPage";
-import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import {
+    ProjectAnalysisResultStore,
+    whereFor,
+} from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
     ManagedAspect,
@@ -64,6 +70,11 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
+import {
+    PlantedTree,
+    SunburstCircleMetadata,
+} from "../tree/sunburst";
+import { buildFingerprintTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -80,10 +91,13 @@ function renderStaticReactNode(body: ReactElement,
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): {
-    customizer: ExpressCustomizer,
-    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-} {
+export function orgPage(
+    aspectRegistry: AspectRegistry,
+    store: ProjectAnalysisResultStore,
+    httpClientFactory: HttpClientFactory): {
+        customizer: ExpressCustomizer,
+        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    } {
     const orgRoute = "/org";
     return {
         routesToSuggestOnStartup: [{ title: "Org Visualizations", route: orgRoute }],
@@ -105,7 +119,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
             /* the org page itself */
             express.get(orgRoute, ...handlers, async (req, res) => {
                 try {
-                    const repos = await store.loadWhere(whereFor(req));
+                    const repos = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
 
                     const fingerprintUsage = await store.fingerprintUsageForType("*");
 
@@ -156,7 +170,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
 
             /* Project list page */
             express.get("/projects", ...handlers, async (req, res) => {
-                const allAnalysisResults = await store.loadWhere(whereFor(req));
+                const allAnalysisResults = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
 
                 // optional query parameter: owner
                 const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
@@ -219,6 +233,19 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         req.query.trim === "true"}`;
                 }
 
+                let tree: PlantedTree;
+                const fullUrl = `http://${req.get("host")}${dataUrl}`;
+                try {
+                    const result = await httpClientFactory.create().exchange<PlantedTree>(fullUrl,
+                        {
+                            retry: { retries: 0 },
+                        });
+                    tree = result.body;
+                    logger.info(`From ${fullUrl}, got: ` + JSON.stringify(tree.circles, undefined, 2));
+                } catch (e) {
+                    logger.error(`Failure fetching sunburst data from ${fullUrl}: ` + e.message);
+                }
+
                 // tslint:disable-next-line
                 const aspect = aspectRegistry.aspectOf(req.query.type);
                 const fingerprintDisplayName = defaultedToDisplayableFingerprintName(aspect)(req.query.name);
@@ -245,6 +272,7 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
                         possibleIdeals: possibleIdealsForDisplay,
                         query: req.params.query,
                         dataUrl,
+                        tree,
                     }),
                     "Atomist Aspect",
                     [
@@ -253,14 +281,6 @@ export function orgPage(aspectRegistry: AspectRegistry, store: ProjectAnalysisRe
             });
         },
     };
-}
-
-export function whereFor(req: Request): string {
-    const wsid = req.query.workspace || req.params.workspace_id;
-    if (wsid === "*") {
-        return "true";
-    }
-    return wsid ? `workspace_id = '${wsid}'` : "true";
 }
 
 export function jsonToQueryString(json: object): string {

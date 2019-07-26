@@ -20,6 +20,7 @@ import * as _ from "lodash";
 export interface PlantedTree {
     tree: SunburstTree;
     circles: SunburstCircleMetadata[];
+    errors?: [{ message: string }];
 }
 
 export interface SunburstCircleMetadata {
@@ -217,7 +218,7 @@ export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
     const descendantPicker = tree => opts.descendantFinder(tree).filter(n => !!opts.descendantClassifier(n as any));
     const t = _.cloneDeep(tr);
     visit(t, (node, depth) => {
-        if (depth === opts.newLayerDepth && isSunburstTree(node)) {
+        if (depth === (opts.newLayerDepth - 1) && isSunburstTree(node)) {
             // Split children
             const descendantsToClassifyBy = descendantPicker(node);
             logger.info("Found %d leaves for %s", descendantsToClassifyBy.length, t.name);
@@ -368,7 +369,7 @@ function checkDepthInvariant(pt: PlantedTree): void {
     });
     // the tree counts depth from zero
     if ((depth + 1) !== pt.circles.length) {
-        logger.error("Tree: " + JSON.stringify(pt.tree, undefined, 2));
+        logger.error("Data: " + JSON.stringify(pt, undefined, 2));
         throw new Error(`Expected a depth of ${pt.circles.length} but saw a tree of depth ${depth + 1}`);
     }
 }

@@ -34,7 +34,7 @@ describe("introduceClassificationLayer", () => {
         };
         const split = introduceClassificationLayer(pt, {
             descendantClassifier: () => "x",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             newLayerMeaning: "an x",
         });
         assert.deepStrictEqual(split.tree, t1);
@@ -57,7 +57,7 @@ describe("introduceClassificationLayer", () => {
         };
         const split = introduceClassificationLayer(pt, {
             descendantClassifier: () => "x",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             newLayerMeaning: "just an x",
         });
         assert.deepStrictEqual(split.tree, {
@@ -93,7 +93,7 @@ describe("introduceClassificationLayer", () => {
         };
         const split = introduceClassificationLayer(pt, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             newLayerMeaning: "political leaning",
         });
         assert.deepStrictEqual(split.tree, {
@@ -140,7 +140,7 @@ describe("introduceClassificationLayer", () => {
         };
         const split = introduceClassificationLayer(pt, {
             descendantClassifier: n => n.name === "tony" ? "center" : "left",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             newLayerMeaning: "political leanings",
         });
         assert.deepStrictEqual(split.tree, {

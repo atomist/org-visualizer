@@ -25,7 +25,9 @@ import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Idea
 import * as bodyParser from "body-parser";
 import {
     Express,
+    Request,
     RequestHandler,
+    Response,
 } from "express";
 import * as path from "path";
 import { Client } from "pg";
@@ -35,6 +37,7 @@ import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
+    whereFor,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
@@ -58,7 +61,6 @@ import {
     configureAuth,
     corsHandler,
 } from "./auth";
-import { whereFor } from "./orgPage";
 import {
     aspectReport,
     WellKnownReporters,
@@ -71,9 +73,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-    customizer: ExpressCustomizer,
-    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-} {
+        customizer: ExpressCustomizer,
+        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    } {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -129,7 +131,7 @@ export function api(clientFactory: ClientFactory,
                         ...req.query,
                     });
 
-                    const repos = await store.loadWhere(whereFor(req));
+                    const repos = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
                     const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
                     const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
                     return res.json({ tree: data });
@@ -220,7 +222,7 @@ function exposeFingerprintByTypeAndName(express: Express,
                                         aspectRegistry: AspectRegistry,
                                         clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
-    express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+    express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req: Request, res: Response) => {
         const workspaceId = req.params.workspace_id;
         const fingerprintType = req.params.type;
         const fingerprintName = req.params.name;
@@ -252,7 +254,7 @@ function exposeFingerprintByTypeAndName(express: Express,
     });
 }
 
-async function buildFingerprintTree(
+export async function buildFingerprintTree(
     world: {
         aspectRegistry: AspectRegistry,
         clientFactory: () => Client,
@@ -314,7 +316,7 @@ async function buildFingerprintTree(
                         l.name :
                         aspect2.toDisplayableFingerprintName(l.name);
                 },
-                newLayerDepth: 0,
+                newLayerDepth: 1,
                 newLayerMeaning: "fingerprint name",
             });
         const aspect = aspectRegistry.aspectOf(fingerprintType);
@@ -335,7 +337,7 @@ async function buildFingerprintTree(
         pt = introduceClassificationLayer<{ owner: string }>(pt,
             {
                 descendantClassifier: l => l.owner,
-                newLayerDepth: 0,
+                newLayerDepth: 1,
                 newLayerMeaning: "owner",
             });
     }

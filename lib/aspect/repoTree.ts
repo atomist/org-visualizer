@@ -56,7 +56,7 @@ function nonMatchingRepos(tq: TreeQuery): string {
                   SELECT
                     repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_snapshots
-                   WHERE workspace_id ${tq.workspaceId === "*" ? "<>" : "=" } $1
+                   WHERE workspace_id ${tq.workspaceId === "*" ? "<>" : "="} $1
                    AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id
                     FROM repo_fingerprints WHERE repo_fingerprints.fingerprint_id in
                         (SELECT id from fingerprints where fingerprints.feature_name = $2
@@ -81,7 +81,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
                   FROM repo_fingerprints, repo_snapshots
                    WHERE repo_fingerprints.fingerprint_id = fingerprints.id
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
-                    AND workspace_id ${tq.workspaceId === "*" ? "<>" : "=" } $1
+                    AND workspace_id ${tq.workspaceId === "*" ? "<>" : "="} $1
                 ) repo
          ) as children FROM fingerprints
          WHERE fingerprints.feature_name = $2 and fingerprints.name ${tq.byName ? "=" : "<>"} $3
@@ -92,6 +92,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
     return sql;
 }
 
+// Question for Rod: why does this use a DB connection and not some abstraction like a Store?
 /**
  * Tree where children is one of a range of values, leaves individual repos with one of those values
  * @param {TreeQuery} tq
@@ -130,20 +131,21 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
     SELECT name, feature_name as type, variants, count, entropy, variants as size
     from fingerprint_analytics f1
-    WHERE workspace_id ${workspaceId === "*" ? "<>" : "=" } $1 AND ENTROPY > 0
+    WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND ENTROPY > 0
     ORDER BY entropy desc) as aspects
     WHERE aspects.type = f0.type
     GROUP by f0.type) as data`;
     logger.debug(sql);
+    const circles = [
+        { meaning: "type" },
+        { meaning: "fingerprint name" },
+        { meaning: "fingerprint entropy" },
+    ];
     return doWithClient(clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId]);
         let tree: PlantedTree = {
-            circles: [
-                { meaning: "type" },
-                { meaning: "fingerprint name" },
-                { meaning: "fingerprint entropy" },
-            ],
+            circles,
             tree: {
                 name: "drift",
                 children: result.rows.map(r => r.children),
@@ -155,6 +157,12 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
             descendantClassifier: toEntropyBand,
         });
         return tree;
+    }, err => {
+        return {
+            circles,
+            tree: { name: "failed drift report", children: [] },
+            errors: [{ message: err.message }],
+        };
     });
 }
 
@@ -165,7 +173,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
     SELECT name, feature_name as type, variants, count, entropy, variants as size
     from fingerprint_analytics f1
-    WHERE workspace_id ${workspaceId === "*" ? "<>" : "=" } $1
+    WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
     ORDER BY entropy desc) as aspects
     WHERE aspects.type = f0.type AND aspects.type = $2
     GROUP by f0.type) as data`;
@@ -185,7 +193,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
         };
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             descendantClassifier: toEntropyBandForSingleAspect,
         });
         return tree;

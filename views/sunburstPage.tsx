@@ -1,4 +1,5 @@
 import * as React from "react";
+import { PlantedTree, SunburstCircleMetadata } from "../lib/tree/sunburst";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CurrentIdealForDisplay {
@@ -18,6 +19,7 @@ export interface SunburstPageProps {
     possibleIdeals: PossibleIdealForDisplay[];
     query: string;
     dataUrl: string;
+    tree?: PlantedTree; // we might have the data already.
 }
 
 function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
@@ -38,14 +40,33 @@ function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.R
     </li>;
 }
 
+interface PerLevelDataItem {
+    textAreaId: string;
+    labelText: string;
+}
+/* This element will contain the full data value for one level, about the item hovered over. */
+function levelDataListItem(item: PerLevelDataItem): React.ReactElement {
+    return <li key={"li-" + item.textAreaId}>
+        <label htmlFor={item.textAreaId}>{item.labelText}: </label>
+        <span className="levelDataContent" id={item.textAreaId}></span>
+    </li>;
+}
+
 export function SunburstPage(props: SunburstPageProps): React.ReactElement {
+
+    const perLevelDataItems = !props.tree || !props.tree.circles ? []
+        : props.tree.circles.map((c, i) => ({ textAreaId: "levelData-" + i, labelText: c.meaning }));
 
     const d3ScriptCall = `<script>
     SunburstYo.sunburst("${props.query || ""}",
         "${props.dataUrl}",
         window.innerWidth - 250,
-        window.innerHeight - 100);
+        window.innerHeight - 100,
+        [${perLevelDataItems.map(p => `"` + p.textAreaId + `"`).join(",")}]);
     </script>`;
+
+    const thingies: string | React.ReactElement = !props.tree ? "Click a slice to see its details" :
+        <ul>{perLevelDataItems.map(levelDataListItem)}</ul>;
 
     const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) : "";
     return <div className="sunburst">
@@ -53,10 +74,10 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         {idealDisplay}
         <div className="wrapper">
             <div id="putSvgHere" className="sunburstSvg"></div>
-            <div id="dataAboutWhatYouClicked" className="sunburstData">Click a slice to see its details</div>
+            <div id="dataAboutWhatYouClicked" className="sunburstData">{thingies}</div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
-        <a href={"." + props.dataUrl}>Raw data</a>
+        <a href={"." + props.dataUrl} type="application/json">Raw data</a>
     </div>;
 
 }
