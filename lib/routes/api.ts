@@ -38,7 +38,10 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { driftTree, fingerprintsToReposTree } from "../aspect/repoTree";
+import {
+    driftTree,
+    fingerprintsToReposTree,
+} from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,

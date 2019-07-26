@@ -16,12 +16,16 @@
 
 import { logger } from "@atomist/automation-client";
 import { Client } from "pg";
-import { ClientFactory, doWithClient } from "../analysis/offline/persist/pgUtils";
+import {
+    ClientFactory,
+    doWithClient,
+} from "../analysis/offline/persist/pgUtils";
 import {
     introduceClassificationLayer,
     PlantedTree,
     SunburstTree,
-    validatePlantedTree, visit,
+    validatePlantedTree,
+    visit,
 } from "../tree/sunburst";
 
 export interface TreeQuery {
