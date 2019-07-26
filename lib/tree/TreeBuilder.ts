@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import * as _ from "lodash";
 import {
     mergeTrees,
@@ -177,7 +176,6 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
             data.push(root);
             if (data.length === this.chunkSize) {
                 trees.push(await this.treeify(data, renderer));
-                logger.info(`Emitted tree of size ${this.chunkSize}`);
                 data = [];
             }
         }
