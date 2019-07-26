@@ -38,7 +38,7 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { repoTree } from "../aspect/repoTree";
+import { fingerprintsToReposTree } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
@@ -279,7 +279,7 @@ async function buildFingerprintTree(
     const { clientFactory, aspectRegistry } = world;
 
     // Get the tree and then perform post processing on it
-    let pt = await repoTree({
+    let pt = await fingerprintsToReposTree({
         workspaceId,
         clientFactory,
         byName,

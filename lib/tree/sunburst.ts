@@ -252,7 +252,7 @@ export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
     });
 
     const result = { tree: t, circles };
-    checkPlantedTreeInvariants(result);
+    validatePlantedTree(result);
     return result;
 }
 
@@ -353,7 +353,7 @@ function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
     return result;
 }
 
-export function checkPlantedTreeInvariants(pt: PlantedTree): void {
+export function validatePlantedTree(pt: PlantedTree): void {
     checkNullChildrenInvariant(pt);
     checkDepthInvariant(pt);
 }
