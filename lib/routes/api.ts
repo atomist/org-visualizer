@@ -17,18 +17,10 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
-import {
-    BaseAspect,
-    FP,
-} from "@atomist/sdm-pack-fingerprints";
+import { BaseAspect, ConcreteIdeal, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
-import {
-    Express,
-    Request,
-    RequestHandler,
-    Response,
-} from "express";
+import { Express, Request, RequestHandler, Response } from "express";
 import * as path from "path";
 import { Client } from "pg";
 import * as swaggerUi from "swagger-ui-express";
@@ -41,11 +33,7 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import {
-    driftTree,
-    driftTreeForSingleAspect,
-    fingerprintsToReposTree,
-} from "../aspect/repoTree";
+import { driftTree, driftTreeForSingleAspect, fingerprintsToReposTree } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
@@ -56,15 +44,8 @@ import {
     visit,
     visitAsync,
 } from "../tree/sunburst";
-import {
-    authHandlers,
-    configureAuth,
-    corsHandler,
-} from "./auth";
-import {
-    aspectReport,
-    WellKnownReporters,
-} from "./wellKnownReporters";
+import { authHandlers, configureAuth, corsHandler } from "./auth";
+import { aspectReport, WellKnownReporters } from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON.
@@ -285,24 +266,8 @@ export async function buildFingerprintTree(
     });
     logger.debug("Returning fingerprint tree '%s': %j", fingerprintName, pt);
 
-    const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
-    // Flag bad fingerprints with a special color
-    await visitAsync(pt.tree, async l => {
-        if ((l as any).sha) {
-            const problem = await usageChecker.check("local", l as any);
-            if (problem) {
-                (l as any).color = "#810325";
-                (l as any).problem = {
-                    // Need to dispense with the fingerprint, which would make this circular
-                    description: problem.description,
-                    severity: problem.severity,
-                    authority: problem.authority,
-                    url: problem.url,
-                };
-            }
-        }
-        return true;
-    });
+    await decorateProblemFingerprints(aspectRegistry, pt);
+
     if (!byName) {
         // Show all fingerprints in one aspect, splitting by fingerprint name
         pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
@@ -353,17 +318,7 @@ export async function buildFingerprintTree(
         if (!ideal || !isConcreteIdeal(ideal)) {
             throw new Error(`No ideal to aspire to for ${fingerprintType}/${fingerprintName} in workspace '${workspaceId}'`);
         }
-        pt.tree = groupSiblings(pt.tree, {
-            parentSelector: parent => parent.children.some(c => (c as any).sha),
-            childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
-            groupLayerDecorator: l => {
-                if (l.name === "Ideal") {
-                    (l as any).color = "#168115";
-                } else {
-                    (l as any).color = "#811824";
-                }
-            },
-        });
+        decorateToShowProgressToIdeal(aspectRegistry, pt, ideal);
     }
 
     // Group all fingerprint nodes by their name at the first level
@@ -378,6 +333,41 @@ export async function buildFingerprintTree(
     }
 
     return pt;
+}
+
+async function decorateProblemFingerprints(aspectRegistry: AspectRegistry, pt: PlantedTree): Promise<void> {
+    const usageChecker = await aspectRegistry.undesirableUsageCheckerFor("local");
+    // Flag bad fingerprints with a special color
+    await visitAsync(pt.tree, async l => {
+        if ((l as any).sha) {
+            const problem = await usageChecker.check("local", l as any);
+            if (problem) {
+                (l as any).color = "#810325";
+                (l as any).problem = {
+                    // Need to dispense with the fingerprint, which would make this circular
+                    description: problem.description,
+                    severity: problem.severity,
+                    authority: problem.authority,
+                    url: problem.url,
+                };
+            }
+        }
+        return true;
+    });
+}
+
+function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: PlantedTree, ideal: ConcreteIdeal): void {
+    pt.tree = groupSiblings(pt.tree, {
+        parentSelector: parent => parent.children.some(c => (c as any).sha),
+        childClassifier: kid => (kid as any).sha === ideal.ideal.sha ? "Ideal" : "No",
+        groupLayerDecorator: l => {
+            if (l.name === "Ideal") {
+                (l as any).color = "#168115";
+            } else {
+                (l as any).color = "#811824";
+            }
+        },
+    });
 }
 
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
