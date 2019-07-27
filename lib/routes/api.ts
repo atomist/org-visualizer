@@ -51,7 +51,7 @@ import {
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
-    introduceClassificationLayer,
+    introduceClassificationLayer, isSunburstTree,
     PlantedTree,
     SunburstTree,
     trimOuterRim,
@@ -67,6 +67,8 @@ import {
     aspectReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
+
+import * as _ from "lodash";
 
 /**
  * Public API routes, returning JSON.
@@ -152,12 +154,12 @@ export function api(clientFactory: ClientFactory,
     };
 }
 
-function resolveAspectNames(fm: AspectRegistry, t: SunburstTree): void {
+function resolveAspectNames(aspectRegistry: AspectRegistry, t: SunburstTree): void {
     visit(t, l => {
         if ((l as any).sha) {
             const fp = l as any as FP;
             // It's a fingerprint name
-            const aspect = fm.aspectOf(fp.type);
+            const aspect = aspectRegistry.aspectOf(fp.type);
             if (aspect) {
                 fp.name = aspect.toDisplayableFingerprint ? aspect.toDisplayableFingerprint(fp) : fp.data;
             }
@@ -289,6 +291,8 @@ export async function buildFingerprintTree(
 
     await decorateProblemFingerprints(aspectRegistry, pt);
 
+    const aspect = aspectRegistry.aspectOf(fingerprintType);
+
     if (!byName) {
         // Show all fingerprints in one aspect, splitting by fingerprint name
         pt = introduceClassificationLayer<{ data: any, type: string }>(pt,
@@ -305,13 +309,11 @@ export async function buildFingerprintTree(
                 newLayerDepth: 1,
                 newLayerMeaning: "fingerprint name",
             });
-        const aspect = aspectRegistry.aspectOf(fingerprintType);
         if (!!aspect) {
             pt.tree.name = aspect.displayName;
         }
     } else {
         // We are showing a particular fingerprint
-        const aspect = aspectRegistry.aspectOf(pt.tree.name);
         if (!!aspect) {
             pt.tree.name = aspect.displayName;
         }
@@ -342,6 +344,8 @@ export async function buildFingerprintTree(
         decorateToShowProgressToIdeal(aspectRegistry, pt, ideal);
     }
 
+    applyTerminalSizing(aspect, pt.tree);
+
     // Group all fingerprint nodes by their name at the first level
     pt.tree = groupSiblings(pt.tree, {
         parentSelector: parent => parent.children.some(c => (c as any).sha),
@@ -354,6 +358,20 @@ export async function buildFingerprintTree(
     }
 
     return pt;
+}
+
+/**
+ * Size terminal nodes by aspect stat if available
+ */
+function applyTerminalSizing(aspect: BaseAspect, t: SunburstTree): void {
+    if (aspect && aspect.stats && aspect.stats.basicStatsPath) {
+        visit(t, l => {
+            if (isSunburstTree(l) && l.children.every(c => !isSunburstTree(c) && (c as any).owner)) {
+               l.children.forEach(c => (c as any).size = _.get(l, "data." + aspect.stats.basicStatsPath, 1));
+            }
+            return true;
+        });
+    }
 }
 
 async function decorateProblemFingerprints(aspectRegistry: AspectRegistry, pt: PlantedTree): Promise<void> {

@@ -66,5 +66,6 @@ export const branchCount: Aspect = {
         defaultStatStatus: {
             entropy: false,
         },
+        basicStatsPath: "count",
     },
 };
