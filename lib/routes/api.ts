@@ -17,10 +17,20 @@
 import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
-import { BaseAspect, ConcreteIdeal, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    ConcreteIdeal,
+    FP,
+    Ideal,
+} from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
-import { Express, Request, RequestHandler, Response } from "express";
+import {
+    Express,
+    Request,
+    RequestHandler,
+    Response,
+} from "express";
 import * as path from "path";
 import { Client } from "pg";
 import * as swaggerUi from "swagger-ui-express";
@@ -33,7 +43,11 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { driftTree, driftTreeForSingleAspect, fingerprintsToReposTree } from "../aspect/repoTree";
+import {
+    driftTree,
+    driftTreeForSingleAspect,
+    fingerprintsToReposTree,
+} from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
@@ -44,8 +58,15 @@ import {
     visit,
     visitAsync,
 } from "../tree/sunburst";
-import { authHandlers, configureAuth, corsHandler } from "./auth";
-import { aspectReport, WellKnownReporters } from "./wellKnownReporters";
+import {
+    authHandlers,
+    configureAuth,
+    corsHandler,
+} from "./auth";
+import {
+    aspectReport,
+    WellKnownReporters,
+} from "./wellKnownReporters";
 
 /**
  * Public API routes, returning JSON.
