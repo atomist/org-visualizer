@@ -25,7 +25,6 @@ import {
     Language,
 } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
-import * as path from "path";
 import {
     Analyzed,
     AspectRegistry,
@@ -49,26 +48,6 @@ import {
  * Works against full analyses.
  */
 export const WellKnownReporters: Reporters = {
-
-    fileCount: params =>
-        treeBuilderFor<Analyzed>("fileCount", params)
-            .renderWith(ar => {
-                const sizeFp = ar.fingerprints.find(fp => fp.name === "size");
-                const size = sizeFp ? parseInt(sizeFp.data, 10) : 1;
-                const projectName = ar.id.path ?
-                    ar.id.repo + path.sep + ar.id.path :
-                    ar.id.repo;
-                const url = ar.id.path ?
-                    ar.id.url + "/tree/" + (ar.id.sha || "master") + "/" + ar.id.path :
-                    ar.id.url;
-
-                return {
-                    name: projectName,
-                    size,
-                    url,
-                    repoUrl: ar.id.url,
-                };
-            }),
 
     langs:
         params =>

@@ -15,14 +15,15 @@
  */
 
 import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { ProjectAnalysisGrouper } from "../support/groupingUtils";
+import { CodeMetricsElement } from "../../element/codeMetricsElement";
 
 /**
  * Size in terms of files
  */
 export const fileCount: Aspect = {
     name: "size",
-    // Display name is undefined to prevent display
-    displayName: undefined,
+    displayName: "File count",
     extract: async p => {
         const data = await p.totalFileCount() + "";
         return {
@@ -32,6 +33,25 @@ export const fileCount: Aspect = {
             sha: sha256(data),
         };
     },
-    toDisplayableFingerprint: fp => fp.data,
-    toDisplayableFingerprintName: () => "size",
+    toDisplayableFingerprint: fp => band(parseInt(fp.data)),
+    toDisplayableFingerprintName: () => "file count",
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
+        basicStatsPath: "count",
+    }
+};
+
+const band = (count: number) => {
+    if (count > 20000) {
+        return "venti";
+    }
+    if (count > 5000) {
+        return "grande";
+    }
+    if (count > 1000) {
+        return "tall";
+    }
+    return "small";
 };

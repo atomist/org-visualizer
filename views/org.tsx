@@ -171,8 +171,6 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
 
             <li key="code-2"><a href="./query?filter=true&name=aspectCount&byOrg=true">Aspect count by project</a></li>
 
-            <li key="code-3"><a href="./query?filter=true&name=fileCount&byOrg=true">Repo filecount</a></li>
-
             <li key="code-5"><a href="./query?filter=true&name=langs&byOrg=true">Language breakdown for all projects</a></li>
             <li key="code-6"><a href="./query?filter=true&name=loc&byOrg=true">Repo sizes</a></li>
         </ul>

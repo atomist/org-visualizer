@@ -27,7 +27,7 @@ import {
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
     fileCount,
-} from "../aspect/common/count";
+} from "../aspect/common/fileCount";
 import {
     CiAspect,
     JavaBuild,
