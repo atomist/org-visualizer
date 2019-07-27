@@ -15,8 +15,8 @@
  */
 
 import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { ProjectAnalysisGrouper } from "../support/groupingUtils";
 import { CodeMetricsElement } from "../../element/codeMetricsElement";
+import { ProjectAnalysisGrouper } from "../support/groupingUtils";
 
 /**
  * Size in terms of files
@@ -40,7 +40,7 @@ export const fileCount: Aspect = {
             entropy: false,
         },
         basicStatsPath: "count",
-    }
+    },
 };
 
 const band = (count: number) => {
