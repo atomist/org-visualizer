@@ -15,25 +15,25 @@
  */
 
 import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { CodeMetricsElement } from "../../element/codeMetricsElement";
-import { ProjectAnalysisGrouper } from "../support/groupingUtils";
+
+const FileCountType = "fileCount";
 
 /**
  * Size in terms of files
  */
 export const fileCount: Aspect = {
-    name: "size",
+    name: FileCountType,
     displayName: "File count",
     extract: async p => {
-        const data = await p.totalFileCount() + "";
+        const data = { count: await p.totalFileCount() };
         return {
-            type: "size",
-            name: "size",
+            type: FileCountType,
+            name: FileCountType,
             data,
-            sha: sha256(data),
+            sha: sha256(JSON.stringify(data)),
         };
     },
-    toDisplayableFingerprint: fp => band(parseInt(fp.data)),
+    toDisplayableFingerprint: fp => band(parseInt(fp.data, 10)),
     toDisplayableFingerprintName: () => "file count",
     stats: {
         defaultStatStatus: {

@@ -40,7 +40,7 @@ export const branchCount: Aspect = {
             .split("\n")
             .filter(l => !l.includes("origin/HEAD")).length - 1;
         const data = { count };
-        logger.info("Branch count for %s is %d", p.id.url, count);
+        logger.debug("Branch count for %s is %d", p.id.url, count);
         return {
             type: BranchCountType,
             name: BranchCountType,
