@@ -78,9 +78,9 @@ import * as _ from "lodash";
 export function api(clientFactory: ClientFactory,
                     store: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -370,7 +370,7 @@ function applyTerminalSizing(aspect: BaseAspect, t: SunburstTree): void {
     if (aspect && aspect.stats && aspect.stats.basicStatsPath) {
         visit(t, l => {
             if (isSunburstTree(l) && l.children.every(c => !isSunburstTree(c) && (c as any).owner)) {
-               l.children.forEach(c => (c as any).size = _.get(l, "data." + aspect.stats.basicStatsPath, 1));
+                l.children.forEach(c => (c as any).size = _.get(l, "data." + aspect.stats.basicStatsPath, 1));
             }
             return true;
         });
@@ -415,21 +415,20 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
-        try {
-            const type = req.query.type;
-
-            if (!type) {
-                const skewTree = await driftTree(req.params.workspace_id, clientFactory);
+            try {
+                const type = req.query.type;
+                const skewTree = type ?
+                    await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
+                    await driftTree(req.params.workspace_id, clientFactory);
+                fillInAspectNames(aspectRegistry, skewTree.tree);
                 return res.json(skewTree);
-            } else {
-                const skewTree = await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory);
-                return res.json(skewTree);
+            } catch
+                (err) {
+                logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
+                res.sendStatus(500);
             }
-        } catch (err) {
-            logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
-            res.sendStatus(500);
-        }
-    });
+        },
+    );
 }
 
 function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRegistry): void {
@@ -447,5 +446,23 @@ function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRe
         await aspectRegistry.problemStore.noteProblem(req.params.workspace_id, req.params.id);
         logger.info(`Set problem at ${req.params.id}`);
         res.sendStatus(201);
+    });
+}
+
+/**
+ * Any nodes that have type and name should be given the fingerprint name from the aspect if possible
+ */
+function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): void {
+    visit(tree, n => {
+        const t = n as any;
+        if (t.name && t.type) {
+            if (t.name && t.type) {
+                const aspect = aspectRegistry.aspectOf(t.type);
+                if (aspect && aspect.toDisplayableFingerprintName) {
+                    n.name = aspect.toDisplayableFingerprintName(n.name);
+                }
+            }
+        }
+        return true;
     });
 }
