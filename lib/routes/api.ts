@@ -51,7 +51,8 @@ import {
 import { getAspectReports } from "../customize/categories";
 import {
     groupSiblings,
-    introduceClassificationLayer, isSunburstTree,
+    introduceClassificationLayer,
+    isSunburstTree,
     PlantedTree,
     SunburstTree,
     trimOuterRim,
