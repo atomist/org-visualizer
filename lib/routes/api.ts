@@ -316,7 +316,9 @@ export async function buildFingerprintTree(
     } else {
         // We are showing a particular fingerprint
         if (!!aspect) {
-            pt.tree.name = aspect.displayName;
+            pt.tree.name = aspect.toDisplayableFingerprintName ?
+                aspect.toDisplayableFingerprintName(fingerprintName) :
+                fingerprintName;
         }
     }
 
