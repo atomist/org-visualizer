@@ -153,7 +153,7 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
         };
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
-            newLayerDepth: 0,
+            newLayerDepth: 1,
             descendantClassifier: toEntropyBand,
         });
         return tree;
