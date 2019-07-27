@@ -78,6 +78,7 @@ export function calculateFingerprintTask(fingerprinters: Aspect[],
                 variables: {
                     name: ci.parameters.owner,
                 },
+                options: QueryNoCacheOptions,
             }), "GitHubAppInstallation[0]");
 
             const token = _.get(provider, "credential.secret") || _.get(app, "token.secret");
