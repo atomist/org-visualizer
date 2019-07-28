@@ -3,7 +3,7 @@ import { ProjectForDisplay, ProjectList } from "./projectList";
 
 export interface FingerprintForDisplay extends MaybeAnIdeal {
     type: string;
-    displayName?: string;
+    displayName: string;
     name: string;
     entropy?: number;
     count: number;
@@ -11,11 +11,13 @@ export interface FingerprintForDisplay extends MaybeAnIdeal {
 }
 
 export interface AspectForDisplay {
-    aspect: {
-        documentationUrl?: string,
-        displayName: string,
-        name: string,
-    };
+    name: string;
+    displayName: string;
+    documentationUrl?: string;
+}
+
+export interface AspectFingerprintsForDisplay {
+    aspect: AspectForDisplay;
     fingerprints: FingerprintForDisplay[];
 }
 
@@ -25,7 +27,7 @@ interface UnfoundAspectForDisplay {
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
-    importantAspects: AspectForDisplay[];
+    importantAspects: AspectFingerprintsForDisplay[];
     unfoundAspects: UnfoundAspectForDisplay[];
     projects: ProjectForDisplay[];
 }
@@ -37,7 +39,6 @@ export interface MaybeAnIdeal {
         displayValue: string;
     };
 }
-
 
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
@@ -54,7 +55,7 @@ function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     return result;
 }
 
-function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElement {
+function displayImportantAspect(f: AspectFingerprintsForDisplay, i: number): React.ReactElement {
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
 

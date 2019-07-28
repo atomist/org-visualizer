@@ -42,7 +42,7 @@ import {
 import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
 import {
-    AspectForDisplay,
+    AspectFingerprintsForDisplay,
     FingerprintForDisplay,
     OrgExplorer,
 } from "../../views/org";
@@ -80,8 +80,8 @@ import {
 import { buildFingerprintTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -130,7 +130,7 @@ export function orgPage(
 
                     const aspectsEligibleForDisplay = aspectRegistry.aspects.filter(a => !!a.displayName)
                         .filter(a => fingerprintUsage.some(fu => fu.type === a.name));
-                    const importantAspects: AspectForDisplay[] = _.sortBy(aspectsEligibleForDisplay, a => a.displayName)
+                    const importantAspects: AspectFingerprintsForDisplay[] = _.sortBy(aspectsEligibleForDisplay, a => a.displayName)
                         .map(aspect => {
                             const fingerprintsForThisAspect = fingerprintUsage.filter(fu => fu.type === aspect.name);
                             return {
