@@ -15,7 +15,11 @@
  */
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
 import { Reporters } from "../aspect/reporters";
@@ -25,7 +29,10 @@ import {
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import { treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
+import {
+    treeBuilder,
+    TreeBuilder,
+} from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
