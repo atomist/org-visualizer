@@ -92,7 +92,6 @@ describe("travis aspects", () => {
         assert.deepStrictEqual(scanned.services, {});
         assert.strictEqual(scanned.scripts.length, 3);
         assert.deepStrictEqual(scanned.afterSuccess, ["npm run coveralls"]);
-        assert.deepStrictEqual(scanned.env, {});
     });
 
     it("should handle env", async () => {
@@ -102,11 +101,6 @@ describe("travis aspects", () => {
         });
         const scanned = await travisScanner(p);
         assert.deepStrictEqual(scanned.services, {});
-        assert.deepStrictEqual(scanned.env, {
-            DB: "postgres",
-            SH: "bash",
-            PACKAGE_VERSION: "1.0.*",
-        });
         assert(!scanned.addons);
     });
 
