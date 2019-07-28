@@ -15,33 +15,17 @@
  */
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
-import {
-    BaseAspect,
-    FP,
-} from "@atomist/sdm-pack-fingerprints";
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
-import {
-    Analyzed,
-    AspectRegistry,
-} from "../aspect/AspectRegistry";
+import { Analyzed } from "../aspect/AspectRegistry";
 import { Reporters } from "../aspect/reporters";
 import {
-    AnalyzedGrouper,
     defaultAnalyzedRenderer,
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
 import { CodeMetricsElement } from "../element/codeMetricsElement";
-import {
-    ReportBuilder,
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -140,49 +124,9 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-/**
- * Group by the number of fingerprints from this aspects
- */
-function groupByFingerprintCount(aspect: BaseAspect): AnalyzedGrouper {
-    return ar => {
-        const cm = ar.fingerprints.filter(fp => aspect.name === (fp.type || fp.name)).length;
-        if (!cm) {
-            return undefined;
-        }
-        if (cm > 100) {
-            return "venti";
-        }
-        if (cm > 50) {
-            return "grande";
-        }
-        if (cm > 15) {
-            return "tall";
-        }
-        return "small";
-    };
-}
-
 export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, params: any): TreeBuilder<A, A> {
     const tb = treeBuilder<A>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;
-}
-
-/**
- * Report on all fingerprints of a particular type
- */
-export function aspectReport(type: string, fm: AspectRegistry, allMatching: FP[]): ReportBuilder<FP> {
-    return treeBuilder<FP>(type)
-        .group({
-            name: "name",
-            by: fp => fp.type === type ? fp.name : undefined,
-        })
-        .renderWith(fp => {
-            const aspect = fm.aspectOf(fp.type);
-            return {
-                name: aspect ? aspect.toDisplayableFingerprint(fp) : JSON.stringify(fp.data),
-                size: allMatching.filter(a => fp.sha === a.sha).length,
-            };
-        });
 }

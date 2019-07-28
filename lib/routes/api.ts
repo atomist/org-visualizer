@@ -44,8 +44,6 @@ import {
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import {
-    introduceClassificationLayer,
-    PlantedTree,
     SunburstTree,
     visit,
 } from "../tree/sunburst";
@@ -56,7 +54,6 @@ import {
 } from "./auth";
 import { buildFingerprintTree } from "./buildFingerprintTree";
 import {
-    aspectReport,
     WellKnownReporters,
 } from "./wellKnownReporters";
 
@@ -103,19 +100,7 @@ export function api(clientFactory: ClientFactory,
             express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
             express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
                 try {
-
-                    if (req.params.name === "aspectReport") {
-                        const type = req.query.type;
-                        const fingerprints = await store.fingerprintsInWorkspace(req.params.workspace_id, type);
-                        const withDups = await store.fingerprintsInWorkspace(req.params.workspace_id, type, undefined, true);
-                        logger.info("Found %d fingerprints", fingerprints.length);
-                        const aspectTree = await aspectReport(type, aspectRegistry, withDups).toSunburstTree(
-                            () => fingerprints);
-                        return res.json({ tree: aspectTree });
-                    }
-
                     const allQueries = WellKnownReporters;
-
                     const q = allQueries[req.params.name];
                     if (!q) {
                         throw new Error(`No query named '${req.params.name}'`);
