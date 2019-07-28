@@ -60,9 +60,9 @@ import {
 } from "../../views/sunburstPage";
 import { TopLevelPage } from "../../views/topLevelPage";
 import {
+    FingerprintUsage,
     ProjectAnalysisResultStore,
     whereFor,
-    FingerprintUsage,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
@@ -79,8 +79,8 @@ import {
 import { buildFingerprintTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
-    title?: string,
-    extraScripts?: string[]): string {
+                               title?: string,
+                               extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -143,6 +143,7 @@ export function orgPage(
                                         return {
                                             ...fp,
                                             ideal,
+                                            displayName: defaultedToDisplayableFingerprintName(aspect)(fp.name),
                                             entropy: supportsEntropy(aspect) ? fp.entropy : undefined,
                                         };
                                     }),
