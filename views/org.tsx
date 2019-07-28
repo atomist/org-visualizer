@@ -1,20 +1,15 @@
+import { BaseAspect } from "@atomist/sdm-pack-fingerprints";
 import * as React from "react";
+import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
+import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 
-export interface FingerprintForDisplay extends MaybeAnIdeal {
-    type: string;
+export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "name">, Pick<CohortAnalysis, "count" | "variants">, MaybeAnIdeal {
     displayName: string;
-    name: string;
     entropy?: number;
-    count: number;
-    variants: number;
 }
 
-export interface AspectForDisplay {
-    name: string;
-    displayName: string;
-    documentationUrl?: string;
-}
+type AspectForDisplay = Pick<BaseAspect, "documentationUrl" | "name" | "displayName">;
 
 export interface AspectFingerprintsForDisplay {
     aspect: AspectForDisplay;
