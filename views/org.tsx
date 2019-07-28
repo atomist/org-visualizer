@@ -1,24 +1,33 @@
-import { BaseAspect, supportsEntropy } from "@atomist/sdm-pack-fingerprints";
 import * as React from "react";
-import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 
-export interface FingerprintForDisplay extends MaybeAnIdeal, CohortAnalysis {
+export interface FingerprintForDisplay extends MaybeAnIdeal {
     type: string;
     displayName?: string;
     name: string;
-    aspect: BaseAspect;
+    entropy?: number;
+    count: number;
+    variants: number;
 }
 
 export interface AspectForDisplay {
-    aspect: BaseAspect;
+    aspect: {
+        documentationUrl?: string,
+        displayName: string,
+        name: string,
+    };
     fingerprints: FingerprintForDisplay[];
+}
+
+interface UnfoundAspectForDisplay {
+    documentationUrl?: string;
+    displayName: string;
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     actionableFingerprints: ActionableFingerprintForDisplay[];
     importantAspects: AspectForDisplay[];
-    unfoundAspects: BaseAspect[];
+    unfoundAspects: UnfoundAspectForDisplay[];
     projects: ProjectForDisplay[];
 }
 
@@ -84,7 +93,7 @@ function displayImportantAspect(f: AspectForDisplay, i: number): React.ReactElem
             </div></div></div>;
 }
 
-function displayUnfoundAspects(mfs: BaseAspect[]): React.ReactElement {
+function displayUnfoundAspects(mfs: Array<{}>): React.ReactElement {
     if (mfs.length === 0) {
         return <div></div>;
     }
@@ -97,7 +106,7 @@ function displayUnfoundAspects(mfs: BaseAspect[]): React.ReactElement {
     </div>;
 }
 
-function displayUnfoundAspect(mf: BaseAspect, i: number): React.ReactElement {
+function displayUnfoundAspect(mf: { documentationUrl?: string, displayName: string }, i: number): React.ReactElement {
     const link = !!mf.documentationUrl ?
         <a href={mf.documentationUrl}>{mf.displayName}</a> : mf.displayName;
     return <li className="unfound">
@@ -109,7 +118,7 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
     const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
     const existsLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true&presence=true&otherLabel=true`;
-    const ent = <span>{supportsEntropy(f.aspect) && `entropy=${f.entropy.toFixed(2)}`}</span>;
+    const ent = f.entropy ? <span>{`entropy=${f.entropy.toFixed(2)}`}</span> : "";
 
     return <li key={displayName}>
         <i>{displayName}</i>: {f.count} projects, {" "}
@@ -161,7 +170,7 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
 
         {/*<h3>See Problems</h3>*/}
         {/*<ul>*/}
-            {/*<li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>*/}
+        {/*<li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>*/}
 
         {/*</ul>*/}
 

@@ -1,8 +1,7 @@
-import { RepoRef } from "@atomist/automation-client";
 import * as _ from "lodash";
 import * as React from "react";
 
-export type ProjectForDisplay = RepoRef & { id: string }; // will likely add more data later
+export interface ProjectForDisplay { url: string; repo: string; owner: string; id: string; } // will likely add more data later
 
 export interface ProjectListProps {
     projects: ProjectForDisplay[];

@@ -25,6 +25,7 @@ import {
     FP,
     Ideal,
     isConcreteIdeal,
+    supportsEntropy,
 } from "@atomist/sdm-pack-fingerprints";
 import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
@@ -61,6 +62,7 @@ import { TopLevelPage } from "../../views/topLevelPage";
 import {
     ProjectAnalysisResultStore,
     whereFor,
+    FingerprintUsage,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
@@ -77,8 +79,8 @@ import {
 import { buildFingerprintTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
-                               title?: string,
-                               extraScripts?: string[]): string {
+    title?: string,
+    extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
             bodyContent: body,
@@ -126,28 +128,26 @@ export function orgPage(
                     const actionableFingerprints = [];
                     const ideals = await aspectRegistry.idealStore.loadIdeals("*");
 
-                    const importAspects: AspectForDisplay[] = _.sortBy(aspectRegistry.aspects, a => a.displayName || a.name)
-                        .filter(f => !!f.displayName)
-                        .filter(f => fingerprintUsage.some(fu => fu.type === f.name))
-                        .map(aspect => ({
-                            aspect,
-                            fingerprints: fingerprintUsage.filter(fu => fu.type === aspect.name)
-                                .map(fu => ({
-                                    ...fu,
-                                    aspect,
-                                })),
-                        }));
-                    for (const ffd of importAspects) {
-                        for (const fp of ffd.fingerprints) {
-                            const ideal = ideals.find(id => {
-                                const c = idealCoordinates(id);
-                                return c.type === fp.type && c.name === fp.name;
-                            });
-                            if (ideal && isConcreteIdeal(ideal) && ffd.aspect.toDisplayableFingerprint) {
-                                fp.ideal = { displayValue: ffd.aspect.toDisplayableFingerprint(ideal.ideal) };
-                            }
-                        }
-                    }
+                    const importantAspects: AspectForDisplay[] = _.sortBy(aspectRegistry.aspects, a => a.displayName || a.name)
+                        .filter(a => !!a.displayName)
+                        .filter(a => fingerprintUsage.some(fu => fu.type === a.name))
+                        .map(aspect => {
+                            return {
+                                aspect,
+                                fingerprints: fingerprintUsage.filter(fu => fu.type === aspect.name)
+                                    .map(fp => {
+                                        const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
+                                        const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
+                                            { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }
+                                            : undefined;
+                                        return {
+                                            ...fp,
+                                            ideal,
+                                            entropy: supportsEntropy(aspect) ? fp.entropy : undefined,
+                                        };
+                                    }),
+                            };
+                        });
 
                     const unfoundAspects: BaseAspect[] = aspectRegistry.aspects
                         .filter(f => !!f.displayName)
@@ -156,7 +156,7 @@ export function orgPage(
                     res.send(renderStaticReactNode(OrgExplorer({
                         actionableFingerprints,
                         projectsAnalyzed: repos.length,
-                        importantAspects: importAspects,
+                        importantAspects,
                         unfoundAspects,
                         projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                     })));
@@ -360,4 +360,9 @@ async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProje
         }
     }
     return result;
+}
+
+function idealMatchesFingerprint(id: Ideal, fp: FingerprintUsage): boolean {
+    const c = idealCoordinates(id);
+    return c.type === fp.type && c.name === fp.name;
 }
