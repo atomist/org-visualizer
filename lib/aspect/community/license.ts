@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Project, ProjectFile } from "@atomist/automation-client";
+import {
+    Project,
+    ProjectFile,
+} from "@atomist/automation-client";
 import {
     Aspect,
     sha256,
