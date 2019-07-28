@@ -29,7 +29,6 @@ import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
 import {
     ClientFactory,
-    doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
@@ -86,7 +85,7 @@ export function api(clientFactory: ClientFactory,
 
             exposeIdealAndProblemSetting(express, aspectRegistry);
 
-            exposeAspectMetadata(express, store, clientFactory);
+            exposeAspectMetadata(express, store);
 
             exposeListFingerprints(express, store);
 
@@ -135,7 +134,7 @@ function exposeSwaggerDoc(express: Express, docRoute: string): void {
     express.use(docRoute, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
-function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStore, clientFactory: ClientFactory): void {
+function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStore): void {
     // Return the aspects metadata
     express.options("/api/v1/:workspace_id/aspects", corsHandler());
     express.get("/api/v1/:workspace_id/aspects", [corsHandler(), ...authHandlers()], async (req, res) => {
@@ -144,20 +143,8 @@ function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStor
             const fingerprintUsage: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId);
             const reports = getAspectReports(fingerprintUsage, workspaceId);
             logger.debug("Returning aspect reports for '%s': %j", workspaceId, reports);
-
-            // TODO cd where should those queries ideally live? @rod
-            let sql = `SELECT COUNT(*) FROM (SELECT DISTINCT owner, name FROM repo_snapshots WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
-            const count = await doWithClient(clientFactory, async client => {
-                const result = await client.query(sql,
-                    [workspaceId]);
-                return +result.rows[0].count;
-            });
-            sql = `SELECT timestamp FROM repo_snapshots WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 ORDER BY timestamp DESC LIMIT 1`;
-            const at = await doWithClient(clientFactory, async client => {
-                const result = await client.query(sql,
-                    [workspaceId]);
-                return result.rows[0].timestamp;
-            });
+            const count = await store.distinctRepoCount(workspaceId);
+            const at = await store.latestTimestamp(workspaceId);
 
             res.json({
                 analyzed: {

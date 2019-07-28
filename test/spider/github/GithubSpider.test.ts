@@ -89,11 +89,15 @@ const hardCodedPlace = "place.json";
 
 class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
-
     public persisted: ProjectAnalysisResult[] = [];
-    public count(): Promise<number> {
+    public distinctRepoCount(): Promise<number> {
         throw new Error("Method not implemented.");
     }
+
+    public latestTimestamp(workspaceId: string): Promise<Date> {
+        throw new Error("Method not implemented.");
+    }
+
     public loadWhere(): Promise<ProjectAnalysisResult[]> {
         throw new Error("Method not implemented.");
     }

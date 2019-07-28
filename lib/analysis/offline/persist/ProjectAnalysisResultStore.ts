@@ -62,10 +62,11 @@ export interface FingerprintUsage extends CohortAnalysis {
 export interface ProjectAnalysisResultStore {
 
     /**
-     * How many analyses we have stored.
-     * @return {Promise<number>}
+     * How many repos we've analyzed
      */
-    count(): Promise<number>;
+    distinctRepoCount(workspaceId: string): Promise<number>;
+
+    latestTimestamp(workspaceId: string): Promise<Date>;
 
     /**
      * Where e.g. workspace_id = value
@@ -94,14 +95,12 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Persist a record of analytics
-     * @param {string} workspaceId
-     * @return {Promise<void>}
      */
     persistAnalytics(params: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean>;
 
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name
-     * @param dedup deduplicte
+     * @param dedup deduplicate
      */
     fingerprintsInWorkspace(
         workspaceId: string,

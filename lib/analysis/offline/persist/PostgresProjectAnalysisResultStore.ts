@@ -53,12 +53,27 @@ import {
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
 
+// tslint:disable:max-file-line-count
+
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
-    public count(): Promise<number> {
+    public distinctRepoCount(workspaceId: string): Promise<number> {
+        const sql = `SELECT COUNT(*) FROM (SELECT DISTINCT owner, name FROM repo_snapshots
+        WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
         return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query("SELECT COUNT(1) as c from repo_snapshots");
-            return rows[0].c;
+            const result = await client.query(sql,
+                [workspaceId]);
+            return +result.rows[0].count;
+        });
+    }
+
+    public latestTimestamp(workspaceId: string): Promise<Date> {
+        const sql = `SELECT timestamp FROM repo_snapshots WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+        ORDER BY timestamp DESC LIMIT 1`;
+        return doWithClient(this.clientFactory, async client => {
+            const result = await client.query(sql,
+                [workspaceId]);
+            return result.rows[0].timestamp;
         });
     }
 
