@@ -15,7 +15,12 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { BaseAspect, ConcreteIdeal, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    ConcreteIdeal,
+    FP,
+    Ideal,
+} from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import { Client } from "pg";
 import { AspectRegistry } from "../aspect/AspectRegistry";

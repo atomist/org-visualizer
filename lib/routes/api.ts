@@ -18,7 +18,12 @@ import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
 import * as bodyParser from "body-parser";
-import { Express, Request, RequestHandler, Response } from "express";
+import {
+    Express,
+    Request,
+    RequestHandler,
+    Response,
+} from "express";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
@@ -30,12 +35,25 @@ import {
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { driftTree, driftTreeForSingleAspect } from "../aspect/repoTree";
+import {
+    driftTree,
+    driftTreeForSingleAspect,
+} from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
-import { SunburstTree, visit } from "../tree/sunburst";
-import { authHandlers, configureAuth, corsHandler } from "./auth";
+import {
+    SunburstTree,
+    visit,
+} from "../tree/sunburst";
+import {
+    authHandlers,
+    configureAuth,
+    corsHandler,
+} from "./auth";
 import { buildFingerprintTree } from "./buildFingerprintTree";
-import { aspectReport, WellKnownReporters } from "./wellKnownReporters";
+import {
+    aspectReport,
+    WellKnownReporters,
+} from "./wellKnownReporters";
 
 /**
  * Expose the public API routes, returning JSON.
