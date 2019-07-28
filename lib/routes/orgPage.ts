@@ -43,6 +43,7 @@ import * as ReactDOMServer from "react-dom/server";
 import serveStatic = require("serve-static");
 import {
     AspectForDisplay,
+    FingerprintForDisplay,
     OrgExplorer,
 } from "../../views/org";
 import {
@@ -125,28 +126,17 @@ export function orgPage(
 
                     const fingerprintUsage = await store.fingerprintUsageForType("*");
 
-                    const actionableFingerprints = [];
                     const ideals = await aspectRegistry.idealStore.loadIdeals("*");
 
-                    const importantAspects: AspectForDisplay[] = _.sortBy(aspectRegistry.aspects, a => a.displayName || a.name)
-                        .filter(a => !!a.displayName)
-                        .filter(a => fingerprintUsage.some(fu => fu.type === a.name))
+                    const aspectsEligibleForDisplay = aspectRegistry.aspects.filter(a => !!a.displayName)
+                        .filter(a => fingerprintUsage.some(fu => fu.type === a.name));
+                    const importantAspects: AspectForDisplay[] = _.sortBy(aspectsEligibleForDisplay, a => a.displayName)
                         .map(aspect => {
+                            const fingerprintsForThisAspect = fingerprintUsage.filter(fu => fu.type === aspect.name);
                             return {
                                 aspect,
-                                fingerprints: fingerprintUsage.filter(fu => fu.type === aspect.name)
-                                    .map(fp => {
-                                        const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
-                                        const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
-                                            { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }
-                                            : undefined;
-                                        return {
-                                            ...fp,
-                                            ideal,
-                                            displayName: defaultedToDisplayableFingerprintName(aspect)(fp.name),
-                                            entropy: supportsEntropy(aspect) ? fp.entropy : undefined,
-                                        };
-                                    }),
+                                fingerprints: fingerprintsForThisAspect
+                                    .map(fp => formatFingerprintUsageForDisplay(aspect, ideals, fp)),
                             };
                         });
 
@@ -155,7 +145,6 @@ export function orgPage(
                         .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
 
                     res.send(renderStaticReactNode(OrgExplorer({
-                        actionableFingerprints,
                         projectsAnalyzed: repos.length,
                         importantAspects,
                         unfoundAspects,
@@ -166,8 +155,7 @@ export function orgPage(
                     logger.error(e.stack);
                     res.status(500).send("failure");
                 }
-            },
-            );
+            });
 
             /* Project list page */
             express.get("/projects", ...handlers, async (req, res) => {
@@ -366,4 +354,17 @@ async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProje
 function idealMatchesFingerprint(id: Ideal, fp: FingerprintUsage): boolean {
     const c = idealCoordinates(id);
     return c.type === fp.type && c.name === fp.name;
+}
+
+function formatFingerprintUsageForDisplay(aspect: ManagedAspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
+    const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
+    const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
+        { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }
+        : undefined;
+    return {
+        ...fp,
+        ideal,
+        displayName: defaultedToDisplayableFingerprintName(aspect)(fp.name),
+        entropy: supportsEntropy(aspect) ? fp.entropy : undefined,
+    };
 }

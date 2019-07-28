@@ -25,7 +25,6 @@ interface UnfoundAspectForDisplay {
 }
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
-    actionableFingerprints: ActionableFingerprintForDisplay[];
     importantAspects: AspectForDisplay[];
     unfoundAspects: UnfoundAspectForDisplay[];
     projects: ProjectForDisplay[];
@@ -38,20 +37,7 @@ export interface MaybeAnIdeal {
         displayValue: string;
     };
 }
-export interface ActionableFingerprintForDisplay extends FingerprintForDisplay {
-    featureName: string;
-    type: string;
-}
-function actionableFingerprintListItem(af: ActionableFingerprintForDisplay): React.ReactElement {
-    const queryLink = `./query?type=${af.type}&name=${af.name}&byOrg=true`;
-    const existsLink = `./query?type=${af.type}&name=${af.name}-present&filter=true&byOrg=true`;
-    return <li key={af.name}><i>{af.featureName}:
-                {af.displayName}</i>: {af.count} projects, {" "}
-        <a href={queryLink}>{af.variants} variants</a> -
-         <a href={existsLink}> Exists?</a>
-        {idealDisplay(af)}
-    </li>;
-}
+
 
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
@@ -136,20 +122,11 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
         </div>;
     }
 
-    const actionItems = <div><h2>Action Items</h2>
-        <div className="actionItemBox">
-            <ul>
-                {props.actionableFingerprints.map(actionableFingerprintListItem)}
-                <li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>
-            </ul>
-        </div></div>;
-
     const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
     return <div>
 
         {projectSummary}
 
-        {/*actionItems*/}
         <h2>Aspects</h2>
         <div className="importantFeatures">
             <ul>
@@ -167,12 +144,6 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         {displayAspects(props)}
 
         <h2>Common queries</h2>
-
-        {/*<h3>See Problems</h3>*/}
-        {/*<ul>*/}
-        {/*<li key="vp"><a href="./query?filter=true&name=flagged&byOrg=true">Visualize problems</a></li>*/}
-
-        {/*</ul>*/}
 
         <h3>Code</h3>
         <ul>
