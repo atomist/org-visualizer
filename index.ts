@@ -114,9 +114,9 @@ export const configuration: Configuration = configure(async sdm => {
         registerReportDetails(LeinDeps, { url: "drift?type=clojure-project-deps" });
     }
     registerCategories(DockerFrom, "Docker");
-    registerReportDetails(DockerFrom, { url: "filter/aspectReport?type=docker-base-image" });
+    registerReportDetails(DockerFrom, { url: "/fingerprint/docker-base-image/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=true" });
     registerCategories(DockerPorts, "Docker");
-    registerReportDetails(DockerPorts, { url: "filter/aspectReport?type=docker-ports" });
+    registerReportDetails(DockerPorts, { url: "/fingerprint/docker-ports/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=true" });
 
     if (mode === "online") {
         const pushImpact = new PushImpact();
