@@ -83,38 +83,23 @@ export interface TravisCi {
      */
     addons: any | undefined;
 
-    env: BoundEnvironmentVariables;
-
-    /**
-     * Can we emulate this build? Useful in querying.
-     */
-    canEmulate?: boolean;
-
 }
-
-export type BoundEnvironmentVariables = Record<string, string>;
 
 /**
  * Scan for Travis information
  */
 export const travisScanner = async p => {
-    const travisYaml = await p.getFile(".travis.yml");
-    if (!travisYaml) {
-        return undefined;
-    }
+        const travisYaml = await p.getFile(".travis.yml");
+        if (!travisYaml) {
+            return undefined;
+        }
 
-    try {
-        const nativeObject = tryAsYamlThenJson(await travisYaml.getContent());
-
-        const env: BoundEnvironmentVariables = {};
-        for (const e of nativeObject.env || []) {
-            // Format is DB=postgres
-            const key = e.substring(0, e.indexOf("="));
-            let value = e.substring(key.length + 1);
-            if (value.startsWith('"')) {
-                value = value.substring(1, value.length - 1);
-            }
-            env[key] = value;
+        let nativeObject: any;
+        try {
+            nativeObject = tryAsYamlThenJson(await travisYaml.getContent());
+        } catch (e) {
+            logger.warn("Cannot parse Travis file: %s", e.message);
+            return undefined;
         }
 
         const services: Services = {};
@@ -140,7 +125,6 @@ export const travisScanner = async p => {
             scripts: nativeObject.script ?
                 toStringArray(nativeObject.script) :
                 [],
-            env,
             addons: nativeObject.addons,
             beforeInstall: nativeObject.before_install ?
                 toStringArray(nativeObject.before_install) :
@@ -155,11 +139,7 @@ export const travisScanner = async p => {
                 [],
         };
         return travis;
-    } catch (e) {
-        logger.warn("Cannot parse YAML file: %s", e.message);
-        return undefined;
-    }
-};
+    };
 
 /**
  * First try to parse as YAML then try as JSON (yes, this is legal!)
@@ -170,6 +150,7 @@ function tryAsYamlThenJson(content: string): any {
     try {
         return yaml.parse(content);
     } catch (error) {
+        logger.warn("Failed to parse as YAML: %s", error);
         return JSON.parse(content);
     }
 }
