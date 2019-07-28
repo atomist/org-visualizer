@@ -29,11 +29,18 @@ describe("license aspect", () => {
         assert.deepStrictEqual(fp.data, { classification: "None", content: undefined, path: undefined });
     });
 
-    it("should find Apache license", async () => {
+    it("should find Apache license at LICENSE", async () => {
         const p = InMemoryProject.of({ path: "LICENSE", content: asl });
         const fp = await License.extract(p) as FP;
         assert(!!fp.data);
         assert.deepStrictEqual(fp.data, { classification: "Apache License", content: asl, path: "LICENSE" });
+    });
+
+    it("should find Apache license at license.txt", async () => {
+        const p = InMemoryProject.of({ path: "license.txt", content: asl });
+        const fp = await License.extract(p) as FP;
+        assert(!!fp.data);
+        assert.deepStrictEqual(fp.data, { classification: "Apache License", content: asl, path: "license.txt" });
     });
 
 });

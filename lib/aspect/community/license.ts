@@ -14,51 +14,64 @@
  * limitations under the License.
  */
 
+import { Project, ProjectFile } from "@atomist/automation-client";
 import {
     Aspect,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 
+export const NoLicense = "None";
+
+const LicenseType = "license";
+
 export interface LicenseData {
     path: string;
+
+    /**
+     * What we've classified the license as by parsing the license file.
+     */
     classification: string;
+
     content?: string;
 }
 
+/**
+ * License aspect. Every repository gets a license fingerprint, which may have unknown
+ * as a license.
+ */
 export const License: Aspect = {
-    name: "license",
+    name: LicenseType,
     displayName: "License",
     extract: async p => {
-        let path;
-        let licenseFile = await p.getFile("LICENSE");
-        if (!!licenseFile) {
-            path = "LICENSE";
-        } else {
-            licenseFile = await p.getFile("LICENSE.txt");
-            if (!!licenseFile) {
-                path = "LICENSE.txt";
-            }
-        }
-        let classification: string = "None";
+        const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt");
+        let classification: string = NoLicense;
         let content: string;
         if (!!licenseFile) {
             content = await licenseFile.getContent();
             classification = content.trim().split("\n")[0].trim();
         }
-        const data: LicenseData = { classification, content, path };
+        const data: LicenseData = { classification, content, path: licenseFile ? licenseFile.path : undefined };
         return {
-            type: "license",
-            name: "license",
+            type: LicenseType,
+            name: LicenseType,
             data,
             sha: sha256(JSON.stringify(data)),
         };
     },
     toDisplayableFingerprintName: () => "License",
     toDisplayableFingerprint: fp => {
-        try {
-            return (!!fp.data && !!fp.data.classification) ? `${fp.data.path}:${fp.data.classification}` : "None";
-        } catch (err) {
-            return "Unknown";
-        }
+        return fp.data.classification === NoLicense ?
+            "None" :
+            `${fp.data.path}:${fp.data.classification}`;
     },
 };
+
+async function firstFileFound(p: Project, ...paths: string[]): Promise<ProjectFile | undefined> {
+    for (const path of paths) {
+        const f = await p.getFile(path);
+        if (f) {
+            return f;
+        }
+    }
+    return undefined;
+}
