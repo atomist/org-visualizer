@@ -166,8 +166,8 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
 }
 
 export async function driftTreeForSingleAspect(workspaceId: string,
-    type: string,
-    clientFactory: ClientFactory): Promise<PlantedTree> {
+                                               type: string,
+                                               clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
     SELECT name, feature_name as type, variants, count, entropy, variants as size
