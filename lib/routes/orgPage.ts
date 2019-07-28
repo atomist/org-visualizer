@@ -31,7 +31,6 @@ import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ide
 import * as bodyParser from "body-parser";
 import {
     Express,
-    Request,
     RequestHandler,
 } from "express";
 import * as _ from "lodash";
@@ -75,9 +74,7 @@ import {
 } from "../aspect/DefaultAspectRegistry";
 import {
     PlantedTree,
-    SunburstCircleMetadata,
 } from "../tree/sunburst";
-import { buildFingerprintTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
