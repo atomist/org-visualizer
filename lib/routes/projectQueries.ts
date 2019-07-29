@@ -15,12 +15,12 @@
  */
 
 import { CodeStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { Analyzed } from "../aspect/AspectRegistry";
 import { findCodeMetricsData } from "../aspect/common/codeMetrics";
 import {
     ReportBuilder,
     treeBuilder,
 } from "../tree/TreeBuilder";
-import { Analyzed } from "../aspect/AspectRegistry";
 
 /**
  * Languages used in this project
