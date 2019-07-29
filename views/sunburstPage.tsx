@@ -20,25 +20,13 @@ export interface SunburstPageProps {
     possibleIdeals: PossibleIdealForDisplay[];
     query: string;
     dataUrl: string;
-    tree?: PlantedTree; // we might have the data already.
+    tree: PlantedTree; // we might have the data already.
 }
 
 function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
     return <h2>
         Current ideal: {currentIdeal.displayValue}
     </h2>;
-}
-
-function suggestedIdealListItem(possibleIdeal: PossibleIdealForDisplay): React.ReactElement {
-    return <li key={possibleIdeal.url}>
-        The <a href={possibleIdeal.url}>world</a> suggests:
-        <form action="/setIdeal" method="post">
-            <input hidden={true} type="text" readOnly={true} id="stringifiedFP" name="stringifiedFP"
-                value={possibleIdeal.stringified} />
-            <input hidden={true} readOnly={true} type="text" id="fingerprintName" name="fingerprintName" value={possibleIdeal.fingerprintName} />
-            <input type="submit" defaultValue={possibleIdeal.displayValue} />
-        </form>
-    </li>;
 }
 
 interface PerLevelDataItem {
@@ -59,8 +47,9 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         : props.tree.circles.map((c, i) => ({ textAreaId: "levelData-" + i, labelText: c.meaning }));
 
     const d3ScriptCall = `<script>
+    const data = ${JSON.stringify(props.tree)};
     SunburstYo.sunburst("${props.workspaceId}",
-        "${props.dataUrl}",
+        data,
         window.innerWidth - 250,
         window.innerHeight - 100,
         [${perLevelDataItems.map(p => `"` + p.textAreaId + `"`).join(",")}]);

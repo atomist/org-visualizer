@@ -42,15 +42,13 @@ type SunburstTreeNode = d3.HierarchyNode<SunburstTree | SunburstLeaf>;
 
 // tslint:disable
 
-export function sunburst(workspaceId, dataUrl: string, pWidth, pHeight, perLevelDataElementIds: string[]) {
+export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataElementIds: string[]) {
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
         height = Math.max(pHeight || window.innerHeight, minDiameterInPixels),
         maxRadius = (Math.min(width, height) / 2) - 5;
     const viewBoxSide = maxRadius * 2 + 10;
-
-    const formatNumber = d3.format(",d");
 
     const x = d3.scaleLinear()
         .range([0, 2 * Math.PI])
@@ -93,71 +91,69 @@ export function sunburst(workspaceId, dataUrl: string, pWidth, pHeight, perLevel
         return d.data.name.length * CHAR_SPACE < perimeter;
     };
 
-    const dataDiv = d3.select("#dataAboutWhatYouClicked");
-
     const svg = d3.select("#putSvgHere").append("svg")
         .style("width", viewBoxSide + "px")
         .attr("viewBox", `${-viewBoxSide / 2} ${-viewBoxSide / 2} ${viewBoxSide} ${viewBoxSide}`)
         .on("click", focusOn); // Reset zoom on canvas click
 
-    d3.json(dataUrl).then((d: PlantedTree) => {
+    // now work with the data
+    const d: PlantedTree = data;
 
-        if (!d.tree || d.tree.children.length === 0) {
-            alert(`No data at ${dataUrl}`);
-            return;
-        }
+    if (!d.tree || d.tree.children.length === 0) {
+        alert(`No data in ` + dataJson);
+        return;
+    }
 
-        const root = d3.hierarchy<SunburstTree | SunburstLeaf>(d.tree);
-        root.sum(d => (d as SunburstLeaf).size || 0); // sets a "value" property on each node
+    const root = d3.hierarchy<SunburstTree | SunburstLeaf>(d.tree);
+    root.sum(d => (d as SunburstLeaf).size || 0); // sets a "value" property on each node
 
-        const slice = svg.selectAll<d3.BaseType, SunburstTree | SunburstLeaf>("g.slice")
-            .data(d3.partition<SunburstTree | SunburstLeaf>()(root).descendants());
+    const slice = svg.selectAll<d3.BaseType, SunburstTree | SunburstLeaf>("g.slice")
+        .data(d3.partition<SunburstTree | SunburstLeaf>()(root).descendants());
 
-        slice.exit().remove(); // does this remove any extraneous ones?
+    slice.exit().remove(); // does this remove any extraneous ones?
 
-        const perLevelDataElements = perLevelDataElementIds.map(id => d3.select("#" + id)).filter(a => !!a);
+    const perLevelDataElements = perLevelDataElementIds.map(id => d3.select("#" + id)).filter(a => !!a);
 
-        const newSlice = slice.enter()
-            .append("g").attr("class", "slice")
-            .on("click", d => {
-                d3.event.stopPropagation();
-                setFrozenLevelData(workspaceId, perLevelDataElements, d);
-                focusOn(d);
-            })
-            .on("mouseover", (d: SunburstTreeNode) => {
-                populatePerLevelData(perLevelDataElements, d);
-            });
+    const newSlice = slice.enter()
+        .append("g").attr("class", "slice")
+        .on("click", d => {
+            d3.event.stopPropagation();
+            setFrozenLevelData(workspaceId, perLevelDataElements, d);
+            focusOn(d);
+        })
+        .on("mouseover", (d: SunburstTreeNode) => {
+            populatePerLevelData(perLevelDataElements, d);
+        });
 
-        // This is the hover text
-        newSlice.append("title")
-            .text(d => d.data.name);
+    // This is the hover text
+    newSlice.append("title")
+        .text(d => d.data.name);
 
-        newSlice.append("path")
-            .attr("class", "main-arc")
-            // I think this says, the last ring should use the same color as its parent
-            .style("fill", (d: any) => d.data.color || chooseColorFromString((d.children ? d : d.parent).data.name))
-            .attr("d", arc as any);
+    newSlice.append("path")
+        .attr("class", "main-arc")
+        // I think this says, the last ring should use the same color as its parent
+        .style("fill", (d: any) => d.data.color || chooseColorFromString((d.children ? d : d.parent).data.name))
+        .attr("d", arc as any);
 
-        newSlice.append("path")
-            .attr("class", "hidden-arc")
-            .attr("id", (_, i) => `hiddenArc${i}`)
-            .attr("d", middleArcLine);
+    newSlice.append("path")
+        .attr("class", "hidden-arc")
+        .attr("id", (_, i) => `hiddenArc${i}`)
+        .attr("d", middleArcLine);
 
-        const text = newSlice.append("text")
-            .attr("display", d => textFits(d) ? null : "none");
+    const text = newSlice.append("text")
+        .attr("display", d => textFits(d) ? null : "none");
 
-        // Add white contour
-        text.append("textPath")
-            .attr("class", "textOutline")
-            .attr("startOffset", "50%")
-            .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
-            .text(d => d.data.name);
+    // Add white contour
+    text.append("textPath")
+        .attr("class", "textOutline")
+        .attr("startOffset", "50%")
+        .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
+        .text(d => d.data.name);
 
-        text.append("textPath")
-            .attr("startOffset", "50%")
-            .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
-            .text(d => d.data.name);
-    });
+    text.append("textPath")
+        .attr("startOffset", "50%")
+        .attr("xlink:href", (_, i) => `#hiddenArc${i}`)
+        .text(d => d.data.name);
 
     function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
         // Reset to top-level if no data point specified
