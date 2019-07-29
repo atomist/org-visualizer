@@ -224,7 +224,7 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
 function setFrozenLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
     console.log("I will now populate some data for " + d.data.name);
 
-    const namesUpTree = [];
+    const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
         namesUpTree.push(place.data.name);
     }
