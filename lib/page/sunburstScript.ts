@@ -101,7 +101,6 @@ export function sunburst(workspaceId, dataUrl: string, pWidth, pHeight, perLevel
         .on("click", focusOn); // Reset zoom on canvas click
 
     d3.json(dataUrl).then((d: PlantedTree) => {
-        console.log("This is a thing: " + JSON.stringify(d));
 
         if (!d.tree || d.tree.children.length === 0) {
             alert(`No data at ${dataUrl}`);
@@ -198,7 +197,6 @@ export function sunburst(workspaceId, dataUrl: string, pWidth, pHeight, perLevel
 }
 
 function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
-    console.log("I will now populate some data for " + d.data.name);
 
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
@@ -211,7 +209,6 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
             return;
         }
         const value = namesDown[i] || "(various)";
-        console.log("Trying to set something to " + value);
         e.html(value);
     });
 
@@ -224,7 +221,6 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
 }
 
 function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
-    console.log("I will now populate some data for " + d.data.name);
 
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
@@ -237,7 +233,6 @@ function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any,
 
     perLevelDataElements.forEach((e, i) => {
         const className = i >= levelCountAbove ? "unfrozenLevelData" : "frozenLevelData";
-        console.log("Trying to class something to " + className);
         e.attr("class", className);
         if (!dataId || i !== (levelCountAbove - 1)) {
             // no buttons
