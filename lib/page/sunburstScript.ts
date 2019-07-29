@@ -112,7 +112,7 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
         const slice = svg.selectAll<d3.BaseType, SunburstTree | SunburstLeaf>("g.slice")
             .data(d3.partition<SunburstTree | SunburstLeaf>()(root).descendants());
 
-        slice.exit().remove();
+        slice.exit().remove(); // does this remove any extraneous ones?
 
         const perLevelDataElements = perLevelDataElementIds.map(id => d3.select("#" + id)).filter(a => !!a);
 
@@ -127,8 +127,9 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
                 populatePerLevelData(perLevelDataElements, d);
             });
 
+        // This is what it gets for hover
         newSlice.append("title")
-            .text(d => d.data.name + "\n" + formatNumber(d.value));
+            .text(d => d.data.name);
 
         newSlice.append("path")
             .attr("class", "main-arc")
@@ -208,6 +209,13 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
         console.log("Trying to set something to " + value);
         e.html(value);
     });
+
+    if (namesUpTree.length < perLevelDataElements.length) {
+        // if this isn't a leaf node, then
+        // the value property on the node is a count of the leaves under it.
+        // put that count in the last level data
+        perLevelDataElements[perLevelDataElements.length - 1].html("(" + d.value + " of them)");
+    }
 }
 
 function setFrozenLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
