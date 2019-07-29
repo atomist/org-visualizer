@@ -21,7 +21,11 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
-import { CodeMetricsData, CodeMetricsType, findCodeMetricsData } from "../aspect/common/codeMetrics";
+import {
+    CodeMetricsData,
+    CodeMetricsType,
+    findCodeMetricsData,
+} from "../aspect/common/codeMetrics";
 import { Reporters } from "../aspect/reporters";
 import {
     defaultAnalyzedRenderer,

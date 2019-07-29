@@ -16,7 +16,10 @@
 
 import { Project } from "@atomist/automation-client";
 import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { calculateCodeMetrics, CodeMetrics } from "@atomist/sdm-pack-sloc";
+import {
+    calculateCodeMetrics,
+    CodeMetrics,
+} from "@atomist/sdm-pack-sloc";
 import { Analyzed } from "../AspectRegistry";
 
 export type CodeMetricsData = Pick<CodeMetrics,
