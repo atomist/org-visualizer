@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { CodeStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { findCodeMetricsData } from "../aspect/common/codeMetrics";
 import {
     ReportBuilder,
     treeBuilder,
 } from "../tree/TreeBuilder";
+import { Analyzed } from "../aspect/AspectRegistry";
 
 /**
  * Languages used in this project
  * @type {ReportBuilder}
  */
-export const languagesQuery: ReportBuilder<ProjectAnalysis> =
-    treeBuilder<ProjectAnalysis>("by language")
+export const languagesQuery: ReportBuilder<Analyzed> =
+    treeBuilder<Analyzed>("by language")
         .split<CodeStats>({
             namer: ar => ar.id.repo,
             splitter: ar => {
