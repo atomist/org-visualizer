@@ -48,7 +48,7 @@ interface PerLevelDataItem {
 function levelDataListItem(item: PerLevelDataItem): React.ReactElement {
     return <li key={"li-" + item.textAreaId}>
         <label htmlFor={item.textAreaId}>{item.labelText}: </label>
-        <span className="levelDataContent" id={item.textAreaId}></span>
+        <div className="unfrozenLevelData" id={item.textAreaId}></div>
     </li>;
 }
 
@@ -65,7 +65,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         [${perLevelDataItems.map(p => `"` + p.textAreaId + `"`).join(",")}]);
     </script>`;
 
-    const thingies: string | React.ReactElement = !props.tree ? "Click a slice to see its details" :
+    const thingies: string | React.ReactElement = !props.tree ? "Hover over a slice to see its details" :
         <ul>{perLevelDataItems.map(levelDataListItem)}</ul>;
 
     const idealDisplay = props.currentIdeal ? displayCurrentIdeal(props.currentIdeal) : "";

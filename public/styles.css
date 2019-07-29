@@ -109,13 +109,13 @@ label.success {
     color: green;
 }
 
-.levelDataContent {
+.unfrozenLevelData {
     padding-left: 1em;
-    white-space: nowrap;
 }
 
 .frozenLevelData {
     border: 2px solid orange;
+    padding-left: 1em;
 }
 
 /* Collapsible content stuff 

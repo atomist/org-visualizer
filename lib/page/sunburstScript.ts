@@ -205,7 +205,10 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
 
     const namesDown = namesUpTree.reverse();
     perLevelDataElements.forEach((e, i) => {
-        const value = namesDown[i] || "";
+        if (e.attr("class") === "frozenLevelData") {
+            return;
+        }
+        const value = namesDown[i] || "(various)";
         console.log("Trying to set something to " + value);
         e.html(value);
     });
@@ -227,10 +230,12 @@ function setFrozenLevelData(perLevelDataElements: d3.Selection<any, any, any, an
     }
 
     const levelCountAbove = namesUpTree.length;
+    const namesDownTree = namesUpTree.reverse();
     perLevelDataElements.forEach((e, i) => {
         const className = i >= levelCountAbove ? "unfrozenLevelData" : "frozenLevelData";
         console.log("Trying to class something to " + className);
-        e.attr("class", className)
+        e.attr("class", className);
+        e.html(namesDownTree[i]);
     });
 }
 
