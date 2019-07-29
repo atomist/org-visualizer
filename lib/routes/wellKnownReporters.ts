@@ -21,6 +21,7 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
+import { CodeMetricsData, CodeMetricsType, findCodeMetricsData } from "../aspect/common/codeMetrics";
 import { Reporters } from "../aspect/reporters";
 import {
     defaultAnalyzedRenderer,
@@ -31,7 +32,6 @@ import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 
 /**
  * Well known reporters against our repo cohort.
@@ -114,11 +114,6 @@ export const WellKnownReporters: Reporters = {
                     return rendered;
                 }),
     };
-
-function findCodeMetricsData(a: Analyzed): CodeMetricsData | undefined {
-    const fp = a.fingerprints.find(f => f.name === CodeMetricsType);
-    return fp ? fp.data : undefined;
-}
 
 const groupByLoc: ProjectAnalysisGrouper = ar => {
     const cm = findCodeMetricsData(ar);

@@ -15,7 +15,6 @@
  */
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { Analyzed } from "../aspect/AspectRegistry";
 
 export interface SubprojectDescription {
@@ -28,7 +27,7 @@ export interface SubprojectDescription {
  * The result of running one analysis. Allows us to attach further information,
  * such as provenance if we spidered it.
  */
-export interface ProjectAnalysisResult<A extends Analyzed = Analyzed> {
+export interface ProjectAnalysisResult {
 
     /**
      * Unique database id. Available after persistence.
@@ -39,7 +38,7 @@ export interface ProjectAnalysisResult<A extends Analyzed = Analyzed> {
 
     readonly workspaceId: string;
 
-    readonly analysis?: A;
+    readonly analysis?: Analyzed;
 
     /**
      * Date of this analysis

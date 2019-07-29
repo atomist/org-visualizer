@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { calculateCodeMetrics, CodeMetrics, } from "@atomist/sdm-pack-sloc";
 import { Project } from "@atomist/automation-client";
 import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { calculateCodeMetrics, CodeMetrics } from "@atomist/sdm-pack-sloc";
+import { Analyzed } from "../AspectRegistry";
 
 export type CodeMetricsData = Pick<CodeMetrics,
     "languages" | "totalFiles" | "lines" | "files">;
@@ -50,6 +51,11 @@ export const CodeMetricsAspect: Aspect = {
             type: CodeMetricsType,
             data,
             sha: sha256(JSON.stringify(data)),
-        }
-    }
+        };
+    },
 };
+
+export function findCodeMetricsData(a: Analyzed): CodeMetricsData | undefined {
+    const fp = a.fingerprints.find(f => f.name === CodeMetricsType);
+    return fp ? fp.data : undefined;
+}

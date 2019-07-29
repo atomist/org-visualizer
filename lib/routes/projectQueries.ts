@@ -16,7 +16,7 @@
 
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { CodeStats } from "@atomist/sdm-pack-sloc/lib/slocReport";
-import { CodeMetrics } from "../aspect/common/codeMetrics";
+import { findCodeMetricsData } from "../aspect/common/codeMetrics";
 import {
     ReportBuilder,
     treeBuilder,
@@ -31,7 +31,7 @@ export const languagesQuery: ReportBuilder<ProjectAnalysis> =
         .split<CodeStats>({
             namer: ar => ar.id.repo,
             splitter: ar => {
-                const cme = ar.elements.codemetrics as CodeMetrics;
+                const cme = findCodeMetricsData(ar) || { languages: []};
                 return cme.languages;
             },
         })
