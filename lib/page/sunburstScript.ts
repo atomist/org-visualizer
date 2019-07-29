@@ -16,10 +16,6 @@
 
 import * as d3 from "d3";
 import {
-    BaseType,
-    HierarchyNode,
-} from "d3";
-import {
     PlantedTree,
     SunburstLeaf,
     SunburstTree,
@@ -39,6 +35,8 @@ const palette = [
     "#1f8045",
     "#173d48",
 ];
+
+type SunburstTreeNode = d3.HierarchyNode<SunburstTree | SunburstLeaf>;
 
 // tslint:disable
 
@@ -111,7 +109,7 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
         const root = d3.hierarchy<SunburstTree | SunburstLeaf>(d.tree);
         root.sum(d => (d as SunburstLeaf).size || 0); // sets a "value" property on each node
 
-        const slice = svg.selectAll<BaseType, SunburstTree | SunburstLeaf>("g.slice")
+        const slice = svg.selectAll<d3.BaseType, SunburstTree | SunburstLeaf>("g.slice")
             .data(d3.partition<SunburstTree | SunburstLeaf>()(root).descendants());
 
         slice.exit().remove();
@@ -122,9 +120,10 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
             .append("g").attr("class", "slice")
             .on("click", d => {
                 d3.event.stopPropagation();
+                setFrozenLevelData(perLevelDataElements, d);
                 focusOn(d);
             })
-            .on("mouseover", (d: HierarchyNode<SunburstTree | SunburstLeaf>) => {
+            .on("mouseover", (d: SunburstTreeNode) => {
                 populatePerLevelData(perLevelDataElements, d);
             });
 
@@ -183,7 +182,7 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
         moveStackToFront(d);
 
         function moveStackToFront(elD) {
-            svg.selectAll<BaseType, HierarchyNode<SunburstTree | SunburstLeaf>>(".slice").filter(d => d === elD)
+            svg.selectAll<d3.BaseType, SunburstTreeNode>(".slice").filter(d => d === elD)
                 .each(function (d) {
                     (this as any).parentNode.appendChild(this); // move all parents to the end of the line
                     if (d.parent) {
@@ -194,7 +193,7 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
     }
 }
 
-function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: HierarchyNode<SunburstTree | SunburstLeaf>) {
+function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
     console.log("I will now populate some data for " + d.data.name);
 
     const namesUpTree = [d.data.name];
@@ -207,6 +206,22 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
         const value = namesDown[i] || "";
         console.log("Trying to set something to " + value);
         e.html(value);
+    });
+}
+
+function setFrozenLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
+    console.log("I will now populate some data for " + d.data.name);
+
+    const namesUpTree = [];
+    for (let place: any = d; place = place.parent; !!place) {
+        namesUpTree.push(place.data.name);
+    }
+
+    const levelCountAbove = namesUpTree.length;
+    perLevelDataElements.forEach((e, i) => {
+        const className = i >= levelCountAbove ? "unfrozenLevelData" : "frozenLevelData";
+        console.log("Trying to class something to " + className);
+        e.attr("class", className)
     });
 }
 

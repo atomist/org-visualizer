@@ -114,6 +114,10 @@ label.success {
     white-space: nowrap;
 }
 
+.frozenLevelData {
+    border: 2px solid orange;
+}
+
 /* Collapsible content stuff 
  * https://alligator.io/css/collapsible/
  */
