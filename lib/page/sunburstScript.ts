@@ -21,6 +21,8 @@ import {
     SunburstTree,
 } from "../tree/sunburst";
 
+const NameOfThisLibrary = "SunburstYo";
+
 /**
  * Color palette for d3 to use
  */
@@ -40,7 +42,7 @@ type SunburstTreeNode = d3.HierarchyNode<SunburstTree | SunburstLeaf>;
 
 // tslint:disable
 
-export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDataElementIds: string[]) {
+export function sunburst(workspaceId, dataUrl: string, pWidth, pHeight, perLevelDataElementIds: string[]) {
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
@@ -120,14 +122,14 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
             .append("g").attr("class", "slice")
             .on("click", d => {
                 d3.event.stopPropagation();
-                setFrozenLevelData(perLevelDataElements, d);
+                setFrozenLevelData(workspaceId, perLevelDataElements, d);
                 focusOn(d);
             })
             .on("mouseover", (d: SunburstTreeNode) => {
                 populatePerLevelData(perLevelDataElements, d);
             });
 
-        // This is what it gets for hover
+        // This is the hover text
         newSlice.append("title")
             .text(d => d.data.name);
 
@@ -221,55 +223,49 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
     }
 }
 
-function setFrozenLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
+function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
     console.log("I will now populate some data for " + d.data.name);
 
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
         namesUpTree.push(place.data.name);
     }
-
-    const levelCountAbove = namesUpTree.length;
     const namesDownTree = namesUpTree.reverse();
+
+    const dataId = (d.data as any).id;
+    const levelCountAbove = namesUpTree.length;
+
     perLevelDataElements.forEach((e, i) => {
         const className = i >= levelCountAbove ? "unfrozenLevelData" : "frozenLevelData";
         console.log("Trying to class something to " + className);
         e.attr("class", className);
-        e.html(namesDownTree[i]);
+        if (!dataId || i !== (levelCountAbove - 1)) {
+            // no buttons
+            e.html(namesDownTree[i]);
+            return;
+        }
+        e.html(namesDownTree[i] + "<br/>" + htmlForSetIdeal(workspaceId, dataId) + htmlForNoteProblem(workspaceId, dataId));
     });
 }
 
-function constructDescription(d) {
-    // TODO this is not good
-    const workspaceId = "*";
-    let descriptionOfWhereYouClicked = `${d.data.name}`;
-    for (let place = d; place = place.parent; !!place) {
-        descriptionOfWhereYouClicked = place.data.name + "<br/>" + descriptionOfWhereYouClicked;
-    }
-    if (d.data.size === 1) {
-        descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-            `<br/><a href="${d.data.url}">${d.data.url}</a>`;
-    }
-    if (!!d.data.sha) {
-        // This is a fingerprint with a sha
-        const setIdealLink = `<button id="setIdeal"
-                    onclick="postSetIdeal('${workspaceId}','${d.data.id}')"
-                    >Set as ideal</button><label for="setIdeal" id="setIdealLabel" class="nothingToSay">&nbsp;</label>`;
-        const noteProblemLink = `<button id="noteProblem"
-                    onclick="postNoteProblem('${workspaceId}','${d.data.id}')"
-                    >Note as problem</button><label for="noteProblem" id="noteProblemLabel" class="nothingToSay">&nbsp;</label>`;
-        descriptionOfWhereYouClicked = descriptionOfWhereYouClicked +
-            "<br/>" + setIdealLink + "<br/>" + noteProblemLink;
-    }
-    return descriptionOfWhereYouClicked;
+function htmlForSetIdeal(workspaceId, dataId) {
+    return `<button id="setIdeal" onclick="${NameOfThisLibrary}.postSetIdeal('${workspaceId}','${dataId}')">
+                Set as ideal
+            </button><label for="setIdeal" id="setIdealLabel" class="nothingToSay">&nbsp;</label>`;
 }
 
-function postSetIdeal(workspaceId: string, fingerprintId: string) {
+function htmlForNoteProblem(workspaceId, dataId) {
+    return `<button id="noteProblem" onclick="${NameOfThisLibrary}.postNoteProblem('${workspaceId}','${dataId}')">
+                Note as problem
+            </button><label for="noteProblem" id="noteProblemLabel" class="nothingToSay">&nbsp;</label>`;
+}
+
+export function postSetIdeal(workspaceId: string, fingerprintId: string) {
     const postUrl = `./api/v1/${workspaceId}/ideal/${fingerprintId}`;
     const labelElement = document.getElementById("setIdealLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            labelElement.textContent = `Ideal set for workspace '${workspaceId}'`;
+            labelElement.textContent = `Ideal set`;
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         } else {
@@ -283,12 +279,12 @@ function postSetIdeal(workspaceId: string, fingerprintId: string) {
         });
 }
 
-function postNoteProblem(workspaceId: string, fingerprintId: string) {
+export function postNoteProblem(workspaceId: string, fingerprintId: string) {
     const postUrl = `./api/v1/${workspaceId}/problem/${fingerprintId}`;
     const labelElement = document.getElementById("noteProblemLabel");
     fetch(postUrl, { method: "PUT" }).then(response => {
         if (response.ok) {
-            labelElement.textContent = `Problem noted for workspace '${workspaceId}'`;
+            labelElement.textContent = `Problem noted`;
             labelElement.setAttribute("class", "success");
             labelElement.setAttribute("display", "static");
         } else {

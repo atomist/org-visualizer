@@ -14,6 +14,7 @@ export interface PossibleIdealForDisplay {
 }
 
 export interface SunburstPageProps {
+    workspaceId: string;
     fingerprintDisplayName: string;
     currentIdeal: CurrentIdealForDisplay;
     possibleIdeals: PossibleIdealForDisplay[];
@@ -58,7 +59,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         : props.tree.circles.map((c, i) => ({ textAreaId: "levelData-" + i, labelText: c.meaning }));
 
     const d3ScriptCall = `<script>
-    SunburstYo.sunburst("${props.query || ""}",
+    SunburstYo.sunburst("${props.workspaceId}",
         "${props.dataUrl}",
         window.innerWidth - 250,
         window.innerHeight - 100,

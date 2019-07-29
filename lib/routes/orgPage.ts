@@ -253,6 +253,7 @@ export function orgPage(
 
                 res.send(renderStaticReactNode(
                     SunburstPage({
+                        workspaceId,
                         fingerprintDisplayName,
                         currentIdeal: currentIdealForDisplay,
                         possibleIdeals: possibleIdealsForDisplay,

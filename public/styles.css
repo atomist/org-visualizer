@@ -90,11 +90,12 @@ svg .slice:hover textPath.textOutline {
  * set ideal button stuff, on sunburst page
  */
 
-label[for="setIdeal"] {
-    padding: 5px;
-    outline: 1px black solid;
+button {
     margin: 5px;
-    display: inline-block;
+}
+
+label[for="setIdeal"] | label[for="noteProblem"] {
+    margin: 5px;
 }
 
 label.nothingToSay {
