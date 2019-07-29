@@ -14,36 +14,42 @@
  * limitations under the License.
  */
 
-import {
-    TechnologyElement,
-    TechnologyScanner,
-} from "@atomist/sdm-pack-analysis";
-import {
-    calculateCodeMetrics,
-    CodeMetrics,
-} from "@atomist/sdm-pack-sloc";
+import { calculateCodeMetrics, CodeMetrics, } from "@atomist/sdm-pack-sloc";
+import { Project } from "@atomist/automation-client";
+import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
 
-export interface CodeMetricsElement extends TechnologyElement,
-    Pick<CodeMetrics, "languages" | "totalFiles" | "lines" | "files"> {
-
-    name: "codemetrics";
-
-}
+export type CodeMetricsData = Pick<CodeMetrics,
+    "languages" | "totalFiles" | "lines" | "files">;
 
 /**
  * Scan for lines of code in particular programming languages.
  * Uses @atomist/sdm-pack-sloc
  */
-export const codeMetricsScanner: TechnologyScanner<CodeMetricsElement> = async p => {
+async function scanForCodeMetrics(p: Project): Promise<CodeMetricsData> {
     const codeMetrics = await calculateCodeMetrics(p);
     const relevantLanguages = codeMetrics.languages.filter(l => l.total > 0);
-    const tags = relevantLanguages.map(lr => lr.language.name);
     return {
-        name: "codemetrics",
-        tags,
         languages: relevantLanguages,
         files: codeMetrics.files,
         lines: codeMetrics.lines,
         totalFiles: codeMetrics.totalFiles,
     };
+}
+
+export const CodeMetricsType = "code-metrics";
+
+// TODO Aspect<FP<CodeMetricsData>>
+export const CodeMetricsAspect: Aspect = {
+    name: CodeMetricsType,
+    // Suppress display
+    displayName: undefined,
+    extract: async p => {
+        const data = await scanForCodeMetrics(p);
+        return {
+            name: CodeMetricsType,
+            type: CodeMetricsType,
+            data,
+            sha: sha256(JSON.stringify(data)),
+        }
+    }
 };

@@ -51,6 +51,7 @@ import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import { CodeOwnership } from "../element/codeOwnership";
+import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 
 /**
  * The aspects anaged by this SDM.
@@ -77,6 +78,8 @@ export const Aspects: ManagedAspect[] = [
     GitRecency,
     // This is expensive as it requires deeper cloning
     gitActiveCommitters(50),
+    // This is also expensive
+    CodeMetricsAspect,
     StackAspect,
     CiAspect,
     JavaBuild,

@@ -36,7 +36,6 @@ import {
     ProblemStore,
 } from "../aspect/AspectRegistry";
 import { Aspects } from "../customize/aspects";
-import { codeMetricsScanner } from "../element/codeMetricsElement";
 
 /**
  * Add scanners to the analyzer to extract data
@@ -46,8 +45,6 @@ import { codeMetricsScanner } from "../element/codeMetricsElement";
 export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
     return analyzerBuilder(sdm)
         .withAspects(Aspects)
-        // This one is crazy expensive so may want to skip it
-         .withScanner({ action: codeMetricsScanner, runWhen: opts => opts.full })
         .build();
 }
 

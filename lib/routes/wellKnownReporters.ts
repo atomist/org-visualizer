@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import {
     CodeStats,
     consolidate,
@@ -28,26 +27,24 @@ import {
     OrgGrouper,
     ProjectAnalysisGrouper,
 } from "../aspect/support/groupingUtils";
-import { CodeMetricsElement } from "../element/codeMetricsElement";
 import {
     treeBuilder,
     TreeBuilder,
 } from "../tree/TreeBuilder";
+import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 
 /**
  * Well known reporters against our repo cohort.
- * Works against full analyses.
  */
 export const WellKnownReporters: Reporters = {
 
-    langs:
-        params =>
-            treeBuilderFor<ProjectAnalysis>("languages", params)
+        langs: params =>
+            treeBuilderFor("languages", params)
                 .customGroup<CodeStats>({
                     name: "language", to: async ars => {
                         const cms: CodeStats[] = [];
                         for await (const ar of ars) {
-                            const cm = ar.elements.codemetrics as CodeMetricsElement;
+                            const cm = findCodeMetricsData(ar);
                             if (cm) {
                                 cms.push(...cm.languages);
                             }
@@ -59,17 +56,17 @@ export const WellKnownReporters: Reporters = {
                         return s;
                     },
                 })
-                .map<ProjectAnalysis & { lang: string }>({
+                .map<Analyzed & { lang: string }>({
                     async* mapping(cs: AsyncIterable<CodeStats>,
-                                   originalQuery: () => AsyncIterable<ProjectAnalysis>): AsyncIterable<ProjectAnalysis & { lang: string }> {
+                                   originalQuery: () => AsyncIterable<Analyzed>): AsyncIterable<Analyzed & { lang: string }> {
                         // TODO don't materialize this
-                        const source: ProjectAnalysis[] = [];
+                        const source: Analyzed[] = [];
                         for await (const pa of originalQuery()) {
                             source.push(pa);
                         }
                         for await (const s of cs) {
                             for (const r of source.filter(ar => {
-                                const cm = ar.elements.codemetrics as CodeMetricsElement;
+                                const cm = findCodeMetricsData(ar) || { languages: [] };
                                 return cm.languages.some(l => l.language.name === s.language.name);
                             })
                                 .map(ar => ({ ...ar, lang: s.language.name }))) {
@@ -78,44 +75,53 @@ export const WellKnownReporters: Reporters = {
                         }
                     },
                 })
-                .renderWith(ar => ({
-                    name: ar.id.repo,
-                    size: (ar.elements.codemetrics as CodeMetricsElement).languages.find(l => l.language.name === ar.lang).total,
-                    url: `/projects/${ar.id.owner}/${ar.id.repo}`,
-                    repoUrl: ar.id.url,
-                })),
+                .renderWith(ar => {
+                    const cm = findCodeMetricsData(ar) || { languages: [] };
+                    const size = cm.languages.find(l => l.language.name === ar.lang).total;
+                    return {
+                        name: ar.id.repo,
+                        size,
+                        url: `/projects/${ar.id.owner}/${ar.id.repo}`,
+                        repoUrl: ar.id.url,
+                    };
+                }),
 
-    loc: params =>
-        treeBuilderFor<ProjectAnalysis>("loc", params)
-            .group({ name: "size", by: groupByLoc })
-            .split<CodeStats>({
-                splitter: ar => {
-                    const cm = ar.elements.codemetrics as CodeMetricsElement;
-                    return cm.languages;
-                },
-                namer: a => a.id.repo,
-            })
-            .renderWith(cs => {
-                return {
-                    name: `${cs.language.name} (${cs.source})`,
-                    // url: ar.analysis.id.url,
-                    size: cs.source,
-                };
-            }),
+        loc: params =>
+            treeBuilderFor("loc", params)
+                .group({ name: "size", by: groupByLoc })
+                .split<CodeStats>({
+                    splitter: ar => {
+                        const cm = findCodeMetricsData(ar) || { languages: [] };
+                        return cm.languages;
+                    },
+                    namer: a => a.id.repo,
+                })
+                .renderWith(cs => {
+                    return {
+                        name: `${cs.language.name} (${cs.source})`,
+                        // url: ar.analysis.id.url,
+                        size: cs.source,
+                    };
+                }),
 
-    // Aspects found in this project
-    aspectCount: params =>
-        treeBuilderFor("aspectCount", params)
-            .renderWith(ar => {
-                // TODO fix this using new support
-                const rendered = defaultAnalyzedRenderer()(ar);
-                rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
-                return rendered;
-            }),
-};
+        // Aspects found in this project
+        aspectCount: params =>
+            treeBuilderFor("aspectCount", params)
+                .renderWith(ar => {
+                    // TODO fix this using new support
+                    const rendered = defaultAnalyzedRenderer()(ar);
+                    rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
+                    return rendered;
+                }),
+    };
+
+function findCodeMetricsData(a: Analyzed): CodeMetricsData | undefined {
+    const fp = a.fingerprints.find(f => f.name === CodeMetricsType);
+    return fp ? fp.data : undefined;
+}
 
 const groupByLoc: ProjectAnalysisGrouper = ar => {
-    const cm = ar.elements.codemetrics as CodeMetricsElement;
+    const cm = findCodeMetricsData(ar);
     if (!cm) {
         return undefined;
     }
@@ -131,8 +137,8 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-export function treeBuilderFor<A extends Analyzed = Analyzed>(name: string, params: any): TreeBuilder<A, A> {
-    const tb = treeBuilder<A>(name);
+export function treeBuilderFor(name: string, params: any): TreeBuilder<Analyzed, Analyzed> {
+    const tb = treeBuilder<Analyzed>(name);
     return (params.byOrg === "true") ?
         tb.group({ name: "org", by: OrgGrouper }) :
         tb;
