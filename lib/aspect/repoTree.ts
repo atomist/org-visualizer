@@ -20,6 +20,7 @@ import {
     ClientFactory,
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
+import { toEntropyBandForSingleAspect } from "../customize/categories";
 import {
     introduceClassificationLayer,
     PlantedTree,
@@ -208,28 +209,6 @@ function toEntropyBand(fp: { entropy: number }): string | undefined {
     }
     if (fp.entropy > .5) {
         return "loose (>.5)";
-    }
-    return undefined;
-}
-
-function toEntropyBandForSingleAspect(fp: { entropy: number }): string | undefined {
-    /*
-    None: = 0
-Low: < 1
-Medium: < 2
-High: >=*2*
-     */
-    if (fp.entropy === 0) {
-        return "None";
-    }
-    if (fp.entropy < 1) {
-        return "Low";
-    }
-    if (fp.entropy < 2) {
-        return "Medium";
-    }
-    if (fp.entropy >= 2) {
-        return "High";
     }
     return undefined;
 }
