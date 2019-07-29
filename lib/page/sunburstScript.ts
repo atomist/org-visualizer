@@ -57,7 +57,7 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
     const y = d3.scaleSqrt()
         .range([maxRadius * .1, maxRadius]);
 
-    const color = d3.scaleOrdinal(palette);
+    const chooseColorFromString = d3.scaleOrdinal(palette);
 
     const arc = d3.arc()
         .startAngle((d: any) => x(d.x0))
@@ -132,7 +132,8 @@ export function sunburst(someName, dataUrl: string, pWidth, pHeight, perLevelDat
 
         newSlice.append("path")
             .attr("class", "main-arc")
-            .style("fill", (d: any) => d.data.color || (color as any)((d.children ? d : d.parent).data.name))
+            // I think this says, the last ring should use the same color as its parent
+            .style("fill", (d: any) => d.data.color || chooseColorFromString((d.children ? d : d.parent).data.name))
             .attr("d", arc as any);
 
         newSlice.append("path")
