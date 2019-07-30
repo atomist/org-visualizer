@@ -57,22 +57,6 @@ export function getCategories(aspect: Pick<Aspect<any>, "name">): string[] | und
     return AspectCategories[aspect.name];
 }
 
-export function toEntropyBandForSingleAspect(fp: { entropy: number }): string {
-    if (fp.entropy === 0) {
-        return "None";
-    }
-    if (fp.entropy < 1) {
-        return "Low";
-    }
-    if (fp.entropy < 2) {
-        return "Medium";
-    }
-    if (fp.entropy >= 2) {
-        return "High";
-    }
-    return undefined;
-}
-
 export interface AspectReport {
     category: string;
     count: number;

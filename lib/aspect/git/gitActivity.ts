@@ -20,12 +20,19 @@ import {
 } from "@atomist/automation-client";
 import {
     Aspect,
-    ExtractFingerprint,
+    ExtractFingerprint, FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
-import { DefaultStat } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as child_process from "child_process";
 import * as util from "util";
+import {
+    bandFor,
+    Default,
+} from "../../util/bands";
+import {
+    AgeBands,
+    SizeBands,
+} from "../../util/commonBands";
 import { daysSince } from "./dateUtils";
 
 const exec = util.promisify(child_process.exec);
@@ -74,7 +81,11 @@ function committersCommands(commitDepth: number): string[] {
     ];
 }
 
-function activeCommittersExtractor(commitDepth: number): ExtractFingerprint {
+export interface ActiveCommittersData {
+    count: number;
+}
+
+function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<ActiveCommittersData>> {
     return async p => {
         const cwd = (p as LocalProject).baseDir;
         const cmds = committersCommands(commitDepth);
@@ -100,14 +111,24 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint {
  * Active committers. This is expensive as it requires cloning the
  * last commitDepth commits
  */
-export function gitActiveCommitters(commitDepth: number): Aspect {
+export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommittersData>> {
     return {
         name: "git-actives",
         displayName: "Active git committers",
         extract: activeCommittersExtractor(commitDepth),
         toDisplayableFingerprintName: () => "Active git committers",
         toDisplayableFingerprint: fp => {
-            return fp.data.count + "";
+            return bandFor<SizeBands>({
+                low: { upTo: 4 },
+                medium: { upTo: 12 },
+                high: Default,
+            }, fp.data.count, true);
+        },
+        stats: {
+            defaultStatStatus: {
+                entropy: false,
+            },
+            basicStatsPath: "count",
         },
     };
 }
@@ -139,14 +160,10 @@ function sinceDays(days: number): string {
 
 function lastDateToActivityBand(date: Date): string {
     const days = daysSince(date);
-    if (days > 500) {
-        return "prehistoric";
-    }
-    if (days > 365) {
-        return "ancient";
-    }
-    if (days > 30) {
-        return "slow";
-    }
-    return "active";
+    return bandFor<AgeBands>({
+        current: { upTo: 30 },
+        recent: { upTo: 200 },
+        ancient: { upTo: 500 },
+        prehistoric: Default,
+    }, days, true);
 }
