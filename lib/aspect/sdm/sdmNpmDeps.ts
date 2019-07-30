@@ -139,7 +139,7 @@ export const diffNpmDepsFingerprints: DiffSummaryFingerprint = (diff, target) =>
 ${(target.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`)).join("\n")}
 
 Project ${bold(`${diff.owner}/${diff.repo}/${diff.branch}`)} is currently configured to use versions:
-${(diff.to.data[1] as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`))}`,
+${(diff.to.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`))}`,
     };
 };
 

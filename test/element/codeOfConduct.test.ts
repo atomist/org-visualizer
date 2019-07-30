@@ -15,7 +15,7 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
-import { TypedFP } from "@atomist/sdm-pack-fingerprints";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "power-assert";
 import {
     CodeOfConduct,
@@ -29,13 +29,13 @@ describe("codeOfConduct", () => {
 
     it("should find no code of conduct", async () => {
         const p = InMemoryProject.of();
-        const s = await CodeOfConduct.extract(p) as TypedFP<CodeOfConductData>;
+        const s = await CodeOfConduct.extract(p) as FP<CodeOfConductData>;
         assert(!s);
     });
 
     it("should find test code of conduct", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: testCoC });
-        const s = await CodeOfConduct.extract(p) as TypedFP<CodeOfConductData>;
+        const s = await CodeOfConduct.extract(p) as FP<CodeOfConductData>;
         assert(!!s);
         assert.strictEqual(s.data.content, testCoC);
         assert.strictEqual(s.data.title, "The Benign Code of Conduct");
@@ -43,7 +43,7 @@ describe("codeOfConduct", () => {
 
     it("should do its best with code of conduct without title", async () => {
         const p = InMemoryProject.of({ path: "CODE_OF_CONDUCT.md", content: "meaningless" });
-        const s = await CodeOfConduct.extract(p) as TypedFP<CodeOfConductData>;
+        const s = await CodeOfConduct.extract(p) as FP<CodeOfConductData>;
         assert(!!s);
         assert.strictEqual(s.data.content, "meaningless");
         assert(!s.data.title);
