@@ -100,7 +100,7 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
     const d: PlantedTree = data;
 
     if (!d.tree || d.tree.children.length === 0) {
-        alert(`No data in ` + dataJson);
+        alert("No data");
         return;
     }
 

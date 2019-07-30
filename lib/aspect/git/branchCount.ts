@@ -48,7 +48,7 @@ export const branchCount: Aspect = {
             sha: sha256(JSON.stringify(data)),
         };
     },
-    toDisplayableFingerprintName: () => "branch count",
+    toDisplayableFingerprintName: () => "Branch count",
     toDisplayableFingerprint: fp => {
         const count = parseInt(fp.data.count, 10);
         if (count > 20) {

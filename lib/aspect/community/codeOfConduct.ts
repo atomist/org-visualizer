@@ -58,6 +58,7 @@ export const CodeOfConduct: Aspect<TypedFP<CodeOfConductData>> = {
         }
         return undefined;
     },
+    toDisplayableFingerprintName: () => "Code of conduct",
     toDisplayableFingerprint: fpi => {
         return fpi.data.title || "untitled";
     },
