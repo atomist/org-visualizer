@@ -81,7 +81,7 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 export const configuration: Configuration = configure(async sdm => {
         const isStaging = sdm.configuration.endpoints.api.includes("staging");
 
-        const optionalAspects = isStaging ? [LeinDeps] : [];
+        const optionalAspects = isStaging ? [SdmDeps, LeinDeps] : [];
 
         const jobAspects = [
             DockerFrom,
