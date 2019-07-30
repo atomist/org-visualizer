@@ -16,9 +16,9 @@
 
 import * as assert from "assert";
 import {
-    mergeTrees,
     SunburstTree,
 } from "../../lib/tree/sunburst";
+import { mergeTrees } from "../../lib/tree/treeUtils";
 
 describe("treeMerge", () => {
 

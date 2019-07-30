@@ -16,10 +16,10 @@
 
 import * as assert from "assert";
 import {
-    introduceClassificationLayer,
     PlantedTree,
     SunburstTree,
 } from "../../lib/tree/sunburst";
+import { introduceClassificationLayer } from "../../lib/tree/treeUtils";
 
 describe("introduceClassificationLayer", () => {
 

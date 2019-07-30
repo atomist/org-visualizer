@@ -21,11 +21,8 @@ import {
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
 import { toEntropyBandForSingleAspect } from "../customize/categories";
-import {
-    introduceClassificationLayer,
-    PlantedTree,
-    validatePlantedTree,
-} from "../tree/sunburst";
+import { PlantedTree } from "../tree/sunburst";
+import { introduceClassificationLayer, validatePlantedTree } from "../tree/treeUtils";
 
 export interface TreeQuery {
 

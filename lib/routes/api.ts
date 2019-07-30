@@ -42,10 +42,8 @@ import {
     driftTreeForSingleAspect,
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
-import {
-    SunburstTree,
-    visit,
-} from "../tree/sunburst";
+import { SunburstTree } from "../tree/sunburst";
+import { visit } from "../tree/treeUtils";
 import {
     authHandlers,
     configureAuth,

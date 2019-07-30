@@ -26,15 +26,17 @@ import { Client } from "pg";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { fingerprintsToReposTree } from "../aspect/repoTree";
 import {
-    groupSiblings,
-    introduceClassificationLayer,
     isSunburstTree,
     PlantedTree,
     SunburstTree,
+} from "../tree/sunburst";
+import {
+    groupSiblings,
+    introduceClassificationLayer,
     trimOuterRim,
     visit,
     visitAsync,
-} from "../tree/sunburst";
+} from "../tree/treeUtils";
 
 import * as _ from "lodash";
 

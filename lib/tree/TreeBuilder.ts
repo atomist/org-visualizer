@@ -16,10 +16,10 @@
 
 import * as _ from "lodash";
 import {
-    mergeTrees,
     SunburstLeaf,
     SunburstTree,
 } from "./sunburst";
+import { mergeTrees } from "./treeUtils";
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst
