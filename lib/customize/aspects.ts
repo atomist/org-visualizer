@@ -26,9 +26,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
-import {
-    fileCount,
-} from "../aspect/common/fileCount";
+import { fileCount } from "../aspect/common/fileCount";
 import {
     CiAspect,
     JavaBuild,
@@ -46,6 +44,7 @@ import { idealsFromNpm } from "../aspect/node/idealFromNpm";
 import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
+import { SdmDeps } from "../aspect/sdm/sdmNpmDeps";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
@@ -104,4 +103,5 @@ export const Aspects: ManagedAspect[] = [
     DirectMavenDependencies,
     PythonDependencies,
     LeinDeps,
+    SdmDeps,
 ];

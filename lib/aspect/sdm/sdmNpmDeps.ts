@@ -146,12 +146,13 @@ ${(diff.to.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`))}`,
 const SdmDepsName = "sdm-deps";
 
 export const SdmDeps: Aspect = {
-    displayName: "SDM packages",
     name: SdmDepsName,
+    displayName: "SDM packages",
     extract: createSdmDepsFingerprints,
     apply: applySdmDepsFingerprint,
     summary: diffNpmDepsFingerprints,
     toDisplayableFingerprint: fp => (fp.data as NpmPackage[]).map(d => `${d.name.split("/")[1]}@${d.version}`).join(", "),
+    toDisplayableFingerprintName: () => "SDM packages",
     workflows: [
         DefaultTargetDiffHandler,
     ],
