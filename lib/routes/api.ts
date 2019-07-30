@@ -24,6 +24,7 @@ import {
     RequestHandler,
     Response,
 } from "express";
+import * as _ from "lodash";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
@@ -177,10 +178,17 @@ function exposeFingerprintByType(express: Express,
     express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
         try {
             const workspaceId = req.params.workspace_id || "*";
-            const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, req.params.type);
+            const type = req.params.type;
+            const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, type);
             fillInAspectNamesInList(aspectRegistry, fps);
             logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
-            res.json({ list: fps });
+            res.json({
+                list: fps,
+                analyzed: {
+                    count: fps.length,
+                    variants: _.sumBy(fps, "variants"),
+                },
+            });
         } catch (e) {
             logger.warn("Error occurred getting fingerprints: %s %s", e.message, e.stack);
             res.sendStatus(500);
@@ -286,7 +294,7 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
     fingerprints.forEach(fp => {
         const aspect = aspectRegistry.aspectOf(fp.type);
         if (!!aspect && !!aspect.toDisplayableFingerprintName) {
-            fp.name = aspect.toDisplayableFingerprintName(fp.name);
+            (fp as any).displayName = aspect.toDisplayableFingerprintName(fp.name);
         }
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
