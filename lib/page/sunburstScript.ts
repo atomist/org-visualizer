@@ -194,17 +194,20 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
 
 function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
 
+
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
         namesUpTree.push(place.data.name);
     }
+    const namesDownTree = namesUpTree.reverse();
 
-    const namesDown = namesUpTree.reverse();
     perLevelDataElements.forEach((e, i) => {
         if (e.attr("class") === "frozenLevelData") {
             return;
         }
-        const value = namesDown[i] || "(various)";
+        console.log("Class is " + e.attr("class"))
+
+        const value = namesDownTree[i] || "(various)";
         e.html(value);
     });
 
@@ -218,25 +221,30 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
 
 function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
 
-    const namesUpTree = [d.data.name];
+    const htmlUpTree = [formatLevelData(d.data)];
     for (let place: any = d; place = place.parent; !!place) {
-        namesUpTree.push(place.data.name);
+        htmlUpTree.push(formatLevelData(place.data))
     }
-    const namesDownTree = namesUpTree.reverse();
+    const htmlDownTree = htmlUpTree.reverse();
 
     const dataId = (d.data as any).id;
-    const levelCountAbove = namesUpTree.length;
+    const levelCountAbove = htmlUpTree.length;
 
     perLevelDataElements.forEach((e, i) => {
         const className = i >= levelCountAbove ? "unfrozenLevelData" : "frozenLevelData";
         e.attr("class", className);
         if (!dataId || i !== (levelCountAbove - 1)) {
             // no buttons
-            e.html(namesDownTree[i]);
+            e.html(htmlDownTree[i]);
             return;
         }
-        e.html(namesDownTree[i] + "<br/>" + htmlForSetIdeal(workspaceId, dataId) + htmlForNoteProblem(workspaceId, dataId));
+        e.html(htmlDownTree[i] + "<br/>" + htmlForSetIdeal(workspaceId, dataId) + htmlForNoteProblem(workspaceId, dataId));
     });
+}
+
+function formatLevelData(data: { name: string, url?: string }): string {
+    return data.url ? `<a href="${data.url}">${data.name}</a>` : data.name;
+
 }
 
 function htmlForSetIdeal(workspaceId, dataId) {

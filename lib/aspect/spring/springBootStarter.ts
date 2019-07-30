@@ -16,15 +16,15 @@
 
 import {
     Aspect,
+    FP,
     sha256,
-    TypedFP,
 } from "@atomist/sdm-pack-fingerprints";
 import { VersionedArtifact } from "@atomist/sdm-pack-spring";
 import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/parse/fromPom";
 
 const SpringBootStarterType = "spring-boot-starter";
 
-export type SpringBootStarterFingerprint = TypedFP<VersionedArtifact>;
+export type SpringBootStarterFingerprint = FP<VersionedArtifact>;
 
 /**
  * Detect which Spring Boot starter dependencies are included in your projects,
