@@ -63,7 +63,7 @@ export const createSdmDepsFingerprints: ExtractFingerprint = async p => {
     if (!!file) {
         const pj = JSON.parse(await file.getContent());
 
-        // Don't calcuate that fingerprint one of the SDM packages itself as those
+        // Don't calculate that fingerprint one of the SDM packages itself as those
         // iterate at different speeds
         const name = pj.name;
         if (SdmPackages.includes(name)) {
@@ -83,6 +83,11 @@ export const createSdmDepsFingerprints: ExtractFingerprint = async p => {
             name: pk,
             version: devDependencies[pk],
         }));
+
+        // If we don't have all dependencies, don't calculate the fingerprint
+        if (SdmPackages.some(pk => !sdmPackages.some(fpk => fpk.name === pk))) {
+            return undefined;
+        }
 
         return createSdmDepFingerprint(sdmPackages);
     } else {
