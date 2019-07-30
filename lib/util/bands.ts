@@ -30,7 +30,7 @@ function isUpTo(b: Band): b is UpTo {
  * @param {number} value
  * @return {string}
  */
-export function bandFor(bands: Bands<any>, value: number, includeNumber: boolean = false): string {
+export function bandFor<B extends string = string>(bands: Bands<B>, value: number, includeNumber: boolean = false): string {
     const bandNames = Object.getOwnPropertyNames(bands);
     for (const bandName of bandNames) {
         const band = bands[bandName];

@@ -23,6 +23,8 @@ import {
     Aspect,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
+import { bandFor, Default } from "../../util/bands";
+import { SizeBands } from "../../util/commonBands";
 
 const BranchCountType = "branch-count";
 
@@ -51,16 +53,12 @@ export const branchCount: Aspect = {
     toDisplayableFingerprintName: () => "Branch count",
     toDisplayableFingerprint: fp => {
         const count = parseInt(fp.data.count, 10);
-        if (count > 20) {
-            return "crazy (>20)";
-        }
-        if (count > 12) {
-            return "excessive (12-20)";
-        }
-        if (count > 5) {
-            return "high (5-12)";
-        }
-        return "ok (<=5)";
+        return bandFor<"low" | "medium" | "high" | "excessive">({
+            low: { upTo: 5 },
+            medium: { upTo: 12 },
+            high: { upTo: 12},
+            excessive: Default,
+        }, count, true);
     },
     stats: {
         defaultStatStatus: {

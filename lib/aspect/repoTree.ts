@@ -20,12 +20,13 @@ import {
     ClientFactory,
     doWithClient,
 } from "../analysis/offline/persist/pgUtils";
-import { toEntropyBandForSingleAspect } from "../customize/categories";
 import { PlantedTree } from "../tree/sunburst";
 import {
     introduceClassificationLayer,
     validatePlantedTree,
 } from "../tree/treeUtils";
+import { bandFor } from "../util/bands";
+import { EntropySizeBands } from "../util/commonBands";
 
 export interface TreeQuery {
 
@@ -154,7 +155,7 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: toEntropyBand,
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, true),
         });
         return tree;
     }, err => {
@@ -194,21 +195,8 @@ export async function driftTreeForSingleAspect(workspaceId: string,
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: toEntropyBandForSingleAspect,
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, true),
         });
         return tree;
     });
-}
-
-function toEntropyBand(fp: { entropy: number }): string | undefined {
-    if (fp.entropy > 2) {
-        return "random (>2)";
-    }
-    if (fp.entropy > 1) {
-        return "wild (>1)";
-    }
-    if (fp.entropy > .5) {
-        return "loose (>.5)";
-    }
-    return undefined;
 }

@@ -35,8 +35,9 @@ import {
 } from "../../../aspect/AspectRegistry";
 import {
     getCategories,
-    toEntropyBandForSingleAspect,
 } from "../../../customize/categories";
+import { bandFor } from "../../../util/bands";
+import { EntropySizeBands } from "../../../util/commonBands";
 import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
@@ -491,7 +492,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             variants: +r.variants,
             count: +r.count,
             entropy: +r.entropy,
-            entropy_band: toEntropyBandForSingleAspect(r),
+            entropy_band: fp => bandFor(EntropySizeBands, r.entropy, true),
             // This is really confusing but the Aspect.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));
