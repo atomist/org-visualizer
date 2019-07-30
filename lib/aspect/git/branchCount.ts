@@ -56,7 +56,7 @@ export const branchCount: Aspect = {
     toDisplayableFingerprintName: () => "Branch count",
     toDisplayableFingerprint: fp => {
         const count = parseInt(fp.data.count, 10);
-        return bandFor<"low" | "medium" | "high" | "excessive">({
+        return bandFor<SizeBands | "excessive">({
             low: { upTo: 5 },
             medium: { upTo: 12 },
             high: { upTo: 12},
