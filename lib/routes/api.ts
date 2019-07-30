@@ -27,9 +27,7 @@ import {
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
-import {
-    ClientFactory,
-} from "../analysis/offline/persist/pgUtils";
+import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
@@ -50,9 +48,7 @@ import {
     corsHandler,
 } from "./auth";
 import { buildFingerprintTree } from "./buildFingerprintTree";
-import {
-    WellKnownReporters,
-} from "./wellKnownReporters";
+import { WellKnownReporters } from "./wellKnownReporters";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -87,7 +83,7 @@ export function api(clientFactory: ClientFactory,
 
             exposeListFingerprints(express, store);
 
-            exposeFingerprintByType(express, store);
+            exposeFingerprintByType(express, aspectRegistry, store);
 
             exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory);
 
@@ -174,12 +170,15 @@ function exposeListFingerprints(express: Express, store: ProjectAnalysisResultSt
     });
 }
 
-function exposeFingerprintByType(express: Express, store: ProjectAnalysisResultStore): void {
+function exposeFingerprintByType(express: Express,
+                                 aspectRegistry: AspectRegistry,
+                                 store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type", [corsHandler(), ...authHandlers()], async (req, res) => {
         try {
             const workspaceId = req.params.workspace_id || "*";
             const fps: FingerprintUsage[] = await store.fingerprintUsageForType(workspaceId, req.params.type);
+            fillInAspectNamesInList(aspectRegistry, fps);
             logger.debug("Returning fingerprints of type for '%s': %j", workspaceId, fps);
             res.json({ list: fps });
         } catch (e) {
@@ -277,5 +276,19 @@ function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): 
             }
         }
         return true;
+    });
+}
+
+/**
+ * Fill in aspect names
+ */
+function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: FingerprintUsage[]): void {
+    fingerprints.forEach(fp => {
+        const aspect = aspectRegistry.aspectOf(fp.type);
+        if (!!aspect && !!aspect.toDisplayableFingerprintName) {
+            fp.name = aspect.toDisplayableFingerprintName(fp.name);
+        }
+        // This is going to be needed for the invocation of the command handlers to set targets
+        (fp as any).fingerprint = `${fp.type}::${fp.name}`;
     });
 }
