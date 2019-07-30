@@ -112,15 +112,14 @@ export const applySdmDepsFingerprint: ApplyFingerprint = async (p, fp) => {
             }
 
             // Fix up peerDependency entries
-
-            if (!!_.get(pj.peerDependencies, p.name)) {
+            if (!!_.get(pj.peerDependencies, pk.name)) {
                 const version = pk.version.replace(/\^/g, "");
                 const peerVersion = `>=${semver.major(version)}.${semver.minor(version)}.0`;
                 pj.peerDependencies[pk.name] = peerVersion;
             }
         });
 
-        await file.setContent(JSON.stringify(pj));
+        await file.setContent(JSON.stringify(pj, undefined, 2));
         const log = new LoggingProgressLog("npm install");
         const result = await spawnLog(
             "npm",
@@ -144,7 +143,7 @@ export const diffNpmDepsFingerprints: DiffSummaryFingerprint = (diff, target) =>
 ${(target.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`)).join("\n")}
 
 Project ${bold(`${diff.owner}/${diff.repo}/${diff.branch}`)} is currently configured to use versions:
-${(diff.to.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`))}`,
+${(diff.to.data as NpmPackage[]).map(p => codeLine(`${p.name}@${p.version}`)).join("\n")}`,
     };
 };
 
