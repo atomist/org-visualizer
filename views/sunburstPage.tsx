@@ -20,7 +20,7 @@ export interface SunburstPageProps {
     possibleIdeals: PossibleIdealForDisplay[];
     query: string;
     dataUrl: string;
-    tree: PlantedTree; // we might have the data already.
+    tree: PlantedTree; // we have the data already.
 }
 
 function displayCurrentIdeal(currentIdeal: CurrentIdealForDisplay): React.ReactElement {
