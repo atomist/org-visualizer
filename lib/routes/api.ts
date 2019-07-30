@@ -142,11 +142,11 @@ function exposeAspectMetadata(express: Express, store: ProjectAnalysisResultStor
             const at = await store.latestTimestamp(workspaceId);
 
             res.json({
+                list: reports,
                 analyzed: {
                     repo_count: count,
                     at,
                 },
-                reports,
             });
         } catch (e) {
             logger.warn("Error occurred getting aspect metadata: %s %s", e.message, e.stack);
