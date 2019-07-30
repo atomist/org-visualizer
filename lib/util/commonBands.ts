@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Bands, Default } from "./bands";
+import {
+    Bands,
+    Default,
+} from "./bands";
 
 export type SizeBands = "low" | "medium" | "high";
 

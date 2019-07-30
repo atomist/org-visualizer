@@ -25,8 +25,14 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as child_process from "child_process";
 import * as util from "util";
-import { bandFor, Default } from "../../util/bands";
-import { AgeBands, SizeBands } from "../../util/commonBands";
+import {
+    bandFor,
+    Default,
+} from "../../util/bands";
+import {
+    AgeBands,
+    SizeBands,
+} from "../../util/commonBands";
 import { daysSince } from "./dateUtils";
 
 const exec = util.promisify(child_process.exec);

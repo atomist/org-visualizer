@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { bandFor, Bands, Default } from "../../lib/util/bands";
+import {
+    bandFor,
+    Bands,
+    Default,
+} from "../../lib/util/bands";
 
 import * as assert from "assert";
 

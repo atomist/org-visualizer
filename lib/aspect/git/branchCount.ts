@@ -23,7 +23,10 @@ import {
     Aspect,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
-import { bandFor, Default } from "../../util/bands";
+import {
+    bandFor,
+    Default,
+} from "../../util/bands";
 import { SizeBands } from "../../util/commonBands";
 
 const BranchCountType = "branch-count";
