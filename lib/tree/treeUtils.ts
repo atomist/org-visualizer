@@ -16,7 +16,13 @@
 
 import { logger } from "@atomist/automation-client";
 import * as _ from "lodash";
-import { isSunburstTree, PlantedTree, SunburstLeaf, SunburstLevel, SunburstTree } from "./sunburst";
+import {
+    isSunburstTree,
+    PlantedTree,
+    SunburstLeaf,
+    SunburstLevel,
+    SunburstTree,
+} from "./sunburst";
 
 export function visit(
     t: SunburstLevel,
