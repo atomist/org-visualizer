@@ -40,18 +40,28 @@ function isUpTo(b: Band): b is UpTo {
     return !!maybe && maybe.upTo !== undefined;
 }
 
+export enum BandCasing {
+    NoChange,
+    Sentence,
+}
+
 /**
  * Return the band for the given value
  * @param {Bands} bands
  * @param {number} value
  * @return {string}
  */
-export function bandFor<B extends string = string>(bands: Bands<B>, value: number, includeNumber: boolean = false): string {
+export function bandFor<B extends string = string>(bands: Bands<B>,
+                                                   value: number,
+                                                   options: {
+                                                       includeNumber?: boolean,
+                                                       casing?: BandCasing,
+                                                   } = { includeNumber: false, casing: BandCasing.NoChange }): string {
     const bandNames = Object.getOwnPropertyNames(bands);
     for (const bandName of bandNames) {
         const band = bands[bandName];
         if (isExactly(band) && band.exactly === value) {
-            return format(value, bandName, band, includeNumber);
+            return format(value, bandName, band, options);
         }
     }
     const upToBands: Array<{ name: string, band: UpTo }> = _.sortBy(
@@ -61,18 +71,29 @@ export function bandFor<B extends string = string>(bands: Bands<B>, value: numbe
         b => b.band.upTo);
     for (const upTo of upToBands) {
         if (upTo.band.upTo > value) {
-            return format(value, upTo.name, upTo.band, includeNumber);
+            return format(value, upTo.name, upTo.band, options);
         }
     }
-    return bandNames.find(n => bands[n] === Default);
+    return formatName(bandNames.find(n => bands[n] === Default), options);
 }
 
-function format(value: number, name: string, band: Band, includeNumber: boolean): string {
+function format(value: number, name: string, band: Band, options: { includeNumber?: boolean, casing?: BandCasing }): string {
+    const includeNumber = options.includeNumber;
+    const fName = formatName(name, options);
+
     if (includeNumber && isExactly(band)) {
-        return `${name} (=${band.exactly})`;
+        return `${fName} (=${band.exactly})`;
     }
     if (includeNumber && isUpTo(band)) {
-        return `${name} (<${band.upTo})`;
+        return `${fName} (<${band.upTo})`;
     }
-    return name;
+    return fName;
+}
+
+function formatName(name: string, options: { casing?: BandCasing } = {}): string {
+    if (options.casing === BandCasing.Sentence) {
+        return _.upperFirst(name);
+    } else {
+        return name;
+    }
 }

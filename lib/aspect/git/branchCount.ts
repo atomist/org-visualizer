@@ -61,7 +61,7 @@ export const branchCount: Aspect = {
             medium: { upTo: 12 },
             high: { upTo: 12},
             excessive: Default,
-        }, count, true);
+        }, count, { includeNumber: true });
     },
     stats: {
         defaultStatStatus: {

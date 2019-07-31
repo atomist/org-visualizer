@@ -25,7 +25,10 @@ import {
     introduceClassificationLayer,
     validatePlantedTree,
 } from "../tree/treeUtils";
-import { bandFor } from "../util/bands";
+import {
+    BandCasing,
+    bandFor,
+} from "../util/bands";
 import { EntropySizeBands } from "../util/commonBands";
 
 export interface TreeQuery {
@@ -155,7 +158,7 @@ export async function driftTree(workspaceId: string, clientFactory: ClientFactor
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, true),
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { includeNumber: true, casing: BandCasing.NoChange}),
         });
         return tree;
     }, err => {
@@ -195,7 +198,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, true),
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { casing: BandCasing.Sentence, includeNumber: false }),
         });
         return tree;
     });

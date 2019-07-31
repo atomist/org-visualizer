@@ -122,7 +122,7 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
                 low: { upTo: 4 },
                 medium: { upTo: 12 },
                 high: Default,
-            }, fp.data.count, true);
+            }, fp.data.count, { includeNumber: true });
         },
         stats: {
             defaultStatStatus: {
@@ -165,5 +165,5 @@ function lastDateToActivityBand(date: Date): string {
         recent: { upTo: 200 },
         ancient: { upTo: 500 },
         prehistoric: Default,
-    }, days, true);
+    }, days, { includeNumber: true });
 }

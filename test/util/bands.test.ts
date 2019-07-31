@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import * as assert from "assert";
 import {
+    BandCasing,
     bandFor,
     Bands,
     Default,
 } from "../../lib/util/bands";
-
-import * as assert from "assert";
 
 describe("bands", () => {
 
@@ -74,9 +74,20 @@ describe("bands", () => {
             low: { upTo: 1 },
             speckled: Default,
         };
-        assert.strictEqual(bandFor(bands, 0.5, true), "gotcha (=0.5)");
-        assert.strictEqual(bandFor(bands, 0.6, true), "low (<1)");
-        assert.strictEqual(bandFor(bands, 25, true), "speckled");
+        assert.strictEqual(bandFor(bands, 0.5, { includeNumber: true }), "gotcha (=0.5)");
+        assert.strictEqual(bandFor(bands, 0.6, { includeNumber: true }), "low (<1)");
+        assert.strictEqual(bandFor(bands, 25, { includeNumber: true }), "speckled");
+    });
+
+    it("should include number and correct case", () => {
+        const bands: Bands<"gotcha" | "speckled" | "low"> = {
+            gotcha: { exactly: 0.5 },
+            low: { upTo: 1 },
+            speckled: Default,
+        };
+        assert.strictEqual(bandFor(bands, 0.5, { includeNumber: true, casing: BandCasing.Sentence }), "Gotcha (=0.5)");
+        assert.strictEqual(bandFor(bands, 0.6, { includeNumber: true }), "low (<1)");
+        assert.strictEqual(bandFor(bands, 25, { includeNumber: true, casing: BandCasing.Sentence }), "Speckled");
     });
 
 });
