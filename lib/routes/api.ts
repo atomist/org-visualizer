@@ -21,6 +21,7 @@ import {
 } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
+import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import { toName } from "@atomist/sdm-pack-fingerprints/lib/adhoc/preferences";
 import * as bodyParser from "body-parser";
 import {
@@ -42,7 +43,10 @@ import {
     whereFor,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
-import { AspectRegistry } from "../aspect/AspectRegistry";
+import {
+    AspectRegistry,
+    IdealStore,
+} from "../aspect/AspectRegistry";
 import {
     driftTree,
     driftTreeForSingleAspect,
@@ -50,7 +54,6 @@ import {
 import { getAspectReports } from "../customize/categories";
 import { SunburstTree } from "../tree/sunburst";
 import { visit } from "../tree/treeUtils";
-import { GetFpTargets } from "../typings/types";
 import {
     authHandlers,
     configureAuth,
@@ -64,7 +67,7 @@ import { WellKnownReporters } from "./wellKnownReporters";
  * Also expose Swagger API documentation.
  */
 export function api(clientFactory: ClientFactory,
-                    store: ProjectAnalysisResultStore,
+                    store: ProjectAnalysisResultStore & IdealStore,
                     aspectRegistry: AspectRegistry): {
     customizer: ExpressCustomizer,
     routesToSuggestOnStartup: Array<{ title: string, route: string }>,
@@ -94,7 +97,7 @@ export function api(clientFactory: ClientFactory,
 
             exposeFingerprintByType(express, aspectRegistry, store);
 
-            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory);
+            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, store);
 
             exposeDrift(express, aspectRegistry, clientFactory);
 
@@ -206,7 +209,8 @@ function exposeFingerprintByType(express: Express,
 
 function exposeFingerprintByTypeAndName(express: Express,
                                         aspectRegistry: AspectRegistry,
-                                        clientFactory: ClientFactory): void {
+                                        clientFactory: ClientFactory,
+                                        store: ProjectAnalysisResultStore & IdealStore): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req: Request, res: Response) => {
         const workspaceId = req.params.workspace_id;
@@ -232,9 +236,21 @@ function exposeFingerprintByTypeAndName(express: Express,
                 byName,
             });
 
+            const ideal = await store.loadIdeal(workspaceId, fingerprintType, fingerprintName);
+            let target;
+            if (isConcreteIdeal(ideal)) {
+                const aspect = aspectRegistry.aspectOf(fingerprintType);
+                if (!!aspect && !!aspect.toDisplayableFingerprint) {
+                    target = {
+                        ...ideal.ideal,
+                        value: aspect.toDisplayableFingerprint(ideal.ideal),
+                    };
+                }
+            }
+
             res.json({
                 ...pt,
-                target: await getFingerprintTarget(req, aspectRegistry, fingerprintType, fingerprintName, workspaceId),
+                target,
             });
         } catch (e) {
             logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
@@ -310,65 +326,4 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
     });
-}
-
-/**
- * Get the target for a single type and name
- */
-async function getFingerprintTarget(req: Request,
-                                    aspectRegistry: AspectRegistry,
-                                    type: string,
-                                    name: string,
-                                    workspaceId: string): Promise<{ type: string, name: string, value: string, sha: string, data: any }> {
-
-    // TODO cd Once the ideals_fingerprints table is populated from the backend, we'll move to reading that
-
-    if (isInLocalMode()) {
-        return undefined;
-    }
-
-    let creds;
-    if (!!req.cookies && !!req.cookies.access_token) {
-        creds = req.cookies.access_token;
-    } else {
-        creds = (req as any).authorization.credentials;
-    }
-
-    if (!!creds) {
-        const configuration = automationClientInstance().configuration;
-        const graphClient = configuration.graphql.client.factory.create(
-            workspaceId,
-            {
-                ...configuration,
-                apiKey: creds,
-            });
-        const targets = await graphClient.query<GetFpTargets.Query, GetFpTargets.Variables>({
-            name: "GetFpTargets",
-            options: QueryNoCacheOptions,
-        });
-        const fingerprint = toName(type, name);
-        const target = (targets.TeamConfiguration || []).find(fp => fp.name === fingerprint);
-        if (!!target) {
-            const value = JSON.parse(target.value);
-            const aspect = aspectRegistry.aspectOf(type);
-            let displayValue;
-            if (!!aspect && !!aspect.toDisplayableFingerprint) {
-                displayValue = aspect.toDisplayableFingerprint({
-                    name,
-                    type,
-                    data: value.data,
-                    sha: value.sha,
-                });
-            }
-            return {
-                type,
-                name,
-                sha: value.sha,
-                data: value.data,
-                value: displayValue,
-            };
-        }
-    }
-
-    return undefined;
 }
