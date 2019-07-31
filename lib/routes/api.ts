@@ -320,6 +320,9 @@ async function getFingerprintTarget(req: Request,
                                     type: string,
                                     name: string,
                                     workspaceId: string): Promise<{ type: string, name: string, value: string, sha: string, data: any }> {
+
+    // TODO cd Once the ideals_fingerprints table is populated from the backend, we'll move to reading that
+
     if (isInLocalMode()) {
         return undefined;
     }
