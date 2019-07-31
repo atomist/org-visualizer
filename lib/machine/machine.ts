@@ -27,7 +27,7 @@ import {
     ProjectAnalyzer,
 } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
-import { Client } from "pg";
+import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
@@ -48,11 +48,16 @@ export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
         .build();
 }
 
+const PoolHolder: { pool: Pool } = { pool: undefined };
+
 export function sdmConfigClientFactory(config: Configuration): ClientFactory {
-    return () => new Client({
-        database: "org_viz",
-        ...(_.get(config, "sdm.postgres") || {}),
-    });
+    if (!PoolHolder.pool) {
+        PoolHolder.pool = new Pool({
+            database: "org_viz",
+            ...(_.get(config, "sdm.postgres") || {}),
+        });
+    }
+    return () => PoolHolder.pool.connect();
 }
 
 export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore & IdealStore & ProblemStore {

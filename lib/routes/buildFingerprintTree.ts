@@ -23,6 +23,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import { Client } from "pg";
+import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { fingerprintsToReposTree } from "../aspect/repoTree";
 import {
@@ -47,7 +48,7 @@ import * as _ from "lodash";
 export async function buildFingerprintTree(
     world: {
         aspectRegistry: AspectRegistry,
-        clientFactory: () => Client,
+        clientFactory: ClientFactory,
     },
     params: {
         workspaceId: string,

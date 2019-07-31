@@ -15,9 +15,11 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { Client } from "pg";
+import {
+    PoolClient,
+} from "pg";
 
-export type ClientFactory = () => Client;
+export type ClientFactory = () => Promise<PoolClient>;
 
 /**
  * Perform the given operations with a database client connection
@@ -31,16 +33,11 @@ export type ClientFactory = () => Client;
  * @param {R} defaultResult return this in case of error. If not provided, return undefined
  * @return {Promise<R>}
  */
-export async function doWithClient<R>(clientFactory: () => Client,
-                                      what: (c: Client) => Promise<R>,
+export async function doWithClient<R>(clientFactory: ClientFactory,
+                                      what: (c: PoolClient) => Promise<R>,
                                       defaultResult?: R | ((e: Error) => R)): Promise<R> {
-    const client = clientFactory();
+    const client = await clientFactory();
     let result: R;
-    try {
-        await client.connect();
-    } catch (err) {
-        throw new Error("Could not connect to Postgres. Please start it up. Message: " + err.message);
-    }
     try {
         result = await what(client);
     } catch (err) {
@@ -52,7 +49,7 @@ export async function doWithClient<R>(clientFactory: () => Client,
         }
         return defaultResult;
     } finally {
-        await client.end();
+        await client.release();
     }
     return result;
 }

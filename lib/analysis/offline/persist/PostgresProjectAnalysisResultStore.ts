@@ -27,7 +27,10 @@ import {
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
-import { Client } from "pg";
+import {
+    Client,
+    ClientBase,
+} from "pg";
 import {
     Analyzed,
     IdealStore,
@@ -273,7 +276,7 @@ values ($1, $2, $3, $4, current_timestamp)`, [
         }, emptyPersistResult);
     }
 
-    private async persistOne(client: Client, analysisResult: ProjectAnalysisResult): Promise<PersistResult> {
+    private async persistOne(client: ClientBase, analysisResult: ProjectAnalysisResult): Promise<PersistResult> {
         const repoRef = analysisResult.analysis.id;
         if (!repoRef) {
             return {
@@ -346,7 +349,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
     }
 
     // Persist the fingerprints for this analysis
-    private async persistFingerprints(pa: Analyzed, id: string, client: Client): Promise<{
+    private async persistFingerprints(pa: Analyzed, id: string, client: ClientBase): Promise<{
         insertedCount: number,
         failures: Array<{ failedFingerprint: FP; error: Error }>,
     }> {
@@ -379,7 +382,7 @@ values ($1, $2) ON CONFLICT DO NOTHING
      * @param {Client} client
      * @return {Promise<void>}
      */
-    private async ensureFingerprintStored(fp: FP, client: Client): Promise<string> {
+    private async ensureFingerprintStored(fp: FP, client: ClientBase): Promise<string> {
         const aspectName = fp.type || "unknown";
         const fingerprintId = aspectName + "_" + fp.name + "_" + fp.sha;
         //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
@@ -504,7 +507,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
 /**
  * Delete the data we hold for this repository.
  */
-async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: Client): Promise<void> {
+async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: ClientBase): Promise<void> {
     await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN
             (SELECT id from repo_snapshots WHERE url = $1)`,
         [repoRef.url]);

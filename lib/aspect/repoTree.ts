@@ -35,7 +35,7 @@ export interface TreeQuery {
 
     workspaceId: string;
 
-    clientFactory: () => Client;
+    clientFactory: ClientFactory;
 
     aspectName: string;
 
