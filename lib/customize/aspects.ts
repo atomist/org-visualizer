@@ -50,7 +50,7 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { CodeOwnership } from "../element/codeOwnership";
+import { CodeOwnership } from "../aspect/common/codeOwnership";
 
 /**
  * The aspects anaged by this SDM.

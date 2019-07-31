@@ -41,7 +41,7 @@ const codeOwnershipFingerprintName = "codeOwnership";
 /*
  * Find a code ownership file if possible
  */
-export const CodeOwnershipExtractor: ExtractFingerprint =
+export const CodeOwnershipExtractor: ExtractFingerprint<FP<CodeOwnershipData>> =
     async (p: Project) => {
         const codeownersFile = await p.getFile("CODEOWNERS");
         if (codeownersFile) {
@@ -62,19 +62,19 @@ export const CodeOwnershipExtractor: ExtractFingerprint =
         return undefined;
     };
 
-export class CodeOwnership implements Aspect {
+export class CodeOwnership implements Aspect<FP<CodeOwnershipData>> {
 
     public readonly displayName: string = "Code Ownership";
 
     public readonly name: string = "codeOwnership";
 
-    get apply(): ApplyFingerprint {
+    get apply(): ApplyFingerprint<FP<CodeOwnershipData>> {
         return async (p, tsi) => {
             throw new Error(`Applying code ownership is not yet supported. But it could be.`);
         };
     }
 
-    public extract: ExtractFingerprint = CodeOwnershipExtractor;
+    public extract: ExtractFingerprint<FP<CodeOwnershipData>> = CodeOwnershipExtractor;
 
     public toDisplayableFingerprint(fp: FP): string {
         return fp.data;
