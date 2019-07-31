@@ -66,6 +66,7 @@ CREATE TABLE fingerprint_analytics (
   count numeric,
   entropy numeric,
   variants numeric,
+  compliance numeric,
   PRIMARY KEY (name, feature_name, workspace_id)
 );
 
