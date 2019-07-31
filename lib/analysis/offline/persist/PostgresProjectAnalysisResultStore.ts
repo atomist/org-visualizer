@@ -494,7 +494,7 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             count: +r.count,
             entropy: +r.entropy,
             compliance: +r.compliance,
-            entropy_band: bandFor(EntropySizeBands, r.entropy, { casing: BandCasing.Sentence, includeNumber: false }),
+            entropy_band: bandFor(EntropySizeBands, +r.entropy, { casing: BandCasing.Sentence, includeNumber: false }),
             // This is really confusing but the Aspect.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));
