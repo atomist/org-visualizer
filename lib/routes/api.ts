@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
+import {
+    automationClientInstance,
+    logger,
+    QueryNoCacheOptions,
+} from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
+import { toName } from "@atomist/sdm-pack-fingerprints/lib/adhoc/preferences";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -28,7 +33,9 @@ import * as _ from "lodash";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
-import { ClientFactory } from "../analysis/offline/persist/pgUtils";
+import {
+    ClientFactory,
+} from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
@@ -43,6 +50,7 @@ import {
 import { getAspectReports } from "../customize/categories";
 import { SunburstTree } from "../tree/sunburst";
 import { visit } from "../tree/treeUtils";
+import { GetFpTargets } from "../typings/types";
 import {
     authHandlers,
     configureAuth,
@@ -224,7 +232,10 @@ function exposeFingerprintByTypeAndName(express: Express,
                 byName,
             });
 
-            res.json(pt);
+            res.json({
+                ...pt,
+                target: await getFingerprintTarget(req, aspectRegistry, fingerprintType, fingerprintName, workspaceId),
+            });
         } catch (e) {
             logger.warn("Error occurred getting one fingerprint: %s %s", e.message, e.stack);
             res.sendStatus(500);
@@ -299,4 +310,62 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
     });
+}
+
+/**
+ * Get the target for a single type and name
+ */
+async function getFingerprintTarget(req: Request,
+                                    aspectRegistry: AspectRegistry,
+                                    type: string,
+                                    name: string,
+                                    workspaceId: string): Promise<{ type: string, name: string, value: string, sha: string, data: any }> {
+    if (isInLocalMode()) {
+        return undefined;
+    }
+
+    let creds;
+    if (!!req.cookies && !!req.cookies.access_token) {
+        creds = req.cookies.access_token;
+    } else {
+        creds = (req as any).authorization.credentials;
+    }
+
+    if (!!creds) {
+        const configuration = automationClientInstance().configuration;
+        const graphClient = configuration.graphql.client.factory.create(
+            workspaceId,
+            {
+                ...configuration,
+                apiKey: creds,
+            });
+        const targets = await graphClient.query<GetFpTargets.Query, GetFpTargets.Variables>({
+            name: "GetFpTargets",
+            options: QueryNoCacheOptions,
+        });
+        const fingerprint = toName(type, name);
+        const target = (targets.TeamConfiguration || []).find(fp => fp.name === fingerprint);
+        if (!!target) {
+            const value = JSON.parse(target.value);
+            const aspect = aspectRegistry.aspectOf(type);
+            let displayValue;
+            if (!!aspect && !!aspect.toDisplayableFingerprint) {
+                displayValue = aspect.toDisplayableFingerprint({
+                    name,
+                    type,
+                    data: value.data,
+                    sha: value.sha,
+                });
+            }
+            return {
+                type,
+                name,
+                sha: value.sha,
+                data: value.data,
+                value: displayValue,
+            };
+        }
+    }
+
+    return undefined;
 }
