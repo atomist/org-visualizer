@@ -20,6 +20,7 @@ import {
     HttpClientFactory,
     logger,
 } from "@atomist/automation-client";
+import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import { configureHumio } from "@atomist/automation-client-ext-humio";
 import {
     ExpressCustomizer,
@@ -198,6 +199,7 @@ export const configuration: Configuration = configure(async sdm => {
 
         postProcessors: [
             configureHumio,
+            configureDashboardNotifications,
             async cfg => {
                 const { customizers, routesToSuggestOnStartup } =
                     orgVisualizationEndpoints(

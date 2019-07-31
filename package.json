@@ -25,6 +25,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/automation-client": "1.6.3-master.20190727084117",
+    "@atomist/automation-client-ext-dashboard": "^1.1.0",
     "@atomist/automation-client-ext-humio": "^0.2.0",
     "@atomist/sdm": "^1.6.1",
     "@atomist/sdm-core": "1.6.2-master.20190718103648",
@@ -34,7 +35,7 @@
     "@atomist/sdm-pack-build": "^1.0.5",
     "@atomist/sdm-pack-clojure": "^1.0.24",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190717104008",
-    "@atomist/sdm-pack-fingerprints": "4.0.3-master.20190730084140",
+    "@atomist/sdm-pack-fingerprints": "4.0.3-remove-global.20190731111928",
     "@atomist/sdm-pack-node": "^1.1.1",
     "@atomist/sdm-pack-sloc": "1.0.3-master.20190502175705",
     "@atomist/sdm-pack-spring": "^2.0.0",
