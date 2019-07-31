@@ -26,7 +26,7 @@ export interface ReportDetails {
 }
 
 const AspectCategories: Record<string, string[]> = {};
-const AspectReportDetails: Record<string, ReportDetails> = {};
+const AspectReportDetails: ReportDetails[] = [];
 
 /**
  * Store a categories for a given Aspects
@@ -41,13 +41,13 @@ export function registerCategories(aspect: Pick<Aspect<any>, "name">,
  */
 export function registerReportDetails(aspect: Aspect<any>,
                                       details: ReportDetails = {}): void {
-    AspectReportDetails[aspect.name] = {
+    AspectReportDetails.push({
         name: aspect.displayName,
         type: aspect.name,
         description: `Details about the ${aspect.displayName} aspect`,
         url: `filter/aspectReport?type=${aspect.name}`,
         ...details,
-    };
+    });
 }
 
 /**
@@ -76,13 +76,18 @@ export function getAspectReports(fus: FingerprintUsage[],
             reports.push({
                 category: k,
                 count: fu.length,
-                aspects: _.uniqBy(fu.filter(f => !!AspectReportDetails[f.type]).map(f => {
-                    const rd = AspectReportDetails[f.type];
+                aspects: _.uniqBy(fu.filter(f => !!AspectReportDetails.some(a => a.type === f.type)).map(f => {
+                    const rd = AspectReportDetails.find(a => a.type === f.type);
                     return {
                         ...rd,
                         url: `/api/v1/${workspaceId}/${rd.url}`,
                     };
-                }), "url"),
+                }), "url").sort((r1, r2) => {
+                    const i1 = AspectReportDetails.findIndex(r => r.type === r1.type);
+                    const i2 = AspectReportDetails.findIndex(r => r.type === r2.type);
+                    return i1 - i2;
+
+                }),
             });
         }
     });
