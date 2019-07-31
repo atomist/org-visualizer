@@ -49,7 +49,7 @@ interface NpmPackage {
 export function createSdmDepFingerprint(packages: NpmPackage[]): FP {
     return {
         type: SdmDepsName,
-        name: SdmDepsName,
+        name: "client+sdm+sdm-core",
         abbreviation: "sdmdeps",
         version: "0.0.1",
         data: packages,

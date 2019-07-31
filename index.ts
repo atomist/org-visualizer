@@ -56,7 +56,6 @@ import {
 } from "./lib/aspect/common/stackAspect";
 import { DefaultAspectRegistry } from "./lib/aspect/DefaultAspectRegistry";
 import { TypeScriptVersion } from "./lib/aspect/node/TypeScriptVersion";
-import { SdmDeps } from "./lib/aspect/sdm/sdmNpmDeps";
 import { DirectMavenDependencies } from "./lib/aspect/spring/directMavenDependencies";
 import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
 import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
@@ -82,7 +81,7 @@ const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
 export const configuration: Configuration = configure(async sdm => {
         const isStaging = sdm.configuration.endpoints.api.includes("staging");
 
-        const optionalAspects = isStaging ? [SdmDeps, LeinDeps] : [];
+        const optionalAspects = isStaging ? [LeinDeps] : [];
 
         const jobAspects = [
             DockerFrom,
@@ -113,12 +112,6 @@ export const configuration: Configuration = configure(async sdm => {
             url: "drift?type=npm-project-deps",
             description: "Node direct dependencies in use across all repositories in your workspace, " +
             "grouped by Drift Level.",
-        });
-        registerCategories(SdmDeps, "Node.js");
-        registerReportDetails(SdmDeps, {
-            url: "fingerprint/sdm-deps/sdm-deps?byOrg=true",
-            description: "Direct dependencies to @atomist SDM packages in use across all repositories in your workspace, " +
-                "broken out by versions and repositories that use each version.",
         });
         registerCategories(SpringBootStarter, "Java");
         registerCategories(JavaBuild, "Java");

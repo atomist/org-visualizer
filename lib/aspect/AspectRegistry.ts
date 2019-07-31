@@ -21,7 +21,6 @@ import {
     FP,
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
-import { accessSync } from "fs";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
