@@ -477,7 +477,7 @@ async function fingerprintsForProject(clientFactory: ClientFactory,
 
 async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
     return doWithClient<FingerprintUsage[]>(clientFactory, async client => {
-        const sql = `SELECT name, feature_name as type, variants, count, entropy
+        const sql = `SELECT name, feature_name as type, variants, count, entropy, compliance
   from fingerprint_analytics f
   WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   AND  ${type ? "f.feature_name = $2" : "true"}
@@ -493,7 +493,8 @@ async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId
             variants: +r.variants,
             count: +r.count,
             entropy: +r.entropy,
-            entropy_band: fp => bandFor(EntropySizeBands, r.entropy, { casing: BandCasing.Sentence, includeNumber: false }),
+            compliance: +r.compliance,
+            entropy_band: bandFor(EntropySizeBands, r.entropy, { casing: BandCasing.Sentence, includeNumber: false }),
             // This is really confusing but the Aspect.name is feature_name alias type in the db
             categories: getCategories({ name: r.type }),
         }));

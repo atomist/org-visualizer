@@ -56,6 +56,7 @@ export interface CohortAnalysis {
     count: number;
     variants: number;
     entropy: number;
+    compliance: number;
 }
 
 /**
@@ -71,5 +72,5 @@ function analyzeCohort(fps: FP[]): CohortAnalysis {
         },
         0,
     );
-    return { entropy, variants: Object.values(groups).length, count: fps.length };
+    return { entropy, variants: Object.values(groups).length, count: fps.length, compliance: undefined };
 }
