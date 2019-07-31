@@ -26,6 +26,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
+import { CodeOwnership } from "../aspect/common/codeOwnership";
 import { fileCount } from "../aspect/common/fileCount";
 import {
     CiAspect,
@@ -50,7 +51,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { CodeOwnership } from "../aspect/common/codeOwnership";
 
 /**
  * The aspects anaged by this SDM.
