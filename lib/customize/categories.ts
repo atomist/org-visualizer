@@ -23,6 +23,7 @@ export interface ReportDetails {
     shortName?: string;
     type?: string;
     description?: string;
+    unit?: string;
     url?: string;
 }
 
