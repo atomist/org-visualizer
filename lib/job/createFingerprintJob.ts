@@ -23,6 +23,7 @@ import {
     Success,
 } from "@atomist/automation-client";
 import {
+    CommandHandlerRegistration,
     createJob,
     EventHandlerRegistration,
     PreferenceScope,
@@ -39,6 +40,15 @@ import {
     calculateFingerprintTask,
     CalculateFingerprintTaskParameters,
 } from "./fingerprintTask";
+
+export const CreateFingerprintJobCommand: CommandHandlerRegistration = {
+    name: "CreateFingerprintJob",
+    intent: "calculate fingerprints",
+    description: "Trigger a background job to calculate all fingerprints across a given org",
+    listener: async ci => {
+        await fingerprintGitHubResourceProvider(ci.context, true);
+    },
+};
 
 export const CreateFingerprintJob: EventHandlerRegistration<OnDiscoveryJob.Subscription> = {
     name: "CreateFingerprintJob",
@@ -105,7 +115,7 @@ async function fingerprintGitHubAppInstallation(event: OnGitHubAppInstallation.S
     }
 }
 
-async function fingerprintGitHubResourceProvider(ctx: HandlerContext): Promise<void> {
+async function fingerprintGitHubResourceProvider(ctx: HandlerContext, rerun: boolean = false): Promise<void> {
     const result = await ctx.graphClient.query<ReposByProvider.Query, ReposByProvider.Variables>({
         name: "ReposByProvider",
         variables: {
@@ -134,7 +144,7 @@ async function fingerprintGitHubResourceProvider(ctx: HandlerContext): Promise<v
 
     for (const org of orgs) {
         const analyzed = await prefs.get<boolean>(preferenceKey(org.name), { scope: PreferenceScope.Sdm, defaultValue: false });
-        if (!analyzed) {
+        if (!analyzed || rerun) {
             try {
                 await createJob<CalculateFingerprintTaskParameters>({
                         command: calculateFingerprintTask([], []),

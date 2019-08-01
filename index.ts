@@ -66,7 +66,10 @@ import {
     registerReportDetails,
 } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
-import { CreateFingerprintJob } from "./lib/job/createFingerprintJob";
+import {
+    CreateFingerprintJob,
+    CreateFingerprintJobCommand,
+} from "./lib/job/createFingerprintJob";
 import { calculateFingerprintTask } from "./lib/job/fingerprintTask";
 import {
     analysisResultStore,
@@ -156,6 +159,7 @@ export const configuration: Configuration = configure(async sdm => {
             };
         } else {
             sdm.addEvent(CreateFingerprintJob);
+            sdm.addCommand(CreateFingerprintJobCommand);
             sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
             return {};
         }
