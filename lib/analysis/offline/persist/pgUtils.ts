@@ -49,7 +49,7 @@ export async function doWithClient<R>(clientFactory: ClientFactory,
         }
         return defaultResult;
     } finally {
-        await client.release();
+        client.release();
     }
     return result;
 }
