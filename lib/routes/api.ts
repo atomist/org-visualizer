@@ -40,7 +40,6 @@ import {
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
-    whereFor,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import {
@@ -115,7 +114,7 @@ export function api(clientFactory: ClientFactory,
                         ...req.query,
                     });
 
-                    const repos = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
+                    const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
                     const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
                     const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
                     return res.json({ tree: data });

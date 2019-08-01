@@ -62,7 +62,6 @@ import { TopLevelPage } from "../../views/topLevelPage";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
-    whereFor,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
@@ -119,7 +118,7 @@ export function orgPage(
             /* the org page itself */
             express.get(orgRoute, ...handlers, async (req, res) => {
                 try {
-                    const repos = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
+                    const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
 
                     const fingerprintUsage = await store.fingerprintUsageForType("*");
 
@@ -156,7 +155,7 @@ export function orgPage(
 
             /* Project list page */
             express.get("/projects", ...handlers, async (req, res) => {
-                const allAnalysisResults = await store.loadWhere(whereFor(req.query.workspace, req.params.workspace_id));
+                const allAnalysisResults = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
 
                 // optional query parameter: owner
                 const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);

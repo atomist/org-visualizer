@@ -69,11 +69,9 @@ export interface ProjectAnalysisResultStore {
     latestTimestamp(workspaceId: string): Promise<Date>;
 
     /**
-     * Where e.g. workspace_id = value
-     * @param {string} where SQL where clause
-     * @return {Promise<ProjectAnalysisResult[]>}
+     * Load in the given workspace
      */
-    loadWhere(where: string): Promise<ProjectAnalysisResult[]>;
+    loadInWorkspace(workspaceId: string): Promise<ProjectAnalysisResult[]>;
 
     loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
 
@@ -109,12 +107,4 @@ export interface ProjectAnalysisResultStore {
         dedup?: boolean): Promise<FP[]>;
 
     fingerprintsForProject(id: string): Promise<FP[]>;
-}
-
-export function whereFor(...possibleWorkspaceIds: string[]): string {
-    const wsid = possibleWorkspaceIds.find(a => !!a);
-    if (wsid === "*") {
-        return "true";
-    }
-    return wsid ? `workspace_id = '${wsid}'` : "true";
 }

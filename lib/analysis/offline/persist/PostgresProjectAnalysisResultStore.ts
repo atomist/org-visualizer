@@ -85,12 +85,13 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         });
     }
 
-    public loadWhere(where: string): Promise<ProjectAnalysisResult[]> {
+    public loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]> {
+        const wsid = workspaceId || "*";
         return doWithClient(this.clientFactory, async client => {
             const sql = `SELECT id, owner, name, url, commit_sha, analysis, timestamp
-                from repo_snapshots ` +
-                (where ? `WHERE ${where}` : "");
-            const rows = await client.query(sql);
+                from repo_snapshots
+                WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1`;
+            const rows = await client.query(sql, [wsid]);
             return rows.rows.map(row => ({
                 ...row,
                 repoRef: rowToRepoRef(row),
