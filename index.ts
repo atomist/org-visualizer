@@ -106,12 +106,15 @@ export const configuration: Configuration = configure(async sdm => {
         // TODO cd merge into one call
         registerCategories(TypeScriptVersion, "Node.js");
         registerReportDetails(TypeScriptVersion, {
+            name: "TypeScript versions",
+            shortName: "versions",
             url: "fingerprint/typescript-version/typescript-version?byOrg=true",
             description: "TypeScript versions in use across all repositories in your workspace, " +
             "broken out by version and repositories that use each version.",
         });
         registerCategories(NpmDeps, "Node.js");
         registerReportDetails(NpmDeps, {
+            shortName: "dependencies",
             url: "drift?type=npm-project-deps",
             description: "Node direct dependencies in use across all repositories in your workspace, " +
             "grouped by Drift Level.",
@@ -121,6 +124,7 @@ export const configuration: Configuration = configure(async sdm => {
         registerCategories(SpringBootVersion, "Java");
         registerCategories(DirectMavenDependencies, "Java");
         registerReportDetails(DirectMavenDependencies, {
+            shortName: "dependencies",
             url: "drift?type=maven-direct-dep",
             description: "Maven direct dependencies in use across all repositories in your workspace, " +
             "grouped by Drift Level.",
@@ -131,12 +135,15 @@ export const configuration: Configuration = configure(async sdm => {
         }
         registerCategories(DockerFrom, "Docker");
         registerReportDetails(DockerFrom, {
+            name: "Docker base images",
+            shortName: "images",
             url: "fingerprint/docker-base-image/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=false",
             description: "Docker base images in use across all repositories in your workspace, " +
             "broken out by image label and repositories where used.",
         });
         registerCategories(DockerPorts, "Docker");
         registerReportDetails(DockerPorts, {
+            shortName: "ports",
             url: "fingerprint/docker-ports/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=false",
             description: "Ports exposed in Docker configuration in use  across all repositories in your workspace, " +
             "broken out by port number and repositories where used.",

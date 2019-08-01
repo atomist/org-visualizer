@@ -20,6 +20,7 @@ import { FingerprintUsage } from "../analysis/offline/persist/ProjectAnalysisRes
 
 export interface ReportDetails {
     name?: string;
+    shortName?: string;
     type?: string;
     description?: string;
     url?: string;
