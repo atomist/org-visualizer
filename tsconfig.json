@@ -6,6 +6,7 @@
     "moduleResolution": "Node",
     "jsx": "react",
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "lib": [
       "dom",
