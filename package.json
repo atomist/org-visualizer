@@ -70,7 +70,7 @@
     "zip-a-folder": "0.0.8"
   },
   "devDependencies": {
-    "@atomist/sdm-local": "^1.0.9",
+    "@atomist/sdm-local": "^1.1.0",
     "@types/d3": "^5.7.2",
     "@types/mocha": "^5.2.7",
     "@types/pg": "^7.4.14",
