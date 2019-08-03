@@ -39,6 +39,8 @@ const exec = util.promisify(child_process.exec);
 
 const gitLastCommitCommand = "git log -1 --format=%cd --date=short";
 
+export const GitRecencyType = "git-recency";
+
 const gitRecencyExtractor: ExtractFingerprint =
     async p => {
         const r = await exec(gitLastCommitCommand, { cwd: (p as LocalProject).baseDir });
@@ -48,8 +50,8 @@ const gitRecencyExtractor: ExtractFingerprint =
         const data = new Date(r.stdout.trim());
 
         return {
-            type: "git-recency",
-            name: "git-recency",
+            type: GitRecencyType,
+            name: GitRecencyType,
             data,
             sha: sha256(JSON.stringify(data)),
         };
@@ -85,6 +87,8 @@ export interface ActiveCommittersData {
     count: number;
 }
 
+export const GitActivesType = "git-actives";
+
 function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<ActiveCommittersData>> {
     return async p => {
         const cwd = (p as LocalProject).baseDir;
@@ -99,8 +103,8 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<A
         const data = { count };
 
         return {
-            type: "git-actives",
-            name: "git-actives",
+            type: GitActivesType,
+            name: GitActivesType,
             data,
             sha: sha256(JSON.stringify(data)),
         };
@@ -113,7 +117,7 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<A
  */
 export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommittersData>> {
     return {
-        name: "git-actives",
+        name: GitActivesType,
         displayName: "Active git committers",
         extract: activeCommittersExtractor(commitDepth),
         toDisplayableFingerprintName: () => "Active git committers",

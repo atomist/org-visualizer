@@ -119,9 +119,14 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     }
 
     const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
+    const repos = "./query?explore=true";
+
     return <div>
 
         {projectSummary}
+
+        <h2>Explore</h2>
+        <a href={repos}>Interactive explorer</a>
 
         <h2>Aspects</h2>
         <div className="importantFeatures">

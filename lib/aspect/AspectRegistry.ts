@@ -21,6 +21,7 @@ import {
     FP,
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
 
 /**
  * Function that can return the desired ideal, if any, for a given fingerprint name.
@@ -127,6 +128,15 @@ export type ManagedAspect<FPI extends FP = FP> = Aspect<FPI> | AtomicAspect<FPI>
 export interface AspectRegistry {
 
     /**
+     * Get the index value for this fingerprint
+     * @param {FP} fp
+     * @return {string | undefined}
+     */
+    tagsFor(fp: FP): string[];
+
+    combinationTagsFor(fps: FP[]): string[];
+
+    /**
      * All the aspects we are managing
      */
     readonly aspects: ManagedAspect[];
@@ -183,4 +193,9 @@ export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore:
             return problems.find(p => p.fingerprint.sha === fp.sha);
         },
     };
+}
+
+export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[]): string[] {
+    return _.uniq(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp))))
+        .sort();
 }

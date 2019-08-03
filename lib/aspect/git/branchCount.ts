@@ -29,7 +29,7 @@ import {
 } from "../../util/bands";
 import { SizeBands } from "../../util/commonBands";
 
-const BranchCountType = "branch-count";
+export const BranchCountType = "branch-count";
 
 export const branchCount: Aspect = {
     name: BranchCountType,

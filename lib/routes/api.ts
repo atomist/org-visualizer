@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    automationClientInstance,
-    logger,
-    QueryNoCacheOptions,
-} from "@atomist/automation-client";
+import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
-import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
-import { toName } from "@atomist/sdm-pack-fingerprints/lib/adhoc/preferences";
+import {
+    FP,
+    isConcreteIdeal,
+} from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -34,25 +32,32 @@ import * as _ from "lodash";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
-import {
-    ClientFactory,
-} from "../analysis/offline/persist/pgUtils";
+import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
 } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
+    Analyzed,
     AspectRegistry,
     IdealStore,
+    tagsIn,
 } from "../aspect/AspectRegistry";
 import {
     driftTree,
     driftTreeForSingleAspect,
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
-import { SunburstTree } from "../tree/sunburst";
-import { visit } from "../tree/treeUtils";
+import {
+    PlantedTree,
+    SunburstTree,
+} from "../tree/sunburst";
+import {
+    introduceClassificationLayer,
+    visit,
+} from "../tree/treeUtils";
 import {
     authHandlers,
     configureAuth,
@@ -95,6 +100,8 @@ export function api(clientFactory: ClientFactory,
             exposeListFingerprints(express, store);
 
             exposeFingerprintByType(express, aspectRegistry, store);
+
+            exposeExplore(express, aspectRegistry, store);
 
             exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, store);
 
@@ -295,6 +302,75 @@ function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRe
     });
 }
 
+function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): void {
+    express.options("/api/v1/:workspace_id/explore", corsHandler());
+    express.get("/api/v1/:workspace_id/explore", [corsHandler(), ...authHandlers()], async (req, res) => {
+        const workspaceId = req.params.workspace_id || "local";
+        const repos = await store.loadInWorkspace("*");
+
+        const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
+
+        const taggedRepos: Array<ProjectAnalysisResult & { tags: string[] }> =
+            repos.map(repo =>
+                ({
+                    ...repo,
+                    tags: tagsIn(aspectRegistry, repo.analysis.fingerprints)
+                        .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints)),
+                }));
+
+        const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
+        logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
+
+        const grouped = _.groupBy(_.flatten(relevantRepos.map(r => r.tags)));
+        const allTags = Object.getOwnPropertyNames(grouped).map(name => ({
+            name,
+            count: grouped[name].length,
+        }));
+
+        let repoTree: PlantedTree = {
+            circles: [{ meaning: "root" }, { meaning: "repo" }, { meaning: "tag" }],
+            tree: {
+                name: "repos",
+                children: [
+                    {
+                        name: selectedTags.join("+"),
+                        children: relevantRepos.map(r => {
+                            return {
+                                id: r.id,
+                                owner: r.repoRef.owner,
+                                repo: r.repoRef.repo,
+                                name: r.repoRef.repo,
+                                url: r.repoRef.url,
+                                size: r.analysis.fingerprints.length,
+                                tags: r.tags,
+                            };
+                        }),
+                    },
+                ],
+            },
+        };
+
+        // if (req.query.byOrg) {
+        // Group by organization via an additional layer at the center
+        repoTree = introduceClassificationLayer<{ owner: string }>(repoTree,
+            {
+                descendantClassifier: l => l.owner,
+                newLayerDepth: 1,
+                newLayerMeaning: "owner",
+                // descendantFinder: l => descendants(l).filter(n => !!(n as any).owner),
+            });
+
+        res.send({
+            // fingerprints: relevantFingerprints,
+            tags: allTags,
+            selectedTags,
+            repoCount: repos.length,
+            matchingRepoCount: relevantRepos.length,
+            ...repoTree,
+        });
+    });
+}
+
 /**
  * Any nodes that have type and name should be given the fingerprint name from the aspect if possible
  */
@@ -325,4 +401,8 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
     });
+}
+
+function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: string[] }): boolean {
+    return selectedTag.startsWith("!") ? !repo.tags.includes(selectedTag.substr(1)) : repo.tags.includes(selectedTag);
 }

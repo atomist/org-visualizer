@@ -205,7 +205,9 @@ export function orgPage(
                 const workspaceId = req.query.workspaceId || "*";
                 const queryString = jsonToQueryString(req.query);
 
-                if (req.query.skew) {
+                if (req.query.explore) {
+                    dataUrl = `/api/v1/${workspaceId}/explore?tags=${req.query.tags || ""}`;
+                } else if (req.query.skew) {
                     dataUrl = `/api/v1/${workspaceId}/drift`;
                 } else {
                     dataUrl = !!req.query.filter ?
@@ -259,6 +261,7 @@ export function orgPage(
                         query: req.params.query,
                         dataUrl,
                         tree,
+                        selectedTags: req.query.tags  ? req.query.tags.split(",") : [],
                     }),
                     "Atomist Aspect",
                     [

@@ -25,10 +25,42 @@ import {
     UndesirableUsageChecker,
 } from "./AspectRegistry";
 
+import * as _ from "lodash";
+
+export type Tagger = (fp: FP) => string;
+
+export type CombinationTagger = (fp: FP[]) => string;
+
 /**
  * Aspects must have unique names
  */
 export class DefaultAspectRegistry implements AspectRegistry {
+
+    private readonly taggers: Tagger[] = [];
+
+    private readonly combinationTaggers: CombinationTagger[] = [];
+
+    /**
+     * Create an index on this aspect. Must return a unique string. It's associated with a usage
+     * not an aspect.
+     */
+    public withTaggers(...taggers: Tagger[]): this {
+        this.taggers.push(...taggers);
+        return this;
+    }
+
+    public withCombinationTaggers(...taggers: CombinationTagger[]): this {
+        this.combinationTaggers.push(...taggers);
+        return this;
+    }
+
+    public tagsFor(fp: FP): string[] {
+        return _.uniq(this.taggers.map(tagger => tagger(fp)).filter(t => !!t));
+    }
+
+    public combinationTagsFor(fps: FP[]): string[] {
+        return _.uniq(this.combinationTaggers.map(tagger => tagger(fps))).filter(t => !!t);
+    }
 
     get aspects(): ManagedAspect[] {
         return this.opts.aspects;
