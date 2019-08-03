@@ -46,6 +46,59 @@ header .page-title {
     background: rgba(34, 106, 106, 0.2);
 }
 
+/* "explore" sunburst page */
+
+.tagGroup {
+    display: inline-block;
+    margin: 5px;
+    padding: 3px;
+    border: 1px black solid;
+    border-radius: 3px;
+}
+
+.tagGroup form {
+    display: inline;
+}
+
+.tagGroup input {
+    margin: 0px 5px;
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    color: transparent;
+    border: 2px solid transparent;
+}
+
+.tagGroup input.requireButton {
+    background-image: url(require.png);
+}
+
+.tagGroup input.excludeButton {
+    background-image: url(exclude.png);
+}
+
+.requiredTag input.requireButton {
+    border: groove;
+    background-color: lightgray;
+}
+
+.excludedTag input.excludeButton {
+    border: groove;
+    background-color: lightgray;
+}
+
+.requiredTag input.excludeButton {
+    opacity: 0.5;
+}
+
+.requiredTag span.tagDescription {
+    font-weight: bold;
+}
+
+.excludedTag span.tagDescription {
+    text-decoration: line-through;
+}
+
 /* d3 sunburst stuff */
 
 svg .slice {

@@ -347,7 +347,7 @@ function checkDepthInvariant(pt: PlantedTree): void {
     // the tree counts depth from zero
     if ((depth + 1) !== pt.circles.length) {
         logger.error("Data: " + JSON.stringify(pt, undefined, 2));
-        throw new Error(`Expected a depth of ${pt.circles.length} but saw a tree of depth ${depth + 1}`);
+        logger.error(`Expected a depth of ${pt.circles.length} but saw a tree of depth ${depth + 1}`);
     }
 }
 
