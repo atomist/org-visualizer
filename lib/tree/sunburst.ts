@@ -20,7 +20,7 @@
 export interface PlantedTree {
     tree: SunburstTree;
     circles: SunburstCircleMetadata[];
-    errors?: [{ message: string }];
+    errors?: Array<{ message: string }>;
 }
 
 export interface SunburstCircleMetadata {
