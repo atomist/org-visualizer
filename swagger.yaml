@@ -276,6 +276,15 @@ paths:
               description: Comma-separate list of tags to search for.
               required: false
               type: string
+            - name: byOrg
+              in: query
+              description: Introduce a tree layer by organization
+              type: string
+              enum:
+                - true
+                - false
+              required: false
+              default: true
           responses:
             "200":
               description: successful operation

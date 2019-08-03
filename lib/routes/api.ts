@@ -350,15 +350,15 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             },
         };
 
-        // if (req.query.byOrg) {
-        // Group by organization via an additional layer at the center
-        repoTree = introduceClassificationLayer<{ owner: string }>(repoTree,
-            {
-                descendantClassifier: l => l.owner,
-                newLayerDepth: 1,
-                newLayerMeaning: "owner",
-                // descendantFinder: l => descendants(l).filter(n => !!(n as any).owner),
-            });
+        if (req.query.byOrg !== "false") {
+            // Group by organization via an additional layer at the center
+            repoTree = introduceClassificationLayer<{ owner: string }>(repoTree,
+                {
+                    descendantClassifier: l => l.owner,
+                    newLayerDepth: 1,
+                    newLayerMeaning: "owner",
+                });
+        }
 
         res.send({
             // fingerprints: relevantFingerprints,
