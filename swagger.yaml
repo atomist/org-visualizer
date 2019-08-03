@@ -256,6 +256,55 @@ paths:
                 description: successful operation
               "400":
                 description: Invalid status value
+  /{workspace}/explore:
+    get:
+          tags:
+            - repositories
+          summary: Find all repositories in workspace matching one or more tags
+          description: Find all repositories in workspace matching one or more tags
+          operationId: findByTag
+          produces:
+            - application/json
+          parameters:
+            - name: workspace
+              in: path
+              description: Workspace id. * for all.
+              required: true
+              type: string
+            - name: tags
+              in: query
+              description: Comma-separate list of tags to search for.
+              required: false
+              type: string
+          responses:
+            "200":
+              description: successful operation
+              schema:
+                  type: object
+                  properties:
+                    tags:
+                      type: array
+                      description: Thing
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Tag name
+                          count:
+                            description: Occurrence among matching repositories
+                            type: integer
+                            format: int32
+                    selectedTags:
+                      type: array
+                      description: Selected tags
+                      items:
+                        type: string
+                    tree:
+                      description: Org/repositories/tags
+                      $ref: "#/definitions/Tree"
+            "400":
+              description: Invalid workspace id
 
 components:
   schemas:
