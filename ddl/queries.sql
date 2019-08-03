@@ -63,3 +63,10 @@ SELECT row_to_json(data) FROM (SELECT f0.type, json_agg(aspects) as children FRO
     ORDER BY entropy desc) as aspects
     WHERE aspects.type = f0.type
     GROUP by f0.type) as data;
+
+
+-- Fingerprints per repo
+SELECT rs.id, owner, rs.name as repo, url, commit_sha, timestamp, jsonb_agg(f) as fingerprints
+    from repo_snapshots rs, repo_fingerprints rf, fingerprints f
+    where rs.id = rf.repo_snapshot_id and f.id = rf.fingerprint_id
+    group by rs.id;
