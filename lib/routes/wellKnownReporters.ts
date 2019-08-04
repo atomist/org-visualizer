@@ -14,28 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
-import {
-    CodeMetricsData,
-    CodeMetricsType,
-    findCodeMetricsData,
-} from "../aspect/common/codeMetrics";
+import { findCodeMetricsData, } from "../aspect/common/codeMetrics";
 import { Reporters } from "../aspect/reporters";
-import {
-    defaultAnalyzedRenderer,
-    OrgGrouper,
-    ProjectAnalysisGrouper,
-} from "../aspect/support/groupingUtils";
-import {
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { OrgGrouper, ProjectAnalysisGrouper, } from "../aspect/support/groupingUtils";
+import { treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
@@ -106,16 +91,6 @@ export const WellKnownReporters: Reporters = {
                         // url: ar.analysis.id.url,
                         size: cs.source,
                     };
-                }),
-
-        // Aspects found in this project
-        aspectCount: params =>
-            treeBuilderFor("aspectCount", params)
-                .renderWith(ar => {
-                    // TODO fix this using new support
-                    const rendered = defaultAnalyzedRenderer()(ar);
-                    rendered.size = _.uniq(ar.fingerprints.map(fp => fp.type)).length;
-                    return rendered;
                 }),
     };
 
