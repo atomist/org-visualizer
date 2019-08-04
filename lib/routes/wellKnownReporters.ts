@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CodeStats, consolidate, Language, } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
-import { findCodeMetricsData, } from "../aspect/common/codeMetrics";
+import { findCodeMetricsData } from "../aspect/common/codeMetrics";
 import { Reporters } from "../aspect/reporters";
-import { OrgGrouper, ProjectAnalysisGrouper, } from "../aspect/support/groupingUtils";
-import { treeBuilder, TreeBuilder, } from "../tree/TreeBuilder";
+import { OrgGrouper, ProjectAnalysisGrouper } from "../aspect/support/groupingUtils";
+import { treeBuilder, TreeBuilder } from "../tree/TreeBuilder";
 
 /**
  * Well known reporters against our repo cohort.
