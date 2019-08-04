@@ -21,6 +21,7 @@ export interface PlantedTree {
     tree: SunburstTree;
     circles: SunburstCircleMetadata[];
     errors?: Array<{ message: string }>;
+    tags?: Array<{ name: string, count: number }>;
 }
 
 export interface SunburstCircleMetadata {
