@@ -26,7 +26,7 @@ import {
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
-import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
+import { CodeMetricsAspect, CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
 import { fileCount } from "../aspect/common/fileCount";
 import {
@@ -129,6 +129,10 @@ export const Taggers: Tagger[] = [
     fp => fp.type === TravisScriptsAspect.name ? "travis" : undefined,
     fp => fp.type === PythonDependencies.name ? "python" : undefined,
     fp => fp.type === BranchCountType && fp.data.count > 20 ? ">20 branches" : undefined,
+    fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000 ? "huge (>10K)" : undefined,
+    fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000 ?
+        "big (3-10K)" :
+        undefined,
     fp => {
         if (fp.type === GitRecencyType) {
             const date = new Date(fp.data);
