@@ -26,7 +26,11 @@ import {
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
-import { CodeMetricsAspect, CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import {
+    CodeMetricsAspect,
+    CodeMetricsData,
+    CodeMetricsType,
+} from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
 import { fileCount } from "../aspect/common/fileCount";
 import {
