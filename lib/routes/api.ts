@@ -42,7 +42,8 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     Analyzed,
     AspectRegistry,
-    IdealStore, Tag,
+    IdealStore,
+    Tag,
     tagsIn,
 } from "../aspect/AspectRegistry";
 import {
@@ -52,7 +53,8 @@ import {
 import { getAspectReports } from "../customize/categories";
 import {
     PlantedTree,
-    SunburstTree, TagUsage,
+    SunburstTree,
+    TagUsage,
 } from "../tree/sunburst";
 import {
     introduceClassificationLayer,

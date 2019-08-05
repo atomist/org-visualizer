@@ -21,7 +21,8 @@ import {
     IdealStore,
     ManagedAspect,
     ProblemStore,
-    problemStoreBackedUndesirableUsageCheckerFor, Tag,
+    problemStoreBackedUndesirableUsageCheckerFor,
+    Tag,
     UndesirableUsageChecker,
 } from "./AspectRegistry";
 
