@@ -196,10 +196,10 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
 
         <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {(props.tree as any).matchingRepoCount} of {(props.tree as any).repoCount} repos</h2>
 
-        <form method="GET" action="/query">
+        {props.selectedTags.length > 0 && <form method="GET" action="/query">
             <input type="hidden" name="explore" value="true" />
             <input type="submit" value="CLEAR" />
-        </form>
+        </form>}
 
         {tagButtons}
 
