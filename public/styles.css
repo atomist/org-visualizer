@@ -67,6 +67,7 @@ header .page-title {
     padding: 3px;
     border: 1px black solid;
     border-radius: 3px;
+    vertical-align: top;
 }
 
 .tagGroup form {
@@ -84,6 +85,10 @@ header .page-title {
 
 .tagGroup input.requireButton {
     background-image: url(require.png);
+}
+
+.tagGroup input.resetTagSelection {
+    background-image: url(reset.png);
 }
 
 .tagGroup input.excludeButton {

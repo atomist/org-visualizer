@@ -53,6 +53,12 @@ function levelDataListItem(item: PerLevelDataItem): React.ReactElement {
 
 function displayTagGroup(tagGroup: TagGroup): React.ReactElement {
     return <div>
+        {tagGroup.tagSelection.length > 0 && <div className="tagGroup">
+            clear:
+            <form method="GET" action="/query">
+                <input type="hidden" name="explore" value="true" />
+                <input className="resetTagSelection" type="submit" value="CLEAR" />
+            </form></div>}
         {tagGroup.allTagNames().map(n => displayTagButtons(tagGroup, n))}
     </div>;
 }
@@ -87,7 +93,7 @@ export class TagGroup {
     private readonly tagsInData: Array<{ name: string, count: number }>;
     private readonly totalProjectsDisplayed: number;
 
-    constructor(private readonly tagSelection: string[],
+    constructor(public readonly tagSelection: string[],
                 treeWithTags?: { tags?: Array<{ name: string, count: number }>, matchingRepoCount?: number }) {
         this.tagsInData = treeWithTags && treeWithTags.tags ? treeWithTags.tags : [];
         this.totalProjectsDisplayed = treeWithTags ? treeWithTags.matchingRepoCount : 0;
@@ -195,11 +201,6 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         <h1>{props.fingerprintDisplayName}</h1>
 
         <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {(props.tree as any).matchingRepoCount} of {(props.tree as any).repoCount} repos</h2>
-
-        {props.selectedTags.length > 0 && <form method="GET" action="/query">
-            <input type="hidden" name="explore" value="true" />
-            <input type="submit" value="CLEAR" />
-        </form>}
 
         {tagButtons}
 
