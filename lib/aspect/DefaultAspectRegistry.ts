@@ -27,9 +27,15 @@ import {
 
 import * as _ from "lodash";
 
-export type Tagger = (fp: FP) => string;
+/**
+ * Determine zero or one tag in this fingerprint
+ */
+export type Tagger = (fp: FP) => string | undefined;
 
-export type CombinationTagger = (fp: FP[]) => string;
+/**
+ * Determine zero or one tag from this set of fingerprints
+ */
+export type CombinationTagger = (fp: FP[]) => string | undefined;
 
 /**
  * Aspects must have unique names

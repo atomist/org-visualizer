@@ -328,25 +328,20 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         }));
 
         let repoTree: PlantedTree = {
-            circles: [{ meaning: "root" }, { meaning: "repo" }, { meaning: "tag" }],
+            circles: [{ meaning: "tags" }, { meaning: "repo" }],
             tree: {
-                name: "repos",
-                children: [
-                    {
-                        name: selectedTags.join("+"),
-                        children: relevantRepos.map(r => {
-                            return {
-                                id: r.id,
-                                owner: r.repoRef.owner,
-                                repo: r.repoRef.repo,
-                                name: r.repoRef.repo,
-                                url: r.repoRef.url,
-                                size: r.analysis.fingerprints.length,
-                                tags: r.tags,
-                            };
-                        }),
-                    },
-                ],
+                name: describeSelectedTagsToAnimals(selectedTags),
+                children: relevantRepos.map(r => {
+                    return {
+                        id: r.id,
+                        owner: r.repoRef.owner,
+                        repo: r.repoRef.repo,
+                        name: r.repoRef.repo,
+                        url: r.repoRef.url,
+                        size: r.analysis.fingerprints.length,
+                        tags: r.tags,
+                    };
+                }),
             },
         };
 
@@ -405,4 +400,8 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
 
 function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: string[] }): boolean {
     return selectedTag.startsWith("!") ? !repo.tags.includes(selectedTag.substr(1)) : repo.tags.includes(selectedTag);
+}
+
+export function describeSelectedTagsToAnimals(selectedTags: string[]): string {
+    return selectedTags.map(t => t.replace("!", "not ")).join(" and ") || "All";
 }
