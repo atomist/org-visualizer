@@ -48,6 +48,19 @@ header .page-title {
 
 /* "explore" sunburst page */
 
+.percentageOfProjectWithoutTag {
+    width: 100%;
+    background-color: blue;
+    height: 10px;
+    color: transparent;
+}
+
+.percentageOfProjectsWithTag {
+    background-color: lightGreen;
+    height: 100%;
+    color: inherit;
+}
+
 .tagGroup {
     display: inline-block;
     margin: 5px;

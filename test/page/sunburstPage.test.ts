@@ -18,8 +18,8 @@ import * as assert from "assert";
 import { TagGroup } from "../../views/sunburstPage";
 
 describe("buttons to change the selected tags in the explore view of sunburst", () => {
-    it("takes in the tag selection and the tags available in the data", () => {
-        const subject = new TagGroup(["node", "!dead"], { tags: [] });
+    it("takes in the tag selection and the tags available in the data and the total number of projects", () => {
+        const subject = new TagGroup(["node", "!dead"], { tags: [], matchingRepoCount: 4 });
     });
 
     it("doesn't barf when the tree is not provided", () => {
@@ -127,6 +127,21 @@ describe("buttons to change the selected tags in the explore view of sunburst", 
     it("produces the tagSelection that results from excluding a tag currently required", () => {
         assert.deepStrictEqual(new TagGroup(["mememe", "!humboe"]).tagSelectionForExclude("mememe"),
             ["!humboe", "!mememe"], "From required, to excluded");
+    });
+
+    it("100% of projects have a required tag", () => {
+        const subject = new TagGroup(["mememe"]);
+        assert.strictEqual(subject.getPercentageOfProjects("mememe"), 100);
+    });
+
+    it("0% of projects have an excluded tag", () => {
+        const subject = new TagGroup(["!goaway"]);
+        assert.strictEqual(subject.getPercentageOfProjects("goaway"), 0);
+    });
+
+    it("returns the percentage of something with the tag data", () => {
+        const subject = new TagGroup([], { tags: [{ name: "lizard", count: 4 }], matchingRepoCount: 80 });
+        assert.strictEqual(subject.getPercentageOfProjects("lizard"), 5);
     });
 
 });

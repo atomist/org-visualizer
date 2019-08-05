@@ -57,9 +57,16 @@ function displayTagGroup(tagGroup: TagGroup): React.ReactElement {
 }
 
 function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElement {
+
+    const percentageWithTag = tagGroup.getPercentageOfProjects(tagName);
+    const percentageBar = <div className="percentageOfProjectWithoutTag">
+        <div className="percentageOfProjectsWithTag" style={{ width: percentageWithTag + "%" }}>
+            {percentageWithTag}%</div>
+        {100 - percentageWithTag}%</div>;
     return <div className={"tagGroup " +
         (tagGroup.isRequired(tagName) ? "requiredTag " : "") +
         (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
+        {percentageBar}
         <span className="tagDescription">{tagName}</span>
         <form method="GET" action="/query">
             <input type="hidden" name="explore" value="true" />
@@ -77,9 +84,12 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
 export class TagGroup {
 
     private readonly tagsInData: Array<{ name: string, count: number }>;
+    private readonly totalProjectsDisplayed: number;
+
     constructor(private readonly tagSelection: string[],
-                private readonly treeWithTags?: { tags?: Array<{ name: string, count: number }> }) {
+                treeWithTags?: { tags?: Array<{ name: string, count: number }>, matchingRepoCount?: number }) {
         this.tagsInData = treeWithTags && treeWithTags.tags ? treeWithTags.tags : [];
+        this.totalProjectsDisplayed = treeWithTags ? treeWithTags.matchingRepoCount : 0;
     }
 
     public allTagNames(): string[] {
@@ -94,6 +104,20 @@ export class TagGroup {
 
     public isExcluded(tagName: string): boolean {
         return this.tagSelection.includes(this.pleaseExclude(tagName));
+    }
+
+    public getPercentageOfProjects(tagName: string): number {
+        if (this.isExcluded(tagName)) {
+            return 0;
+        }
+        if (this.isRequired(tagName)) {
+            return 100;
+        }
+        const data = this.tagsInData.find(t => t.name === tagName);
+        if (!data) {
+            return 0; // whatever
+        }
+        return Math.round(data.count * 100 / this.totalProjectsDisplayed);
     }
 
     public describeExclude(tagName: string): string {
