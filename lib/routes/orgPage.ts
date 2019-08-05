@@ -146,8 +146,7 @@ export function orgPage(
                         unfoundAspects,
                         projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
                     })));
-                } catch
-                (e) {
+                } catch (e) {
                     logger.error(e.stack);
                     res.status(500).send("failure");
                 }

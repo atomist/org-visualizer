@@ -20,7 +20,7 @@ export function TopLevelPage(props: {
         <body>
             <header>
                 <div className="around-page-title">
-                    <img className="atomist-logo" src="/atomist-logo-small-white.png" />
+                    <a href="/org"><img className="atomist-logo" src="/atomist-logo-small-white.png" /></a>
                     <span className="page-title">
                         {props.pageTitle || "Atomist Explorer"}
                     </span>
