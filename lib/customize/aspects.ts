@@ -21,7 +21,6 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
-    constructNpmDepsFingerprintName,
     filesAspect,
     NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
@@ -65,7 +64,6 @@ import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 
-import * as _ from "lodash";
 import { daysSince } from "../aspect/git/dateUtils";
 
 /**
@@ -124,46 +122,58 @@ export const Aspects: ManagedAspect[] = [
 export const Taggers: Tagger[] = [
     // fp => fp.type === NpmDeps.name ? `npm: ${fp.name}`: undefined,
     // fp => fp.type === DockerFrom.name ? `docker: ${fp.name}`: undefined,
-    fp => fp.type === DockerFrom.name ? "docker" : undefined,
-    fp => fp.type === NpmDeps.name ? "node" : undefined,
-    fp => fp.type === DirectMavenDependencies.name ? "maven" : undefined,
-    fp => fp.type === TypeScriptVersion.name ? "typescript" : undefined,
-    fp => fp.type === LeinDeps.name ? "clojure" : undefined,
-    fp => fp.type === SpringBootVersion.name ? "spring-boot" : undefined,
-    fp => fp.type === TravisScriptsAspect.name ? "travis" : undefined,
-    fp => fp.type === PythonDependencies.name ? "python" : undefined,
-    fp => fp.type === BranchCountType && fp.data.count > 20 ? ">20 branches" : undefined,
-    fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000 ? "huge (>10K)" : undefined,
-    fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000 ?
-        "big (3-10K)" :
-        undefined,
-    fp => {
-        if (fp.type === GitRecencyType) {
-            const date = new Date(fp.data);
-            if (daysSince(date) > 500) {
-                return "dead?";
+    { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
+    { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
+    { name: "maven", description: "Direct Maven dependencies", test: fp => fp.type === DirectMavenDependencies.name },
+    { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
+    { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
+    { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
+    { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
+    { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
+    {
+        name: ">20 branches",
+        description: "git branch count",
+        test: fp => fp.type === BranchCountType && fp.data.count > 20,
+    },
+    {
+        name: "huge (>10K)",
+        description: "Repo size",
+        test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000,
+    },
+    {
+        name: "big (3-10K)",
+        description: "Repo size",
+        test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
+    },
+    {
+        name: "dead?", description: "Git activity",
+        test: fp => {
+            if (fp.type === GitRecencyType) {
+                const date = new Date(fp.data);
+                return daysSince(date) > 500;
             }
-            if (daysSince(date) < 3) {
-                return "active";
-            }
-        }
-        return undefined;
+            return false;
+        },
     },
 ];
 
 export const CombinationTaggers: CombinationTagger[] = [
     // fps => _.uniq(fps.map(f => f.type)).length  + "",
-    fps => {
-        // Find recent repos
-        const grt = fps.find(fp => fp.type === GitRecencyType);
-        const acc = fps.find(fp => fp.type === GitActivesType);
-        if (!!grt && !!acc) {
-            // TODO can reduce days with non stale data
-            const days = daysSince(new Date(grt.data));
-            if (days < 10 && acc.data.count > 2) {
-                return "hot";
+    {
+        name: "hot",
+        description: "How hot is git",
+        test: fps => {
+            // Find recent repos
+            const grt = fps.find(fp => fp.type === GitRecencyType);
+            const acc = fps.find(fp => fp.type === GitActivesType);
+            if (!!grt && !!acc) {
+                // TODO can reduce days with non stale data
+                const days = daysSince(new Date(grt.data));
+                if (days < 10 && acc.data.count > 2) {
+                    return true;
+                }
             }
-        }
-        return undefined;
+            return false;
+        },
     },
 ];

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import * as _ from "lodash";
 import { describeSelectedTagsToAnimals, TagTree } from "../lib/routes/api";
+import { TagUsage } from "../lib/tree/sunburst";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CurrentIdealForDisplay {
@@ -89,11 +90,11 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
 
 export class TagGroup {
 
-    private readonly tagsInData: Array<{ name: string, count: number }>;
+    private readonly tagsInData: TagUsage[];
     private readonly totalProjectsDisplayed: number;
 
     constructor(public readonly tagSelection: string[],
-                treeWithTags?: { tags?: Array<{ name: string, count: number }>, matchingRepoCount?: number }) {
+                treeWithTags?: { tags?: TagUsage[], matchingRepoCount?: number }) {
         this.tagsInData = treeWithTags && treeWithTags.tags ? treeWithTags.tags : [];
         this.totalProjectsDisplayed = treeWithTags ? treeWithTags.matchingRepoCount : 0;
     }

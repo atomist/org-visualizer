@@ -21,7 +21,7 @@ import {
     IdealStore,
     ManagedAspect,
     ProblemStore,
-    problemStoreBackedUndesirableUsageCheckerFor,
+    problemStoreBackedUndesirableUsageCheckerFor, Tag,
     UndesirableUsageChecker,
 } from "./AspectRegistry";
 
@@ -30,12 +30,18 @@ import * as _ from "lodash";
 /**
  * Determine zero or one tag in this fingerprint
  */
-export type Tagger = (fp: FP) => string | undefined;
+export interface Tagger extends Tag {
+
+    test(fp: FP): boolean;
+}
 
 /**
  * Determine zero or one tag from this set of fingerprints
  */
-export type CombinationTagger = (fp: FP[]) => string | undefined;
+export interface CombinationTagger extends Tag {
+
+    test(fp: FP[]): boolean;
+}
 
 /**
  * Aspects must have unique names
@@ -60,12 +66,24 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this;
     }
 
-    public tagsFor(fp: FP): string[] {
-        return _.uniq(this.taggers.map(tagger => tagger(fp)).filter(t => !!t));
+    public tagsFor(fp: FP): Tag[] {
+        return _.uniqBy(this.taggers
+                .map(tagger => ({ ...tagger, tag: tagger.test(fp) }))
+                .filter(t => !!t.tag),
+            tag => tag.name);
     }
 
-    public combinationTagsFor(fps: FP[]): string[] {
-        return _.uniq(this.combinationTaggers.map(tagger => tagger(fps))).filter(t => !!t);
+    public combinationTagsFor(fps: FP[]): Tag[] {
+        return _.uniqBy(this.combinationTaggers
+                .map(tagger => ({ ...tagger, tag: tagger.test(fps) }))
+                .filter(t => !!t.tag),
+            tag => tag.name);
+    }
+
+    get availableTags(): Tag[] {
+        return _.uniqBy(
+            [...this.taggers, ...this.combinationTaggers],
+            tag => tag.name);
     }
 
     get aspects(): ManagedAspect[] {

@@ -42,7 +42,7 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     Analyzed,
     AspectRegistry,
-    IdealStore,
+    IdealStore, Tag,
     tagsIn,
 } from "../aspect/AspectRegistry";
 import {
@@ -52,7 +52,7 @@ import {
 import { getAspectReports } from "../customize/categories";
 import {
     PlantedTree,
-    SunburstTree,
+    SunburstTree, TagUsage,
 } from "../tree/sunburst";
 import {
     introduceClassificationLayer,
@@ -310,7 +310,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
 
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
-        const taggedRepos: Array<ProjectAnalysisResult & { tags: string[] }> =
+        const taggedRepos: Array<ProjectAnalysisResult & { tags: Tag[] }> =
             repos.map(repo =>
                 ({
                     ...repo,
@@ -321,10 +321,11 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
 
-        const grouped = _.groupBy(_.flatten(relevantRepos.map(r => r.tags)));
-        const allTags = Object.getOwnPropertyNames(grouped).map(name => ({
+        const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
+        const allTags = Object.getOwnPropertyNames(relevantTags).map(name => ({
             name,
-            count: grouped[name].length,
+            description: aspectRegistry.availableTags.find(t => t.name === name).description,
+            count: relevantTags[name].length,
         }));
 
         let repoTree: PlantedTree = {
@@ -363,20 +364,14 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             matchingRepoCount: relevantRepos.length,
             ...repoTree,
         };
-
         res.send(tagTree);
     });
-}
-
-export interface Tag {
-    name: string;
-    count: number;
 }
 
 export interface TagTree extends PlantedTree {
     repoCount: number;
     matchingRepoCount: number;
-    tags: Tag[];
+    tags: TagUsage[];
     selectedTags: string[];
 }
 
@@ -412,8 +407,9 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
     });
 }
 
-function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: string[] }): boolean {
-    return selectedTag.startsWith("!") ? !repo.tags.includes(selectedTag.substr(1)) : repo.tags.includes(selectedTag);
+function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: Tag[] }): boolean {
+    const repoTags = repo.tags.map(tag => tag.name);
+    return selectedTag.startsWith("!") ? !repoTags.includes(selectedTag.substr(1)) : repoTags.includes(selectedTag);
 }
 
 export function describeSelectedTagsToAnimals(selectedTags: string[]): string {

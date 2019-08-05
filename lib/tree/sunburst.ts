@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { Tag } from "../aspect/AspectRegistry";
+
+export interface TagUsage extends Tag {
+    count: number;
+}
+
 /**
  * SunburstTree with metadata about the meaning of each level
  */
@@ -21,7 +27,7 @@ export interface PlantedTree {
     tree: SunburstTree;
     circles: SunburstCircleMetadata[];
     errors?: Array<{ message: string }>;
-    tags?: Array<{ name: string, count: number }>;
+    tags?: TagUsage[];
 }
 
 export interface SunburstCircleMetadata {

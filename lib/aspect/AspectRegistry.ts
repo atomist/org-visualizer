@@ -122,6 +122,11 @@ export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
  */
 export type ManagedAspect<FPI extends FP = FP> = Aspect<FPI> | AtomicAspect<FPI>;
 
+export interface Tag {
+    name: string;
+    description?: string;
+}
+
 /**
  * Manage a number of aspects.
  */
@@ -132,9 +137,11 @@ export interface AspectRegistry {
      * @param {FP} fp
      * @return {string | undefined}
      */
-    tagsFor(fp: FP): string[];
+    tagsFor(fp: FP): Tag[];
 
-    combinationTagsFor(fps: FP[]): string[];
+    combinationTagsFor(fps: FP[]): Tag[];
+
+    availableTags: Tag[];
 
     /**
      * All the aspects we are managing
@@ -195,7 +202,7 @@ export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore:
     };
 }
 
-export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[]): string[] {
-    return _.uniq(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp))))
+export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[]): Tag[] {
+    return _.uniqBy(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp))), tag => tag.name)
         .sort();
 }
