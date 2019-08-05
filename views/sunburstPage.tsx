@@ -1,8 +1,7 @@
 import * as React from "react";
-import { PlantedTree, SunburstCircleMetadata } from "../lib/tree/sunburst";
 
 import * as _ from "lodash";
-import { describeSelectedTagsToAnimals } from "../lib/routes/api";
+import { describeSelectedTagsToAnimals, TagTree } from "../lib/routes/api";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CurrentIdealForDisplay {
@@ -23,7 +22,7 @@ export interface SunburstPageProps {
     possibleIdeals: PossibleIdealForDisplay[];
     query: string;
     dataUrl: string;
-    tree: PlantedTree; // we have the data already.
+    tree: TagTree; // we have the data already.
 
     /**
      * Tags selected
@@ -200,7 +199,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
     return <div className="sunburst">
         <h1>{props.fingerprintDisplayName}</h1>
 
-        <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {(props.tree as any).matchingRepoCount} of {(props.tree as any).repoCount} repos</h2>
+        <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {props.tree.matchingRepoCount} of {props.tree.repoCount} repos</h2>
 
         {tagButtons}
 

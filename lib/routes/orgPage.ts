@@ -74,6 +74,7 @@ import {
 import {
     PlantedTree,
 } from "../tree/sunburst";
+import { TagTree } from "./api";
 
 function renderStaticReactNode(body: ReactElement,
                                title?: string,
@@ -219,10 +220,10 @@ export function orgPage(
                         req.query.trim === "true"}`;
                 }
 
-                let tree: PlantedTree;
+                let tree: TagTree;
                 const fullUrl = `http://${req.get("host")}${dataUrl}`;
                 try {
-                    const result = await httpClientFactory.create().exchange<PlantedTree>(fullUrl,
+                    const result = await httpClientFactory.create().exchange<TagTree>(fullUrl,
                         {
                             retry: { retries: 0 },
                         });

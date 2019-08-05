@@ -355,15 +355,29 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
                 });
         }
 
-        res.send({
+        const tagTree: TagTree = {
             // fingerprints: relevantFingerprints,
             tags: allTags,
             selectedTags,
             repoCount: repos.length,
             matchingRepoCount: relevantRepos.length,
             ...repoTree,
-        });
+        };
+
+        res.send(tagTree);
     });
+}
+
+export interface Tag {
+    name: string;
+    count: number;
+}
+
+export interface TagTree extends PlantedTree {
+    repoCount: number;
+    matchingRepoCount: number;
+    tags: Tag[];
+    selectedTags: string[];
 }
 
 /**
