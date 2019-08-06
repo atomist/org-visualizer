@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { HttpClientFactory, logger } from "@atomist/automation-client";
+import {
+    HttpClientFactory,
+    logger,
+} from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
     BaseAspect,
@@ -26,17 +29,40 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
-import { Express, RequestHandler } from "express";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import * as _ from "lodash";
 import { CSSProperties } from "react";
 import serveStatic = require("serve-static");
-import { AspectFingerprintsForDisplay, FingerprintForDisplay, OrgExplorer } from "../../views/org";
-import { ProjectAspectForDisplay, ProjectExplorer } from "../../views/project";
-import { ProjectForDisplay, ProjectList } from "../../views/projectList";
-import { CurrentIdealForDisplay, PossibleIdealForDisplay, SunburstPage } from "../../views/sunburstPage";
+import {
+    AspectFingerprintsForDisplay,
+    FingerprintForDisplay,
+    OrgExplorer,
+} from "../../views/org";
+import {
+    ProjectAspectForDisplay,
+    ProjectExplorer,
+} from "../../views/project";
+import {
+    ProjectForDisplay,
+    ProjectList,
+} from "../../views/projectList";
+import {
+    CurrentIdealForDisplay,
+    PossibleIdealForDisplay,
+    SunburstPage,
+} from "../../views/sunburstPage";
 import { renderStaticReactNode } from "../../views/topLevelPage";
-import { FingerprintUsage, ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { AspectRegistry, ManagedAspect } from "../aspect/AspectRegistry";
+import {
+    FingerprintUsage,
+    ProjectAnalysisResultStore,
+} from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import {
+    AspectRegistry,
+    ManagedAspect,
+} from "../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
