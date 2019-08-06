@@ -145,12 +145,13 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         ...opts,
     };
     return [
+        { name: "vulnerable", description: "Has exposed secrets", test: fp => fp.type === ExposedSecrets.name },
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
         { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
         {
             name: "maven",
             description: "Direct Maven dependencies",
-            test: fp => fp.type === DirectMavenDependencies.name
+            test: fp => fp.type === DirectMavenDependencies.name,
         },
         { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
         { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
@@ -229,7 +230,7 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
                 // There are quite a few aspects that are found on everything, e.g. git
                 // We need to set the threshold count probably
                 return aspectCount < optsToUse.minAspectsToExpect;
-            }
+            },
         },
         {
             name: "hot",
