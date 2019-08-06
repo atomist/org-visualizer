@@ -241,8 +241,8 @@ values ($1, $2, $3, $4, current_timestamp)`, [
         });
     }
 
-    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string, dedup?: boolean): Promise<FP[]> {
-        return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name, dedup);
+    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
+        return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
     }
 
     public async fingerprintsForProject(snapshotId: string): Promise<FP[]> {
@@ -432,10 +432,9 @@ function problemRowToProblem(rawRow: any): ProblemUsage {
 async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
-                                       name?: string,
-                                       dedup?: boolean): Promise<FP[]> {
+                                       name?: string): Promise<FP[]> {
     return doWithClient(clientFactory, async client => {
-        const sql = `SELECT ${dedup ? "DISTINCT" : ""} f.name as fingerprintName, f.feature_name, f.sha, f.data
+        const sql = `SELECT DISTINCT f.name as fingerprintName, f.feature_name, f.sha, f.data
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f
   WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
   AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
