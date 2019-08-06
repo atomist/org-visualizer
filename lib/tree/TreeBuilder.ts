@@ -16,10 +16,10 @@
 
 import * as _ from "lodash";
 import {
+    PlantedTree, SunburstCircleMetadata,
     SunburstLeaf,
     SunburstTree,
 } from "./sunburst";
-import { mergeTrees } from "./treeUtils";
 
 /**
  * Implemented by types that can create JSON usable to back a d3 sunburst
@@ -28,11 +28,11 @@ import { mergeTrees } from "./treeUtils";
 export interface ReportBuilder<ROOT> {
 
     /**
-     * Construct a SunburstTree from the given data.
+     * Construct a PlantedTree from the given data.
      * @param {() => (ROOT[] | AsyncIterable<ROOT>)} query
      * @return {Promise<SunburstTree>}
      */
-    toSunburstTree(query: () => ROOT[] | AsyncIterable<ROOT>): Promise<SunburstTree>;
+    toPlantedTree(query: () => ROOT[] | AsyncIterable<ROOT>): Promise<PlantedTree>;
 }
 
 export type Renderer<T> = (t: T) => SunburstLeaf;
@@ -116,7 +116,7 @@ export interface SplitStep<T, Q> {
 
 // Add a kind field to help with type determination
 type Step = (GroupStep<any> | CustomGroupStep<any, any> | MapStep<any, any, any> | SplitStep<any, any>) &
-    { kind: "group" | "split" | "customGroup" | "map" };
+    { kind: "group" | "split" | "customGroup" | "map", name?: string };
 
 class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
 
@@ -149,26 +149,23 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
      */
     public renderWith(renderer: Renderer<T>): ReportBuilder<ROOT> {
         return {
-            toSunburstTree: async originalQuery => {
-                return mergeTrees(...await this.chunk(originalQuery, renderer));
+            toPlantedTree: async originalQuery => {
+                const data: ROOT[] = [];
+                for await (const root of originalQuery()) {
+                    data.push(root);
+                }
+                const tree = await this.treeify(data, renderer);
+                const circles: SunburstCircleMetadata[] = [
+                    ...this.steps
+                        .filter(step => !!step.name)
+                        .map(step => ({
+                            meaning: step.name,
+                        })),
+                    { meaning: "render" },
+                ];
+                return { tree, circles };
             },
         };
-    }
-
-    // Chunk it into trees of size n
-    private async chunk(originalQuery: () => AsyncIterable<ROOT> | ROOT[],
-                        renderer: Renderer<T>): Promise<SunburstTree[]> {
-        const trees: SunburstTree[] = [];
-        let data: ROOT[] = [];
-        for await (const root of originalQuery()) {
-            data.push(root);
-            if (data.length === this.chunkSize) {
-                trees.push(await this.treeify(data, renderer));
-                data = [];
-            }
-        }
-        trees.push(await this.treeify(data, renderer));
-        return trees;
     }
 
     // Make a single tree from materialized data
@@ -182,10 +179,8 @@ class DefaultTreeBuilder<ROOT, T> implements TreeBuilder<ROOT, T> {
     /**
      *
      * @param {string} rootName
-     * @param {50} chunkSize number of records to handle at once
      */
-    public constructor(public readonly rootName: string,
-                       private readonly chunkSize: number = 50) {
+    public constructor(public readonly rootName: string) {
     }
 
 }

@@ -119,11 +119,11 @@ export function api(clientFactory: ClientFactory,
 
                     const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
                     const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-                    let tree = await q.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-                    // if (req.query.byOrg !== "false") {
-                    //     tree = splitByOrg({ tree, circles: [] }).tree;
-                    // }
-                    return res.json({ tree });
+                    let pt = await q.toPlantedTree(() => relevantRepos.map(r => r.analysis));
+                    if (req.query.byOrg !== "false") {
+                        pt = splitByOrg(pt);
+                    }
+                    return res.json(pt);
                 } catch (e) {
                     logger.warn("Error occurred getting report: %s %s", e.message, e.stack);
                     res.sendStatus(500);
@@ -408,4 +408,3 @@ function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: Tag
 export function describeSelectedTagsToAnimals(selectedTags: string[]): string {
     return selectedTags.map(t => t.replace("!", "not ")).join(" and ") || "All";
 }
-

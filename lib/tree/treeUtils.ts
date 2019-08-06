@@ -199,6 +199,10 @@ export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
             // Split children
             const descendantsToClassifyBy = descendantPicker(node);
             logger.info("Found %d leaves for %s", descendantsToClassifyBy.length, t.name);
+            if (node === t && descendantsToClassifyBy.length === 0) {
+                logger.info("Nothing to do on %s", t.name);
+                return false;
+            }
             // Introduce a new node for each classification
             const distinctNames = _.uniq(descendantsToClassifyBy.map(d => opts.descendantClassifier(d as any)));
             const oldKids = node.children;
@@ -283,52 +287,6 @@ export function childCount(l: SunburstLevel): number {
 
 export function childrenOf(l: SunburstLevel): SunburstLevel[] {
     return isSunburstTree(l) ? l.children : [];
-}
-
-/**
- * Merge these trees. They must have the same name.
- * Trees may be merged in memory because they may have many nodes, but don't have much data.
- * @return {SunburstTree}
- */
-export function mergeTrees(...trees: SunburstTree[]): SunburstTree {
-    if (trees.length === 1) {
-        return trees[0];
-    }
-    return trees.reduce(merge2Trees);
-}
-
-function merge2Trees(t1: SunburstTree, t2: SunburstTree): SunburstTree {
-    if (t1.name !== t2.name) {
-        throw new Error(`Trees with different names cannot be merged. Had '${t1.name}' and '${t2.name}'`);
-    }
-    const mergedChildren: SunburstLevel[] = [];
-
-    for (const child of [...t1.children, ...t2.children]) {
-        const existing = mergedChildren.find(n => n.name === child.name);
-        if (existing) {
-            if (!isSunburstTree(existing)) {
-                if (isSunburstTree(child)) {
-                    throw new Error(`Cannot add tree child to non-tree ${JSON.stringify(existing)}`);
-                }
-                // TODO what about label?
-                existing.size += child.size;
-            } else {
-                const merged = mergeTrees(existing, child as SunburstTree);
-                const index = mergedChildren.indexOf(existing);
-                mergedChildren[index] = merged;
-            }
-        } else {
-            mergedChildren.push(child);
-        }
-    }
-
-    const result: SunburstTree = {
-        name: t1.name,
-        children: mergedChildren,
-    };
-
-    // console.log(JSON.stringify(result));
-    return result;
 }
 
 export function validatePlantedTree(pt: PlantedTree): void {

@@ -14,39 +14,27 @@
  * limitations under the License.
  */
 
-import {
-    CodeStats,
-    consolidate,
-    Language,
-} from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
 import { findCodeMetricsData } from "../aspect/common/codeMetrics";
 import { Reporters } from "../aspect/reporters";
-import {
-    OrgGrouper,
-    ProjectAnalysisGrouper,
-} from "../aspect/support/groupingUtils";
-import {
-    treeBuilder,
-    TreeBuilder,
-} from "../tree/TreeBuilder";
+import { treeBuilder } from "../tree/TreeBuilder";
+import { bandFor } from "../util/bands";
 
-const groupByLoc: ProjectAnalysisGrouper = ar => {
+export type AnalyzedGrouper = (ar: Analyzed) => string;
+
+const groupByLoc: AnalyzedGrouper = ar => {
     const cm = findCodeMetricsData(ar);
     if (!cm) {
         return undefined;
     }
-    if (cm.lines > 20000) {
-        return "venti";
-    }
-    if (cm.lines > 8000) {
-        return "grande";
-    }
-    if (cm.lines > 2000) {
-        return "tall";
-    }
-    return "small";
+    return bandFor({
+        small: { upTo: 2000 },
+        tall: { upTo: 8000 },
+        grande: { upTo: 20000 },
+        venti: "default",
+    }, cm.lines);
 };
 
 /**
@@ -98,6 +86,7 @@ export const WellKnownReporters: Reporters = {
                     name: ar.id.repo,
                     size,
                     url: `/projects/${ar.id.owner}/${ar.id.repo}`,
+                    owner: ar.id.owner,
                     repoUrl: ar.id.url,
                 };
             }),
@@ -120,4 +109,3 @@ export const WellKnownReporters: Reporters = {
                 };
             }),
 };
-
