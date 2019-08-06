@@ -64,7 +64,10 @@ import {
     configureAuth,
     corsHandler,
 } from "./auth";
-import { buildFingerprintTree, splitByOrg } from "./buildFingerprintTree";
+import {
+    buildFingerprintTree,
+    splitByOrg,
+} from "./buildFingerprintTree";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 /**

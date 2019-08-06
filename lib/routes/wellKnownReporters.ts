@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CodeStats, consolidate, Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import {
+    CodeStats,
+    consolidate,
+    Language,
+} from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { Analyzed } from "../aspect/AspectRegistry";
 import { findCodeMetricsData } from "../aspect/common/codeMetrics";

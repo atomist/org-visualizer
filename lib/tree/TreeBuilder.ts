@@ -16,7 +16,8 @@
 
 import * as _ from "lodash";
 import {
-    PlantedTree, SunburstCircleMetadata,
+    PlantedTree,
+    SunburstCircleMetadata,
     SunburstLeaf,
     SunburstTree,
 } from "./sunburst";
