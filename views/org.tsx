@@ -38,7 +38,7 @@ export interface MaybeAnIdeal {
 function idealDisplay(af: MaybeAnIdeal): React.ReactElement {
     let result = <span></span>;
     if (af.ideal) {
-        const idealQueryLink: string = `./query?type=${af.type}&name=${af.name}&byOrg=true&progress=true`;
+        const idealQueryLink: string = `./fingerprint/${af.type}/${af.name}?byOrg=true&progress=true`;
 
         result = <span>
             -
@@ -54,7 +54,7 @@ function displayImportantAspect(f: AspectFingerprintsForDisplay, i: number): Rea
     const key = "collapsible" + i;
     const expandByDefault = f.fingerprints.length === 1;
 
-    const allLink: (trim: boolean) => string = trim => `./query?type=${f.aspect.name}&name=*&byOrg=true&trim=${trim}`;
+    const allLink: (trim: boolean) => string = trim => `./fingerprint/${f.aspect.name}/*?byOrg=true&trim=${trim}`;
     const about = !f.aspect.documentationUrl ? "" :
         <a href={f.aspect.documentationUrl}>About</a>;
 
@@ -98,8 +98,8 @@ function displayUnfoundAspect(mf: { documentationUrl?: string, displayName: stri
 
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
-    const variantsQueryLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true`;
-    const existsLink: string = `./query?type=${f.type}&name=${f.name}&byOrg=true&presence=true&otherLabel=true`;
+    const variantsQueryLink: string = `./fingerprint/${f.type}/${f.name}?byOrg=true`;
+    const existsLink: string = `./fingerprint/${f.type}/${f.name}?byOrg=true&presence=true&otherLabel=true`;
     const ent = f.entropy ? <span>{`entropy=${f.entropy.toFixed(2)}`}</span> : "";
 
     return <li key={displayName}>
@@ -119,7 +119,7 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     }
 
     const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
-    const repos = "./query?explore=true";
+    const repos = "./explore";
 
     return <div>
 
@@ -144,20 +144,19 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
         {displayAspects(props)}
 
-        <h2>Common queries</h2>
+        <h2>Canned Reports</h2>
 
         <h3>Code</h3>
         <ul>
-            <li key="code-1"><a href="./query?skew=true&byOrg=true">Entropy explorer</a></li>
-
-            <li key="code-5"><a href="./query?filter=true&name=langs&byOrg=true">Language breakdown for all projects</a></li>
-            <li key="code-6"><a href="./query?filter=true&name=loc&byOrg=true">Repo sizes</a></li>
+            <li key="code-1"><a href="./drift?byOrg=true">Drift explorer</a></li>
+            <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown for all projects</a></li>
+            <li key="code-6"><a href="./report/loc?byOrg=true">Repo sizes</a></li>
         </ul>
 
         <h2>Data</h2>
         <ul>
             <li><a href="./api-docs">Swagger documentation</a></li>
-            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?type=npm-project-deps&name=tslint&byOrg=true">Example of backing JSON data</a></li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a></li>
         </ul>
     </div>;
 }

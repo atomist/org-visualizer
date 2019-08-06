@@ -55,7 +55,7 @@ function displayTagGroup(tagGroup: TagGroup): React.ReactElement {
     return <div>
         {tagGroup.tagSelection.length > 0 && <div className="tagGroup">
             clear:
-            <form method="GET" action="/query">
+            <form method="GET" action="/explore">
                 <input type="hidden" name="explore" value="true" />
                 <input className="resetTagSelection" type="submit" value="CLEAR" />
             </form></div>}
@@ -75,12 +75,12 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
         (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
         {percentageBar}
         <span className="tagDescription">{tagName}</span>
-        <form method="GET" action="/query">
+        <form method="GET" action="/explore">
             <input type="hidden" name="explore" value="true" />
             <input type="hidden" name="tags" value={tagGroup.tagSelectionForRequire(tagName).join(",")} />
             <input className="requireButton" type="submit" value="Yes please" title={tagGroup.describeRequire(tagName)}></input>
         </form>
-        <form method="GET" action="/query">
+        <form method="GET" action="/explore">
             <input type="hidden" name="explore" value="true" />
             <input type="hidden" name="tags" value={tagGroup.tagSelectionForExclude(tagName).join(",")} />
             <input className="excludeButton" type="submit" value="Please no" alt="alt text" title={tagGroup.describeExclude(tagName)} />

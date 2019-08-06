@@ -103,7 +103,7 @@ export function api(clientFactory: ClientFactory,
             exposeExplore(express, aspectRegistry, store);
             exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, store);
             exposeDrift(express, aspectRegistry, clientFactory);
-            exposeWellKnownQueries(express, store);
+            exposeWellKnownReports(express, store);
             exposePersistEntropy(express, store, handlers);
         },
     };
@@ -370,14 +370,14 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
     });
 }
 
-function exposeWellKnownQueries(express: Express, store: ProjectAnalysisResultStore): void {
+function exposeWellKnownReports(express: Express, store: ProjectAnalysisResultStore): void {
     // In memory queries against returns
-    express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
-    express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+    express.options("/api/v1/:workspace_id/report/:name", corsHandler());
+    express.get("/api/v1/:workspace_id/report/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
         try {
             const q = WellKnownReporters[req.params.name];
             if (!q) {
-                throw new Error(`No query named '${req.params.name}'`);
+                throw new Error(`No report named '${req.params.name}'`);
             }
 
             const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
