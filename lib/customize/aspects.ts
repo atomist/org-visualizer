@@ -55,7 +55,10 @@ import {
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import { TsLintPropertyAspect, TsLintType } from "../aspect/node/TsLintAspect";
+import {
+    TsLintPropertyAspect,
+    TsLintType,
+} from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
