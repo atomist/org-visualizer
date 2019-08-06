@@ -19,7 +19,7 @@ The key underlying concept is that of a **fingerprint**: a snapshot of a concern
 -  Language usage
 -  SQL statements and database usage
  
-Fingerprints are persisted and are the basis for querying and visualization. Tags are not persisted, but are purely a projection to support querying.
+Fingerprints are persisted and are the basis for querying and visualization. Tags are not persisted, but are purely a projection to support querying. This distinction is important to consider when choosing between the two approaches for something that could be implemented with either.
 
 ## Aspects
 
