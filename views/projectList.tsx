@@ -32,7 +32,7 @@ function displayOrgProjects(owner: string, projects: ProjectForDisplay[]): React
 export function ProjectList(props: ProjectListProps): React.ReactElement {
     const projectsByOrg = _.groupBy(props.projects, p => p.owner);
     return <div>
-        <h2>Projects ({props.projects.length})</h2>
+        <h2>Organizations and Projects ({props.projects.length})</h2>
         <ul>
             {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
         </ul>

@@ -145,15 +145,13 @@ export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
         {displayAspects(props)}
 
         <h2>Canned Reports</h2>
-
-        <h3>Code</h3>
         <ul>
-            <li key="code-1"><a href="./drift?byOrg=true">Drift explorer</a></li>
-            <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown for all projects</a></li>
-            <li key="code-6"><a href="./report/loc?byOrg=true">Repo sizes</a></li>
+            <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a></li>
+            <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a></li>
+            <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a></li>
         </ul>
 
-        <h2>Data</h2>
+        <h2>Developer</h2>
         <ul>
             <li><a href="./api-docs">Swagger documentation</a></li>
             <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a></li>
