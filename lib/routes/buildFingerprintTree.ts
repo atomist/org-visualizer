@@ -110,13 +110,7 @@ export async function buildFingerprintTree(
 
     resolveAspectNames(aspectRegistry, pt.tree);
     if (byOrg) {
-        // Group by organization via an additional layer at the center
-        pt = introduceClassificationLayer<{ owner: string }>(pt,
-            {
-                descendantClassifier: l => l.owner,
-                newLayerDepth: 1,
-                newLayerMeaning: "owner",
-            });
+        pt = splitByOrg(pt);
     }
     if (showPresence) {
         pt.tree = groupSiblings(pt.tree,
@@ -210,4 +204,14 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
             }
         },
     });
+}
+
+export function splitByOrg(pt: PlantedTree): PlantedTree {
+    // Group by organization via an additional layer at the center
+    return introduceClassificationLayer<{ owner: string }>(pt,
+        {
+            descendantClassifier: l => l.owner,
+            newLayerDepth: 1,
+            newLayerMeaning: "owner",
+        });
 }

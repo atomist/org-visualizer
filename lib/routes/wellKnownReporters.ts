@@ -32,78 +32,6 @@ import {
     TreeBuilder,
 } from "../tree/TreeBuilder";
 
-/**
- * Well known reporters against our repo cohort.
- */
-export const WellKnownReporters: Reporters = {
-
-        langs: params =>
-            treeBuilderFor("languages", params)
-                .customGroup<CodeStats>({
-                    name: "language", to: async ars => {
-                        const cms: CodeStats[] = [];
-                        for await (const ar of ars) {
-                            const cm = findCodeMetricsData(ar);
-                            if (cm) {
-                                cms.push(...cm.languages);
-                            }
-                        }
-
-                        const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
-                        const s: Record<string, CodeStats[]> = {};
-                        distinctLanguages.forEach(lang => s[lang.name] = [consolidate(lang, cms)]);
-                        return s;
-                    },
-                })
-                .map<Analyzed & { lang: string }>({
-                    async* mapping(cs: AsyncIterable<CodeStats>,
-                                   originalQuery: () => AsyncIterable<Analyzed>): AsyncIterable<Analyzed & { lang: string }> {
-                        // TODO don't materialize this
-                        const source: Analyzed[] = [];
-                        for await (const pa of originalQuery()) {
-                            source.push(pa);
-                        }
-                        for await (const s of cs) {
-                            for (const r of source.filter(ar => {
-                                const cm = findCodeMetricsData(ar) || { languages: [] };
-                                return cm.languages.some(l => l.language.name === s.language.name);
-                            })
-                                .map(ar => ({ ...ar, lang: s.language.name }))) {
-                                yield r;
-                            }
-                        }
-                    },
-                })
-                .renderWith(ar => {
-                    const cm = findCodeMetricsData(ar) || { languages: [] };
-                    const size = cm.languages.find(l => l.language.name === ar.lang).total;
-                    return {
-                        name: ar.id.repo,
-                        size,
-                        url: `/projects/${ar.id.owner}/${ar.id.repo}`,
-                        repoUrl: ar.id.url,
-                    };
-                }),
-
-        loc: params =>
-            treeBuilderFor("loc", params)
-                .group({ name: "size", by: groupByLoc })
-                .split<CodeStats>({
-                    splitter: ar => {
-                        const cm = findCodeMetricsData(ar) || { languages: [] };
-                        return cm.languages;
-                    },
-                    namer: a => a.id.repo,
-                })
-                .renderWith(cs => {
-                    return {
-                        name: `${cs.language.name} (${cs.source})`,
-                        // url: ar.analysis.id.url,
-                        size: cs.source,
-                    };
-                }),
-    };
-
 const groupByLoc: ProjectAnalysisGrouper = ar => {
     const cm = findCodeMetricsData(ar);
     if (!cm) {
@@ -121,9 +49,75 @@ const groupByLoc: ProjectAnalysisGrouper = ar => {
     return "small";
 };
 
-export function treeBuilderFor(name: string, params: any): TreeBuilder<Analyzed, Analyzed> {
-    const tb = treeBuilder<Analyzed>(name);
-    return (params.byOrg === "true") ?
-        tb.group({ name: "org", by: OrgGrouper }) :
-        tb;
-}
+/**
+ * Well known reporters against our repo cohort.
+ */
+export const WellKnownReporters: Reporters = {
+
+    langs:
+        treeBuilder<Analyzed>("languages")
+            .customGroup<CodeStats>({
+                name: "language", to: async ars => {
+                    const cms: CodeStats[] = [];
+                    for await (const ar of ars) {
+                        const cm = findCodeMetricsData(ar);
+                        if (cm) {
+                            cms.push(...cm.languages);
+                        }
+                    }
+
+                    const distinctLanguages: Language[] = _.uniqBy(_.flatten(cms.map(cm => cm.language)), l => l.name);
+                    const s: Record<string, CodeStats[]> = {};
+                    distinctLanguages.forEach(lang => s[lang.name] = [consolidate(lang, cms)]);
+                    return s;
+                },
+            })
+            .map<Analyzed & { lang: string }>({
+                async* mapping(cs: AsyncIterable<CodeStats>,
+                               originalQuery: () => AsyncIterable<Analyzed>): AsyncIterable<Analyzed & { lang: string }> {
+                    // TODO don't materialize this
+                    const source: Analyzed[] = [];
+                    for await (const pa of originalQuery()) {
+                        source.push(pa);
+                    }
+                    for await (const s of cs) {
+                        for (const r of source.filter(ar => {
+                            const cm = findCodeMetricsData(ar) || { languages: [] };
+                            return cm.languages.some(l => l.language.name === s.language.name);
+                        })
+                            .map(ar => ({ ...ar, lang: s.language.name }))) {
+                            yield r;
+                        }
+                    }
+                },
+            })
+            .renderWith(ar => {
+                const cm = findCodeMetricsData(ar) || { languages: [] };
+                const size = cm.languages.find(l => l.language.name === ar.lang).total;
+                return {
+                    name: ar.id.repo,
+                    size,
+                    url: `/projects/${ar.id.owner}/${ar.id.repo}`,
+                    repoUrl: ar.id.url,
+                };
+            }),
+
+    loc:
+        treeBuilder<Analyzed>("loc")
+            .group({ name: "size", by: groupByLoc })
+            .split<CodeStats>({
+                splitter: ar => {
+                    const cm = findCodeMetricsData(ar) || { languages: [] };
+                    return cm.languages;
+                },
+                namer: a => a.id.repo,
+            })
+            .renderWith(cs => {
+                return {
+                    name: `${cs.language.name} (${cs.source})`,
+                    // url: ar.analysis.id.url,
+                    size: cs.source,
+                };
+            }),
+};
+

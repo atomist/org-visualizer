@@ -18,7 +18,6 @@ import { logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import { isInLocalMode } from "@atomist/sdm-core";
 import {
-    FP,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
@@ -65,7 +64,7 @@ import {
     configureAuth,
     corsHandler,
 } from "./auth";
-import { buildFingerprintTree } from "./buildFingerprintTree";
+import { buildFingerprintTree, splitByOrg } from "./buildFingerprintTree";
 import { WellKnownReporters } from "./wellKnownReporters";
 
 /**
@@ -113,20 +112,18 @@ export function api(clientFactory: ClientFactory,
             express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
             express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
                 try {
-                    const allQueries = WellKnownReporters;
-                    const q = allQueries[req.params.name];
+                    const q = WellKnownReporters[req.params.name];
                     if (!q) {
                         throw new Error(`No query named '${req.params.name}'`);
                     }
 
-                    const cannedQuery = q({
-                        ...req.query,
-                    });
-
                     const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
                     const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-                    const data = await cannedQuery.toSunburstTree(() => relevantRepos.map(r => r.analysis));
-                    return res.json({ tree: data });
+                    let tree = await q.toSunburstTree(() => relevantRepos.map(r => r.analysis));
+                    // if (req.query.byOrg !== "false") {
+                    //     tree = splitByOrg({ tree, circles: [] }).tree;
+                    // }
+                    return res.json({ tree });
                 } catch (e) {
                     logger.warn("Error occurred getting report: %s %s", e.message, e.stack);
                     res.sendStatus(500);
@@ -349,13 +346,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         };
 
         if (req.query.byOrg !== "false") {
-            // Group by organization via an additional layer at the center
-            repoTree = introduceClassificationLayer<{ owner: string }>(repoTree,
-                {
-                    descendantClassifier: l => l.owner,
-                    newLayerDepth: 1,
-                    newLayerMeaning: "owner",
-                });
+            repoTree = splitByOrg(repoTree);
         }
 
         const tagTree: TagTree = {
@@ -417,3 +408,4 @@ function relevant(selectedTag: string, repo: ProjectAnalysisResult & { tags: Tag
 export function describeSelectedTagsToAnimals(selectedTags: string[]): string {
     return selectedTags.map(t => t.replace("!", "not ")).join(" and ") || "All";
 }
+

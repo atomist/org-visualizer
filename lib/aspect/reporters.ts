@@ -17,36 +17,7 @@
 import { ReportBuilder } from "../tree/TreeBuilder";
 import { Analyzed } from "./AspectRegistry";
 
-/**
- * Options for report generation
- */
-export interface ReporterParams {
-
-    /**
-     * Do first layer grouping by organization?
-     */
-    byOrg?: boolean;
-
-    /**
-     * Label to use for a non-matching result. If this is set, we show non-matching results,
-     * for example when grouping by one of a number of possibilities.
-     */
-    otherLabel?: string;
-
-    /**
-     * Path inside
-     */
-    path?: string;
-
-    type: string;
-
-    name: string;
-
-    // tODO change to value
-    artifact?: string;
-}
-
-export type Reporter = (params: ReporterParams) => ReportBuilder<Analyzed>;
+export type Reporter = ReportBuilder<Analyzed>;
 
 /**
  * Reporters we can run against aspects
