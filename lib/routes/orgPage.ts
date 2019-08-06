@@ -208,7 +208,7 @@ function exposeExplorePage(express: Express,
     express.get("/explore", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
         const dataUrl = `/api/v1/${workspaceId}/explore?tags=${req.query.tags || ""}`;
-        return renderDataUrl(workspaceId, dataUrl, aspectRegistry, httpClientFactory, req, res);
+        return renderDataUrl(workspaceId, { dataUrl, title: "Explorer" }, aspectRegistry, httpClientFactory, req, res);
     });
 }
 
@@ -219,7 +219,10 @@ function exposeDriftPage(express: Express,
     express.get("/drift", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
         const dataUrl = `/api/v1/${workspaceId}/drift`;
-        return renderDataUrl(workspaceId, dataUrl, aspectRegistry, httpClientFactory, req, res);
+        return renderDataUrl(workspaceId, {
+            dataUrl,
+            title: "Drift by aspect"
+        }, aspectRegistry, httpClientFactory, req, res);
     });
 }
 
@@ -228,14 +231,19 @@ function exposeFingerprintReportPage(express: Express,
                                      httpClientFactory: HttpClientFactory,
                                      aspectRegistry: AspectRegistry): void {
     express.get("/fingerprint/:type/:name", ...handlers, async (req, res) => {
+        const type = req.params.type;
+        const name = req.params.name;
         const workspaceId = req.query.workspaceId || "*";
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
-            encodeURIComponent(req.params.type)}/${
-            encodeURIComponent(req.params.name)}?byOrg=${
+            encodeURIComponent(type)}/${
+            encodeURIComponent(name)}?byOrg=${
         req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
         req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
         req.query.trim === "true"}`;
-        return renderDataUrl(workspaceId, dataUrl, aspectRegistry, httpClientFactory, req, res);
+        return renderDataUrl(workspaceId, {
+            dataUrl,
+            title: `Atomist aspect ${type}/${name}`
+        }, aspectRegistry, httpClientFactory, req, res);
     });
 }
 
@@ -244,16 +252,23 @@ function exposeCustomReportPage(express: Express,
                                 httpClientFactory: HttpClientFactory,
                                 aspectRegistry: AspectRegistry): void {
     express.get("/report/:name", ...handlers, async (req, res) => {
+        const name = req.params.name;
         const workspaceId = req.query.workspaceId || "*";
         const queryString = jsonToQueryString(req.query);
-        const dataUrl = `/api/v1/${workspaceId}/report/${req.params.name}?${queryString}`;
-        return renderDataUrl(workspaceId, dataUrl, aspectRegistry, httpClientFactory, req, res);
+        const dataUrl = `/api/v1/${workspaceId}/report/${name}?${queryString}`;
+        return renderDataUrl(workspaceId, {
+            dataUrl,
+            title: `Atomist report ${name}`
+        }, aspectRegistry, httpClientFactory, req, res);
     });
 }
 
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
-                             dataUrl: string,
+                             page: {
+                                 title: string,
+                                 dataUrl: string,
+                             },
                              aspectRegistry: AspectRegistry,
                              httpClientFactory: HttpClientFactory,
                              req: any,
@@ -262,7 +277,7 @@ async function renderDataUrl(workspaceId: string,
     let currentIdealForDisplay: CurrentIdealForDisplay;
     const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
-    const fullUrl = `http://${req.get("host")}${dataUrl}`;
+    const fullUrl = `http://${req.get("host")}${page.dataUrl}`;
     try {
         const result = await httpClientFactory.create().exchange<TagTree>(fullUrl,
             {
@@ -291,7 +306,7 @@ async function renderDataUrl(workspaceId: string,
     currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
         .loadIdeal("local", req.query.type, req.query.name));
 
-    logger.info("Data url=%s", dataUrl);
+    logger.info("Data url=%s", page.dataUrl);
 
     res.send(renderStaticReactNode(
         SunburstPage({
@@ -300,11 +315,11 @@ async function renderDataUrl(workspaceId: string,
             currentIdeal: currentIdealForDisplay,
             possibleIdeals: possibleIdealsForDisplay,
             query: req.params.query,
-            dataUrl,
+            dataUrl: page.dataUrl,
             tree,
             selectedTags: req.query.tags ? req.query.tags.split(",") : [],
         }),
-        "Atomist Aspect",
+        page.title,
         [
             "/sunburstScript-bundle.js",
         ]));
