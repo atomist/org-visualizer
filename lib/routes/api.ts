@@ -56,7 +56,6 @@ import {
     TagUsage,
 } from "../tree/sunburst";
 import {
-    introduceClassificationLayer,
     visit,
 } from "../tree/treeUtils";
 import {
@@ -98,46 +97,14 @@ export function api(clientFactory: ClientFactory,
             configureAuth(express);
 
             exposeIdealAndProblemSetting(express, aspectRegistry);
-
             exposeAspectMetadata(express, store);
-
             exposeListFingerprints(express, store);
-
             exposeFingerprintByType(express, aspectRegistry, store);
-
             exposeExplore(express, aspectRegistry, store);
-
             exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, store);
-
             exposeDrift(express, aspectRegistry, clientFactory);
-
-            // In memory queries against returns
-            express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
-            express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
-                try {
-                    const q = WellKnownReporters[req.params.name];
-                    if (!q) {
-                        throw new Error(`No query named '${req.params.name}'`);
-                    }
-
-                    const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
-                    const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-                    let pt = await q.toPlantedTree(() => relevantRepos.map(r => r.analysis));
-                    if (req.query.byOrg !== "false") {
-                        pt = splitByOrg(pt);
-                    }
-                    return res.json(pt);
-                } catch (e) {
-                    logger.warn("Error occurred getting report: %s %s", e.message, e.stack);
-                    res.sendStatus(500);
-                }
-            });
-
-            // Calculate and persist entropy for this fingerprint
-            express.put("/api/v1/:workspace/entropy/:type/:name", ...handlers, async (req, res) => {
-                await computeAnalyticsForFingerprintKind(store, req.params.workspace, req.params.type, req.params.name);
-                res.sendStatus(201);
-            });
+            exposeWellKnownQueries(express, store);
+            exposePersistEntropy(express, store, handlers);
         },
     };
 }
@@ -400,6 +367,38 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
         }
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
+    });
+}
+
+function exposeWellKnownQueries(express: Express, store: ProjectAnalysisResultStore): void {
+    // In memory queries against returns
+    express.options("/api/v1/:workspace_id/filter/:name", corsHandler());
+    express.get("/api/v1/:workspace_id/filter/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
+        try {
+            const q = WellKnownReporters[req.params.name];
+            if (!q) {
+                throw new Error(`No query named '${req.params.name}'`);
+            }
+
+            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
+            const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
+            let pt = await q.toPlantedTree(() => relevantRepos.map(r => r.analysis));
+            if (req.query.byOrg !== "false") {
+                pt = splitByOrg(pt);
+            }
+            return res.json(pt);
+        } catch (e) {
+            logger.warn("Error occurred getting report: %s %s", e.message, e.stack);
+            res.sendStatus(500);
+        }
+    });
+}
+
+function exposePersistEntropy(express: Express, store: ProjectAnalysisResultStore, handlers: RequestHandler[]): void {
+    // Calculate and persist entropy for this fingerprint
+    express.put("/api/v1/:workspace/entropy/:type/:name", ...handlers, async (req, res) => {
+        await computeAnalyticsForFingerprintKind(store, req.params.workspace, req.params.type, req.params.name);
+        res.sendStatus(201);
     });
 }
 
