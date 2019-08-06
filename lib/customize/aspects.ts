@@ -66,6 +66,8 @@ import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 
 import { daysSince } from "../aspect/git/dateUtils";
 
+import * as _ from "lodash";
+
 /**
  * The aspects anaged by this SDM.
  * Modify this list to customize with your own aspects.
@@ -119,61 +121,130 @@ export const Aspects: ManagedAspect[] = [
     LeinDeps,
 ];
 
-export const Taggers: Tagger[] = [
-    // fp => fp.type === NpmDeps.name ? `npm: ${fp.name}`: undefined,
-    // fp => fp.type === DockerFrom.name ? `docker: ${fp.name}`: undefined,
-    { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
-    { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
-    { name: "maven", description: "Direct Maven dependencies", test: fp => fp.type === DirectMavenDependencies.name },
-    { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
-    { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
-    { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
-    { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
-    { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
-    {
-        name: ">20 branches",
-        description: "git branch count",
-        test: fp => fp.type === BranchCountType && fp.data.count > 20,
-    },
-    {
-        name: "huge (>10K)",
-        description: "Repo size",
-        test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000,
-    },
-    {
-        name: "big (3-10K)",
-        description: "Repo size",
-        test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
-    },
-    {
-        name: "dead?", description: "Git activity",
-        test: fp => {
-            if (fp.type === GitRecencyType) {
-                const date = new Date(fp.data);
-                return daysSince(date) > 500;
-            }
-            return false;
-        },
-    },
-];
+export interface TaggersParams {
 
-export const CombinationTaggers: CombinationTagger[] = [
-    // fps => _.uniq(fps.map(f => f.type)).length  + "",
-    {
-        name: "hot",
-        description: "How hot is git",
-        test: fps => {
-            // Find recent repos
-            const grt = fps.find(fp => fp.type === GitRecencyType);
-            const acc = fps.find(fp => fp.type === GitActivesType);
-            if (!!grt && !!acc) {
-                // TODO can reduce days with non stale data
-                const days = daysSince(new Date(grt.data));
-                if (days < 10 && acc.data.count > 2) {
-                    return true;
-                }
-            }
-            return false;
+    /**
+     * Max number of branches not to call out
+     */
+    maxBranches: number;
+
+    /**
+     * Number of days at which to consider a repo dead
+     */
+    deadDays: number;
+}
+
+const DefaultTaggersParams: TaggersParams = {
+    maxBranches: 20,
+    deadDays: 365,
+};
+
+export function taggers(opts: Partial<TaggersParams>): Tagger[] {
+    const optsToUse = {
+        ...DefaultTaggersParams,
+        ...opts,
+    };
+    return [
+        { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
+        { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
+        {
+            name: "maven",
+            description: "Direct Maven dependencies",
+            test: fp => fp.type === DirectMavenDependencies.name
         },
-    },
-];
+        { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
+        { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
+        { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
+        { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
+        { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
+        {
+            name: "solo",
+            description: "Projects with one committer",
+            test: fp => fp.type === GitActivesType && fp.data.count === 1,
+        },
+        {
+            name: `>${optsToUse.maxBranches} branches`,
+            description: "git branch count",
+            test: fp => fp.type === BranchCountType && fp.data.count > optsToUse.maxBranches,
+        },
+        {
+            name: "huge (>10K)",
+            description: "Repo size",
+            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000,
+        },
+        {
+            name: "big (3-10K)",
+            description: "Repo size",
+            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
+        },
+        {
+            name: "dead?", description: `No git activity in last ${optsToUse.deadDays} days`,
+            test: fp => {
+                if (fp.type === GitRecencyType) {
+                    const date = new Date(fp.data);
+                    return daysSince(date) > optsToUse.deadDays;
+                }
+                return false;
+            },
+        },
+    ];
+}
+
+export interface CombinationTaggersParams {
+
+    /**
+     * Mininum number of aspects to expect to indicate adequate project understanding
+     */
+    minAspectsToExpect: number;
+
+    /**
+     * Days since the last commit to indicate a hot repo
+     */
+    hotDays: number;
+
+    /**
+     * Number of committers needed to indicate a hot repo
+     */
+    hotContributors: number;
+}
+
+// TODO can reduce days with non stale data
+const DefaultCombinationTaggersParams: CombinationTaggersParams = {
+    minAspectsToExpect: 9,
+    hotDays: 10,
+    hotContributors: 2,
+};
+
+export function combinationTaggers(opts: Partial<CombinationTaggersParams>): CombinationTagger[] {
+    const optsToUse = {
+        ...DefaultCombinationTaggersParams,
+        ...opts,
+    };
+    return [
+        {
+            name: "not understood",
+            description: "You may want to write aspects for these outlier projects",
+            test: fps => {
+                const aspectCount = _.uniq(fps.map(f => f.type)).length;
+                // There are quite a few aspects that are found on everything, e.g. git
+                // We need to set the threshold count probably
+                return aspectCount < optsToUse.minAspectsToExpect;
+            }
+        },
+        {
+            name: "hot",
+            description: "How hot is git",
+            test: fps => {
+                const grt = fps.find(fp => fp.type === GitRecencyType);
+                const acc = fps.find(fp => fp.type === GitActivesType);
+                if (!!grt && !!acc) {
+                    const days = daysSince(new Date(grt.data));
+                    if (days < optsToUse.hotDays && acc.data.count > optsToUse.hotContributors) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+        },
+    ];
+}
