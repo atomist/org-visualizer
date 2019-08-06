@@ -22,7 +22,8 @@ const StackName = "stack";
 
 export const StackAspect: Aspect = classificationAspect({
         name: StackName,
-        displayName: "Technology stack",
+        // Deliberately don't display
+        displayName: undefined,
         toDisplayableFingerprintName: () => "Technology stack",
         allowMulti: true,
     },
@@ -52,7 +53,8 @@ export const JavaBuild: Aspect = classificationAspect({
 
 export const CiAspect: Aspect = classificationAspect({
         name: "ci",
-        displayName: "CI tool",
+        // Deliberately don't display
+        displayName: undefined,
         toDisplayableFingerprintName: () => "CI tool",
     },
     { classification: "travis", reason: "has .travis.yml", predicate: async p => p.hasFile(".travis.yml") },

@@ -50,7 +50,7 @@ header .page-title {
 
 .percentageOfProjectWithoutTag {
     width: 100%;
-    background-color: blue;
+    background-color: grey;
     height: 10px;
     color: transparent;
 }

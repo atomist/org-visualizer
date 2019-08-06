@@ -167,6 +167,8 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
+        { name: "jenkins", description: "Jenkins", test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins") },
+        { name: "circleci", description: "circleci", test: fp => fp.type === CiAspect.name && fp.data.includes("circle") },
         {
             name: "solo",
             description: "Projects with one committer",
