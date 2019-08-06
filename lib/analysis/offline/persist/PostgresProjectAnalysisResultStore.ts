@@ -86,12 +86,18 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     }
 
     public loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]> {
-        const wsid = workspaceId || "*";
+        return this.loadInWorkspaceInternal(workspaceId || "*");
+    }
+
+    private async loadInWorkspaceInternal(wsid: string,
+                                          additionalWhereClause: string = "true",
+                                          additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
         return doWithClient(this.clientFactory, async client => {
-            const sql = `SELECT id, owner, name, url, commit_sha, analysis, timestamp
+            const sql = `SELECT id, owner, name, url, commit_sha, analysis, timestamp, workspace_id
                 from repo_snapshots
-                WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1`;
-            const rows = await client.query(sql, [wsid]);
+                WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
+                AND ${additionalWhereClause}`;
+            const rows = await client.query(sql, [wsid, ...additionalParameters]);
             return rows.rows.map(row => ({
                 ...row,
                 repoRef: rowToRepoRef(row),
@@ -99,34 +105,16 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         }, []);
     }
 
-    public async loadById(id: string): Promise<ProjectAnalysisResult> {
-        return doWithClient(this.clientFactory, async client => {
-            const result = await client.query(`SELECT owner, name, url, commit_sha, analysis, timestamp
-                FROM repo_snapshots
-                WHERE id = $1`, [id]);
-            return result.rows.length === 1 ? {
-                id,
-                analysis: result.rows[0].analysis,
-                timestamp: result.rows[0].timestamp,
-                workspaceId: result.rows[0].workspace_id,
-                repoRef: rowToRepoRef(result.rows[0]),
-            } : undefined;
-        });
+    public async loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
+        const hits = await this.loadInWorkspaceInternal("*", "id = $2", [id]);
+        return hits.length === 1 ? hits[0] : undefined;
     }
 
-    public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult> {
-        return doWithClient(this.clientFactory, async client => {
-            const result = await client.query(`SELECT id, owner, name, url, commit_sha, analysis, timestamp
-                FROM repo_snapshots
-                WHERE owner = $1 AND name = $2 AND commit_sha = $3`, [repo.owner, repo.repo, repo.sha]);
-            return result.rows.length >= 1 ? {
-                id: result.rows[0].id,
-                analysis: result.rows[0].analysis,
-                timestamp: result.rows[0].timestamp,
-                workspaceId: result.rows[0].workspace_id,
-                repoRef: rowToRepoRef(result.rows[0]),
-            } : undefined;
-        });
+    public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined> {
+        const hits = await this.loadInWorkspaceInternal("*",
+            "WHERE owner = $2 AND name = $3 AND commit_sha = $4",
+            [repo.owner, repo.repo, repo.sha]);
+        return hits.length === 1 ? hits[0] : undefined;
     }
 
     public async persist(repos: ProjectAnalysisResult | AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
