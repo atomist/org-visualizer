@@ -150,7 +150,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: "maven",
             description: "Direct Maven dependencies",
-            test: fp => fp.type === DirectMavenDependencies.name
+            test: fp => fp.type === DirectMavenDependencies.name,
         },
         { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
         { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
@@ -229,7 +229,7 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
                 // There are quite a few aspects that are found on everything, e.g. git
                 // We need to set the threshold count probably
                 return aspectCount < optsToUse.minAspectsToExpect;
-            }
+            },
         },
         {
             name: "hot",
