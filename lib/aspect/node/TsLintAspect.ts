@@ -23,11 +23,11 @@ import {
 import * as _ from "lodash";
 import { Error } from "tslint/lib/error";
 
-const TsLintAspectName = "tslint";
+export const TsLintType = "tslint";
 
 export class TsLintProperty extends AbstractFingerprint {
 
-    public readonly type: string = TsLintAspectName;
+    public readonly type: string = TsLintType;
 
     constructor(public readonly path: string, public readonly property: string, data: any) {
         super(`${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
@@ -39,7 +39,7 @@ export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
 
     public readonly displayName: string = "TSLint";
 
-    public readonly name: string = TsLintAspectName;
+    public readonly name: string = TsLintType;
 
     get apply(): ApplyFingerprint<TsLintProperty> {
         return async (p, tsi) => {

@@ -55,7 +55,7 @@ import {
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
+import { TsLintPropertyAspect, TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
@@ -86,7 +86,12 @@ export const Aspects: ManagedAspect[] = [
     },
     CodeOfConduct,
     ExposedSecrets,
-    new TsLintPropertyAspect(),
+    {
+        ...new TsLintPropertyAspect(),
+        // Deliberately suppress display until we figure out how to make this aspect more useful.
+        // There is a useful tag from it
+        displayName: undefined,
+    },
     TravisScriptsAspect,
     fileCount,
     branchCount,
@@ -154,6 +159,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => fp.type === DirectMavenDependencies.name,
         },
         { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
+        { name: "tslint", description: "tslint (TypeScript)", test: fp => fp.type === TsLintType },
         { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
