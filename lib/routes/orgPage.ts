@@ -221,7 +221,7 @@ function exposeDriftPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/drift`;
         return renderDataUrl(workspaceId, {
             dataUrl,
-            title: "Drift by aspect"
+            title: "Drift by aspect",
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -242,7 +242,7 @@ function exposeFingerprintReportPage(express: Express,
         req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
-            title: `Atomist aspect ${type}/${name}`
+            title: `Atomist aspect ${type}/${name}`,
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -258,7 +258,7 @@ function exposeCustomReportPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/report/${name}?${queryString}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
-            title: `Atomist report ${name}`
+            title: `Atomist report ${name}`,
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
