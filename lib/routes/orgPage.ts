@@ -218,7 +218,7 @@ function exposeDriftPage(express: Express,
                          aspectRegistry: AspectRegistry): void {
     express.get("/drift", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
-        const dataUrl = `/api/v1/${workspaceId}/drift`;
+        const dataUrl = `/api/v1/${workspaceId}/drift` + (req.query.type ? `?type=${req.query.type}` : "");
         return renderDataUrl(workspaceId, {
             dataUrl,
             title: "Drift by aspect",

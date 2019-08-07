@@ -39,14 +39,13 @@ import {
 import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/analytics";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
-    Analyzed,
     AspectRegistry,
     IdealStore,
     Tag,
     tagsIn,
 } from "../aspect/AspectRegistry";
 import {
-    driftTree,
+    driftTreeForAllAspects,
     driftTreeForSingleAspect,
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
@@ -56,6 +55,7 @@ import {
     TagUsage,
 } from "../tree/sunburst";
 import {
+    killChildren, trimOuterRim,
     visit,
 } from "../tree/treeUtils";
 import {
@@ -239,11 +239,15 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const type = req.query.type;
-                const skewTree = type ?
+                let driftTree = type ?
                     await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
-                    await driftTree(req.params.workspace_id, clientFactory);
-                fillInAspectNames(aspectRegistry, skewTree.tree);
-                return res.json(skewTree);
+                    await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
+                fillInAspectNames(aspectRegistry, driftTree.tree);
+                if (!type) {
+                    driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+                }
+                driftTree.tree = flattenSoleFingerprints(driftTree.tree);
+                return res.json(driftTree);
             } catch
                 (err) {
                 logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
@@ -274,9 +278,8 @@ function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRe
 function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/explore", corsHandler());
     express.get("/api/v1/:workspace_id/explore", [corsHandler(), ...authHandlers()], async (req, res) => {
-        const workspaceId = req.params.workspace_id || "local";
-        const repos = await store.loadInWorkspace("*");
-
+        const workspaceId = req.params.workspace_id || "*";
+        const repos = await store.loadInWorkspace(workspaceId);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
         const taggedRepos: Array<ProjectAnalysisResult & { tags: Tag[] }> =
@@ -354,6 +357,24 @@ function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): 
         }
         return true;
     });
+}
+
+function removeAspectsWithoutMeaningfulEntropy(aspectRegistry: AspectRegistry, driftTree: PlantedTree): PlantedTree {
+    // Remove anything where entropy isn't meaningful
+    driftTree.tree = killChildren(driftTree.tree, child => {
+        const t = child as any;
+        if (t.type) {
+            const aspect = aspectRegistry.aspectOf(t.type);
+            return !!aspect && !!aspect.stats && aspect.stats.defaultStatStatus.entropy === false;
+        }
+        return false;
+    });
+    return driftTree;
+}
+
+function flattenSoleFingerprints(tree: SunburstTree): SunburstTree {
+    // Remove anything where entropy isn't meaningful
+    return trimOuterRim(tree, container => container.children.length === 1);
 }
 
 /**

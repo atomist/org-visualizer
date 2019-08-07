@@ -45,9 +45,11 @@ export async function visitAsync(t: SunburstLevel,
 
 /**
  * Suppress branches that meet a condition
+ * @param tr Tree to transform
+ * @param shouldEliminate whether this child should be deleted
  */
-function killChildren(tr: SunburstTree,
-                      shouldEliminate: (tl: SunburstLevel, depth: number) => boolean): SunburstTree {
+export function killChildren(tr: SunburstTree,
+                             shouldEliminate: (child: SunburstLevel, depth: number) => boolean): SunburstTree {
     const t = _.cloneDeep(tr);
     visit(t, (l, depth) => {
         if (isSunburstTree(l)) {
@@ -131,12 +133,15 @@ export function groupSiblings(tr: SunburstTree,
 
 /**
  * Trim the outer rim, replacing the next one with sized leaves
+ * @param tr tree to work on
+ * @param test test for which eligible nodes (nodes with only leaves under them) to kill
  */
-export function trimOuterRim(tr: SunburstTree): SunburstTree {
+export function trimOuterRim(tr: SunburstTree, test: (t: SunburstTree) => boolean = () => true): SunburstTree {
     const t = _.cloneDeep(tr);
     visit(t, l => {
-        if (isSunburstTree(l) && !l.children.some(isSunburstTree)) {
-            (l as any as SunburstLeaf).size = l.children.length;
+        if (isSunburstTree(l) && !l.children.some(isSunburstTree) && test(l)) {
+            const leafChildren = l.children as SunburstLeaf[];
+            (l as any as SunburstLeaf).size = _.sum(leafChildren.map(c => c.size));
             delete (l.children);
         }
         return true;

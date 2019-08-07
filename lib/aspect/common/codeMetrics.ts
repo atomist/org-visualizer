@@ -15,7 +15,7 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import {
     calculateCodeMetrics,
     CodeMetrics,
@@ -42,8 +42,7 @@ async function scanForCodeMetrics(p: Project): Promise<CodeMetricsData> {
 
 export const CodeMetricsType = "code-metrics";
 
-// TODO Aspect<FP<CodeMetricsData>>
-export const CodeMetricsAspect: Aspect = {
+export const CodeMetricsAspect: Aspect<FP<CodeMetricsData>> = {
     name: CodeMetricsType,
     // Suppress display
     displayName: undefined,
@@ -55,6 +54,12 @@ export const CodeMetricsAspect: Aspect = {
             data,
             sha: sha256(JSON.stringify(data)),
         };
+    },
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
+        basicStatsPath: "lines",
     },
 };
 

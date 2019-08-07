@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { sniffProject } from "./secretSniffing";
+import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { ExposedSecret, sniffProject } from "./secretSniffing";
 import { loadSnifferOptions } from "./snifferOptionsLoader";
 
 const ExposedSecretsType = "exposed-secret";
 
-export const ExposedSecrets: Aspect = {
+export type ExposedSecretsData = Pick<ExposedSecret, "secret" | "path" | "description">;
+
+export const ExposedSecrets: Aspect<FP<ExposedSecretsData>> = {
     name: ExposedSecretsType,
     displayName: "Exposed secrets",
     extract: async p => {
@@ -41,4 +43,9 @@ export const ExposedSecrets: Aspect = {
     },
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => `${fp.data.path}:${fp.data.description}`,
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
+    },
 };

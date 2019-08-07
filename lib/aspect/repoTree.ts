@@ -130,7 +130,7 @@ export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTre
     return result;
 }
 
-export async function driftTree(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
+export async function driftTreeForAllAspects(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
     SELECT name, feature_name as type, variants, count, entropy, variants as size
