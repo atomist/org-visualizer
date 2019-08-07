@@ -48,6 +48,7 @@ import {
     driftTreeForSingleAspect,
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
+import { CustomReporters } from "../customize/customReporters";
 import {
     PlantedTree,
     SunburstTree,
@@ -67,7 +68,6 @@ import {
     buildFingerprintTree,
     splitByOrg,
 } from "./buildFingerprintTree";
-import { WellKnownReporters } from "./wellKnownReporters";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -103,7 +103,7 @@ export function api(clientFactory: ClientFactory,
             exposeExplore(express, aspectRegistry, projectAnalysisResultStore);
             exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, projectAnalysisResultStore);
             exposeDrift(express, aspectRegistry, clientFactory);
-            exposeWellKnownReports(express, projectAnalysisResultStore);
+            exposeCustomReports(express, projectAnalysisResultStore);
             exposePersistEntropy(express, projectAnalysisResultStore, handlers);
         },
     };
@@ -391,19 +391,19 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
     });
 }
 
-function exposeWellKnownReports(express: Express, store: ProjectAnalysisResultStore): void {
+function exposeCustomReports(express: Express, store: ProjectAnalysisResultStore): void {
     // In memory queries against returns
     express.options("/api/v1/:workspace_id/report/:name", corsHandler());
     express.get("/api/v1/:workspace_id/report/:name", [corsHandler(), ...authHandlers()], async (req, res) => {
         try {
-            const q = WellKnownReporters[req.params.name];
+            const q = CustomReporters[req.params.name];
             if (!q) {
                 throw new Error(`No report named '${req.params.name}'`);
             }
 
             const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
-            let pt = await q.toPlantedTree(() => relevantRepos.map(r => r.analysis));
+            let pt = await q.builder.toPlantedTree(() => relevantRepos.map(r => r.analysis));
             if (req.query.byOrg !== "false") {
                 pt = splitByOrg(pt);
             }

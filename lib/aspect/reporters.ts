@@ -17,9 +17,13 @@
 import { ReportBuilder } from "../tree/TreeBuilder";
 import { Analyzed } from "./AspectRegistry";
 
-export type Reporter = ReportBuilder<Analyzed>;
+export interface Reporter {
+    summary: string;
+    description: string;
+    builder: ReportBuilder<Analyzed>;
+}
 
 /**
- * Reporters we can run against aspects
+ * Implemented by object exposing reports we can run against aspects
  */
 export type Reporters<A extends Analyzed = Analyzed> = Record<string, Reporter>;

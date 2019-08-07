@@ -8,6 +8,7 @@ The following are the key extension points:
 
 - **Aspects**, which extract *fingerprint* data from projects allowing visualization and (optionally) rolling out updates and on-change workflows.
 - **Taggers**, which provide insights based on aspects.
+- **Custom reporters**, which can use data captured by aspects for wholly custom reports.
 
 The key underlying concept is that of a **fingerprint**: a snapshot of a concern within a project--for example, the version of a particular library. However, fingerprints can encompass much more than merely dependencies. User examples include:
 
@@ -198,6 +199,10 @@ Add your simple or combination taggers to the respective array in the same file.
 
 ## Advanced Concepts
 
+### Custom Reports
+
+To add custom reports, add to the record type in `lib/customize/customReporters.ts`. Writing a custom type is only necessary for unusual requirements.
+
 ### Aspect granularity and composition
 Keep your aspects fine-grained. An aspect should address a single concern.
 
@@ -214,6 +219,8 @@ stats path
 tbd
 
 ### Efficiency
+
+All aspect `extract` methods need to run on every push to the default branch, and on an all repositories when a new organization is onboarded into the Atomist service. Thus it is important to consider the cost of their implementation.
 
 Avoid retrieving more data than necessary. Some tips:
 

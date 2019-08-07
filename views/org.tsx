@@ -2,6 +2,7 @@ import { BaseAspect } from "@atomist/sdm-pack-fingerprints";
 import * as React from "react";
 import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
+import { CustomReporters } from "../lib/customize/customReporters";
 import { ProjectForDisplay, ProjectList } from "./projectList";
 import { collapsible } from "./utils";
 
@@ -149,20 +150,24 @@ function displayDashboards(): React.ReactElement {
         <h2>Dashboards</h2>
         <ul>
             {collapsible("explore", "Explore",
-                <ul><li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li></ul>,
+                <ul>
+                    <li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li>
+                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the greatest entropy</li>
+                </ul>,
                 true)}
-            {collapsible("canned-reports", "Canned Reports",
-                displayCannedReports(),
+            {collapsible("custom-reports", "Custom Reports",
+                displayCustomReports(),
                 true)}
         </ul>
     </div>;
 }
 
-function displayCannedReports(): React.ReactElement {
+function displayCustomReports(): React.ReactElement {
     return <ul>
-        <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the greatest entropy</li>
-        <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a> - See the number of lines of code in each language, across all repos</li>
-        <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a> - Compare the size and language breakdown of your repos</li>
+        {Object.getOwnPropertyNames(CustomReporters).map(name => {
+            const reporter = CustomReporters[name];
+            return <li key={`report-${name}`}><a href={`./report/${name}?byOrg=true`}>{reporter.summary}</a> - {reporter.description}</li>;
+        })}
     </ul>;
 }
 

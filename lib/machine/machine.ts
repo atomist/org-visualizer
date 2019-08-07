@@ -34,8 +34,8 @@ import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectA
 import {
     ProblemStore,
 } from "../aspect/AspectRegistry";
-import { Aspects } from "../customize/aspects";
 import { IdealStore } from "../aspect/IdealStore";
+import { Aspects } from "../customize/aspects";
 
 /**
  * Add scanners to the analyzer to extract data

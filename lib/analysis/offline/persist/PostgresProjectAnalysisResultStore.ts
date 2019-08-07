@@ -35,6 +35,7 @@ import {
     Analyzed,
     ProblemUsage,
 } from "../../../aspect/AspectRegistry";
+import { IdealStore } from "../../../aspect/IdealStore";
 import { getCategories } from "../../../customize/categories";
 import {
     BandCasing,
@@ -59,7 +60,6 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
-import { IdealStore } from "../../../aspect/IdealStore";
 
 // tslint:disable:max-file-line-count
 
