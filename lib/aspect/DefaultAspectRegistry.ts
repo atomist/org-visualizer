@@ -18,7 +18,6 @@ import { FP } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
     chainUndesirableUsageCheckers,
-    IdealStore,
     ManagedAspect,
     ProblemStore,
     problemStoreBackedUndesirableUsageCheckerFor,
@@ -27,6 +26,7 @@ import {
 } from "./AspectRegistry";
 
 import * as _ from "lodash";
+import { IdealStore } from "./IdealStore";
 
 /**
  * Determine zero or one tag in this fingerprint

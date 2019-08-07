@@ -14,42 +14,14 @@
  * limitations under the License.
  */
 
-import { RemoteRepoRef } from "@atomist/automation-client";
+import { RemoteRepoRef, Severity } from "@atomist/automation-client";
 import {
     Aspect,
     AtomicAspect,
     FP,
-    Ideal,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-
-/**
- * Function that can return the desired ideal, if any, for a given fingerprint name.
- * While an Aspect can suggest multiple ideals in the suggestedIdeals method,
- * there can only be one ideal recommended at any time.
- */
-export interface IdealStore {
-
-    storeIdeal(workspaceId: string, ideal: Ideal): Promise<void>;
-
-    /**
-     * Set the ideal to the given fingerprint id
-     * @param {string} workspaceId
-     * @param {string} fingerprintId
-     * @return {Promise<void>}
-     */
-    setIdeal(workspaceId: string, fingerprintId: string): Promise<void>;
-
-    loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal | undefined>;
-
-    /**
-     * Load all ideals in this workspace
-     * @param {string} workspaceId
-     * @return {Promise<Ideal[]>}
-     */
-    loadIdeals(workspaceId: string): Promise<Ideal[]>;
-
-}
+import { IdealStore } from "./IdealStore";
 
 /**
  * Flag for an undesirable usage
@@ -122,9 +94,19 @@ export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
  */
 export type ManagedAspect<FPI extends FP = FP> = Aspect<FPI> | AtomicAspect<FPI>;
 
+/**
+ * Tag based on fingerprint data.
+ */
 export interface Tag {
+
     name: string;
+
     description?: string;
+
+    /**
+     * Severity if this tag is associated with an action
+     */
+    severity?: Severity;
 }
 
 /**

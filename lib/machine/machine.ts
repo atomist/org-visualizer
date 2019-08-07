@@ -32,10 +32,10 @@ import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
-    IdealStore,
     ProblemStore,
 } from "../aspect/AspectRegistry";
 import { Aspects } from "../customize/aspects";
+import { IdealStore } from "../aspect/IdealStore";
 
 /**
  * Add scanners to the analyzer to extract data

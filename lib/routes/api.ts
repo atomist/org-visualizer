@@ -40,7 +40,6 @@ import { computeAnalyticsForFingerprintKind } from "../analysis/offline/spider/a
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     AspectRegistry,
-    IdealStore,
     Tag,
     tagsIn,
 } from "../aspect/AspectRegistry";
@@ -75,7 +74,7 @@ import { WellKnownReporters } from "./wellKnownReporters";
  * Also expose Swagger API documentation.
  */
 export function api(clientFactory: ClientFactory,
-                    store: ProjectAnalysisResultStore & IdealStore,
+                    projectAnalysisResultStore: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
     customizer: ExpressCustomizer,
     routesToSuggestOnStartup: Array<{ title: string, route: string }>,
@@ -98,14 +97,14 @@ export function api(clientFactory: ClientFactory,
             configureAuth(express);
 
             exposeIdealAndProblemSetting(express, aspectRegistry);
-            exposeAspectMetadata(express, store);
-            exposeListFingerprints(express, store);
-            exposeFingerprintByType(express, aspectRegistry, store);
-            exposeExplore(express, aspectRegistry, store);
-            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, store);
+            exposeAspectMetadata(express, projectAnalysisResultStore);
+            exposeListFingerprints(express, projectAnalysisResultStore);
+            exposeFingerprintByType(express, aspectRegistry, projectAnalysisResultStore);
+            exposeExplore(express, aspectRegistry, projectAnalysisResultStore);
+            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, projectAnalysisResultStore);
             exposeDrift(express, aspectRegistry, clientFactory);
-            exposeWellKnownReports(express, store);
-            exposePersistEntropy(express, store, handlers);
+            exposeWellKnownReports(express, projectAnalysisResultStore);
+            exposePersistEntropy(express, projectAnalysisResultStore, handlers);
         },
     };
 }
@@ -186,7 +185,7 @@ function exposeFingerprintByType(express: Express,
 function exposeFingerprintByTypeAndName(express: Express,
                                         aspectRegistry: AspectRegistry,
                                         clientFactory: ClientFactory,
-                                        store: ProjectAnalysisResultStore & IdealStore): void {
+                                        store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req: Request, res: Response) => {
         const workspaceId = req.params.workspace_id;
@@ -212,7 +211,7 @@ function exposeFingerprintByTypeAndName(express: Express,
                 byName,
             });
 
-            const ideal = await store.loadIdeal(workspaceId, fingerprintType, fingerprintName);
+            const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, fingerprintType, fingerprintName);
             let target;
             if (isConcreteIdeal(ideal)) {
                 const aspect = aspectRegistry.aspectOf(fingerprintType);

@@ -33,7 +33,6 @@ import {
 } from "pg";
 import {
     Analyzed,
-    IdealStore,
     ProblemUsage,
 } from "../../../aspect/AspectRegistry";
 import { getCategories } from "../../../customize/categories";
@@ -60,6 +59,7 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "./ProjectAnalysisResultStore";
+import { IdealStore } from "../../../aspect/IdealStore";
 
 // tslint:disable:max-file-line-count
 
