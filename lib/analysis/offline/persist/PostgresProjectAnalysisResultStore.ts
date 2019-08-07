@@ -94,7 +94,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
         const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
 from repo_snapshots, repo_fingerprints
-WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1 
+WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
 AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
 AND ${additionalWhereClause}
 GROUP BY id`;
@@ -106,7 +106,7 @@ GROUP BY id`;
                 const fingerprintIds: string[] = row.fingerprint_ids.split(",");
                 const analysis: Analyzed = {
                     fingerprints: fingerprintIds.map(fid => fingerprints.find(fp => fp.id === fid)),
-                    id: repoRef
+                    id: repoRef,
                 };
                 return {
                     id: row.id,
