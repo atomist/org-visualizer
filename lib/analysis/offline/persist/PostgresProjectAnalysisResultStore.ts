@@ -93,15 +93,25 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                                           additionalWhereClause: string = "true",
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
         return doWithClient(this.clientFactory, async client => {
-            const sql = `SELECT id, owner, name, url, commit_sha, analysis, timestamp, workspace_id
+            const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id
                 from repo_snapshots
                 WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
                 AND ${additionalWhereClause}`;
             const rows = await client.query(sql, [wsid, ...additionalParameters]);
-            return rows.rows.map(row => ({
-                ...row,
-                repoRef: rowToRepoRef(row),
-            }));
+            return rows.rows.map(row => {
+                const analysis = row.analysis;
+                return {
+                    id: row.id,
+                    owner: row.owner,
+                    name: row.name,
+                    url: row.url,
+                    commitSha: row.commit_sha,
+                    timestamp: row.timestamp,
+                    workspaceId: row.workingDescription,
+                    repoRef: rowToRepoRef(row),
+                    analysis,
+                };
+            });
         }, []);
     }
 
