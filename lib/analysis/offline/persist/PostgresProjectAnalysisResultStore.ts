@@ -92,24 +92,20 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     private async loadInWorkspaceInternal(wsid: string,
                                           additionalWhereClause: string = "true",
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
-        const fingerprints = await this.fingerprintsInWorkspaceRecord(wsid);
+        // The fingerprints query is expensive so we parallelize the 2 queries
+        const getFingerprints = this.fingerprintsInWorkspaceRecord(wsid);
 
-        const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
+        const repoRowsSql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
 from repo_snapshots, repo_fingerprints
 WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
 AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
 AND ${additionalWhereClause}
 GROUP BY id`;
-        return doWithClient(sql, this.clientFactory, async client => {
+        const getRepos = doWithClient(repoRowsSql, this.clientFactory, async client => {
             // Load all fingerprints in workspace so we can look up
-            const repoSnapshotRows = await client.query(sql, [wsid, ...additionalParameters]);
+            const repoSnapshotRows = await client.query(repoRowsSql, [wsid, ...additionalParameters]);
             return repoSnapshotRows.rows.map(row => {
                 const repoRef = rowToRepoRef(row);
-                const fingerprintIds: string[] = row.fingerprint_ids.split(",");
-                const analysis: Analyzed = {
-                    fingerprints: fingerprintIds.map(fid => fingerprints[fid]),
-                    id: repoRef,
-                };
                 return {
                     id: row.id,
                     owner: row.owner,
@@ -119,10 +115,19 @@ GROUP BY id`;
                     timestamp: row.timestamp,
                     workspaceId: row.workingDescription,
                     repoRef,
-                    analysis,
+                    fingerprintIds: row.fingerprint_ids.split(","),
                 };
             });
         }, []);
+        const [fingerprints, repos] = await Promise.all([getFingerprints, getRepos]);
+        // Fill in the remaining information from the fingerprints lookup
+        for (const repo of repos) {
+            (repo as any).analysis = {
+                fingerprints: repo.fingerprintIds.map(fid => fingerprints[fid]),
+                id: repo.repoRef,
+            };
+        }
+        return repos;
     }
 
     public async loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
