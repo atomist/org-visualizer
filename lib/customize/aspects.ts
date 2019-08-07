@@ -174,12 +174,12 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: "jenkins",
             description: "Jenkins",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins")
+            test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins"),
         },
         {
             name: "circleci",
             description: "circleci",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("circle")
+            test: fp => fp.type === CiAspect.name && fp.data.includes("circle"),
         },
         {
             name: "solo",
