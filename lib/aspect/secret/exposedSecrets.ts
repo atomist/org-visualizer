@@ -15,7 +15,10 @@
  */
 
 import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
-import { ExposedSecret, sniffProject } from "./secretSniffing";
+import {
+    ExposedSecret,
+    sniffProject,
+} from "./secretSniffing";
 import { loadSnifferOptions } from "./snifferOptionsLoader";
 
 const ExposedSecretsType = "exposed-secret";

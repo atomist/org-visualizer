@@ -55,7 +55,8 @@ import {
     TagUsage,
 } from "../tree/sunburst";
 import {
-    killChildren, trimOuterRim,
+    killChildren,
+    trimOuterRim,
     visit,
 } from "../tree/treeUtils";
 import {
