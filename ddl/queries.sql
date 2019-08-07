@@ -70,3 +70,23 @@ SELECT rs.id, owner, rs.name as repo, url, commit_sha, timestamp, jsonb_agg(f) a
     from repo_snapshots rs, repo_fingerprints rf, fingerprints f
     where rs.id = rf.repo_snapshot_id and f.id = rf.fingerprint_id
     group by rs.id;
+
+-- Distinct types by repo
+SELECT repo_snapshots.id, count(feature_name) from repo_snapshots,
+  (select distinct feature_name, repo_snapshot_id
+      from repo_fingerprints, fingerprints
+      WHERE repo_fingerprints.fingerprint_id = fingerprints.id)
+    AS aspects
+    WHERE workspace_id <> '5'
+    AND repo_snapshot_id = repo_snapshots.id
+    group by repo_snapshots.id;
+
+-- Average number of fingerprints in a workspace
+SELECT avg(count) from (SELECT repo_snapshots.id, count(feature_name) from repo_snapshots,
+  (select distinct feature_name, repo_snapshot_id
+      from repo_fingerprints, fingerprints
+      WHERE repo_fingerprints.fingerprint_id = fingerprints.id)
+    AS aspects
+    WHERE workspace_id <> '5'
+    AND repo_snapshot_id = repo_snapshots.id
+    group by repo_snapshots.id) stats;

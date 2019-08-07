@@ -282,12 +282,19 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         const repos = await store.loadInWorkspace(workspaceId);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
+        const averageFingerprintCount = await store.averageFingerprintCount(workspaceId);
+
+        const tagContext: TagContext = {
+            averageFingerprintCount,
+            repoCount: repos.length,
+        };
+
         const taggedRepos: Array<ProjectAnalysisResult & { tags: Tag[] }> =
             repos.map(repo =>
                 ({
                     ...repo,
-                    tags: tagsIn(aspectRegistry, repo.analysis.fingerprints)
-                        .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints)),
+                    tags: tagsIn(aspectRegistry, repo.analysis.fingerprints, tagContext)
+                        .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
                 }));
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
@@ -329,17 +336,31 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             selectedTags,
             repoCount: repos.length,
             matchingRepoCount: relevantRepos.length,
+            averageFingerprintCount,
             ...repoTree,
         };
         res.send(tagTree);
     });
 }
 
-export interface TagTree extends PlantedTree {
+export interface TagContext {
+
+    /**
+     * All repos available
+     */
     repoCount: number;
+
+    /**
+     * Average number of distinct fingerprint types in the workspace
+     */
+    averageFingerprintCount: number;
+}
+
+export interface TagTree extends TagContext, PlantedTree {
     matchingRepoCount: number;
     tags: TagUsage[];
     selectedTags: string[];
+
 }
 
 /**

@@ -220,9 +220,9 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
 export interface CombinationTaggersParams {
 
     /**
-     * Mininum number of aspects to expect to indicate adequate project understanding
+     * Mininum percentage of average aspect count (fraction) to expect to indicate adequate project understanding
      */
-    minAspectsToExpect: number;
+    minAverageAspectCountFractionToExpect: number;
 
     /**
      * Days since the last commit to indicate a hot repo
@@ -237,7 +237,7 @@ export interface CombinationTaggersParams {
 
 // TODO can reduce days with non stale data
 const DefaultCombinationTaggersParams: CombinationTaggersParams = {
-    minAspectsToExpect: 9,
+    minAverageAspectCountFractionToExpect: .75,
     hotDays: 10,
     hotContributors: 2,
 };
@@ -251,11 +251,12 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
         {
             name: "not understood",
             description: "You may want to write aspects for these outlier projects",
-            test: fps => {
+            severity: "warn",
+            test: (fps, tagContext) => {
                 const aspectCount = _.uniq(fps.map(f => f.type)).length;
                 // There are quite a few aspects that are found on everything, e.g. git
                 // We need to set the threshold count probably
-                return aspectCount < optsToUse.minAspectsToExpect;
+                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
             },
         },
         {

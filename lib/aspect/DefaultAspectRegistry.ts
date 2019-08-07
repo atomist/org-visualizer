@@ -26,6 +26,7 @@ import {
 } from "./AspectRegistry";
 
 import * as _ from "lodash";
+import { TagContext } from "../routes/api";
 import { IdealStore } from "./IdealStore";
 
 /**
@@ -33,7 +34,7 @@ import { IdealStore } from "./IdealStore";
  */
 export interface Tagger extends Tag {
 
-    test(fp: FP): boolean;
+    test(fp: FP, tagContext: TagContext): boolean;
 }
 
 /**
@@ -41,7 +42,7 @@ export interface Tagger extends Tag {
  */
 export interface CombinationTagger extends Tag {
 
-    test(fp: FP[]): boolean;
+    test(fp: FP[], tagContext: TagContext): boolean;
 }
 
 /**
@@ -67,16 +68,16 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this;
     }
 
-    public tagsFor(fp: FP): Tag[] {
+    public tagsFor(fp: FP, tagContext: TagContext): Tag[] {
         return _.uniqBy(this.taggers
-                .map(tagger => ({ ...tagger, tag: tagger.test(fp) }))
+                .map(tagger => ({ ...tagger, tag: tagger.test(fp, tagContext) }))
                 .filter(t => !!t.tag),
             tag => tag.name);
     }
 
-    public combinationTagsFor(fps: FP[]): Tag[] {
+    public combinationTagsFor(fps: FP[], tagContext: TagContext): Tag[] {
         return _.uniqBy(this.combinationTaggers
-                .map(tagger => ({ ...tagger, tag: tagger.test(fps) }))
+                .map(tagger => ({ ...tagger, tag: tagger.test(fps, tagContext) }))
                 .filter(t => !!t.tag),
             tag => tag.name);
     }

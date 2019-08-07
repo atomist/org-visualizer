@@ -24,6 +24,7 @@ import {
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
+import { TagContext } from "../routes/api";
 import { IdealStore } from "./IdealStore";
 
 /**
@@ -118,13 +119,11 @@ export interface Tag {
 export interface AspectRegistry {
 
     /**
-     * Get the index value for this fingerprint
-     * @param {FP} fp
-     * @return {string | undefined}
+     * Get the tag value for this fingerprint
      */
-    tagsFor(fp: FP): Tag[];
+    tagsFor(fp: FP, tagContext: TagContext): Tag[];
 
-    combinationTagsFor(fps: FP[]): Tag[];
+    combinationTagsFor(fps: FP[], tagContext: TagContext): Tag[];
 
     availableTags: Tag[];
 
@@ -187,7 +186,7 @@ export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore:
     };
 }
 
-export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[]): Tag[] {
-    return _.uniqBy(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp))), tag => tag.name)
+export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[], tagContext: TagContext): Tag[] {
+    return _.uniqBy(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp, tagContext))), tag => tag.name)
         .sort();
 }
