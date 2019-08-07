@@ -70,6 +70,14 @@ header .page-title {
     vertical-align: top;
 }
 
+.errorTagGroup {
+    border: 4px red solid;
+}
+
+.warnTagGroup {
+    border: 4px orange solid;
+}
+
 .tagGroup form {
     display: inline;
 }

@@ -153,7 +153,11 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         ...opts,
     };
     return [
-        { name: "vulnerable", description: "Has exposed secrets", test: fp => fp.type === ExposedSecrets.name },
+        {
+            name: "vulnerable",
+            description: "Has exposed secrets", test: fp => fp.type === ExposedSecrets.name,
+            severity: "error",
+        },
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
         { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
         {
@@ -167,8 +171,16 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
-        { name: "jenkins", description: "Jenkins", test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins") },
-        { name: "circleci", description: "circleci", test: fp => fp.type === CiAspect.name && fp.data.includes("circle") },
+        {
+            name: "jenkins",
+            description: "Jenkins",
+            test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins")
+        },
+        {
+            name: "circleci",
+            description: "circleci",
+            test: fp => fp.type === CiAspect.name && fp.data.includes("circle")
+        },
         {
             name: "solo",
             description: "Projects with one committer",
@@ -177,6 +189,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: `>${optsToUse.maxBranches} branches`,
             description: "git branch count",
+            severity: "warn",
             test: fp => fp.type === BranchCountType && fp.data.count > optsToUse.maxBranches,
         },
         {
@@ -190,7 +203,9 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
         },
         {
-            name: "dead?", description: `No git activity in last ${optsToUse.deadDays} days`,
+            name: "dead?",
+            description: `No git activity in last ${optsToUse.deadDays} days`,
+            severity: "error",
             test: fp => {
                 if (fp.type === GitRecencyType) {
                     const date = new Date(fp.data);

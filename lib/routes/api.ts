@@ -297,6 +297,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         const allTags = Object.getOwnPropertyNames(relevantTags).map(name => ({
             name,
             description: aspectRegistry.availableTags.find(t => t.name === name).description,
+            severity: aspectRegistry.availableTags.find(t => t.name === name).severity,
             count: relevantTags[name].length,
         }));
 

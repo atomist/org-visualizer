@@ -184,6 +184,9 @@ This will cause every project that has a `GitRecency` fingerprint of less than 3
 
 > Most use cases can be satisfied using simple taggers. Don't use combination taggers without good reason.
 
+### Prompting action
+Taggers have an optional `severity` property for which the legal values are `info`, `warn` and `error`. If you set this value to `warn` or `error` the severity will be returned along with the data payload and the UI will prominently render the relevant tag.
+
 ## Adding your aspects and taggers
 
 Do this by updating the `aspects` constant defined in the [`aspects.ts`](../lib/customize/aspects.ts) file. Add aspects to the `Aspects` array:
