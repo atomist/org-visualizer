@@ -289,24 +289,12 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             repoCount: repos.length,
         };
 
-        const taggedRepos: Array<ProjectAnalysisResult & { tags: Tag[] }> =
-            repos.map(repo =>
-                ({
-                    ...repo,
-                    tags: tagsIn(aspectRegistry, repo.analysis.fingerprints, tagContext)
-                        .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
-                }));
+        const taggedRepos = tagRepos(aspectRegistry, tagContext, repos);
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
 
-        const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
-        const allTags = Object.getOwnPropertyNames(relevantTags).map(name => ({
-            name,
-            description: aspectRegistry.availableTags.find(t => t.name === name).description,
-            severity: aspectRegistry.availableTags.find(t => t.name === name).severity,
-            count: relevantTags[name].length,
-        }));
+        const allTags = tagUsageIn(aspectRegistry, relevantRepos);
 
         let repoTree: PlantedTree = {
             circles: [{ meaning: "tags" }, { meaning: "repo" }],
@@ -331,7 +319,6 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         }
 
         const tagTree: TagTree = {
-            // fingerprints: relevantFingerprints,
             tags: allTags,
             selectedTags,
             repoCount: repos.length,
@@ -360,7 +347,25 @@ export interface TagTree extends TagContext, PlantedTree {
     matchingRepoCount: number;
     tags: TagUsage[];
     selectedTags: string[];
+}
 
+function tagRepos(aspectRegistry: AspectRegistry, tagContext: TagContext, repos: ProjectAnalysisResult[]): Array<ProjectAnalysisResult & { tags: Tag[] }> {
+    return repos.map(repo =>
+        ({
+            ...repo,
+            tags: tagsIn(aspectRegistry, repo.analysis.fingerprints, tagContext)
+                .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
+        }));
+}
+
+function tagUsageIn(aspectRegistry: AspectRegistry, relevantRepos: Array<ProjectAnalysisResult& { tags: Tag[]}>): TagUsage[] {
+    const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
+    return Object.getOwnPropertyNames(relevantTags).map(name => ({
+        name,
+        description: aspectRegistry.availableTags.find(t => t.name === name).description,
+        severity: aspectRegistry.availableTags.find(t => t.name === name).severity,
+        count: relevantTags[name].length,
+    }));
 }
 
 /**
