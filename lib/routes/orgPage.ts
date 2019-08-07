@@ -44,6 +44,7 @@ import {
 import {
     ProjectAspectForDisplay,
     ProjectExplorer,
+    ProjectFingerprintForDisplay,
 } from "../../views/project";
 import {
     ProjectForDisplay,
@@ -77,9 +78,9 @@ export function orgPage(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
-    customizer: ExpressCustomizer,
-    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-} {
+        customizer: ExpressCustomizer,
+        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    } {
     const orgRoute = "/org";
     return {
         routesToSuggestOnStartup: [{ title: "Org Visualizations", route: orgRoute }],
@@ -237,9 +238,9 @@ function exposeFingerprintReportPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
             encodeURIComponent(type)}/${
             encodeURIComponent(name)}?byOrg=${
-        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
-        req.query.trim === "true"}`;
+            req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+            req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+            req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
             title: `Atomist aspect ${type}/${name}`,
@@ -266,9 +267,9 @@ function exposeCustomReportPage(express: Express,
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
                              page: {
-                                 title: string,
-                                 dataUrl: string,
-                             },
+        title: string,
+        dataUrl: string,
+    },
                              aspectRegistry: AspectRegistry,
                              httpClientFactory: HttpClientFactory,
                              req: any,
@@ -331,7 +332,7 @@ export function jsonToQueryString(json: object): string {
     ).join("&");
 }
 
-function displayIdeal(fingerprint: MelbaFingerprintForDisplay, aspect: ManagedAspect): string {
+function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: ManagedAspect): string {
     if (idealIsDifferentFromActual(fingerprint)) {
         return defaultedToDisplayableFingerprint(aspect)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
@@ -341,19 +342,19 @@ function displayIdeal(fingerprint: MelbaFingerprintForDisplay, aspect: ManagedAs
     return "";
 }
 
-function idealIsElimination(fingerprint: MelbaFingerprintForDisplay): boolean {
+function idealIsElimination(fingerprint: AugmentedFingerprintForDisplay): boolean {
     return fingerprint.ideal && !isConcreteIdeal(fingerprint.ideal);
 }
 
-function idealIsDifferentFromActual(fingerprint: MelbaFingerprintForDisplay): boolean {
+function idealIsDifferentFromActual(fingerprint: AugmentedFingerprintForDisplay): boolean {
     return fingerprint.ideal && isConcreteIdeal(fingerprint.ideal) && fingerprint.ideal.ideal.sha !== fingerprint.sha;
 }
 
-function idealIsSameAsActual(fingerprint: MelbaFingerprintForDisplay): boolean {
+function idealIsSameAsActual(fingerprint: AugmentedFingerprintForDisplay): boolean {
     return fingerprint.ideal && isConcreteIdeal(fingerprint.ideal) && fingerprint.ideal.ideal.sha === fingerprint.sha;
 }
 
-function displayStyleAccordingToIdeal(fingerprint: MelbaFingerprintForDisplay): CSSProperties {
+function displayStyleAccordingToIdeal(fingerprint: AugmentedFingerprintForDisplay): CSSProperties {
     const redStyle: CSSProperties = { color: "red" };
     const greenStyle: CSSProperties = { color: "green" };
 
@@ -369,24 +370,24 @@ function displayStyleAccordingToIdeal(fingerprint: MelbaFingerprintForDisplay): 
     return {};
 }
 
-export type MelbaFingerprintForDisplay = FP & {
-    ideal?: Ideal;
-    displayValue: string;
-    displayName: string;
-};
+export type AugmentedFingerprintForDisplay =
+    FP &
+    Pick<ProjectFingerprintForDisplay, "displayValue" | "displayName"> & {
+        ideal?: Ideal;
+    };
 
-export interface MelbaAspectForDisplay {
+export interface AugmentedAspectForDisplay {
     aspect: ManagedAspect;
-    fingerprints: MelbaFingerprintForDisplay[];
+    fingerprints: AugmentedFingerprintForDisplay[];
 }
 
-async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProject: FP[]): Promise<MelbaAspectForDisplay[]> {
+async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProject: FP[]): Promise<AugmentedAspectForDisplay[]> {
     const result = [];
     for (const aspect of fm.aspects) {
         const originalFingerprints =
             _.sortBy(allFingerprintsInOneProject.filter(fp => aspect.name === (fp.type || fp.name)), fp => fp.name);
         if (originalFingerprints.length > 0) {
-            const fingerprints: MelbaFingerprintForDisplay[] = [];
+            const fingerprints: AugmentedFingerprintForDisplay[] = [];
             for (const fp of originalFingerprints) {
                 fingerprints.push({
                     ...fp,
