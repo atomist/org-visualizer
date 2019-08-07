@@ -141,7 +141,11 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return undefined;
     }
 
-    persistAnalytics(params: { workspaceId: string; kind: Pick<FP, "type" | "name">; cohortAnalysis: CohortAnalysis; }[]): Promise<boolean> {
+    public persistAnalytics(params: { workspaceId: string; kind: Pick<FP, "type" | "name">; cohortAnalysis: CohortAnalysis; }[]): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+
+    public fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
         throw new Error("Method not implemented.");
     }
 }

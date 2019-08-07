@@ -92,6 +92,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     private async loadInWorkspaceInternal(wsid: string,
                                           additionalWhereClause: string = "true",
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
+        const fingerprints = await this.fingerprintsInWorkspaceRecord(wsid);
+
         const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
 from repo_snapshots, repo_fingerprints
 WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
@@ -99,13 +101,13 @@ AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
 AND ${additionalWhereClause}
 GROUP BY id`;
         return doWithClient(sql, this.clientFactory, async client => {
-            const fingerprints = await this.fingerprintsInWorkspace(wsid);
+            // Load all fingerprints in workspace so we can look up
             const repoSnapshotRows = await client.query(sql, [wsid, ...additionalParameters]);
             return repoSnapshotRows.rows.map(row => {
                 const repoRef = rowToRepoRef(row);
                 const fingerprintIds: string[] = row.fingerprint_ids.split(",");
                 const analysis: Analyzed = {
-                    fingerprints: fingerprintIds.map(fid => fingerprints.find(fp => fp.id === fid)),
+                    fingerprints: fingerprintIds.map(fid => fingerprints[fid]),
                     id: repoRef,
                 };
                 return {
@@ -251,8 +253,18 @@ WHERE id = $1`;
         });
     }
 
-    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<Array<FP & {id: string}>> {
+    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<Array<FP & { id: string }>> {
         return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
+    }
+
+    /**
+     * Key is persistent fingerprint id
+     */
+    private async fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
+        const fingerprintsArray = await this.fingerprintsInWorkspace(workspaceId, type, name);
+        const fingerprints: Record<string, FP & { id: string }> = {};
+        fingerprintsArray.forEach(fp => fingerprints[fp.id] = fp);
+        return fingerprints;
     }
 
     public async fingerprintsForProject(snapshotId: string): Promise<FP[]> {
@@ -439,7 +451,7 @@ function problemRowToProblem(rawRow: any): ProblemUsage {
 async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
-                                       name?: string): Promise<Array<FP & { id: string}>> {
+                                       name?: string): Promise<Array<FP & { id: string }>> {
     const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data
 FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
 WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
