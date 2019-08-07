@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as React from "react";
+import { collapsible } from "./utils";
 
 export interface ProjectForDisplay { url: string; repo: string; owner: string; id: string; } // will likely add more data later
 
@@ -37,14 +38,4 @@ export function ProjectList(props: ProjectListProps): React.ReactElement {
             {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
         </ul>
     </div>;
-}
-
-function collapsible(key: string, title: string, content: React.ReactElement, startOpen: boolean): React.ReactElement {
-    return <div className="wrap-collapsible owner-collapsible">
-        <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={startOpen}></input>
-        <label htmlFor={key} className="lbl-toggle">{title}</label>
-        <div className="collapsible-content">
-            <div className="content-inner">
-                {content}
-            </div></div></div>;
 }

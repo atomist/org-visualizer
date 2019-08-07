@@ -3,6 +3,7 @@ import * as React from "react";
 import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { ProjectForDisplay, ProjectList } from "./projectList";
+import { collapsible } from "./utils";
 
 export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "name">, Pick<CohortAnalysis, "count" | "variants">, MaybeAnIdeal {
     displayName: string;
@@ -20,6 +21,7 @@ interface UnfoundAspectForDisplay {
     documentationUrl?: string;
     displayName: string;
 }
+
 export interface OrgExplorerProps {
     projectsAnalyzed: number;
     importantAspects: AspectFingerprintsForDisplay[];
@@ -61,7 +63,8 @@ function displayImportantAspect(f: AspectFingerprintsForDisplay, i: number): Rea
     const graphAll = f.fingerprints.length <= 1 ? "" : <a href={allLink(true)}>All fingerprints</a>;
     const graphAllExpanded = f.fingerprints.length <= 1 ? "" : <a href={allLink(false)}>Expanded</a>;
 
-    const summaryListItem = about || graphAll || graphAllExpanded ? <li key={"all" + i}>{about} {graphAll} {graphAllExpanded}</li> : "";
+    const summaryListItem = about || graphAll || graphAllExpanded ?
+        <li key={"all" + i}>{about} {graphAll} {graphAllExpanded}</li> : "";
 
     return <div className="wrap-collapsible feature-collapsible">
         <input id={key} className="sneaky toggle" type="checkbox" defaultChecked={expandByDefault}></input>
@@ -72,7 +75,9 @@ function displayImportantAspect(f: AspectFingerprintsForDisplay, i: number): Rea
                     {summaryListItem}
                     {f.fingerprints.map(fingerprintListItem)}
                 </ul>
-            </div></div></div>;
+            </div>
+        </div>
+    </div>;
 }
 
 function displayUnfoundAspects(mfs: Array<{}>): React.ReactElement {
@@ -112,21 +117,22 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
 
 export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
-        return <div><h2>No projects analyzed</h2>
+        return <div>
+            <h2>No projects analyzed</h2>
             Use the <pre>spider</pre> command to investigate some projects.
-            See <a href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the README</a> for details.
+            See <a
+            href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the
+            README</a> for details.
         </div>;
     }
 
     const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
-    const repos = "./explore";
 
     return <div>
 
         {projectSummary}
 
-        <h2>Explore</h2>
-        <a href={repos}>Interactive explorer</a>
+        {displayDashboards()}
 
         <h2>Aspects</h2>
         <div className="importantFeatures">
@@ -138,23 +144,46 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     </div>;
 }
 
+function displayDashboards(): React.ReactElement {
+    return <div>
+        <h2>Dashboards</h2>
+        <ul>
+            {collapsible("explore", "Explore",
+                <ul><li><a href="./explore">Interactive explorer</a></li></ul>,
+                true)}
+            {collapsible("canned-reports", "Canned Reports",
+                displayCannedReports(),
+                true)}
+        </ul>
+    </div>;
+}
+
+function displayCannedReports(): React.ReactElement {
+    return <ul>
+        <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a></li>
+        <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a></li>
+        <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a></li>
+    </ul>;
+}
+
 // tslint:disable:max-line-length
 
 export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
     return <div>
         {displayAspects(props)}
+        {displayDeveloper()}
+    </div>;
+}
 
-        <h2>Canned Reports</h2>
-        <ul>
-            <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a></li>
-            <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a></li>
-            <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a></li>
-        </ul>
-
+function displayDeveloper(): React.ReactElement {
+    return <div>
         <h2>Developer</h2>
         <ul>
+            <li><a href="https://github.com/atomist-blogs/org-visualizer/blob/master/docs/developer.md">Developer
+                Guide</a></li>
             <li><a href="./api-docs">Swagger documentation</a></li>
-            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a></li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a>
+            </li>
         </ul>
     </div>;
 }
