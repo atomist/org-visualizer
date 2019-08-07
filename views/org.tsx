@@ -86,7 +86,7 @@ function displayUnfoundAspects(mfs: Array<{}>): React.ReactElement {
     }
     return <div>
         <h2>Unseen Aspects</h2>
-        These aspects were not found in any project:
+        These aspects are understood by this <i>org-visualizer</i> instance but were not found in any project:
         <ul>
             {mfs.map(displayUnfoundAspect)}
         </ul>
@@ -149,7 +149,7 @@ function displayDashboards(): React.ReactElement {
         <h2>Dashboards</h2>
         <ul>
             {collapsible("explore", "Explore",
-                <ul><li><a href="./explore">Interactive explorer</a></li></ul>,
+                <ul><li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li></ul>,
                 true)}
             {collapsible("canned-reports", "Canned Reports",
                 displayCannedReports(),
@@ -160,9 +160,9 @@ function displayDashboards(): React.ReactElement {
 
 function displayCannedReports(): React.ReactElement {
     return <ul>
-        <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a></li>
-        <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a></li>
-        <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a></li>
+        <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the greatest entropy</li>
+        <li key="code-5"><a href="./report/langs?byOrg=true">Language breakdown across all projects</a> - See the number of lines of code in each language, across all repos</li>
+        <li key="code-6"><a href="./report/loc?byOrg=true">Repo breakdowns by size and language</a> - Compare the size and language breakdown of your repos</li>
     </ul>;
 }
 
@@ -180,9 +180,9 @@ function displayDeveloper(): React.ReactElement {
         <h2>Developer</h2>
         <ul>
             <li><a href="https://github.com/atomist-blogs/org-visualizer/blob/master/docs/developer.md">Developer
-                Guide</a></li>
-            <li><a href="./api-docs">Swagger documentation</a></li>
-            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a>
+                Guide</a> - Developer documentation on <a href="https://github.com/atomist-blogs">GitHub</a></li>
+            <li><a href="./api-docs">Swagger documentation</a> - Interactive documentation for API endpoints running on this server</li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a> - Example tree structured data return
             </li>
         </ul>
     </div>;
