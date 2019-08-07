@@ -70,8 +70,9 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Load in the given workspace
+     * @param workspaceId undefined or * for all workspaces
      */
-    loadInWorkspace(workspaceId: string): Promise<ProjectAnalysisResult[]>;
+    loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]>;
 
     loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
 
@@ -98,10 +99,13 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name
+     * @param workspaceId workspaceId. Use * for all workspaces
+     * @param type fingerprint type (optional)
+     * @param name fingerprint name (optional)
      */
     fingerprintsInWorkspace(workspaceId: string,
                             type?: string,
-                            name?: string): Promise<FP[]>;
+                            name?: string): Promise<Array<FP & {id: string}>>;
 
     fingerprintsForProject(id: string): Promise<FP[]>;
 }

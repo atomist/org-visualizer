@@ -284,7 +284,7 @@ async function renderDataUrl(workspaceId: string,
                 retry: { retries: 0 },
             });
         tree = result.body;
-        logger.info(`From ${fullUrl}, got: ` + JSON.stringify(tree.circles, undefined, 2));
+        logger.info("From %s, got %s", fullUrl, tree.circles.map(c => c.meaning));
     } catch (e) {
         logger.error(`Failure fetching sunburst data from ${fullUrl}: ` + e.message);
     }

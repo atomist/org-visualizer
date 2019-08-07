@@ -103,8 +103,8 @@ SELECT row_to_json(fingerprint_groups) FROM (
  * @return {Promise<SunburstTree>}
  */
 export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTree> {
-    const children = await doWithClient(tq.clientFactory, async client => {
-        const sql = fingerprintsToReposQuery(tq);
+    const sql = fingerprintsToReposQuery(tq);
+    const children = await doWithClient(sql, tq.clientFactory, async client => {
         try {
             const results = await client.query(sql,
                 [tq.workspaceId, tq.aspectName, tq.rootName]);
@@ -133,19 +133,18 @@ export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTre
 export async function driftTreeForAllAspects(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
-    SELECT name, feature_name as type, variants, count, entropy, variants as size
-    from fingerprint_analytics f1
-    WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND ENTROPY > 0
-    ORDER BY entropy desc) as aspects
-    WHERE aspects.type = f0.type
-    GROUP by f0.type) as data`;
-    logger.debug(sql);
+SELECT name, feature_name as type, variants, count, entropy, variants as size
+from fingerprint_analytics f1
+WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND ENTROPY > 0
+ORDER BY entropy desc) as aspects
+WHERE aspects.type = f0.type
+GROUP by f0.type) as data`;
     const circles = [
         { meaning: "type" },
         { meaning: "fingerprint name" },
         { meaning: "fingerprint entropy" },
     ];
-    return doWithClient(clientFactory, async client => {
+    return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId]);
         let tree: PlantedTree = {
@@ -175,14 +174,13 @@ export async function driftTreeForSingleAspect(workspaceId: string,
                                                clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
 (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
-    SELECT name, feature_name as type, variants, count, entropy, variants as size
-    from fingerprint_analytics f1
-    WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
-    ORDER BY entropy desc) as aspects
-    WHERE aspects.type = f0.type AND aspects.type = $2
-    GROUP by f0.type) as data`;
-    logger.debug(sql);
-    return doWithClient(clientFactory, async client => {
+SELECT name, feature_name as type, variants, count, entropy, variants as size
+from fingerprint_analytics f1
+WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+ORDER BY entropy desc) as aspects
+WHERE aspects.type = f0.type AND aspects.type = $2
+GROUP by f0.type) as data`;
+    return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId, type]);
         let tree: PlantedTree = {

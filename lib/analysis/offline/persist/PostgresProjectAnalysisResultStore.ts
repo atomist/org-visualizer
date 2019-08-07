@@ -68,7 +68,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     public distinctRepoCount(workspaceId: string): Promise<number> {
         const sql = `SELECT COUNT(*) FROM (SELECT DISTINCT owner, name FROM repo_snapshots
         WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
-        return doWithClient(this.clientFactory, async client => {
+        return doWithClient(sql, this.clientFactory, async client => {
             const result = await client.query(sql,
                 [workspaceId]);
             return +result.rows[0].count;
@@ -78,7 +78,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     public latestTimestamp(workspaceId: string): Promise<Date> {
         const sql = `SELECT timestamp FROM repo_snapshots WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
         ORDER BY timestamp DESC LIMIT 1`;
-        return doWithClient(this.clientFactory, async client => {
+        return doWithClient(sql, this.clientFactory, async client => {
             const result = await client.query(sql,
                 [workspaceId]);
             return result.rows[0].timestamp;
@@ -92,14 +92,22 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     private async loadInWorkspaceInternal(wsid: string,
                                           additionalWhereClause: string = "true",
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
-        return doWithClient(this.clientFactory, async client => {
-            const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id
-                from repo_snapshots
-                WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
-                AND ${additionalWhereClause}`;
-            const rows = await client.query(sql, [wsid, ...additionalParameters]);
-            return rows.rows.map(row => {
-                const analysis = row.analysis;
+        const sql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
+from repo_snapshots, repo_fingerprints
+WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1 
+AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+AND ${additionalWhereClause}
+GROUP BY id`;
+        return doWithClient(sql, this.clientFactory, async client => {
+            const fingerprints = await this.fingerprintsInWorkspace(wsid);
+            const repoSnapshotRows = await client.query(sql, [wsid, ...additionalParameters]);
+            return repoSnapshotRows.rows.map(row => {
+                const repoRef = rowToRepoRef(row);
+                const fingerprintIds: string[] = row.fingerprint_ids.split(",");
+                const analysis: Analyzed = {
+                    fingerprints: fingerprintIds.map(fid => fingerprints.find(fp => fp.id === fid)),
+                    id: repoRef
+                };
                 return {
                     id: row.id,
                     owner: row.owner,
@@ -108,7 +116,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
                     commitSha: row.commit_sha,
                     timestamp: row.timestamp,
                     workspaceId: row.workingDescription,
-                    repoRef: rowToRepoRef(row),
+                    repoRef,
                     analysis,
                 };
             });
@@ -134,8 +142,8 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     public async distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
         const sql = `SELECT distinct f.name, feature_name as type
   from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1`;
-        return doWithClient(this.clientFactory, async client => {
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1`;
+        return doWithClient(sql, this.clientFactory, async client => {
             const result = await client.query(sql, [workspaceId]);
             return result.rows;
         }, []);
@@ -147,7 +155,7 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
 
     public async storeIdeal(workspaceId: string, ideal: Ideal): Promise<void> {
         if (isConcreteIdeal(ideal)) {
-            await doWithClient(this.clientFactory, async client => {
+            await doWithClient("Store ideal", this.clientFactory, async client => {
                 // Clear out any existing ideal
                 await client.query("DELETE FROM ideal_fingerprints WHERE workspace_id = $1 AND fingerprint_id IN " +
                     "(SELECT id from fingerprints where feature_name = $2 AND name = $3)",
@@ -175,10 +183,11 @@ values ($1, $2, 'local-user')`, [
     }
 
     public async loadIdeals(workspaceId: string): Promise<Ideal[]> {
-        return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
-            FROM ideal_fingerprints, fingerprints
-            WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id`, [workspaceId]);
+        const sql = `SELECT id, name, feature_name as type, sha, data
+FROM ideal_fingerprints, fingerprints
+WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id`;
+        return doWithClient(sql, this.clientFactory, async client => {
+            const rows = await client.query(sql, [workspaceId]);
             if (!rows.rows) {
                 return [];
             }
@@ -195,21 +204,22 @@ values ($1, $2, 'local-user')`, [
     }
 
     public async storeProblemFingerprint(workspaceId: string, fp: ProblemUsage): Promise<void> {
-        await doWithClient(this.clientFactory, async client => {
+        const sql = `INSERT INTO problem_fingerprints (workspace_id, fingerprint_id, severity, authority, date_added)
+values ($1, $2, $3, $4, current_timestamp)`;
+        await doWithClient(sql, this.clientFactory, async client => {
             // Clear out any existing ideal
             const fid = await this.ensureFingerprintStored(fp.fingerprint, client);
-            await client.query(`INSERT INTO problem_fingerprints (workspace_id, fingerprint_id, severity, authority, date_added)
-values ($1, $2, $3, $4, current_timestamp)`, [
+            await client.query(sql, [
                 workspaceId, fid, fp.severity, fp.authority]);
         });
     }
 
     public async loadProblems(workspaceId: string): Promise<ProblemUsage[]> {
-        return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(
-                `SELECT id, name, feature_name as type, sha, data, authority, severity, description, url
-            FROM problem_fingerprints, fingerprints
-            WHERE workspace_id = $1 AND problem_fingerprints.fingerprint_id = fingerprints.id`, [workspaceId]);
+        const sql = `SELECT id, name, feature_name as type, sha, data, authority, severity, description, url
+FROM problem_fingerprints, fingerprints
+WHERE workspace_id = $1 AND problem_fingerprints.fingerprint_id = fingerprints.id`;
+        return doWithClient(sql, this.clientFactory, async client => {
+            const rows = await client.query(sql, [workspaceId]);
             if (!rows.rows) {
                 return [];
             }
@@ -218,11 +228,12 @@ values ($1, $2, $3, $4, current_timestamp)`, [
     }
 
     public async loadIdeal(workspaceId: string, type: string, name: string): Promise<Ideal> {
-        const rawRow = await doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data
-            FROM ideal_fingerprints, fingerprints
-            WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id
-            AND feature_name = $2 AND name = $3`, [workspaceId, type, name]);
+        const sql = `SELECT id, name, feature_name as type, sha, data
+FROM ideal_fingerprints, fingerprints
+WHERE workspace_id = $1 AND ideal_fingerprints.fingerprint_id = fingerprints.id
+AND feature_name = $2 AND name = $3`;
+        const rawRow = await doWithClient(sql, this.clientFactory, async client => {
+            const rows = await client.query(sql, [workspaceId, type, name]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
         if (!rawRow) {
@@ -232,14 +243,15 @@ values ($1, $2, $3, $4, current_timestamp)`, [
     }
 
     public async loadFingerprintById(id: string): Promise<FP | undefined> {
-        return doWithClient(this.clientFactory, async client => {
-            const rows = await client.query(`SELECT id, name, feature_name as type, sha, data FROM fingerprints
-            WHERE id = $1`, [id]);
+        const sql = `SELECT id, name, feature_name as type, sha, data FROM fingerprints
+WHERE id = $1`;
+        return doWithClient(sql, this.clientFactory, async client => {
+            const rows = await client.query(sql, [id]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
     }
 
-    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
+    public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<Array<FP & {id: string}>> {
         return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
     }
 
@@ -249,7 +261,7 @@ values ($1, $2, $3, $4, current_timestamp)`, [
     }
 
     public async persistAnalytics(data: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean> {
-        return doWithClient(this.clientFactory, async client => {
+        return doWithClient("Persist analytics", this.clientFactory, async client => {
             for (const { kind, workspaceId, cohortAnalysis } of data) {
                 const sql = `INSERT INTO fingerprint_analytics (feature_name, name, workspace_id, entropy, variants, count)
         values ($1, $2, $3, $4, $5, $6)
@@ -263,12 +275,9 @@ values ($1, $2, $3, $4, current_timestamp)`, [
 
     private async persistAnalysisResults(
         analysisResultIterator: AsyncIterable<ProjectAnalysisResult> | ProjectAnalysisResult[]): Promise<PersistResult> {
-        return doWithClient(this.clientFactory, async client => {
+        return doWithClient("Persist analysis results", this.clientFactory, async client => {
             const persistResults: PersistResult[] = [];
             for await (const analysisResult of analysisResultIterator) {
-                if (!analysisResult.analysis) {
-                    throw new Error("Analysis is undefined!");
-                }
                 persistResults.push(await this.persistOne(client, analysisResult));
             }
             return persistResults.reduce(combinePersistResults, emptyPersistResult);
@@ -430,13 +439,13 @@ function problemRowToProblem(rawRow: any): ProblemUsage {
 async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
-                                       name?: string): Promise<FP[]> {
-    return doWithClient(clientFactory, async client => {
-        const sql = `SELECT DISTINCT f.name as fingerprintName, f.feature_name, f.sha, f.data
-  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
-  ORDER BY feature_name, fingerprintName ASC`;
+                                       name?: string): Promise<Array<FP & { id: string}>> {
+    const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data
+FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
+WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
+ORDER BY feature_name, fingerprintName ASC`;
+    return doWithClient(sql, clientFactory, async client => {
         const params = [workspaceId];
         if (!!type) {
             params.push(type);
@@ -448,6 +457,7 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
         const rows = await client.query(sql, params);
         return rows.rows.map(row => {
             return {
+                id: row.id,
                 name: row.fingerprintname,
                 type: row.feature_name,
                 sha: row.sha,
@@ -459,11 +469,11 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
 
 async function fingerprintsForProject(clientFactory: ClientFactory,
                                       snapshotId: string): Promise<FP[]> {
-    return doWithClient(clientFactory, async client => {
-        const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
-  from repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rs.id = $1 AND rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id
-  ORDER BY feature_name, fingerprintName ASC`;
+    const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
+FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
+WHERE rs.id = $1 AND rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id
+ORDER BY feature_name, fingerprintName ASC`;
+    return doWithClient(sql, clientFactory, async client => {
         const rows = await client.query(sql, [snapshotId]);
         return rows.rows.map(row => {
             return {
@@ -477,12 +487,12 @@ async function fingerprintsForProject(clientFactory: ClientFactory,
 }
 
 async function fingerprintUsageForType(clientFactory: ClientFactory, workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
-    return doWithClient<FingerprintUsage[]>(clientFactory, async client => {
-        const sql = `SELECT name, feature_name as type, variants, count, entropy, compliance
-  from fingerprint_analytics f
-  WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
-  AND  ${type ? "f.feature_name = $2" : "true"}
-  ORDER BY entropy DESC`;
+    const sql = `SELECT name, feature_name as type, variants, count, entropy, compliance
+FROM fingerprint_analytics f
+WHERE f.workspace_id ${workspaceId === "*" ? "!=" : "="} $1
+AND  ${type ? "f.feature_name = $2" : "true"}
+ORDER BY entropy DESC`;
+    return doWithClient<FingerprintUsage[]>(sql, clientFactory, async client => {
         const params = [workspaceId];
         if (!!type) {
             params.push(type);

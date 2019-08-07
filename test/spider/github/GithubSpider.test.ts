@@ -137,7 +137,7 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return undefined;
     }
 
-    public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<FP[]> {
+    public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<any> {
         return undefined;
     }
 

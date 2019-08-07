@@ -31,11 +31,14 @@ export type ClientFactory = () => Promise<PoolClient>;
  * @param {() => } clientFactory factory for clients
  * @param {(c: ) => Promise<R>} what a function to run with the client
  * @param {R} defaultResult return this in case of error. If not provided, return undefined
+ * @param description description of what we're doing. Allows for timing
  * @return {Promise<R>}
  */
-export async function doWithClient<R>(clientFactory: ClientFactory,
+export async function doWithClient<R>(description: string,
+                                      clientFactory: ClientFactory,
                                       what: (c: PoolClient) => Promise<R>,
                                       defaultResult?: R | ((e: Error) => R)): Promise<R> {
+    const startTime = new Date().getTime();
     const client = await clientFactory();
     let result: R;
     try {
@@ -50,6 +53,9 @@ export async function doWithClient<R>(clientFactory: ClientFactory,
         return defaultResult;
     } finally {
         client.release();
+        const endTime = new Date().getTime();
+        logger.info("============= RDBMS operation ==================\n%s\n>>> Executed in %d milliseconds",
+            description, endTime - startTime);
     }
     return result;
 }

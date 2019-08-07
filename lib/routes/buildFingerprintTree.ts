@@ -74,7 +74,7 @@ export async function buildFingerprintTree(
         rootName: fingerprintName,
         aspectName: fingerprintType,
     });
-    logger.debug("Returning fingerprint tree '%s': %j", fingerprintName, pt);
+    // logger.debug("Returning fingerprint tree '%s': %j", fingerprintName, pt);
 
     await decorateProblemFingerprints(aspectRegistry, pt);
 
