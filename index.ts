@@ -138,7 +138,13 @@ export const configuration: Configuration = configure(async sdm => {
     });
     if (isStaging) {
         registerCategories(LeinDeps, "Java");
-        registerReportDetails(LeinDeps, { url: "drift?type=clojure-project-deps" });
+        registerReportDetails(LeinDeps, {
+            shortName: "dependency",
+            unit: "version",
+            url: "drift?type=clojure-project-deps",
+            description: "Leiningen direct dependencies in use across all repositories in your workspace, " +
+                "grouped by Drift Level.",
+        });
     }
     registerCategories(DockerFrom, "Docker");
     registerReportDetails(DockerFrom, {
@@ -156,13 +162,6 @@ export const configuration: Configuration = configure(async sdm => {
         url: "fingerprint/docker-ports/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=false",
         description: "Ports exposed in Docker configuration in use  across all repositories in your workspace, " +
             "broken out by port number and repositories where used.",
-    });
-    registerReportDetails(LeinDeps, {
-        shortName: "dependency",
-        unit: "version",
-        url: "drift?type=clojure-project-deps",
-        description: "Leiningen direct dependencies in use across all repositories in your workspace, " +
-            "grouped by Drift Level.",
     });
 
     if (mode === "online") {
