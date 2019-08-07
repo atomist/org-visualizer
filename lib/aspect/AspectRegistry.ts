@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { RemoteRepoRef, Severity } from "@atomist/automation-client";
+import {
+    RemoteRepoRef,
+    Severity,
+} from "@atomist/automation-client";
 import {
     Aspect,
     AtomicAspect,
