@@ -1,4 +1,6 @@
 
+alter table repo_snapshots drop column path;
+
 alter table repo_fingerprints add column path varchar;
 
 update repo_fingerprints set path = '';

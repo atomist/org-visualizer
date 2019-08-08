@@ -33,7 +33,6 @@ CREATE TABLE repo_snapshots (
  name text NOT NULL,
  url text NOT NULL,
  branch text,
- path text,
  commit_sha varchar NOT NULL,
  analysis jsonb,
  timestamp TIMESTAMP  NOT NULL,

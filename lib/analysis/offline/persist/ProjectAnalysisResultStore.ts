@@ -70,9 +70,10 @@ export interface ProjectAnalysisResultStore {
 
     /**
      * Load in the given workspace
-     * @param workspaceId undefined or * for all workspaces
+     * @param workspaceId  '*' for all workspaces
+     * @param deep whether to load deep
      */
-    loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]>;
+    loadInWorkspace(workspaceId: string, deep: boolean): Promise<ProjectAnalysisResult[]>;
 
     loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
 

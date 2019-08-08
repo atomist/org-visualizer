@@ -85,59 +85,65 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
         });
     }
 
-    public loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]> {
-        return this.loadInWorkspaceInternal(workspaceId || "*");
+    public loadInWorkspace(workspaceId: string, deep: boolean): Promise<ProjectAnalysisResult[]> {
+        return this.loadInWorkspaceInternal(workspaceId || "*", deep);
     }
 
-    private async loadInWorkspaceInternal(wsid: string,
+    /**
+     * Load repo
+     * @param {string} workspaceId workspace id
+     * @param {boolean} deep whether to load fingerprints also
+     * @param {string} additionalWhereClause does not use aliases, but original table names
+     * @param {any[]} additionalParameters additional parameters required by additional where clause
+     * @return {Promise<ProjectAnalysisResult[]>}
+     */
+    private async loadInWorkspaceInternal(workspaceId: string,
+                                          deep: boolean,
                                           additionalWhereClause: string = "true",
                                           additionalParameters: any[] = []): Promise<ProjectAnalysisResult[]> {
-        // The fingerprints query is expensive so we parallelize the 2 queries
-        const getFingerprints = this.fingerprintsInWorkspaceRecord(wsid);
-
-        const repoRowsSql = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id, string_agg(fingerprint_id, ',') as fingerprint_ids
-from repo_snapshots, repo_fingerprints
-WHERE workspace_id ${wsid !== "*" ? "=" : "<>"} $1
-AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+        const reposOnly = `SELECT id, owner, name, url, commit_sha, timestamp, workspace_id
+FROM repo_snapshots
+WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
+AND ${additionalWhereClause}`;
+        const reposAndFingerprints = `SELECT repo_snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url,
+  repo_snapshots.commit_sha, repo_snapshots.timestamp, repo_snapshots.workspace_id,
+  json_agg(json_build_object('path', path, 'id', fingerprint_id, 'name', f.name, 'type', feature_name, 'sha', sha, 'data', f.data)) as fingerprints
+FROM repo_snapshots, repo_fingerprints, fingerprints as f
+WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
+AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id AND repo_fingerprints.fingerprint_id = f.id
 AND ${additionalWhereClause}
-GROUP BY id`;
-        const getRepos = doWithClient(repoRowsSql, this.clientFactory, async client => {
-            // Load all fingerprints in workspace so we can look up
-            const repoSnapshotRows = await client.query(repoRowsSql, [wsid, ...additionalParameters]);
-            return repoSnapshotRows.rows.map(row => {
-                const repoRef = rowToRepoRef(row);
-                return {
-                    id: row.id,
-                    owner: row.owner,
-                    name: row.name,
-                    url: row.url,
-                    commitSha: row.commit_sha,
-                    timestamp: row.timestamp,
-                    workspaceId: row.workingDescription,
-                    repoRef,
-                    fingerprintIds: row.fingerprint_ids.split(","),
-                };
-            });
-        }, []);
-        const [fingerprints, repos] = await Promise.all([getFingerprints, getRepos]);
-        // Fill in the remaining information from the fingerprints lookup
-        for (const repo of repos) {
-            (repo as any).analysis = {
-                fingerprints: repo.fingerprintIds.map(fid => fingerprints[fid]),
-                id: repo.repoRef,
-            };
-        }
-        return repos;
+GROUP BY repo_snapshots.id`;
+        return doWithClient(deep ? reposAndFingerprints : reposOnly,
+            this.clientFactory, async client => {
+                // Load all fingerprints in workspace so we can look up
+                const repoSnapshotRows = await client.query(deep ? reposAndFingerprints : reposOnly,
+                    [workspaceId, ...additionalParameters]);
+                return repoSnapshotRows.rows.map(row => {
+                    const repoRef = rowToRepoRef(row);
+                    return {
+                        id: row.id,
+                        owner: row.owner,
+                        name: row.name,
+                        url: row.url,
+                        commitSha: row.commit_sha,
+                        timestamp: row.timestamp,
+                        workspaceId: row.workingDescription,
+                        repoRef,
+                        analysis: deep ? { id: repoRef, fingerprints: row.fingerprints } : undefined,
+                    };
+                });
+            }, []);
     }
 
     public async loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
-        const hits = await this.loadInWorkspaceInternal("*", "id = $2", [id]);
+        const hits = await this.loadInWorkspaceInternal("*", true,
+            "repo_snapshots.id = $2", [id]);
         return hits.length === 1 ? hits[0] : undefined;
     }
 
     public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined> {
-        const hits = await this.loadInWorkspaceInternal("*",
-            "WHERE owner = $2 AND name = $3 AND commit_sha = $4",
+        const hits = await this.loadInWorkspaceInternal("*", true,
+            "WHERE repo_snapshots.owner = $2 AND repo_snapshots.name = $3 AND repo_snapshot.commit_sha = $4",
             [repo.owner, repo.repo, repo.sha]);
         return hits.length === 1 ? hits[0] : undefined;
     }
@@ -262,23 +268,13 @@ WHERE id = $1`;
         return fingerprintsInWorkspace(this.clientFactory, workspaceId, type, name);
     }
 
-    /**
-     * Key is persistent fingerprint id
-     */
-    private async fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
-        const fingerprintsArray = await this.fingerprintsInWorkspace(workspaceId, type, name);
-        const fingerprints: Record<string, FP & { id: string }> = {};
-        fingerprintsArray.forEach(fp => fingerprints[fp.id] = fp);
-        return fingerprints;
-    }
-
     public async fingerprintsForProject(snapshotId: string): Promise<FP[]> {
         return fingerprintsForProject(this.clientFactory, snapshotId);
     }
 
     public async averageFingerprintCount(workspaceId?: string): Promise<number> {
         const sql = `SELECT avg(count) as average_fingerprints from (SELECT repo_snapshots.id, count(feature_name) from repo_snapshots,
-(select distinct feature_name, repo_snapshot_id
+(select distinct feature_name, repo_snapshot_id, repo_fingerprints.path
   FROM repo_fingerprints, fingerprints
   WHERE repo_fingerprints.fingerprint_id = fingerprints.id)
 AS aspects
@@ -471,7 +467,7 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
                                        name?: string): Promise<Array<FP & { id: string }>> {
-    const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data, rs.path
+    const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data, rf.path
 FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
 WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
 AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
@@ -486,7 +482,7 @@ ORDER BY feature_name, fingerprintName ASC`;
         }
 
         const rows = await client.query(sql, params);
-        return rows.rows.map(row => {
+        const fps = rows.rows.map(row => {
             return {
                 id: row.id,
                 name: row.fingerprintname,
@@ -496,12 +492,14 @@ ORDER BY feature_name, fingerprintName ASC`;
                 path: row.path,
             };
         });
+        logger.info("%d fingerprints in workspace '%s'", fps.length, workspaceId);
+        return fps;
     }, []);
 }
 
 async function fingerprintsForProject(clientFactory: ClientFactory,
                                       snapshotId: string): Promise<FP[]> {
-    const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data
+    const sql = `SELECT f.name as fingerprintName, f.feature_name, f.sha, f.data, rf.path
 FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
 WHERE rs.id = $1 AND rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id
 ORDER BY feature_name, fingerprintName ASC`;
@@ -513,6 +511,7 @@ ORDER BY feature_name, fingerprintName ASC`;
                 type: row.feature_name,
                 sha: row.sha,
                 data: row.data,
+                path: row.path,
             };
         });
     }, []);

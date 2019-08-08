@@ -77,7 +77,7 @@ const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder
 );
 
 /**
- * The aspects anaged by this SDM.
+ * The aspects managed by this SDM.
  * Modify this list to customize with your own aspects.
  */
 export const Aspects: ManagedAspect[] = [
@@ -177,6 +177,12 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
         {
+            name: "monorepo",
+            description: "Contains multiple virtual projects",
+            severity: "info",
+            test: fp => !!fp.path && fp.path.length > 0,
+        },
+        {
             name: "jenkins",
             description: "Jenkins",
             test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins"),
@@ -253,6 +259,17 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
         ...opts,
     };
     return [
+        {
+            name: "not understood",
+            description: "You may want to write aspects for these outlier projects",
+            severity: "warn",
+            test: (fps, tagContext) => {
+                const aspectCount = _.uniq(fps.map(f => f.type)).length;
+                // There are quite a few aspects that are found on everything, e.g. git
+                // We need to set the threshold count probably
+                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
+            },
+        },
         {
             name: "not understood",
             description: "You may want to write aspects for these outlier projects",

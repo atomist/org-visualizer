@@ -115,7 +115,7 @@ function exposeProjectListPage(express: Express,
                                handlers: RequestHandler[],
                                store: ProjectAnalysisResultStore): void {
     express.get("/projects", ...handlers, async (req, res) => {
-        const allAnalysisResults = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
+        const allAnalysisResults = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
 
         // optional query parameter: owner
         const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
@@ -138,7 +138,7 @@ function exposeOrgPage(express: Express,
                        store: ProjectAnalysisResultStore): void {
     express.get(orgRoute, ...handlers, async (req, res) => {
         try {
-            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
+            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
             const fingerprintUsage = await store.fingerprintUsageForType("*");
 
             const ideals = await aspectRegistry.idealStore.loadIdeals("*");

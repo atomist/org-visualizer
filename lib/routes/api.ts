@@ -279,7 +279,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
     express.options("/api/v1/:workspace_id/explore", corsHandler());
     express.get("/api/v1/:workspace_id/explore", [corsHandler(), ...authHandlers()], async (req, res) => {
         const workspaceId = req.params.workspace_id || "*";
-        const repos = await store.loadInWorkspace(workspaceId);
+        const repos = await store.loadInWorkspace(workspaceId, true);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
         const averageFingerprintCount = await store.averageFingerprintCount(workspaceId);
@@ -430,7 +430,7 @@ function exposeCustomReports(express: Express, store: ProjectAnalysisResultStore
                 throw new Error(`No report named '${req.params.name}'`);
             }
 
-            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
+            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, true);
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             let pt = await q.builder.toPlantedTree(() => relevantRepos.map(r => r.analysis));
             if (req.query.byOrg !== "false") {

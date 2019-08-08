@@ -90,3 +90,18 @@ SELECT avg(count) from (SELECT repo_snapshots.id, count(feature_name) from repo_
     WHERE workspace_id <> '5'
     AND repo_snapshot_id = repo_snapshots.id
     group by repo_snapshots.id) stats;
+
+
+SELECT id, owner, name, url, commit_sha, timestamp, workspace_id,
+  json_agg(json_build_object('path', path, 'id', fingerprint_id)) as fingerprint_refs
+  FROM repo_snapshots, repo_fingerprints
+  WHERE repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+  GROUP BY id;
+
+-- Bring everything back in one query
+SELECT rs.id, owner, rs.name, url, commit_sha, timestamp, workspace_id,
+  json_agg(json_build_object('path', path, 'id', fingerprint_id, 'name', f.name, 'type', feature_name, 'sha', sha, 'data', f.data))
+    AS fingerprints
+  FROM repo_snapshots rs, repo_fingerprints rf, fingerprints f
+  WHERE rs.id = rf.repo_snapshot_id AND f.id = rf.fingerprint_id
+  GROUP BY rs.id;
