@@ -34,6 +34,7 @@ export const BranchCountType = "branch-count";
 export const branchCount: Aspect = {
     name: BranchCountType,
     displayName: "Branch count",
+    baseOnly: true,
     extract: async p => {
         const lp = p as LocalProject;
         const commandResult = await execPromise(

@@ -40,6 +40,7 @@ export interface CodeOfConductData {
 export const CodeOfConduct: Aspect<FP<CodeOfConductData>> = {
     name: "code-of-conduct",
     displayName: "Code of conduct",
+    baseOnly: true,
     extract: async p => {
         const codeOfConductFile = await
             p.getFile("CODE_OF_CONDUCT.md");

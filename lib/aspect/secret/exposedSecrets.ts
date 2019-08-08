@@ -28,6 +28,7 @@ export type ExposedSecretsData = Pick<ExposedSecret, "secret" | "path" | "descri
 export const ExposedSecrets: Aspect<FP<ExposedSecretsData>> = {
     name: ExposedSecretsType,
     displayName: "Exposed secrets",
+    baseOnly: true,
     extract: async p => {
         const exposedSecretsResult = await sniffProject(p, await loadSnifferOptions());
         return exposedSecretsResult.exposedSecrets.map(es => {

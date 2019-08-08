@@ -68,6 +68,8 @@ export class CodeOwnership implements Aspect<FP<CodeOwnershipData>> {
 
     public readonly name: string = "codeOwnership";
 
+    public baseOnly: boolean = true;
+
     get apply(): ApplyFingerprint<FP<CodeOwnershipData>> {
         return async (p, tsi) => {
             throw new Error(`Applying code ownership is not yet supported. But it could be.`);

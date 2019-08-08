@@ -45,6 +45,7 @@ export interface LicenseData {
 export const License: Aspect = {
     name: LicenseType,
     displayName: "License",
+    baseOnly: true,
     extract: async p => {
         const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt");
         let classification: string = NoLicense;

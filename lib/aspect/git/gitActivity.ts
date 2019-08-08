@@ -63,6 +63,7 @@ const gitRecencyExtractor: ExtractFingerprint =
 export const GitRecency: Aspect = {
     name: "git-recency",
     displayName: "Recency of git activity",
+    baseOnly: true,
     extract: gitRecencyExtractor,
     toDisplayableFingerprintName: () => "Recency of git activity",
     toDisplayableFingerprint: fp => {
@@ -119,6 +120,7 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
     return {
         name: GitActivesType,
         displayName: "Active git committers",
+        baseOnly: true,
         extract: activeCommittersExtractor(commitDepth),
         toDisplayableFingerprintName: () => "Active git committers",
         toDisplayableFingerprint: fp => {
