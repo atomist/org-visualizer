@@ -53,7 +53,9 @@ CREATE TABLE fingerprints (
 CREATE TABLE IF NOT EXISTS repo_fingerprints (
   repo_snapshot_id varchar references repo_snapshots(id),
   fingerprint_id varchar references fingerprints(id),
-  PRIMARY KEY (repo_snapshot_id, fingerprint_id)
+  -- Path below the root if this is a virtual repo
+  path varchar,
+  PRIMARY KEY (repo_snapshot_id, fingerprint_id, path)
 );
 
 -- Usage information about fingerprints
