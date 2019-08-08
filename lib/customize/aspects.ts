@@ -21,8 +21,9 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
-    filesAspect,
-    NpmDeps,
+    fileNamesVirtualProjectFinder,
+    filesAspect, makeVirtualProjectAware,
+    NpmDeps, VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
@@ -70,6 +71,10 @@ import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import { daysSince } from "../aspect/git/dateUtils";
 
 import * as _ from "lodash";
+
+const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
+    "package.json", "pom.xml", "build.gradle", "requirements.txt",
+);
 
 /**
  * The aspects anaged by this SDM.
@@ -127,7 +132,7 @@ export const Aspects: ManagedAspect[] = [
     DirectMavenDependencies,
     PythonDependencies,
     LeinDeps,
-];
+].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
 
 export interface TaggersParams {
 
