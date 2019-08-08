@@ -81,7 +81,6 @@ export function updatedStoredAnalysisIfNecessary(opts: {
                     repoRef: analysis.id,
                     analysis,
                     timestamp: now,
-                    subproject: found.subproject,
                     workspaceId: pu.context.workspaceId,
                 });
             } else {

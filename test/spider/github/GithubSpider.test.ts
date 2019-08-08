@@ -45,7 +45,6 @@ import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
 } from "../../../lib/analysis/ProjectAnalysisResult";
-import { SubprojectStatus } from "../../../lib/analysis/subprojectFinder";
 import {
     GitHubSearchResult,
     GitHubSpider,
@@ -213,52 +212,8 @@ describe("GithubSpider", () => {
         };
 
         assert.deepStrictEqual(result, expected);
-
         const persisted = (myOpts.persister as FakeProjectAnalysisResultStore).persisted;
-
         assert.strictEqual(persisted.length, 1);
     });
 
-    it.skip("persists multiple analyses with subprojects", async () => {
-        // this function is pretty darn elaborate
-
-        const subject = new GitHubSpider(async function* (t, q) { yield oneSearchResult; },
-            async sd => InMemoryProject.of({ path: "README.md", content: "hi there" }));
-
-        const myOpts = opts();
-        const myCriteria: ScmSearchCriteria = {
-            ...criteria,
-            subprojectFinder: {
-                name: "Here and There subproject finder",
-                findSubprojects: async p => {
-                    return {
-                        status: SubprojectStatus.IdentifiedPaths,
-                        subprojects: [{
-                            path: "here", reason: "hard coded",
-                        }, { path: "there", reason: "hard coded" }],
-                    };
-                },
-            },
-        };
-        const result = await subject.spider(myCriteria, analyzer, myOpts);
-
-        const expected: SpiderResult = {
-            repositoriesDetected: 1,
-            projectsDetected: 2,
-            failed: [],
-            persistedAnalyses: [hardCodedPlace, hardCodedPlace],
-            keptExisting: [],
-        };
-
-        assert.deepStrictEqual(result, expected);
-
-        const persisted = (myOpts.persister as FakeProjectAnalysisResultStore).persisted;
-
-        persisted.forEach(pa => {
-            assert(!!pa.subproject, "should have a subproject");
-            assert.strictEqual(pa.subproject.reason, "hard coded");
-        });
-
-        assert.strictEqual(persisted.length, 2);
-    });
 });

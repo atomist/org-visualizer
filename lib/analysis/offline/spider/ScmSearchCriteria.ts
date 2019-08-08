@@ -16,7 +16,6 @@
 
 import { Project } from "@atomist/automation-client";
 import { Interpretation } from "@atomist/sdm-pack-analysis";
-import { SubprojectFinder } from "../../subprojectFinder";
 
 /**
  * Used to query GitHub
@@ -52,8 +51,4 @@ export interface ScmSearchCriteria {
      */
     interpretationTest?: (i: Interpretation) => boolean;
 
-    /**
-     * If provided, can discern subproject paths
-     */
-    subprojectFinder?: SubprojectFinder;
 }

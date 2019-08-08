@@ -31,13 +31,11 @@ import { loadUserConfiguration } from "@atomist/automation-client/lib/configurat
 import * as _ from "lodash";
 import * as path from "path";
 import * as yargs from "yargs";
-import { fileNamesSubprojectFinder } from "../analysis/fileNamesSubprojectFinder";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { GitHubSpider } from "../analysis/offline/spider/github/GitHubSpider";
 import { LocalSpider } from "../analysis/offline/spider/local/LocalSpider";
 import { ScmSearchCriteria } from "../analysis/offline/spider/ScmSearchCriteria";
 import { Spider } from "../analysis/offline/spider/Spider";
-import { firstSubprojectFinderOf } from "../analysis/subprojectFinder";
 import {
     createAnalyzer,
     sdmConfigClientFactory,
@@ -107,13 +105,6 @@ async function spider(params: SpiderAppOptions) {
             // through calling getFile()
             return true;
         },
-        subprojectFinder: firstSubprojectFinderOf(
-            fileNamesSubprojectFinder(
-                "pom.xml",
-                "build.gradle",
-                "package.json",
-                "requirements.txt"),
-        ),
     };
 
     const arr = new Array<string>(JSON.stringify(criteria).length + 20);

@@ -14,33 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    GitCommandGitProject,
-    isLocalProject,
-    logger,
-    Project,
-    RemoteRepoRef,
-    RepoId,
-} from "@atomist/automation-client";
-import { isInMemoryProject } from "@atomist/automation-client/lib/project/mem/InMemoryProject";
-import {
-    Interpretation,
-    ProjectAnalysis,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
-import * as path from "path";
-import { SubprojectDescription } from "../../ProjectAnalysisResult";
-import { SubprojectStatus } from "../../subprojectFinder";
-import {
-    PersistResult,
-    ProjectAnalysisResultStore,
-} from "../persist/ProjectAnalysisResultStore";
+import { logger, Project, RepoId } from "@atomist/automation-client";
+import { Interpretation, ProjectAnalysis, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import { PersistResult, ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
-import {
-    ProjectAnalysisResultFilter,
-    SpiderOptions,
-} from "./Spider";
+import { ProjectAnalysisResultFilter, SpiderOptions } from "./Spider";
 
 export async function keepExistingPersisted(
     opts: {
@@ -65,7 +44,6 @@ export interface RepoInfo {
     totalFileCount: number;
     interpretation: Interpretation;
     analysis: ProjectAnalysis;
-    subproject: SubprojectDescription;
 }
 /**
  * Find project or subprojects
@@ -73,32 +51,14 @@ export interface RepoInfo {
 export async function analyze(project: Project,
                               analyzer: ProjectAnalyzer,
                               criteria: ScmSearchCriteria): Promise<AnalyzeResults> {
-
-    const subprojectResults = criteria.subprojectFinder ?
-        await criteria.subprojectFinder.findSubprojects(project) :
-        { status: SubprojectStatus.Unknown };
-    if (!!subprojectResults.subprojects && subprojectResults.subprojects.length > 0) {
-        const repoInfos = await Promise.all(subprojectResults.subprojects.map(subproject => {
-            return projectUnder(project, subproject.path).then(p =>
-                analyzeProject(
-                    p,
-                    analyzer,
-                    { ...subproject, parentRepoRef: project.id as RemoteRepoRef }));
-        })).then(results => results.filter(x => !!x));
-        return {
-            projectsDetected: subprojectResults.subprojects.length,
-            repoInfos,
-        };
-    }
-    return { projectsDetected: 1, repoInfos: [await analyzeProject(project, analyzer, undefined)] };
+    return { projectsDetected: 1, repoInfos: [await analyzeProject(project, analyzer)] };
 }
 
 /**
- * Analyze a project. May be a virtual project, within a bigger project.
+ * Analyze a project.
  */
 async function analyzeProject(project: Project,
-                              analyzer: ProjectAnalyzer,
-                              subproject?: SubprojectDescription): Promise<RepoInfo> {
+                              analyzer: ProjectAnalyzer): Promise<RepoInfo> {
     const readmeFile = await project.getFile("README.md");
     const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
     const totalFileCount = await project.totalFileCount();
@@ -111,29 +71,7 @@ async function analyzeProject(project: Project,
         totalFileCount,
         interpretation,
         analysis,
-        subproject,
     };
-}
-
-async function projectUnder(p: Project, pathWithin: string): Promise<Project> {
-    if (isInMemoryProject(p)) {
-        // TODO we need latest automation-client but this isn't available
-        // return p.toSubproject(pathWithin);
-    }
-    if (!isLocalProject(p)) {
-        throw new Error(`Cannot descend into path '${pathWithin}' of non local project`);
-    }
-    const rid = p.id as RemoteRepoRef;
-    const newId: RemoteRepoRef = {
-        ...rid,
-        path: pathWithin,
-    };
-    return GitCommandGitProject.fromBaseDir(
-        newId,
-        path.join(p.baseDir, pathWithin),
-        (p as any).credentials,
-        p.release,
-    );
 }
 
 export async function persistRepoInfo(
@@ -163,7 +101,6 @@ export async function persistRepoInfo(
         timestamp: moreInfo.timestamp,
         query: moreInfo.query,
         readme: repoInfo.readme,
-        subproject: repoInfo.subproject,
     };
     const persistResult = await opts.persister.persist(toPersist);
     if (opts.onPersisted) {
