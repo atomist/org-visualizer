@@ -401,9 +401,9 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
             // Create fp record if it doesn't exist
             try {
                 await this.ensureFingerprintStored(fp, client);
-                await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id)
-values ($1, $2) ON CONFLICT DO NOTHING
-`, [id, fingerprintId]);
+                await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id, path)
+values ($1, $2, $3) ON CONFLICT DO NOTHING
+`, [id, fingerprintId, fp.path]);
                 insertedCount++;
             } catch (error) {
                 failures.push({ failedFingerprint: fp, error });
@@ -471,7 +471,7 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
                                        name?: string): Promise<Array<FP & { id: string }>> {
-    const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data
+    const sql = `SELECT DISTINCT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data, rs.path
 FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
 WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
 AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}
@@ -493,6 +493,7 @@ ORDER BY feature_name, fingerprintName ASC`;
                 type: row.feature_name,
                 sha: row.sha,
                 data: row.data,
+                path: row.path,
             };
         });
     }, []);

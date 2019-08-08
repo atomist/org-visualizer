@@ -17,18 +17,18 @@ export interface PossibleIdealForDisplay {
 }
 
 export interface SunburstPageProps {
-    workspaceId: string;
-    fingerprintDisplayName: string;
-    currentIdeal: CurrentIdealForDisplay;
-    possibleIdeals: PossibleIdealForDisplay[];
-    query: string;
-    dataUrl: string;
-    tree: TagTree; // we have the data already.
+    readonly workspaceId: string;
+    readonly fingerprintDisplayName: string;
+    readonly currentIdeal: CurrentIdealForDisplay;
+    readonly possibleIdeals: PossibleIdealForDisplay[];
+    readonly query: string;
+    readonly dataUrl: string;
+    readonly tree: TagTree; // we have the data already.
 
     /**
      * Tags selected
      */
-    selectedTags: string[];
+    readonly selectedTags: string[];
 
 }
 
@@ -228,7 +228,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
             <div id="dataAboutWhatYouClicked" className="sunburstData">{thingies}</div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }}/>
-        <a href={"." + props.dataUrl} type="application/json">Raw data</a>
+        <a href={props.dataUrl} type="application/json">Raw data</a>
     </div>;
 
 }
