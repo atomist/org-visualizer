@@ -15,7 +15,6 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
-import { FP } from "@atomist/sdm-pack-fingerprints";
 import { License } from "../../lib/aspect/community/license";
 
 import * as assert from "assert";
@@ -24,21 +23,21 @@ describe("license aspect", () => {
 
     it("should find no license", async () => {
         const p = InMemoryProject.of();
-        const fp: FP<any> = await License.extract(p);
+        const fp: any = await License.extract(p);
         assert(!!fp.data);
         assert.deepStrictEqual(fp.data, { classification: "None", content: undefined, path: undefined });
     });
 
     it("should find Apache license at LICENSE", async () => {
         const p = InMemoryProject.of({ path: "LICENSE", content: asl });
-        const fp: FP<any> = await License.extract(p);
+        const fp: any = await License.extract(p);
         assert(!!fp.data);
         assert.deepStrictEqual(fp.data, { classification: "Apache License", content: asl, path: "LICENSE" });
     });
 
     it("should find Apache license at license.txt", async () => {
         const p = InMemoryProject.of({ path: "license.txt", content: asl });
-        const fp: FP<any> = await License.extract(p);
+        const fp: any = await License.extract(p);
         assert(!!fp.data);
         assert.deepStrictEqual(fp.data, { classification: "Apache License", content: asl, path: "license.txt" });
     });
