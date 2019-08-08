@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { logger, Project, RepoId } from "@atomist/automation-client";
-import { Interpretation, ProjectAnalysis, ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
-import { PersistResult, ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
+import {
+    logger,
+    Project,
+    RepoId,
+} from "@atomist/automation-client";
+import {
+    Interpretation,
+    ProjectAnalysis,
+    ProjectAnalyzer,
+} from "@atomist/sdm-pack-analysis";
+import {
+    PersistResult,
+    ProjectAnalysisResultStore,
+} from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
-import { ProjectAnalysisResultFilter, SpiderOptions } from "./Spider";
+import {
+    ProjectAnalysisResultFilter,
+    SpiderOptions,
+} from "./Spider";
 
 export async function keepExistingPersisted(
     opts: {
