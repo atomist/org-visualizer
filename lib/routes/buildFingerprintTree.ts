@@ -211,7 +211,7 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
  * @param {PlantedTree} pt
  */
 export function putRepoPathInNameOfRepoLeaves(pt: PlantedTree): void {
-    type EndNode = { name: string, size: number, path?: string, url?: string };
+    interface EndNode { name: string, size: number, path?: string, url?: string }
 
     visit(pt.tree, l => {
         const en = l as EndNode;
