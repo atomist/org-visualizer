@@ -218,7 +218,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
     return <div className="sunburst">
         <h1>{props.fingerprintDisplayName}</h1>
 
-        <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {props.tree.matchingRepoCount} of {props.tree.repoCount} repos</h2>
+        <h2>{describeSelectedTagsToAnimals(props.selectedTags)} - {props.tree.matchingRepoCount} of {props.tree.repoCount} repositories</h2>
 
         {tagButtons}
 
