@@ -107,13 +107,13 @@ WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
 AND ${additionalWhereClause}`;
         const reposAndFingerprints = `SELECT repo_snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url,
   repo_snapshots.commit_sha, repo_snapshots.timestamp, repo_snapshots.workspace_id,
-  json_agg(json_build_object('path', path, 'id', fingerprint_id, 'name', f.name, 'type', feature_name, 'sha', sha, 'data', f.data)) as fingerprints
+  json_agg(json_build_object('path', path, 'id', fingerprint_id)) as fingerprint_refs
 FROM repo_snapshots, repo_fingerprints, fingerprints as f
 WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
 AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id AND repo_fingerprints.fingerprint_id = f.id
 AND ${additionalWhereClause}
 GROUP BY repo_snapshots.id`;
-        return doWithClient(deep ? reposAndFingerprints : reposOnly,
+        const queryForRepoRows = doWithClient(deep ? reposAndFingerprints : reposOnly,
             this.clientFactory, async client => {
                 // Load all fingerprints in workspace so we can look up
                 const repoSnapshotRows = await client.query(deep ? reposAndFingerprints : reposOnly,
@@ -129,10 +129,31 @@ GROUP BY repo_snapshots.id`;
                         timestamp: row.timestamp,
                         workspaceId: row.workingDescription,
                         repoRef,
-                        analysis: deep ? { id: repoRef, fingerprints: row.fingerprints } : undefined,
+                        fingerprintRefs: row.fingerprint_refs,
+                        analysis: undefined,
                     };
                 });
             }, []);
+        if (deep) {
+            // We do this join manually instead of returning JSON because of the extent of the duplication
+            // and the resulting memory usage.
+            // We parallelize the 2 needed queries to reduce latency
+            const getFingerprints = this.fingerprintsInWorkspaceRecord(workspaceId);
+            const [repoRows, fingerprints] = await Promise.all([queryForRepoRows, getFingerprints]);
+            for (const repo of repoRows) {
+                repo.analysis = {
+                    id: repo.repoRef,
+                    fingerprints: repo.fingerprintRefs.map(fref => {
+                        return {
+                            ...fingerprints[fref.id],
+                            path: fref.path,
+                        };
+                    }),
+                };
+            }
+            return repoRows;
+        }
+        return await queryForRepoRows;
     }
 
     public async loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
@@ -262,6 +283,16 @@ WHERE id = $1`;
             const rows = await client.query(sql, [id]);
             return rows.rows.length === 1 ? rows.rows[0] : undefined;
         });
+    }
+
+    /**
+     * Key is persistent fingerprint id
+     */
+    private async fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
+        const fingerprintsArray = await this.fingerprintsInWorkspace(workspaceId, type, name);
+        const fingerprints: Record<string, FP & { id: string }> = {};
+        fingerprintsArray.forEach(fp => fingerprints[fp.id] = fp);
+        return fingerprints;
     }
 
     public async fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<Array<FP & { id: string }>> {

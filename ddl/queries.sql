@@ -98,7 +98,8 @@ SELECT id, owner, name, url, commit_sha, timestamp, workspace_id,
   WHERE repo_snapshots.id = repo_fingerprints.repo_snapshot_id
   GROUP BY id;
 
--- Bring everything back in one query
+-- Bring everything back in one query.
+-- It can be 15MB or more per 1000 repos however
 SELECT rs.id, owner, rs.name, url, commit_sha, timestamp, workspace_id,
   json_agg(json_build_object('path', path, 'id', fingerprint_id, 'name', f.name, 'type', feature_name, 'sha', sha, 'data', f.data))
     AS fingerprints
