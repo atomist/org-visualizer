@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Score, scoresFor, ScoreWeightings, weightedCompositeScore } from "@atomist/sdm-pack-analysis";
+import {
+    Score,
+    scoresFor,
+    ScoreWeightings,
+    weightedCompositeScore,
+} from "@atomist/sdm-pack-analysis";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { TaggedRepo } from "../routes/support/tagUtils";
 

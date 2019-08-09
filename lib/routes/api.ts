@@ -49,7 +49,10 @@ import {
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
-import { scoreRepo, scoreRepos } from "../scorer/scoring";
+import {
+    scoreRepo,
+    scoreRepos,
+} from "../scorer/scoring";
 import {
     PlantedTree,
     SunburstTree,
