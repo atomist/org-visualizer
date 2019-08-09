@@ -68,6 +68,7 @@ import {
     buildFingerprintTree,
     splitByOrg,
 } from "./buildFingerprintTree";
+import { tagRepos, tagUsageIn } from "./support/tagUtils";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -347,27 +348,6 @@ export interface TagTree extends TagContext, PlantedTree {
     matchingRepoCount: number;
     tags: TagUsage[];
     selectedTags: string[];
-}
-
-function tagRepos(aspectRegistry: AspectRegistry,
-                  tagContext: TagContext,
-                  repos: ProjectAnalysisResult[]): Array<ProjectAnalysisResult & { tags: Tag[] }> {
-    return repos.map(repo =>
-        ({
-            ...repo,
-            tags: tagsIn(aspectRegistry, repo.analysis.fingerprints, tagContext)
-                .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
-        }));
-}
-
-function tagUsageIn(aspectRegistry: AspectRegistry, relevantRepos: Array<ProjectAnalysisResult & { tags: Tag[] }>): TagUsage[] {
-    const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
-    return Object.getOwnPropertyNames(relevantTags).map(name => ({
-        name,
-        description: aspectRegistry.availableTags.find(t => t.name === name).description,
-        severity: aspectRegistry.availableTags.find(t => t.name === name).severity,
-        count: relevantTags[name].length,
-    }));
 }
 
 /**

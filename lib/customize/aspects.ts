@@ -181,7 +181,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: "monorepo",
             description: "Contains multiple virtual projects",
-            severity: "info",
+            severity: "warn",
             test: fp => !!fp.path && fp.path.length > 0,
         },
         {

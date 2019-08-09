@@ -42,14 +42,14 @@ import {
     OrgExplorer,
 } from "../../views/org";
 import {
-    ProjectAspectForDisplay,
-    ProjectExplorer,
-    ProjectFingerprintForDisplay,
-} from "../../views/project";
-import {
     RepoForDisplay,
     RepoList,
 } from "../../views/repoList";
+import {
+    ProjectAspectForDisplay,
+    ProjectFingerprintForDisplay,
+    RepoExplorer,
+} from "../../views/repository";
 import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
@@ -69,6 +69,7 @@ import {
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
 import { TagTree } from "./api";
+import { tagRepo, tagRepos, tagUsageIn } from "./support/tagUtils";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -206,8 +207,14 @@ function exposeProjectPage(express: Express,
             })),
         }));
 
-        return res.send(renderStaticReactNode(ProjectExplorer({
-            analysisResult,
+        const taggedRepo = tagRepo(aspectRegistry, {
+            // TODO fix this
+            repoCount: -1,
+            averageFingerprintCount: -1,
+        }, analysisResult);
+
+        return res.send(renderStaticReactNode(RepoExplorer({
+            taggedRepo,
             aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
         })));
     });
