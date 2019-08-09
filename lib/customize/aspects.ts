@@ -22,8 +22,10 @@ import {
 } from "@atomist/sdm-pack-docker";
 import {
     fileNamesVirtualProjectFinder,
-    filesAspect, makeVirtualProjectAware,
-    NpmDeps, VirtualProjectFinder,
+    filesAspect,
+    makeVirtualProjectAware,
+    NpmDeps,
+    VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import {
