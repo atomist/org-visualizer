@@ -81,7 +81,7 @@ SELECT row_to_json(fingerprint_groups) FROM (
          (
              SELECT json_agg(row_to_json(repo)) FROM (
                   SELECT
-                    repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
+                    repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size, repo_fingerprints.path
                   FROM repo_fingerprints, repo_snapshots
                    WHERE repo_fingerprints.fingerprint_id = fingerprints.id
                     AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import {
     BaseAspect,
     ConcreteIdeal,
@@ -22,7 +21,6 @@ import {
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
-import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { fingerprintsToReposTree } from "../aspect/repoTree";
@@ -138,6 +136,8 @@ export async function buildFingerprintTree(
 
     if (trim) {
         pt.tree = trimOuterRim(pt.tree);
+    } else {
+        putRepoPathInNameOfRepoLeaves(pt);
     }
 
     return pt;
@@ -203,6 +203,23 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
                 (l as any).color = "#811824";
             }
         },
+    });
+}
+
+/**
+ * Show virtual repos
+ * @param {PlantedTree} pt
+ */
+export function putRepoPathInNameOfRepoLeaves(pt: PlantedTree): void {
+    type EndNode = { name: string, size: number, path?: string, url?: string };
+
+    visit(pt.tree, l => {
+        const en = l as EndNode;
+        if (!isSunburstTree(en) && en.name && en.url && en.path) {
+            // It's an eligible end node
+            en.name = en.name + "/" + en.path;
+        }
+        return true;
     });
 }
 
