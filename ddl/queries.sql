@@ -1,5 +1,5 @@
 
--- Sample queries
+-- Sample queries to illustrate the data model
 
 -- Fingerprints by name
 select fp.name as fingerprint_name, r.name as name
@@ -92,11 +92,15 @@ SELECT avg(count) from (SELECT repo_snapshots.id, count(feature_name) from repo_
     group by repo_snapshots.id) stats;
 
 
-SELECT id, owner, name, url, commit_sha, timestamp, workspace_id,
+SELECT repo_snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url,
+  repo_snapshots.commit_sha, repo_snapshots.timestamp, repo_snapshots.workspace_id,
   json_agg(json_build_object('path', path, 'id', fingerprint_id)) as fingerprint_refs
-  FROM repo_snapshots, repo_fingerprints
-  WHERE repo_snapshots.id = repo_fingerprints.repo_snapshot_id
-  GROUP BY id;
+FROM repo_snapshots
+    LEFT OUTER JOIN repo_fingerprints ON repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+    LEFT OUTER JOIN fingerprints f ON repo_fingerprints.fingerprint_id = f.id
+WHERE workspace_id <> 'x'
+AND repo_snapshots.id = 'https:/github.com/serverless/examples_b964dc847fb565ae0bb093675b15f87f8f59dfed'
+GROUP BY repo_snapshots.id;
 
 -- Bring everything back in one query.
 -- It can be 15MB or more per 1000 repos however
@@ -106,3 +110,7 @@ SELECT rs.id, owner, rs.name, url, commit_sha, timestamp, workspace_id,
   FROM repo_snapshots rs, repo_fingerprints rf, fingerprints f
   WHERE rs.id = rf.repo_snapshot_id AND f.id = rf.fingerprint_id
   GROUP BY rs.id;
+
+SELECT COUNT(1) FROM (SELECT DISTINCT url, path
+  FROM repo_snapshots, repo_fingerprints
+  WHERE repo_fingerprints.repo_snapshot_id = repo_snapshots.id) as virtual_repos;

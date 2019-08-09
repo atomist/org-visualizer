@@ -3,7 +3,7 @@ import * as React from "react";
 import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { CustomReporters } from "../lib/customize/customReporters";
-import { ProjectForDisplay, ProjectList } from "./projectList";
+import { RepoForDisplay, RepoList } from "./repoList";
 import { collapsible } from "./utils";
 
 export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "name">, Pick<CohortAnalysis, "count" | "variants">, MaybeAnIdeal {
@@ -27,7 +27,8 @@ export interface OrgExplorerProps {
     projectsAnalyzed: number;
     importantAspects: AspectFingerprintsForDisplay[];
     unfoundAspects: UnfoundAspectForDisplay[];
-    projects: ProjectForDisplay[];
+    repos: RepoForDisplay[];
+    virtualProjectCount: number;
 }
 
 export interface MaybeAnIdeal {
@@ -127,7 +128,7 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
         </div>;
     }
 
-    const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
+    const projectSummary = <RepoList repos={props.repos} virtualProjectCount={props.virtualProjectCount}></RepoList>;
 
     return <div>
 

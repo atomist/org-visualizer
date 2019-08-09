@@ -47,9 +47,9 @@ import {
     ProjectFingerprintForDisplay,
 } from "../../views/project";
 import {
-    ProjectForDisplay,
-    ProjectList,
-} from "../../views/projectList";
+    RepoForDisplay,
+    RepoList,
+} from "../../views/repoList";
 import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
@@ -78,9 +78,9 @@ export function orgPage(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const orgRoute = "/org";
     return {
         routesToSuggestOnStartup: [{ title: "Org Visualizations", route: orgRoute }],
@@ -115,7 +115,8 @@ function exposeProjectListPage(express: Express,
                                handlers: RequestHandler[],
                                store: ProjectAnalysisResultStore): void {
     express.get("/projects", ...handlers, async (req, res) => {
-        const allAnalysisResults = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
+        const workspaceId = req.query.workspace || req.params.workspace_id;
+        const allAnalysisResults = await store.loadInWorkspace(workspaceId, false);
 
         // optional query parameter: owner
         const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
@@ -123,11 +124,13 @@ function exposeProjectListPage(express: Express,
             return res.send(`No matching repos for organization ${req.query.owner}`);
         }
 
-        const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id }));
-
+        const reposForDisplay: RepoForDisplay[] = relevantAnalysisResults.map(ar => ({
+            url: ar.repoRef.url, repo: ar.repoRef.repo, owner: ar.repoRef.repo, id: ar.id,
+        }));
+        const virtualProjectCount = await store.virtualProjectCount(workspaceId);
         return res.send(renderStaticReactNode(
-            ProjectList({ projects: projectsForDisplay }),
-            "Project list"));
+            RepoList({ repos: reposForDisplay, virtualProjectCount }),
+            "Repository list"));
     });
 }
 
@@ -139,9 +142,10 @@ function exposeOrgPage(express: Express,
     express.get(orgRoute, ...handlers, async (req, res) => {
         try {
             const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
-            const fingerprintUsage = await store.fingerprintUsageForType("*");
+            const workspaceId = "*";
+            const fingerprintUsage = await store.fingerprintUsageForType(workspaceId);
 
-            const ideals = await aspectRegistry.idealStore.loadIdeals("*");
+            const ideals = await aspectRegistry.idealStore.loadIdeals(workspaceId);
 
             const aspectsEligibleForDisplay = aspectRegistry.aspects.filter(a => !!a.displayName)
                 .filter(a => fingerprintUsage.some(fu => fu.type === a.name));
@@ -158,12 +162,19 @@ function exposeOrgPage(express: Express,
             const unfoundAspects: BaseAspect[] = aspectRegistry.aspects
                 .filter(f => !!f.displayName)
                 .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
+            const virtualProjectCount = await store.virtualProjectCount(workspaceId);
 
             res.send(renderStaticReactNode(OrgExplorer({
                 projectsAnalyzed: repos.length,
                 importantAspects,
                 unfoundAspects,
-                projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
+                repos: repos.map(r => ({
+                    id: r.id,
+                    repo: r.repoRef.repo,
+                    owner: r.repoRef.owner,
+                    url: r.repoRef.url,
+                })),
+                virtualProjectCount,
             })));
         } catch (e) {
             logger.error(e.stack);
@@ -238,9 +249,9 @@ function exposeFingerprintReportPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
             encodeURIComponent(type)}/${
             encodeURIComponent(name)}?byOrg=${
-            req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-            req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
-            req.query.trim === "true"}`;
+        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+        req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
             title: `Atomist aspect ${type}/${name}`,
@@ -267,9 +278,9 @@ function exposeCustomReportPage(express: Express,
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
                              page: {
-        title: string,
-        dataUrl: string,
-    },
+                                 title: string,
+                                 dataUrl: string,
+                             },
                              aspectRegistry: AspectRegistry,
                              httpClientFactory: HttpClientFactory,
                              req: any,
@@ -373,8 +384,8 @@ function displayStyleAccordingToIdeal(fingerprint: AugmentedFingerprintForDispla
 export type AugmentedFingerprintForDisplay =
     FP &
     Pick<ProjectFingerprintForDisplay, "displayValue" | "displayName"> & {
-        ideal?: Ideal;
-    };
+    ideal?: Ideal;
+};
 
 export interface AugmentedAspectForDisplay {
     aspect: ManagedAspect;

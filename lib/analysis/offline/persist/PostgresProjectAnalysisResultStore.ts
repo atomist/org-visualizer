@@ -66,8 +66,21 @@ import {
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
 
     public distinctRepoCount(workspaceId: string): Promise<number> {
-        const sql = `SELECT COUNT(*) FROM (SELECT DISTINCT owner, name FROM repo_snapshots
-        WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
+        const sql = `SELECT COUNT(1) FROM (SELECT DISTINCT url
+FROM repo_snapshots
+WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
+        return doWithClient(sql, this.clientFactory, async client => {
+            const result = await client.query(sql,
+                [workspaceId]);
+            return +result.rows[0].count;
+        });
+    }
+
+    public virtualProjectCount(workspaceId: string): Promise<number> {
+        const sql = `SELECT COUNT(1) FROM (SELECT DISTINCT url, path
+FROM repo_snapshots, repo_fingerprints
+WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+  AND repo_fingerprints.repo_snapshot_id = repo_snapshots.id) as virtual_repos`;
         return doWithClient(sql, this.clientFactory, async client => {
             const result = await client.query(sql,
                 [workspaceId]);
@@ -108,9 +121,10 @@ AND ${additionalWhereClause}`;
         const reposAndFingerprints = `SELECT repo_snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url,
   repo_snapshots.commit_sha, repo_snapshots.timestamp, repo_snapshots.workspace_id,
   json_agg(json_build_object('path', path, 'id', fingerprint_id)) as fingerprint_refs
-FROM repo_snapshots, repo_fingerprints, fingerprints as f
+FROM repo_snapshots
+    LEFT OUTER JOIN repo_fingerprints ON repo_snapshots.id = repo_fingerprints.repo_snapshot_id
+    LEFT OUTER JOIN fingerprints f ON repo_fingerprints.fingerprint_id = f.id
 WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
-AND repo_snapshots.id = repo_fingerprints.repo_snapshot_id AND repo_fingerprints.fingerprint_id = f.id
 AND ${additionalWhereClause}
 GROUP BY repo_snapshots.id`;
         const queryForRepoRows = doWithClient(deep ? reposAndFingerprints : reposOnly,
@@ -153,7 +167,7 @@ GROUP BY repo_snapshots.id`;
             }
             return repoRows;
         }
-        return await queryForRepoRows;
+        return queryForRepoRows;
     }
 
     public async loadById(id: string): Promise<ProjectAnalysisResult | undefined> {

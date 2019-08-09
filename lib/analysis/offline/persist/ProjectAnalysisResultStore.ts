@@ -58,6 +58,8 @@ export interface FingerprintUsage extends CohortAnalysis {
  * Interface for basic persistence operations.
  * Implementations can provide additional querying options,
  * e.g. through SQL.
+ * '*' is consistently used in place for workspaceId to return
+ * data for all workspaces.
  */
 export interface ProjectAnalysisResultStore {
 
@@ -65,6 +67,11 @@ export interface ProjectAnalysisResultStore {
      * How many repos we've analyzed
      */
     distinctRepoCount(workspaceId: string): Promise<number>;
+
+    /**
+     * Virtual project count. One repository may contain multiple virtual projects
+     */
+    virtualProjectCount(workspaceId: string): Promise<number>;
 
     latestTimestamp(workspaceId: string): Promise<Date>;
 

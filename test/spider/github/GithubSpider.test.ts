@@ -97,6 +97,10 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         throw new Error("Method not implemented.");
     }
 
+    public virtualProjectCount(workspaceId: string): Promise<number> {
+        throw new Error("Method not implemented.");
+    }
+
     public loadInWorkspace(): Promise<ProjectAnalysisResult[]> {
         throw new Error("Method not implemented.");
     }
