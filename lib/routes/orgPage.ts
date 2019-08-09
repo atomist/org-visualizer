@@ -69,7 +69,11 @@ import {
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
 import { TagTree } from "./api";
-import { tagRepo, tagRepos, tagUsageIn } from "./support/tagUtils";
+import {
+    tagRepo,
+    tagRepos,
+    tagUsageIn,
+} from "./support/tagUtils";
 
 /**
  * Add the org page route to Atomist SDM Express server.

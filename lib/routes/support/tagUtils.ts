@@ -16,7 +16,11 @@
 
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../../analysis/ProjectAnalysisResult";
-import { AspectRegistry, Tag, tagsIn } from "../../aspect/AspectRegistry";
+import {
+    AspectRegistry,
+    Tag,
+    tagsIn,
+} from "../../aspect/AspectRegistry";
 import { TagUsage } from "../../tree/sunburst";
 import { TagContext } from "../api";
 

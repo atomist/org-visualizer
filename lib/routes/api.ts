@@ -68,7 +68,10 @@ import {
     buildFingerprintTree,
     splitByOrg,
 } from "./buildFingerprintTree";
-import { tagRepos, tagUsageIn } from "./support/tagUtils";
+import {
+    tagRepos,
+    tagUsageIn,
+} from "./support/tagUtils";
 
 /**
  * Expose the public API routes, returning JSON.
