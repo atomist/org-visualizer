@@ -25,6 +25,7 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { TagContext } from "../routes/api";
+import { RepositoryScorer } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 
 /**
@@ -126,6 +127,8 @@ export interface AspectRegistry {
     combinationTagsFor(fps: FP[], tagContext: TagContext): Tag[];
 
     availableTags: Tag[];
+
+    readonly scorers: RepositoryScorer[];
 
     /**
      * All the aspects we are managing

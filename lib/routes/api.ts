@@ -49,6 +49,7 @@ import {
 } from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
+import { scoreRepo, scoreRepos } from "../scorer/scoring";
 import {
     PlantedTree,
     SunburstTree,
@@ -80,9 +81,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     projectAnalysisResultStore: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -241,23 +242,23 @@ function exposeFingerprintByTypeAndName(express: Express,
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
-        try {
-            const type = req.query.type;
-            let driftTree = type ?
-                await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
-                await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
-            fillInAspectNames(aspectRegistry, driftTree.tree);
-            if (!type) {
-                driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+            try {
+                const type = req.query.type;
+                let driftTree = type ?
+                    await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
+                    await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
+                fillInAspectNames(aspectRegistry, driftTree.tree);
+                if (!type) {
+                    driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+                }
+                driftTree.tree = flattenSoleFingerprints(driftTree.tree);
+                return res.json(driftTree);
+            } catch
+                (err) {
+                logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
+                res.sendStatus(500);
             }
-            driftTree.tree = flattenSoleFingerprints(driftTree.tree);
-            return res.json(driftTree);
-        } catch
-        (err) {
-            logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
-            res.sendStatus(500);
-        }
-    },
+        },
     );
 }
 
@@ -293,7 +294,9 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             repoCount: repos.length,
         };
 
-        const taggedRepos = tagRepos(aspectRegistry, tagContext, repos);
+        const taggedRepos = await scoreRepos(
+            aspectRegistry,
+            tagRepos(aspectRegistry, tagContext, repos));
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
@@ -313,6 +316,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
                         url: r.repoRef.url,
                         size: r.analysis.fingerprints.length,
                         tags: r.tags,
+                        score: r.score,
                     };
                 }),
             },

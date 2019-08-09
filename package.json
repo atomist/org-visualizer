@@ -29,7 +29,7 @@
     "@atomist/automation-client-ext-humio": "^0.2.0",
     "@atomist/sdm": "1.6.2-master.20190803123555",
     "@atomist/sdm-core": "1.6.2-master.20190718103648",
-    "@atomist/sdm-pack-analysis": "2.0.0-master.20190717103823",
+    "@atomist/sdm-pack-analysis": "^2.0.0-master.20190809101008",
     "@atomist/sdm-pack-analysis-node": "2.0.1-master.20190717120834",
     "@atomist/sdm-pack-analysis-spring": "2.0.0-master.20190710155749",
     "@atomist/sdm-pack-build": "^1.0.5",

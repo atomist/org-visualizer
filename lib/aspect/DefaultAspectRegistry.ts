@@ -27,6 +27,7 @@ import {
 
 import * as _ from "lodash";
 import { TagContext } from "../routes/api";
+import { RepositoryScorer } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 
 /**
@@ -111,11 +112,16 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this.opts.problemStore;
     }
 
+    get scorers(): RepositoryScorer[] {
+        return this.opts.scorers || [];
+    }
+
     constructor(private readonly opts: {
         idealStore: IdealStore,
         problemStore: ProblemStore,
         aspects: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
+        scorers?: RepositoryScorer[],
     }) {
         opts.aspects.forEach(f => {
             if (!f) {
