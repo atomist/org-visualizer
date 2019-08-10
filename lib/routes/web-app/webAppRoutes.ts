@@ -56,6 +56,7 @@ import {
 import { TagTree } from "../api";
 import { exposeOrgPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
+import { CustomReporters } from "../../customize/customReporters";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -185,9 +186,13 @@ function exposeCustomReportPage(express: Express,
         const workspaceId = req.query.workspaceId || "*";
         const queryString = jsonToQueryString(req.query);
         const dataUrl = `/api/v1/${workspaceId}/report/${name}?${queryString}`;
+        const reporter = CustomReporters[name];
+        if (!reporter) {
+            throw new Error(`No report named ${name}`);
+        }
         return renderDataUrl(workspaceId, {
             dataUrl,
-            title: `Atomist report ${name}`,
+            title: reporter.summary,
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
