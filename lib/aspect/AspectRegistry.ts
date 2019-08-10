@@ -15,12 +15,9 @@
  */
 
 import { RemoteRepoRef, Severity } from "@atomist/automation-client";
+import { Score, WeightedScore } from "@atomist/sdm-pack-analysis";
 import { Aspect, AtomicAspect, FP } from "@atomist/sdm-pack-fingerprints";
-import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
-import { TagContext } from "../routes/api";
-import { TaggedRepo } from "../routes/support/tagUtils";
-import { ScoredRepo } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 import { ProblemStore, UndesirableUsageChecker } from "./ProblemStore";
 
@@ -56,6 +53,12 @@ export interface Tag {
      */
     severity?: Severity;
 }
+
+export type TaggedRepo = ProjectAnalysisResult & { tags: Tag[] };
+
+export type ScoredRepo = TaggedRepo & { weightedScore: WeightedScore };
+
+export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | undefined>;
 
 /**
  * Manage a number of aspects.

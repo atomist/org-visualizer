@@ -16,21 +16,11 @@
 
 import {
     FiveStar,
-    Score,
-    Scorer,
-    Scores,
     scoresFor,
     ScoreWeightings,
     weightedCompositeScore,
-    WeightedScore,
-    WeightedScores,
 } from "@atomist/sdm-pack-analysis";
-import { AspectRegistry } from "../aspect/AspectRegistry";
-import { TaggedRepo } from "../routes/support/tagUtils";
-
-export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | undefined>;
-
-export type ScoredRepo = TaggedRepo & { weightedScore: WeightedScore };
+import { RepositoryScorer, ScoredRepo, TaggedRepo } from "../aspect/AspectRegistry";
 
 export async function scoreRepos(scorers: RepositoryScorer[],
                                  repos: TaggedRepo[],

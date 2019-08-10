@@ -51,7 +51,7 @@ export function RepoList(props: RepoListProps): React.ReactElement {
         <h2>{Object.entries(projectsByOrg).length} organizations containing {" "}
             {props.repos.length} repositories and {" "}
             {props.virtualProjectCount} virtual projects </h2>
-        {props.byOrg ? reposByOrg(props) : repos(props) }
+        {props.byOrg ? reposByOrg(props) : reposFlat(props) }
     </div>;
 }
 
@@ -62,7 +62,7 @@ function reposByOrg(props: RepoListProps): React.ReactElement {
     </ul>;
 }
 
-function repos(props: RepoListProps): React.ReactElement {
+function reposFlat(props: RepoListProps): React.ReactElement {
     return <ul>
         {displayProjects("All", props.repos, props)}
     </ul>;

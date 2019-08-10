@@ -17,18 +17,15 @@
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    ManagedAspect,
-    Tag,
+    ManagedAspect, RepositoryScorer, ScoredRepo,
+    Tag, TaggedRepo,
 } from "./AspectRegistry";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
-import { TaggedRepo } from "../routes/support/tagUtils";
 import {
-    RepositoryScorer,
-    ScoredRepo,
     scoreRepos,
 } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";

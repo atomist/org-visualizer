@@ -17,11 +17,11 @@
 import { BranchCountType } from "../aspect/git/branchCount";
 import {
     adjustBy,
-    RepositoryScorer,
 } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
+import { RepositoryScorer } from "../aspect/AspectRegistry";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers

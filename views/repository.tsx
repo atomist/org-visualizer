@@ -1,6 +1,6 @@
 import { WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
-import { ScoredRepo } from "../lib/scorer/scoring";
+import { ScoredRepo } from "../lib/aspect/AspectRegistry";
 import { TagUsage } from "../lib/tree/sunburst";
 import { collapsible } from "./utils";
 

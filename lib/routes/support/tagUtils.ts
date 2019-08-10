@@ -15,11 +15,8 @@
  */
 
 import * as _ from "lodash";
-import { ProjectAnalysisResult } from "../../analysis/ProjectAnalysisResult";
-import { AspectRegistry, Tag } from "../../aspect/AspectRegistry";
+import { AspectRegistry, TaggedRepo } from "../../aspect/AspectRegistry";
 import { TagUsage } from "../../tree/sunburst";
-
-export type TaggedRepo = ProjectAnalysisResult & { tags: Tag[] };
 
 export function tagUsageIn(aspectRegistry: AspectRegistry, relevantRepos: TaggedRepo[]): TagUsage[] {
     const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
