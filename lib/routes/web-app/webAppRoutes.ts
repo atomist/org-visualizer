@@ -53,7 +53,7 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../../aspect/DefaultAspectRegistry";
-import { TagTree } from "../api";
+import { describeSelectedTagsToAnimals, TagTree } from "../api";
 import { exposeOrgPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
 import { CustomReporters } from "../../customize/customReporters";
@@ -136,9 +136,15 @@ function exposeExplorePage(express: Express,
                            httpClientFactory: HttpClientFactory,
                            aspectRegistry: AspectRegistry): void {
     express.get("/explore", ...handlers, async (req, res) => {
+        const tags = req.query.tags || "";
         const workspaceId = req.query.workspaceId || "*";
-        const dataUrl = `/api/v1/${workspaceId}/explore?tags=${req.query.tags || ""}`;
-        return renderDataUrl(workspaceId, { dataUrl, title: "Explorer" }, aspectRegistry, httpClientFactory, req, res);
+        const dataUrl = `/api/v1/${workspaceId}/explore?tags=${tags}`;
+        const readable = describeSelectedTagsToAnimals(tags.split(","));
+        return renderDataUrl(workspaceId, {
+                dataUrl,
+                title: `Repositories matching ${readable}`
+            },
+            aspectRegistry, httpClientFactory, req, res);
     });
 }
 
