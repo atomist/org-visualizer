@@ -24,7 +24,7 @@ export function TopLevelPage(props: {
     return <html>
     <head>
         <title>
-            {props.pageTitle || "Atomist Explorer"}
+            {props.pageTitle || "Atomist Visualizer"}
         </title>
         <link rel="stylesheet" type="text/css" href="/styles.css"></link>
     </head>

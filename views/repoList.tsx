@@ -15,6 +15,7 @@ export interface RepoListProps {
     repos: RepoForDisplay[];
     virtualProjectCount: number;
     sortOrder: SortOrder;
+    byOrg: boolean;
 }
 
 function toListItem(rfd: RepoForDisplay): React.ReactElement {
@@ -36,7 +37,7 @@ function displayProjects(owner: string,
         p => props.sortOrder === "score" ?
             p.score :
             p.repo.toLowerCase());
-    return collapsible(owner, `${owner} (${repos.length} projects)`,
+    return collapsible(owner, `${owner} (${repos.length} repositories)`,
         <ul>
             {sorted.map(toListItem)}
         </ul>,
@@ -50,8 +51,19 @@ export function RepoList(props: RepoListProps): React.ReactElement {
         <h2>{Object.entries(projectsByOrg).length} organizations containing {" "}
             {props.repos.length} repositories and {" "}
             {props.virtualProjectCount} virtual projects </h2>
-        <ul>
-            {Object.entries(projectsByOrg).map(kv => displayProjects(kv[0], kv[1], props))}
-        </ul>
+        {props.byOrg ? reposByOrg(props) : repos(props) }
     </div>;
+}
+
+function reposByOrg(props: RepoListProps): React.ReactElement {
+    const projectsByOrg = _.groupBy(props.repos, p => p.owner);
+    return <ul>
+        {Object.entries(projectsByOrg).map(kv => displayProjects(kv[0], kv[1], props))}
+    </ul>;
+}
+
+function repos(props: RepoListProps): React.ReactElement {
+    return <ul>
+        {displayProjects("All", props.repos, props)}
+    </ul>;
 }

@@ -121,7 +121,7 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div>
             <h2>No projects analyzed</h2>
-            Use the <pre>spider</pre> command to investigate some projects.
+            Use the spider command to investigate some projects.
             See <a
             href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the
             README</a> for details.
@@ -131,9 +131,12 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     const projectSummary =
         <RepoList repos={props.repos}
                   virtualProjectCount={props.virtualProjectCount}
-                  sortOrder="name" />;
+                  sortOrder="name"
+                  byOrg={true}/>;
 
     return <div>
+
+        <a href="./repositories">All repositories</a>
 
         {projectSummary}
 

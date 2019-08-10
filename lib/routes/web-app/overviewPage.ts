@@ -31,7 +31,7 @@ import {
     AspectFingerprintsForDisplay,
     FingerprintForDisplay,
     OrgExplorer,
-} from "../../../views/org";
+} from "../../../views/overview";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import {
     FingerprintUsage,
