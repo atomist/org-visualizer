@@ -73,18 +73,19 @@ export function exposeOrgPage(express: Express,
                 .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
             const virtualProjectCount = await store.virtualProjectCount(workspaceId);
 
-            res.send(renderStaticReactNode(OrgExplorer({
-                projectsAnalyzed: repos.length,
-                importantAspects,
-                unfoundAspects,
-                repos: repos.map(r => ({
-                    id: r.id,
-                    repo: r.repoRef.repo,
-                    owner: r.repoRef.owner,
-                    url: r.repoRef.url,
-                })),
-                virtualProjectCount,
-            })));
+            res.send(renderStaticReactNode(
+                OrgExplorer({
+                    projectsAnalyzed: repos.length,
+                    importantAspects,
+                    unfoundAspects,
+                    repos: repos.map(r => ({
+                        id: r.id,
+                        repo: r.repoRef.repo,
+                        owner: r.repoRef.owner,
+                        url: r.repoRef.url,
+                    })),
+                    virtualProjectCount,
+                }), "Atomist Visualizer"));
         } catch (e) {
             logger.error(e.stack);
             res.status(500).send("failure");

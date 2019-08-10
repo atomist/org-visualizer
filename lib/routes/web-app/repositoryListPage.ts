@@ -66,6 +66,6 @@ export function exposeRepositoryListPage(express: Express,
                 byOrg,
                 expand: true,
             }),
-            "Repositories"));
+            byOrg ? "Repositories by Organization": "Repositories Ranked"));
     });
 }

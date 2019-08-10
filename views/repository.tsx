@@ -25,7 +25,7 @@ export interface RepoExplorerProps {
 
 export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
     return <div>
-        <h1>Repository {props.repo.repoRef.owner}:{props.repo.repoRef.repo}</h1>
+        <h1>{props.repo.repoRef.owner} / {props.repo.repoRef.repo}</h1>
 
         <h2>Scoring</h2>
 
@@ -35,7 +35,8 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
 
         <h2>Resources</h2>
         <ul>
-            <li><a href={props.repo.repoRef.url}>Source</a></li>
+            <li><a href={props.repo.repoRef.url}>Source - {props.repo.repoRef.url}</a></li>
+            <li><a href={props.repo.repoRef.cloneUrl(undefined)}>Clone URL</a> - {props.repo.repoRef.cloneUrl(undefined)}</li>
         </ul>
 
         <h2>Tags Found</h2>

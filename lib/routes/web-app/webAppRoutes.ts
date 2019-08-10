@@ -122,10 +122,11 @@ function exposeRepositoryPage(express: Express,
         }));
 
         const repo = (await aspectRegistry.tagAndScoreRepos([analysisResult]))[0];
-        return res.send(renderStaticReactNode(RepoExplorer({
-            repo,
-            aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
-        })));
+        return res.send(renderStaticReactNode(
+            RepoExplorer({
+                repo,
+                aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
+            }), `${repo.analysis.id.owner} / ${repo.analysis.id.repo}`));
     });
 }
 

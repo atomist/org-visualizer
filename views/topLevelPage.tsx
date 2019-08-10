@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOMServer from "react-dom/server";
 
 export function renderStaticReactNode(body: React.ReactElement,
-                                      title?: string,
+                                      title: string,
                                       extraScripts?: string[]): string {
     return ReactDOMServer.renderToStaticMarkup(
         TopLevelPage({
@@ -18,13 +18,13 @@ function extraScript(src: string): React.ReactElement {
 
 export function TopLevelPage(props: {
     bodyContent: React.ReactElement,
-    pageTitle?: string,
+    pageTitle: string,
     extraScripts?: string[],
 }): React.ReactElement {
     return <html>
     <head>
         <title>
-            {props.pageTitle || "Atomist Visualizer"}
+            {props.pageTitle}
         </title>
         <link rel="stylesheet" type="text/css" href="/styles.css"></link>
     </head>
