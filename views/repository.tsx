@@ -29,7 +29,7 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
 
         <h2>Scoring</h2>
 
-        <div className="score">{props.repo.weightedScore.weightedScore}</div>
+        <div className="score">{props.repo.weightedScore.weightedScore.toFixed(2)}</div>
         <br/>
         {displayWeightedScores(props.repo.weightedScore.weightedScores)}
 

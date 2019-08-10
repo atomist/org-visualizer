@@ -20,12 +20,25 @@ import {
     RepositoryScorer,
 } from "../scorer/scoring";
 
+import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
+
+export const scoreWeightings: ScoreWeightings = {
+    // Bias this to penalize projects with few other scorers
+    "info-bias": 3,
+};
 
 /**
  * Scorers to rate projects
  */
 export const Scorers: RepositoryScorer[] = [
+    async () => {
+        return {
+            name: "info-bias",
+            reason: "Weight to norm to penalize projects with little information",
+            score: 3,
+        };
+    },
     async repo => {
         const branchCount = repo.analysis.fingerprints.find(f => f.type === BranchCountType);
         if (!branchCount) {

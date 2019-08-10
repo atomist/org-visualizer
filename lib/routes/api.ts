@@ -71,7 +71,6 @@ import {
     splitByOrg,
 } from "./buildFingerprintTree";
 import {
-    tagRepos,
     tagUsageIn,
 } from "./support/tagUtils";
 
@@ -288,16 +287,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         const repos = await store.loadInWorkspace(workspaceId, true);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
-        const averageFingerprintCount = await store.averageFingerprintCount(workspaceId);
-
-        const tagContext: TagContext = {
-            averageFingerprintCount,
-            repoCount: repos.length,
-        };
-
-        const taggedRepos = await scoreRepos(
-            aspectRegistry,
-            tagRepos(aspectRegistry, tagContext, repos));
+        const taggedRepos = await aspectRegistry.tagAndScoreRepos(repos);
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
@@ -332,7 +322,8 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             selectedTags,
             repoCount: repos.length,
             matchingRepoCount: relevantRepos.length,
-            averageFingerprintCount,
+            // TODO fix this
+            averageFingerprintCount: -1,
             ...repoTree,
         };
         res.send(tagTree);

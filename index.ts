@@ -70,7 +70,7 @@ import {
     registerReportDetails,
 } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
-import { Scorers } from "./lib/customize/scorers";
+import { Scorers, scoreWeightings } from "./lib/customize/scorers";
 import {
     CreateFingerprintJob,
     CreateFingerprintJobCommand,
@@ -272,6 +272,7 @@ function orgVisualizationEndpoints(dbClientFactory: ClientFactory, httpClientFac
         aspects: Aspects,
         undesirableUsageChecker: demoUndesirableUsageChecker,
         scorers: Scorers,
+        scoreWeightings,
     })
         .withTaggers(...taggers({}))
         .withCombinationTaggers(...combinationTaggers({}));

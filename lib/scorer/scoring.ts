@@ -16,7 +16,7 @@
 
 import {
     FiveStar,
-    Score,
+    Score, Scorer,
     Scores,
     scoresFor,
     ScoreWeightings,
@@ -31,19 +31,19 @@ export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | unde
 
 export type ScoredRepo = TaggedRepo & { weightedScore: WeightedScore };
 
-export async function scoreRepos(aspectRegistry: AspectRegistry,
+export async function scoreRepos(scorers: RepositoryScorer[],
                                  repos: TaggedRepo[],
-                                 weightings?: ScoreWeightings): Promise<ScoredRepo[]> {
-    return Promise.all(repos.map(repo => scoreRepo(aspectRegistry, repo, weightings)));
+                                 weightings: ScoreWeightings): Promise<ScoredRepo[]> {
+    return Promise.all(repos.map(repo => scoreRepo(scorers, repo, weightings)));
 }
 
 /**
  * Score the repo
  */
-export async function scoreRepo(aspectRegistry: AspectRegistry,
+export async function scoreRepo(scorers: RepositoryScorer[],
                                 repo: TaggedRepo,
-                                weightings?: ScoreWeightings): Promise<ScoredRepo> {
-    const scores = await scoresFor(aspectRegistry.scorers, repo, undefined);
+                                weightings: ScoreWeightings): Promise<ScoredRepo> {
+    const scores = await scoresFor(scorers, repo, weightings);
     return {
         ...repo,
         weightedScore: weightedCompositeScore({ scores }, weightings),

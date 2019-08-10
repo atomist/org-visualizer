@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    Express,
-    RequestHandler,
-} from "express";
-import {
-    RepoForDisplay,
-    RepoList,
-} from "../../../views/repoList";
+import { Express, RequestHandler } from "express";
+import { RepoForDisplay, RepoList } from "../../../views/repoList";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import { AspectRegistry } from "../../aspect/AspectRegistry";
-import { scoreRepos } from "../../scorer/scoring";
-import { tagRepos } from "../support/tagUtils";
 
 export type SortOrder = "name" | "score";
 
@@ -49,21 +41,15 @@ export function exposeRepositoryListPage(express: Express,
             return res.send(`No matching repos for organization ${req.query.owner}`);
         }
 
-        const relevantRepos = await scoreRepos(
-            aspectRegistry,
-            tagRepos(aspectRegistry, {
-                // TODO fix this
-                averageFingerprintCount: -1,
-                repoCount: relevantAnalysisResults.length,
-            }, relevantAnalysisResults));
-
-        const reposForDisplay: RepoForDisplay[] = relevantRepos.map(ar => ({
-            url: ar.repoRef.url,
-            repo: ar.repoRef.repo,
-            owner: ar.repoRef.owner,
-            id: ar.id,
-            score: ar.weightedScore.weightedScore,
-        }));
+        const relevantRepos = await aspectRegistry.tagAndScoreRepos(relevantAnalysisResults);
+        const reposForDisplay: RepoForDisplay[] = relevantRepos
+            .map(ar => ({
+                url: ar.repoRef.url,
+                repo: ar.repoRef.repo,
+                owner: ar.repoRef.owner,
+                id: ar.id,
+                score: ar.weightedScore.weightedScore,
+            }));
         const virtualProjectCount = await store.virtualProjectCount(workspaceId);
         return res.send(renderStaticReactNode(
             RepoList({

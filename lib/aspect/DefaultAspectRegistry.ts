@@ -25,9 +25,12 @@ import {
     UndesirableUsageChecker,
 } from "./AspectRegistry";
 
+import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
-import { RepositoryScorer } from "../scorer/scoring";
+import { tagRepos } from "../routes/support/tagUtils";
+import { RepositoryScorer, ScoredRepo, scoreRepos } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 
 /**
@@ -83,6 +86,17 @@ export class DefaultAspectRegistry implements AspectRegistry {
             tag => tag.name);
     }
 
+    public async tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
+        return scoreRepos(
+            this.scorers,
+            tagRepos(this, {
+                repoCount: repos.length,
+                // TODO fix this
+                averageFingerprintCount: -1,
+            }, repos),
+        this.opts.scoreWeightings);
+    }
+
     get availableTags(): Tag[] {
         return _.uniqBy(
             [...this.taggers, ...this.combinationTaggers],
@@ -122,6 +136,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
         aspects: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
         scorers?: RepositoryScorer[],
+        scoreWeightings?: ScoreWeightings,
     }) {
         opts.aspects.forEach(f => {
             if (!f) {

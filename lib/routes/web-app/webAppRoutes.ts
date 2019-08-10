@@ -14,48 +14,24 @@
  * limitations under the License.
  */
 
-import {
-    HttpClientFactory,
-    logger,
-} from "@atomist/automation-client";
+import { HttpClientFactory, logger } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
-import {
-    ConcreteIdeal,
-    FP,
-    Ideal,
-    isConcreteIdeal,
-} from "@atomist/sdm-pack-fingerprints";
+import { ConcreteIdeal, FP, Ideal, isConcreteIdeal } from "@atomist/sdm-pack-fingerprints";
 import * as bodyParser from "body-parser";
-import {
-    Express,
-    RequestHandler,
-} from "express";
+import { Express, RequestHandler } from "express";
 import * as _ from "lodash";
 import { CSSProperties } from "react";
 import serveStatic = require("serve-static");
-import {
-    ProjectAspectForDisplay,
-    ProjectFingerprintForDisplay,
-    RepoExplorer,
-} from "../../../views/repository";
-import {
-    CurrentIdealForDisplay,
-    PossibleIdealForDisplay,
-    SunburstPage,
-} from "../../../views/sunburstPage";
+import { ProjectAspectForDisplay, ProjectFingerprintForDisplay, RepoExplorer } from "../../../views/repository";
+import { CurrentIdealForDisplay, PossibleIdealForDisplay, SunburstPage } from "../../../views/sunburstPage";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    AspectRegistry,
-    ManagedAspect,
-} from "../../aspect/AspectRegistry";
+import { AspectRegistry, ManagedAspect } from "../../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../../aspect/DefaultAspectRegistry";
-import { scoreRepo } from "../../scorer/scoring";
 import { TagTree } from "../api";
-import { tagRepo } from "../support/tagUtils";
 import { exposeOrgPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
 
@@ -123,13 +99,7 @@ function exposeProjectPage(express: Express,
             })),
         }));
 
-        const repo = await scoreRepo(aspectRegistry,
-            tagRepo(aspectRegistry, {
-                // TODO fix this
-                repoCount: -1,
-                averageFingerprintCount: -1,
-            }, analysisResult));
-
+        const repo = (await aspectRegistry.tagAndScoreRepos([analysisResult]))[0];
         return res.send(renderStaticReactNode(RepoExplorer({
             repo,
             aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
