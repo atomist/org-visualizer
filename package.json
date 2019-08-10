@@ -25,7 +25,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/automation-client": "1.6.3-master.20190801201049",
-    "@atomist/automation-client-ext-dashboard": "^1.1.0",
+    "@atomist/automation-client-ext-dashboard": "1.1.1-master.20190810154215",
     "@atomist/automation-client-ext-humio": "^0.2.0",
     "@atomist/sdm": "1.6.2-master.20190803123555",
     "@atomist/sdm-core": "1.6.2-master.20190718103648",
