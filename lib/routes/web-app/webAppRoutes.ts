@@ -54,7 +54,10 @@ import {
     defaultedToDisplayableFingerprintName,
 } from "../../aspect/DefaultAspectRegistry";
 import { CustomReporters } from "../../customize/customReporters";
-import { describeSelectedTagsToAnimals, TagTree } from "../api";
+import {
+    describeSelectedTagsToAnimals,
+    TagTree,
+} from "../api";
 import { exposeOrgPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
 
