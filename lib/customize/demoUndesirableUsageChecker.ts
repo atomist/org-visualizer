@@ -15,7 +15,7 @@
  */
 
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
-import { chainUndesirableUsageCheckers } from "../aspect/AspectRegistry";
+import { chainUndesirableUsageCheckers } from "../aspect/ProblemStore";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 /**

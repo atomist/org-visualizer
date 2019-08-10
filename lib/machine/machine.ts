@@ -33,7 +33,7 @@ import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     ProblemStore,
-} from "../aspect/AspectRegistry";
+} from "../aspect/ProblemStore";
 import { IdealStore } from "../aspect/IdealStore";
 import { Aspects } from "../customize/aspects";
 

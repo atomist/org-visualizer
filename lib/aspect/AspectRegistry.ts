@@ -14,73 +14,14 @@
  * limitations under the License.
  */
 
-import {
-    RemoteRepoRef,
-    Severity,
-} from "@atomist/automation-client";
-import {
-    Aspect,
-    AtomicAspect,
-    FP,
-} from "@atomist/sdm-pack-fingerprints";
+import { RemoteRepoRef, Severity, } from "@atomist/automation-client";
+import { Aspect, AtomicAspect, FP, } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
 import { ScoredRepo } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
-
-/**
- * Flag for an undesirable usage
- */
-export interface ProblemUsage {
-
-    readonly severity: "info" | "warn" | "error";
-
-    /**
-     * Authority this comes from
-     */
-    readonly authority: string;
-
-    /**
-     * Message to the user
-     */
-    readonly description?: string;
-
-    /**
-     * URL associated with this if one is available.
-     * For example, a security advisory.
-     */
-    readonly url?: string;
-
-    readonly fingerprint: FP;
-}
-
-/**
- * Store of problem fingerprints
- */
-export interface ProblemStore {
-
-    noteProblem(workspaceId: string, fingerprintId: string): Promise<void>;
-
-    storeProblemFingerprint(workspaceId: string, problem: ProblemUsage): Promise<void>;
-
-    loadProblems(workspaceId: string): Promise<ProblemUsage[]>;
-
-}
-
-export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<ProblemUsage | undefined>;
-
-/**
- * Function that can flag an issue with a fingerprint.
- * This is a programmatic complement to ProblemStore.
- */
-export interface UndesirableUsageChecker {
-    check: UndesirableUsageCheck;
-}
-
-export const PermitAllUsageChecker: UndesirableUsageChecker = {
-    check: async () => undefined,
-};
+import { ProblemStore, UndesirableUsageChecker } from "./ProblemStore";
 
 /**
  * Implemented by ProjectAnalysis or any other structure
@@ -153,41 +94,6 @@ export interface AspectRegistry {
      */
     undesirableUsageCheckerFor(workspaceId: string): Promise<UndesirableUsageChecker>;
 
-}
-
-/**
- * UndesirableUsageChecker from a list
- * @param {(fp: FP) => Promise<Flag[]>} checkers
- * @return {UndesirableUsageChecker}
- */
-export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck[]): UndesirableUsageChecker {
-    return {
-        check: async (workspaceId, fp) => {
-            for (const f of checkers) {
-                const flagged = await f(workspaceId, fp);
-                if (flagged) {
-                    return flagged;
-                }
-            }
-            return undefined;
-        },
-    };
-}
-
-/**
- * Undesirable usageChecker backed by a ProblemStore
- * @param {ProblemStore} problemStore
- * @param {string} workspaceId
- * @return {Promise<UndesirableUsageChecker>}
- */
-export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore: ProblemStore,
-                                                                   workspaceId: string): Promise<UndesirableUsageChecker> {
-    const problems: ProblemUsage[] = await problemStore.loadProblems(workspaceId);
-    return {
-        check: async (wsid, fp) => {
-            return problems.find(p => p.fingerprint.sha === fp.sha);
-        },
-    };
 }
 
 export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[], tagContext: TagContext): Tag[] {

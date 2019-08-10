@@ -17,12 +17,8 @@
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    chainUndesirableUsageCheckers,
     ManagedAspect,
-    ProblemStore,
-    problemStoreBackedUndesirableUsageCheckerFor,
     Tag,
-    UndesirableUsageChecker,
 } from "./AspectRegistry";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
@@ -36,6 +32,11 @@ import {
     scoreRepos,
 } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
+import {
+    chainUndesirableUsageCheckers, ProblemStore,
+    problemStoreBackedUndesirableUsageCheckerFor,
+    UndesirableUsageChecker
+} from "./ProblemStore";
 
 /**
  * Determine zero or one tag in this fingerprint
