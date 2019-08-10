@@ -136,7 +136,7 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
 
     return <div>
 
-        <a href="./repositories">All repositories</a>
+        <a href="./repositories?byOrg=false">All repositories</a>
 
         {projectSummary}
 

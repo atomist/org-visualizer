@@ -25,7 +25,11 @@ import {
 
 export const NoLicense = "None";
 
-const LicenseType = "license";
+export const LicenseType = "license";
+
+export function hasNoLicense(ld: LicenseData): boolean {
+    return ld.classification === NoLicense;
+}
 
 export interface LicenseData {
     path: string;

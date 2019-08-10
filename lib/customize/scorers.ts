@@ -24,6 +24,7 @@ import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { TypeScriptVersion, TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 import { TsLintType } from "../aspect/node/TsLintAspect";
+import { hasNoLicense, LicenseData, LicenseType } from "../aspect/community/license";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -84,6 +85,27 @@ export const Scorers: RepositoryScorer[] = [
         return {
             name: "has-tslint",
             score: hasTsLint ? 5 : 1,
+        }
+    },
+    async repo => {
+        // TypeScript projects must use tslint
+        const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
+        if (!isTs) {
+            return undefined;
+        }
+        const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
+        return {
+            name: "has-tslint",
+            score: hasTsLint ? 5 : 1,
+            reason: "TypeScript projects should use tslint",
+        }
+    },
+    async repo => {
+        const license = repo.analysis.fingerprints.find(fp => fp.type === LicenseType);
+        return {
+            name: "license",
+            score: !license || hasNoLicense(license.data) ? 1 : 5,
+            reason: "Repositories should have a license",
         }
     }
 ];

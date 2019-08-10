@@ -57,7 +57,7 @@ function displayWeightedScores(weightedScores: WeightedScores): React.ReactEleme
             })
             }
         </ul>,
-        false);
+        true);
 }
 
 function displayAspects(props: RepoExplorerProps): React.ReactElement {
