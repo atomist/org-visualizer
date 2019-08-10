@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { RemoteRepoRef, Severity } from "@atomist/automation-client";
-import { Aspect, AtomicAspect, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    RemoteRepoRef,
+    Severity,
+} from "@atomist/automation-client";
+import {
+    Aspect,
+    AtomicAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";

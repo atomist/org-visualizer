@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { Express, RequestHandler } from "express";
-import { RepoForDisplay, RepoList } from "../../../views/repoList";
+import {
+    Express,
+    RequestHandler,
+} from "express";
+import {
+    RepoForDisplay,
+    RepoList,
+} from "../../../views/repoList";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import { AspectRegistry } from "../../aspect/AspectRegistry";

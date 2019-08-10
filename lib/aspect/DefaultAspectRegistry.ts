@@ -30,7 +30,11 @@ import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
 import { tagRepos } from "../routes/support/tagUtils";
-import { RepositoryScorer, ScoredRepo, scoreRepos } from "../scorer/scoring";
+import {
+    RepositoryScorer,
+    ScoredRepo,
+    scoreRepos,
+} from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 
 /**

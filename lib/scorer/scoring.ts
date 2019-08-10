@@ -16,7 +16,8 @@
 
 import {
     FiveStar,
-    Score, Scorer,
+    Score,
+    Scorer,
     Scores,
     scoresFor,
     ScoreWeightings,

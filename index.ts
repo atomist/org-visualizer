@@ -70,7 +70,10 @@ import {
     registerReportDetails,
 } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
-import { Scorers, scoreWeightings } from "./lib/customize/scorers";
+import {
+    Scorers,
+    scoreWeightings,
+} from "./lib/customize/scorers";
 import {
     CreateFingerprintJob,
     CreateFingerprintJobCommand,
