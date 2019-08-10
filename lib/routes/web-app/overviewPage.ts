@@ -15,16 +15,32 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { BaseAspect, Ideal, idealCoordinates, isConcreteIdeal, supportsEntropy } from "@atomist/sdm-pack-fingerprints";
-import { Express, RequestHandler } from "express";
+import {
+    BaseAspect,
+    Ideal,
+    idealCoordinates,
+    isConcreteIdeal,
+    supportsEntropy,
+} from "@atomist/sdm-pack-fingerprints";
+import {
+    Express,
+    RequestHandler,
+} from "express";
 import * as _ from "lodash";
-import { AspectFingerprintsForDisplay, FingerprintForDisplay, OrgExplorer } from "../../../views/org";
+import {
+    AspectFingerprintsForDisplay,
+    FingerprintForDisplay,
+    OrgExplorer,
+} from "../../../views/org";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
 } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
-import { AspectRegistry, ManagedAspect } from "../../aspect/AspectRegistry";
+import {
+    AspectRegistry,
+    ManagedAspect,
+} from "../../aspect/AspectRegistry";
 import { defaultedToDisplayableFingerprintName } from "../../aspect/DefaultAspectRegistry";
 
 export function exposeOrgPage(express: Express,
