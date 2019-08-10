@@ -132,7 +132,8 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
         <RepoList repos={props.repos}
                   virtualProjectCount={props.virtualProjectCount}
                   sortOrder="name"
-                  byOrg={true}/>;
+                  byOrg={true}
+                  expand={false}/>;
 
     return <div>
 

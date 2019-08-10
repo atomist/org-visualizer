@@ -16,6 +16,7 @@ export interface RepoListProps {
     virtualProjectCount: number;
     sortOrder: SortOrder;
     byOrg: boolean;
+    expand: boolean;
 }
 
 function toListItem(rfd: RepoForDisplay): React.ReactElement {
@@ -41,7 +42,7 @@ function displayProjects(owner: string,
         <ul>
             {sorted.map(toListItem)}
         </ul>,
-        repos.length === 1,
+        repos.length === 1 || props.expand,
     );
 }
 

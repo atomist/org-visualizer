@@ -64,7 +64,8 @@ export function exposeRepositoryListPage(express: Express,
                 virtualProjectCount,
                 sortOrder,
                 byOrg,
+                expand: true,
             }),
-            "Repository list"));
+            "Repositories"));
     });
 }
