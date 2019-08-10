@@ -53,10 +53,10 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../../aspect/DefaultAspectRegistry";
+import { CustomReporters } from "../../customize/customReporters";
 import { describeSelectedTagsToAnimals, TagTree } from "../api";
 import { exposeOrgPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
-import { CustomReporters } from "../../customize/customReporters";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -142,7 +142,7 @@ function exposeExplorePage(express: Express,
         const readable = describeSelectedTagsToAnimals(tags.split(","));
         return renderDataUrl(workspaceId, {
                 dataUrl,
-                title: `Repositories matching ${readable}`
+                title: `Repositories matching ${readable}`,
             },
             aspectRegistry, httpClientFactory, req, res);
     });
