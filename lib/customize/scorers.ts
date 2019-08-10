@@ -25,6 +25,11 @@ import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType, } from "../aspect/node/TypeScriptVersion";
 import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
+import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { CodeOfConduct, CodeOfConductType } from "../aspect/community/codeOfConduct";
+import { daysSince } from "../aspect/git/dateUtils";
+import { GitRecencyType } from "../aspect/git/gitActivity";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -110,7 +115,27 @@ export const Scorers: RepositoryScorer[] = [
     },
     limitLanguages({ limit: 2 }),
     limitLinesOfCode({ limit: 15000 }),
+    limitLinesIn({ language: YamlLanguage, limit: 500 }),
+    limitLinesIn({ language: ShellLanguage, limit: 200 }),
+    requireRecentCommit({ days: 100 }),
+    requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
 ];
+
+function requireRecentCommit(opts: { days: number }): RepositoryScorer {
+    return async repo => {
+        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType);
+        if (!grt) {
+            return undefined;
+        }
+        const date = new Date(grt.data);
+        const days = daysSince(date);
+        return {
+            name: "recency",
+            score: adjustBy(-days / opts.days),
+            reason: `Last commit ${days} days ago`,
+        }
+    };
+}
 
 function limitLanguages(opts: { limit: number }): RepositoryScorer {
     return async repo => {
@@ -121,7 +146,7 @@ function limitLanguages(opts: { limit: number }): RepositoryScorer {
         return {
             name: "multi-language",
             score: adjustBy(opts.limit - cm.data.languages.length),
-            reason: `Found ${cm.data.languages.length} languages`,
+            reason: `Found ${cm.data.languages.length} languages: ${cm.data.languages.map(l => l.language.name).join(",")}`,
         };
     }
 }
@@ -136,6 +161,33 @@ function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
             name: "total-loc",
             score: adjustBy(-cm.data.lines / opts.limit),
             reason: `Found ${cm.data.totalFiles} total lines of code`,
+        };
+    }
+}
+
+export function limitLinesIn(opts: { limit: number, language: Language }): RepositoryScorer {
+    return async repo => {
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        if (!cm) {
+            return undefined;
+        }
+        const target = cm.data.languages.find(l => l.language.name === opts.language.name);
+        const targetLoc = target ? target.total : 0;
+        return {
+            name: `limit-${opts.language.name} (${opts.limit})`,
+            score: adjustBy(-targetLoc / opts.limit),
+            reason: `Found ${targetLoc} lines of ${opts.language.name}`,
+        };
+    }
+}
+
+export function requireAspectOfType(opts: { type: string, reason: string }): RepositoryScorer {
+    return async repo => {
+        const found = repo.analysis.fingerprints.find(fp => fp.type === opts.type);
+        return {
+            name: `${opts.type}-required`,
+            score: !!found ? 5 : 1,
+            reason: opts.reason,
         };
     }
 }
