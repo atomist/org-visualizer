@@ -16,10 +16,13 @@
 
 import {
     FiveStar,
-    Score, Scores,
+    Score,
+    Scores,
     scoresFor,
     ScoreWeightings,
-    weightedCompositeScore, WeightedScore, WeightedScores,
+    weightedCompositeScore,
+    WeightedScore,
+    WeightedScores,
 } from "@atomist/sdm-pack-analysis";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { TaggedRepo } from "../routes/support/tagUtils";

@@ -15,7 +15,10 @@
  */
 
 import { BranchCountType } from "../aspect/git/branchCount";
-import { adjustBy, RepositoryScorer } from "../scorer/scoring";
+import {
+    adjustBy,
+    RepositoryScorer,
+} from "../scorer/scoring";
 
 import * as _ from "lodash";
 
