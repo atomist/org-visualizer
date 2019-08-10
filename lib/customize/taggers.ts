@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { CiAspect } from "../aspect/common/stackAspect";
-import { BranchCountType } from "../aspect/git/branchCount";
-import { GitActivesType, GitRecencyType } from "../aspect/git/gitActivity";
-import { CombinationTagger, Tagger } from "../aspect/DefaultAspectRegistry";
-import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
-import { TsLintType } from "../aspect/node/TsLintAspect";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
-import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { daysSince } from "../aspect/git/dateUtils";
-import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
-import * as _ from "lodash";
-import { PythonDependencies } from "../aspect/python/pythonDependencies";
-import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
-import { SpringBootVersion } from "../aspect/spring/springBootVersion";
-import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
-import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
+import { DockerFrom } from "@atomist/sdm-pack-docker";
+import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import * as _ from "lodash";
+import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import { CiAspect } from "../aspect/common/stackAspect";
+import { CombinationTagger, Tagger } from "../aspect/DefaultAspectRegistry";
+import { BranchCountType } from "../aspect/git/branchCount";
+import { daysSince } from "../aspect/git/dateUtils";
+import { GitActivesType, GitRecencyType } from "../aspect/git/gitActivity";
+import { TsLintType } from "../aspect/node/TsLintAspect";
+import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
+import { PythonDependencies } from "../aspect/python/pythonDependencies";
+import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
+import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
+import { SpringBootVersion } from "../aspect/spring/springBootVersion";
+import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 
 export interface TaggersParams {
 

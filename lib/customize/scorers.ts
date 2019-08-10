@@ -22,9 +22,9 @@ import {
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { TypeScriptVersion, TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
-import { TsLintType } from "../aspect/node/TsLintAspect";
 import { hasNoLicense, LicenseData, LicenseType } from "../aspect/community/license";
+import { TsLintType } from "../aspect/node/TsLintAspect";
+import { TypeScriptVersion, TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -85,7 +85,7 @@ export const Scorers: RepositoryScorer[] = [
         return {
             name: "has-tslint",
             score: hasTsLint ? 5 : 1,
-        }
+        };
     },
     async repo => {
         // TypeScript projects must use tslint
@@ -98,7 +98,7 @@ export const Scorers: RepositoryScorer[] = [
             name: "has-tslint",
             score: hasTsLint ? 5 : 1,
             reason: "TypeScript projects should use tslint",
-        }
+        };
     },
     async repo => {
         const license = repo.analysis.fingerprints.find(fp => fp.type === LicenseType);
@@ -106,6 +106,6 @@ export const Scorers: RepositoryScorer[] = [
             name: "license",
             score: !license || hasNoLicense(license.data) ? 1 : 5,
             reason: "Repositories should have a license",
-        }
-    }
+        };
+    },
 ];

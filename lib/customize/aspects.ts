@@ -15,7 +15,7 @@
  */
 
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
+import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
 import {
     fileNamesVirtualProjectFinder,
     filesAspect,
@@ -24,17 +24,17 @@ import {
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
-import { CodeMetricsAspect, } from "../aspect/common/codeMetrics";
+import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
 import { fileCount } from "../aspect/common/fileCount";
-import { CiAspect, JavaBuild, StackAspect, } from "../aspect/common/stackAspect";
+import { CiAspect, JavaBuild, StackAspect } from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
 import { conditionalize } from "../aspect/compose/conditionalize";
-import { branchCount, } from "../aspect/git/branchCount";
-import { gitActiveCommitters, GitRecency, } from "../aspect/git/gitActivity";
+import { branchCount } from "../aspect/git/branchCount";
+import { gitActiveCommitters, GitRecency } from "../aspect/git/gitActivity";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import { TsLintPropertyAspect, } from "../aspect/node/TsLintAspect";
+import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
