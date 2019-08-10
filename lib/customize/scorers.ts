@@ -19,13 +19,25 @@ import { adjustBy } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
-import { ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
+import {
+    ShellLanguage,
+    YamlLanguage,
+} from "@atomist/sdm-pack-sloc/lib/languages";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
-import { CodeOfConduct, CodeOfConductType } from "../aspect/community/codeOfConduct";
-import { hasNoLicense, LicenseType } from "../aspect/community/license";
+import {
+    CodeMetricsData,
+    CodeMetricsType,
+} from "../aspect/common/codeMetrics";
+import {
+    CodeOfConduct,
+    CodeOfConductType,
+} from "../aspect/community/codeOfConduct";
+import {
+    hasNoLicense,
+    LicenseType,
+} from "../aspect/community/license";
 import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyType } from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
