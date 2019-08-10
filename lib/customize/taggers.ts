@@ -18,12 +18,21 @@ import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import {
+    CodeMetricsData,
+    CodeMetricsType,
+} from "../aspect/common/codeMetrics";
 import { CiAspect } from "../aspect/common/stackAspect";
-import { CombinationTagger, Tagger } from "../aspect/DefaultAspectRegistry";
+import {
+    CombinationTagger,
+    Tagger,
+} from "../aspect/DefaultAspectRegistry";
 import { BranchCountType } from "../aspect/git/branchCount";
 import { daysSince } from "../aspect/git/dateUtils";
-import { GitActivesType, GitRecencyType } from "../aspect/git/gitActivity";
+import {
+    GitActivesType,
+    GitRecencyType,
+} from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";

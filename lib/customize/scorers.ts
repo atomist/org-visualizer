@@ -22,9 +22,16 @@ import {
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { hasNoLicense, LicenseData, LicenseType } from "../aspect/community/license";
+import {
+    hasNoLicense,
+    LicenseData,
+    LicenseType,
+} from "../aspect/community/license";
 import { TsLintType } from "../aspect/node/TsLintAspect";
-import { TypeScriptVersion, TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
+import {
+    TypeScriptVersion,
+    TypeScriptVersionType,
+} from "../aspect/node/TypeScriptVersion";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers

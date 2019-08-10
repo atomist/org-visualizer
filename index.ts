@@ -72,7 +72,10 @@ import {
     Scorers,
     scoreWeightings,
 } from "./lib/customize/scorers";
-import { combinationTaggers, taggers } from "./lib/customize/taggers";
+import {
+    combinationTaggers,
+    taggers,
+} from "./lib/customize/taggers";
 import {
     CreateFingerprintJob,
     CreateFingerprintJobCommand,
