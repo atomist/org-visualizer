@@ -406,9 +406,9 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
             const fingerprintPersistResults = await this.persistFingerprints(analysisResult.analysis, id, client);
             fingerprintPersistResults.failures.forEach(f => {
                 logger.error(`Could not persist fingerprint.
-                Error: ${f.error.message}
-                Repo: ${repoRef.url}
-                Fingerprint: ${JSON.stringify(f.failedFingerprint, undefined, 2)}`);
+    Error: ${f.error.message}
+    Repo: ${repoRef.url}
+    Fingerprint: ${JSON.stringify(f.failedFingerprint, undefined, 2)}`);
             });
             return {
                 succeeded: [id],
@@ -443,8 +443,8 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
             try {
                 await this.ensureFingerprintStored(fp, client);
                 await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id, path)
-values ($1, $2, $3) ON CONFLICT DO NOTHING
-`, [id, fingerprintId, fp.path]);
+VALUES ($1, $2, $3) ON CONFLICT DO NOTHING
+`, [id, fingerprintId, fp.path || ""]);
                 insertedCount++;
             } catch (error) {
                 failures.push({ failedFingerprint: fp, error });
