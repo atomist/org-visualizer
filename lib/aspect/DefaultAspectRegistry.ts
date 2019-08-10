@@ -25,7 +25,7 @@ import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
-import { tagRepos } from "../routes/support/tagUtils";
+import { TaggedRepo } from "../routes/support/tagUtils";
 import {
     RepositoryScorer,
     ScoredRepo,
@@ -35,7 +35,7 @@ import { IdealStore } from "./IdealStore";
 import {
     chainUndesirableUsageCheckers, ProblemStore,
     problemStoreBackedUndesirableUsageCheckerFor,
-    UndesirableUsageChecker
+    UndesirableUsageChecker,
 } from "./ProblemStore";
 
 /**
@@ -94,12 +94,12 @@ export class DefaultAspectRegistry implements AspectRegistry {
     public async tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
         return scoreRepos(
             this.scorers,
-            tagRepos(this, {
+            this.tagRepos({
                 repoCount: repos.length,
                 // TODO fix this
                 averageFingerprintCount: -1,
             }, repos),
-        this.opts.scoreWeightings);
+            this.opts.scoreWeightings);
     }
 
     get availableTags(): Tag[] {
@@ -133,6 +133,26 @@ export class DefaultAspectRegistry implements AspectRegistry {
 
     get scorers(): RepositoryScorer[] {
         return this.opts.scorers || [];
+    }
+
+    private tagRepos(tagContext: TagContext,
+                     repos: ProjectAnalysisResult[]): TaggedRepo[] {
+        return repos.map(repo => this.tagRepo(tagContext, repo));
+    }
+
+    private tagRepo(
+        tagContext: TagContext,
+        repo: ProjectAnalysisResult): TaggedRepo {
+        return {
+            ...repo,
+            tags: this.tagsIn(repo.analysis.fingerprints, tagContext)
+                .concat(this.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
+        };
+    }
+
+    private tagsIn(fps: FP[], tagContext: TagContext): Tag[] {
+        return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, tagContext))), tag => tag.name)
+            .sort();
     }
 
     constructor(private readonly opts: {

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { RemoteRepoRef, Severity, } from "@atomist/automation-client";
-import { Aspect, AtomicAspect, FP, } from "@atomist/sdm-pack-fingerprints";
+import { RemoteRepoRef, Severity } from "@atomist/automation-client";
+import { Aspect, AtomicAspect, FP } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
+import { TaggedRepo } from "../routes/support/tagUtils";
 import { ScoredRepo } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 import { ProblemStore, UndesirableUsageChecker } from "./ProblemStore";
@@ -61,14 +62,7 @@ export interface Tag {
  */
 export interface AspectRegistry {
 
-    /**
-     * Get the tag value for this fingerprint
-     */
-    tagsFor(fp: FP, tagContext: TagContext): Tag[];
-
     tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]>;
-
-    combinationTagsFor(fps: FP[], tagContext: TagContext): Tag[];
 
     availableTags: Tag[];
 
@@ -94,9 +88,4 @@ export interface AspectRegistry {
      */
     undesirableUsageCheckerFor(workspaceId: string): Promise<UndesirableUsageChecker>;
 
-}
-
-export function tagsIn(aspectRegistry: AspectRegistry, fps: FP[], tagContext: TagContext): Tag[] {
-    return _.uniqBy(_.flatten(fps.map(fp => aspectRegistry.tagsFor(fp, tagContext))), tag => tag.name)
-        .sort();
 }

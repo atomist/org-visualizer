@@ -31,10 +31,10 @@ import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { IdealStore } from "../aspect/IdealStore";
 import {
     ProblemStore,
 } from "../aspect/ProblemStore";
-import { IdealStore } from "../aspect/IdealStore";
 import { Aspects } from "../customize/aspects";
 
 /**
