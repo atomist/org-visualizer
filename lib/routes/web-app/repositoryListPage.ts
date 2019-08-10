@@ -37,8 +37,8 @@ export function exposeRepositoryListPage(express: Express,
                                          handlers: RequestHandler[],
                                          aspectRegistry: AspectRegistry,
                                          store: ProjectAnalysisResultStore): void {
-    express.get("/projects", ...handlers, async (req, res) => {
-        const workspaceId = req.query.workspace || req.params.workspace_id;
+    express.get("/repositories", ...handlers, async (req, res) => {
+        const workspaceId = req.query.workspace || req.params.workspace_id || "*";
         const sortOrder: SortOrder = req.query.sortOrder || "score";
 
         const allAnalysisResults = await store.loadInWorkspace(workspaceId, true);
