@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { PlantedTree, SunburstTree } from "../../tree/sunburst";
-import { introduceClassificationLayer, visit } from "../../tree/treeUtils";
+import {
+    PlantedTree,
+    SunburstTree,
+} from "../../tree/sunburst";
+import {
+    introduceClassificationLayer,
+    visit,
+} from "../../tree/treeUtils";
 
 export function splitByOrg(pt: PlantedTree): PlantedTree {
     // Group by organization via an additional layer at the center

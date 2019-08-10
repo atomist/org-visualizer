@@ -69,7 +69,10 @@ import {
 import {
     tagUsageIn,
 } from "./support/tagUtils";
-import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
+import {
+    addRepositoryViewUrl,
+    splitByOrg,
+} from "./support/treeMunging";
 
 /**
  * Expose the public API routes, returning JSON.

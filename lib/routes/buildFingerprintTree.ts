@@ -38,7 +38,10 @@ import {
 } from "../tree/treeUtils";
 
 import * as _ from "lodash";
-import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
+import {
+    addRepositoryViewUrl,
+    splitByOrg,
+} from "./support/treeMunging";
 
 /**
  * Return a tree from fingerprint name -> instances -> repos
