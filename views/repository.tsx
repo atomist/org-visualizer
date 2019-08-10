@@ -2,6 +2,7 @@ import { WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
 import { ScoredRepo } from "../lib/scorer/scoring";
 import { TagUsage } from "../lib/tree/sunburst";
+import { collapsible } from "./utils";
 
 type DisplayName = string;
 
@@ -27,8 +28,9 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
         <h1>Repository {props.repo.repoRef.owner}:{props.repo.repoRef.repo}</h1>
 
         <h2>Scoring</h2>
-        <div className="score">{props.repo.weightedScore.weightedScore}</div>
 
+        <div className="score">{props.repo.weightedScore.weightedScore}</div>
+        <br/>
         {displayWeightedScores(props.repo.weightedScore.weightedScores)}
 
         <h2>Resources</h2>
@@ -38,22 +40,32 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
 
         <h2>Tags Found</h2>
 
-        {props.repo.tags.map(displayTag)}
+        {displayTags(props)}
 
         <h2>Aspects Found</h2>
 
-        {props.aspects.map(displayAspect)}
+        {displayAspects(props)}
     </div>;
 }
 
 function displayWeightedScores(weightedScores: WeightedScores): React.ReactElement {
-    return <ul>
-        {Object.getOwnPropertyNames(weightedScores).map(name => {
-            const score = weightedScores[name];
-            return <li><b>{score.name}</b>: {score.score} (x{score.weighting}) - {score.reason}</li>;
-        })
-        }
-    </ul>;
+    return collapsible("weightedScores", "Score components",
+        <ul>
+            {Object.getOwnPropertyNames(weightedScores).map(name => {
+                const score = weightedScores[name];
+                return <li><b>{score.name}</b>: {score.score} (x{score.weighting}) - {score.reason}</li>;
+            })
+            }
+        </ul>,
+        false);
+}
+
+function displayAspects(props: RepoExplorerProps): React.ReactElement {
+    return collapsible("aspects", "Aspects",
+        <ul>
+            {props.aspects.map(displayAspect)}
+        </ul>,
+        false);
 }
 
 function displayAspect(feature: ProjectAspectForDisplay): React.ReactElement {
@@ -65,9 +77,17 @@ function displayAspect(feature: ProjectAspectForDisplay): React.ReactElement {
     </div>;
 }
 
+function displayTags(props: RepoExplorerProps): React.ReactElement {
+    return collapsible("tags", "Tags Found",
+        <ul>
+            {props.repo.tags.map(displayTag)}
+        </ul>,
+        true);
+}
+
 function displayTag(tag: TagUsage): React.ReactElement {
     return <ul>
-        <li>{tag.name} - {tag.description}</li>
+        <li><b>{tag.name}</b> - {tag.description}</li>
     </ul>;
 }
 
