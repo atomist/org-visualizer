@@ -52,7 +52,8 @@ export function RepoList(props: RepoListProps): React.ReactElement {
         <h2>{Object.entries(projectsByOrg).length} organizations containing {" "}
             {props.repos.length} repositories and {" "}
             {props.virtualProjectCount} virtual projects </h2>
-        {props.byOrg ? reposByOrg(props) : reposFlat(props) }
+
+        {props.byOrg ? reposByOrg(props) : reposRanked(props)}
     </div>;
 }
 
@@ -63,8 +64,8 @@ function reposByOrg(props: RepoListProps): React.ReactElement {
     </ul>;
 }
 
-function reposFlat(props: RepoListProps): React.ReactElement {
+function reposRanked(props: RepoListProps): React.ReactElement {
     return <ul>
-        {displayProjects("All", props.repos, props)}
+        {displayProjects("Ranked", props.repos, props)}
     </ul>;
 }

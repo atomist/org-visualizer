@@ -137,11 +137,9 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
 
     return <div>
 
-        <a href="./repositories?byOrg=false">All repositories</a>
-
-        {projectSummary}
-
         {displayDashboards()}
+
+        {/*{projectSummary}*/}
 
         <h2>Aspects</h2>
         <div className="importantFeatures">
@@ -163,6 +161,12 @@ function displayDashboards(): React.ReactElement {
                     <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the
                         greatest entropy
                     </li>
+                </ul>,
+                true)}
+            {collapsible("repo-nav", "Repository List",
+                <ul>
+                    <li><a href="./repositories?byOrg=true">By organization</a></li>
+                    <li><a href="./repositories?byOrg=false">Ranked</a></li>
                 </ul>,
                 true)}
             {collapsible("custom-reports", "Custom Reports",
