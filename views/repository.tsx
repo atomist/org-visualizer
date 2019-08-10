@@ -1,5 +1,6 @@
+import { WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
-import { TaggedRepo } from "../lib/routes/support/tagUtils";
+import { ScoredRepo } from "../lib/scorer/scoring";
 import { TagUsage } from "../lib/tree/sunburst";
 
 type DisplayName = string;
@@ -17,27 +18,42 @@ export interface ProjectAspectForDisplay {
 }
 
 export interface RepoExplorerProps {
-    taggedRepo: TaggedRepo;
+    repo: ScoredRepo;
     aspects: ProjectAspectForDisplay[];
 }
 
 export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
     return <div>
-        <h1>Repository {props.taggedRepo.repoRef.owner}:{props.taggedRepo.repoRef.repo}</h1>
+        <h1>Repository {props.repo.repoRef.owner}:{props.repo.repoRef.repo}</h1>
+
+        <h2>Scoring</h2>
+        <div className="score">{props.repo.weightedScore.weightedScore}</div>
+
+        {displayWeightedScores(props.repo.weightedScore.weightedScores)}
 
         <h2>Resources</h2>
         <ul>
-            <li><a href={props.taggedRepo.repoRef.url}>Source</a></li>
+            <li><a href={props.repo.repoRef.url}>Source</a></li>
         </ul>
 
         <h2>Tags Found</h2>
 
-        {props.taggedRepo.tags.map(displayTag)}
+        {props.repo.tags.map(displayTag)}
 
         <h2>Aspects Found</h2>
 
         {props.aspects.map(displayAspect)}
     </div>;
+}
+
+function displayWeightedScores(weightedScores: WeightedScores): React.ReactElement {
+    return <ul>
+        {Object.getOwnPropertyNames(weightedScores).map(name => {
+            const score = weightedScores[name];
+            return <li><b>{score.name}</b>: {score.score} (x{score.weighting}) - {score.reason}</li>;
+        })
+        }
+    </ul>;
 }
 
 function displayAspect(feature: ProjectAspectForDisplay): React.ReactElement {
@@ -58,6 +74,6 @@ function displayTag(tag: TagUsage): React.ReactElement {
 function displayFingerprint(fingerprint: ProjectFingerprintForDisplay): React.ReactElement {
     return <li style={fingerprint.style} key={fingerprint.displayName}>
         <i>{fingerprint.displayName}</i>: {fingerprint.displayValue}
-        {" "} {fingerprint.idealDisplayString && `(Ideal: ${fingerprint.idealDisplayString})` }
+        {" "} {fingerprint.idealDisplayString && `(Ideal: ${fingerprint.idealDisplayString})`}
     </li>;
 }

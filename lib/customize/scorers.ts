@@ -14,34 +14,46 @@
  * limitations under the License.
  */
 
-import { FiveStar } from "@atomist/sdm-pack-analysis";
 import { BranchCountType } from "../aspect/git/branchCount";
-import { RepositoryScorer } from "../scorer/scoring";
+import { adjustBy, RepositoryScorer } from "../scorer/scoring";
 
+import * as _ from "lodash";
+
+/**
+ * Scorers to rate projects
+ */
 export const Scorers: RepositoryScorer[] = [
     async repo => {
         const branchCount = repo.analysis.fingerprints.find(f => f.type === BranchCountType);
         if (!branchCount) {
             return undefined;
         }
-        let score: FiveStar = 5;
-        const demerits = Math.min(branchCount.data.count % 5, 4);
-        score = score - demerits as FiveStar;
+        // You get the first 2 branches for free. After that they start to cost
+        const score = adjustBy(-(branchCount.data.count - 2) / 5);
         return branchCount ? {
             name: BranchCountType,
             score,
+            reason: `${branchCount.data.count} branches`,
         } : undefined;
     },
     async repo => {
-        let score: any = 5;
         const err = repo.tags.filter(t => t.severity === "error");
         const warn = repo.tags.filter(t => t.severity === "warn");
-        score -= 3 * err.length;
-        score -= 2 * warn.length;
-        score = Math.max(score, 1) as FiveStar;
+        const score = adjustBy(-3 * err.length - 2 * warn.length);
         return {
             name: "sev-count",
             score,
+            reason: `Errors: ${err.map(e => e.name).join(",")}, warnings: ${warn.map(w => w.name).join(",")}`,
+        };
+    },
+    async repo => {
+        const distinctPaths = _.uniq(repo.analysis.fingerprints.map(t => t.path)).length;
+        return {
+            name: "sev-count",
+            score: adjustBy(1 - distinctPaths),
+            reason: distinctPaths > 1 ?
+                `${distinctPaths} virtual projects: Prefer one project per repository` :
+                "Single project in repository",
         };
     },
 ];

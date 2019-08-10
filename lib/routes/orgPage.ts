@@ -68,6 +68,7 @@ import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
 } from "../aspect/DefaultAspectRegistry";
+import { scoreRepo } from "../scorer/scoring";
 import { TagTree } from "./api";
 import {
     tagRepo,
@@ -211,14 +212,15 @@ function exposeProjectPage(express: Express,
             })),
         }));
 
-        const taggedRepo = tagRepo(aspectRegistry, {
-            // TODO fix this
-            repoCount: -1,
-            averageFingerprintCount: -1,
-        }, analysisResult);
+        const repo = await scoreRepo(aspectRegistry,
+            tagRepo(aspectRegistry, {
+                // TODO fix this
+                repoCount: -1,
+                averageFingerprintCount: -1,
+            }, analysisResult));
 
         return res.send(renderStaticReactNode(RepoExplorer({
-            taggedRepo,
+            repo,
             aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
         })));
     });

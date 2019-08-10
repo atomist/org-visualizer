@@ -319,7 +319,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
                         url: r.repoRef.url,
                         size: r.analysis.fingerprints.length,
                         tags: r.tags,
-                        score: r.score,
+                        weightedScore: r.weightedScore,
                     };
                 }),
             },

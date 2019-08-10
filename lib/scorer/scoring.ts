@@ -15,33 +15,45 @@
  */
 
 import {
-    Score,
+    FiveStar,
+    Score, Scores,
     scoresFor,
     ScoreWeightings,
-    weightedCompositeScore,
+    weightedCompositeScore, WeightedScore, WeightedScores,
 } from "@atomist/sdm-pack-analysis";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { TaggedRepo } from "../routes/support/tagUtils";
 
 export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | undefined>;
 
-export type ScoredRepo = TaggedRepo & { score: number };
+export type ScoredRepo = TaggedRepo & { weightedScore: WeightedScore };
 
 export async function scoreRepos(aspectRegistry: AspectRegistry,
-                                 repos: TaggedRepo[]): Promise<ScoredRepo[]> {
-    return Promise.all(repos.map(repo => scoreRepo(aspectRegistry.scorers, repo)
-        .then(score => ({
-            ...repo,
-            score,
-        }))));
+                                 repos: TaggedRepo[],
+                                 weightings?: ScoreWeightings): Promise<ScoredRepo[]> {
+    return Promise.all(repos.map(repo => scoreRepo(aspectRegistry, repo, weightings)));
 }
 
 /**
  * Score the repo
  */
-export async function scoreRepo(scorers: RepositoryScorer[],
+export async function scoreRepo(aspectRegistry: AspectRegistry,
                                 repo: TaggedRepo,
-                                weightings?: ScoreWeightings): Promise<number> {
-    const scores = await scoresFor(scorers, repo, undefined);
-    return weightedCompositeScore({ scores }, weightings);
+                                weightings?: ScoreWeightings): Promise<ScoredRepo> {
+    const scores = await scoresFor(aspectRegistry.scorers, repo, undefined);
+    return {
+        ...repo,
+        weightedScore: weightedCompositeScore({ scores }, weightings),
+    };
+}
+
+/**
+ * If merits is negative, reduce
+ * @param {number} merits
+ * @param {FiveStar} startAt
+ * @return {FiveStar}
+ */
+export function adjustBy(merits: number, startAt: FiveStar = 5): FiveStar {
+    const score = startAt + merits;
+    return Math.min(Math.max(score, 1), 5) as FiveStar;
 }
