@@ -15,11 +15,7 @@
  */
 
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import {
-    DockerfilePath,
-    DockerFrom,
-    DockerPorts,
-} from "@atomist/sdm-pack-docker";
+import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
 import {
     fileNamesVirtualProjectFinder,
     filesAspect,
@@ -28,40 +24,17 @@ import {
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../aspect/AspectRegistry";
-import {
-    CodeMetricsAspect,
-    CodeMetricsData,
-    CodeMetricsType,
-} from "../aspect/common/codeMetrics";
+import { CodeMetricsAspect, } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
 import { fileCount } from "../aspect/common/fileCount";
-import {
-    CiAspect,
-    JavaBuild,
-    StackAspect,
-} from "../aspect/common/stackAspect";
+import { CiAspect, JavaBuild, StackAspect, } from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
 import { conditionalize } from "../aspect/compose/conditionalize";
-import {
-    CombinationTagger,
-    Tagger,
-} from "../aspect/DefaultAspectRegistry";
-import {
-    branchCount,
-    BranchCountType,
-} from "../aspect/git/branchCount";
-import {
-    gitActiveCommitters,
-    GitActivesType,
-    GitRecency,
-    GitRecencyType,
-} from "../aspect/git/gitActivity";
+import { branchCount, } from "../aspect/git/branchCount";
+import { gitActiveCommitters, GitRecency, } from "../aspect/git/gitActivity";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import {
-    TsLintPropertyAspect,
-    TsLintType,
-} from "../aspect/node/TsLintAspect";
+import { TsLintPropertyAspect, } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
@@ -69,10 +42,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-
-import { daysSince } from "../aspect/git/dateUtils";
-
-import * as _ from "lodash";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",
@@ -135,168 +104,3 @@ export const Aspects: ManagedAspect[] = [
     PythonDependencies,
     LeinDeps,
 ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
-
-export interface TaggersParams {
-
-    /**
-     * Max number of branches not to call out
-     */
-    maxBranches: number;
-
-    /**
-     * Number of days at which to consider a repo dead
-     */
-    deadDays: number;
-}
-
-const DefaultTaggersParams: TaggersParams = {
-    maxBranches: 20,
-    deadDays: 365,
-};
-
-export function taggers(opts: Partial<TaggersParams>): Tagger[] {
-    const optsToUse = {
-        ...DefaultTaggersParams,
-        ...opts,
-    };
-    return [
-        {
-            name: "vulnerable",
-            description: "Has exposed secrets", test: fp => fp.type === ExposedSecrets.name,
-            severity: "error",
-        },
-        { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
-        { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
-        {
-            name: "maven",
-            description: "Direct Maven dependencies",
-            test: fp => fp.type === DirectMavenDependencies.name,
-        },
-        { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
-        { name: "tslint", description: "tslint (TypeScript)", test: fp => fp.type === TsLintType },
-        { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
-        { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
-        { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
-        { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
-        {
-            name: "monorepo",
-            description: "Contains multiple virtual projects",
-            severity: "warn",
-            test: fp => !!fp.path && fp.path.length > 0,
-        },
-        {
-            name: "jenkins",
-            description: "Jenkins",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins"),
-        },
-        {
-            name: "circleci",
-            description: "circleci",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("circle"),
-        },
-        {
-            name: "solo",
-            description: "Projects with one committer",
-            test: fp => fp.type === GitActivesType && fp.data.count === 1,
-        },
-        {
-            name: `>${optsToUse.maxBranches} branches`,
-            description: "git branch count",
-            severity: "warn",
-            test: fp => fp.type === BranchCountType && fp.data.count > optsToUse.maxBranches,
-        },
-        {
-            name: "huge (>10K)",
-            description: "Repo size",
-            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000,
-        },
-        {
-            name: "big (3-10K)",
-            description: "Repo size",
-            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
-        },
-        {
-            name: "dead?",
-            description: `No git activity in last ${optsToUse.deadDays} days`,
-            severity: "error",
-            test: fp => {
-                if (fp.type === GitRecencyType) {
-                    const date = new Date(fp.data);
-                    return daysSince(date) > optsToUse.deadDays;
-                }
-                return false;
-            },
-        },
-    ];
-}
-
-export interface CombinationTaggersParams {
-
-    /**
-     * Mininum percentage of average aspect count (fraction) to expect to indicate adequate project understanding
-     */
-    minAverageAspectCountFractionToExpect: number;
-
-    /**
-     * Days since the last commit to indicate a hot repo
-     */
-    hotDays: number;
-
-    /**
-     * Number of committers needed to indicate a hot repo
-     */
-    hotContributors: number;
-}
-
-// TODO can reduce days with non stale data
-const DefaultCombinationTaggersParams: CombinationTaggersParams = {
-    minAverageAspectCountFractionToExpect: .75,
-    hotDays: 10,
-    hotContributors: 2,
-};
-
-export function combinationTaggers(opts: Partial<CombinationTaggersParams>): CombinationTagger[] {
-    const optsToUse = {
-        ...DefaultCombinationTaggersParams,
-        ...opts,
-    };
-    return [
-        {
-            name: "not understood",
-            description: "You may want to write aspects for these outlier projects",
-            severity: "warn",
-            test: (fps, tagContext) => {
-                const aspectCount = _.uniq(fps.map(f => f.type)).length;
-                // There are quite a few aspects that are found on everything, e.g. git
-                // We need to set the threshold count probably
-                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
-            },
-        },
-        {
-            name: "not understood",
-            description: "You may want to write aspects for these outlier projects",
-            severity: "warn",
-            test: (fps, tagContext) => {
-                const aspectCount = _.uniq(fps.map(f => f.type)).length;
-                // There are quite a few aspects that are found on everything, e.g. git
-                // We need to set the threshold count probably
-                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
-            },
-        },
-        {
-            name: "hot",
-            description: "How hot is git",
-            test: fps => {
-                const grt = fps.find(fp => fp.type === GitRecencyType);
-                const acc = fps.find(fp => fp.type === GitActivesType);
-                if (!!grt && !!acc) {
-                    const days = daysSince(new Date(grt.data));
-                    if (days < optsToUse.hotDays && acc.data.count > optsToUse.hotContributors) {
-                        return true;
-                    }
-                }
-                return false;
-            },
-        },
-    ];
-}

@@ -62,8 +62,6 @@ import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "./lib/aspect/travis/travisAspects";
 import {
     Aspects,
-    combinationTaggers,
-    taggers,
 } from "./lib/customize/aspects";
 import {
     registerCategories,
@@ -85,6 +83,7 @@ import {
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
 import { addWebAppRoutes } from "./lib/routes/web-app/webAppRoutes";
+import { combinationTaggers, taggers } from "./lib/customize/taggers";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";

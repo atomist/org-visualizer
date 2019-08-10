@@ -22,6 +22,8 @@ import {
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
+import { TypeScriptVersion, TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
+import { TsLintType } from "../aspect/node/TsLintAspect";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -65,11 +67,23 @@ export const Scorers: RepositoryScorer[] = [
     async repo => {
         const distinctPaths = _.uniq(repo.analysis.fingerprints.map(t => t.path)).length;
         return {
-            name: "sev-count",
+            name: "monorepo",
             score: adjustBy(1 - distinctPaths),
             reason: distinctPaths > 1 ?
                 `${distinctPaths} virtual projects: Prefer one project per repository` :
                 "Single project in repository",
         };
     },
+    async repo => {
+        // TypeScript projects must use tslint
+        const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
+        if (!isTs) {
+            return undefined;
+        }
+        const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
+        return {
+            name: "has-tslint",
+            score: hasTsLint ? 5 : 1,
+        }
+    }
 ];
