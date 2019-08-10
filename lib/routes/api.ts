@@ -49,9 +49,6 @@ import {
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
 import {
-    scoreRepos,
-} from "../scorer/scoring";
-import {
     PlantedTree,
     SunburstTree,
     TagUsage,
@@ -68,11 +65,11 @@ import {
 } from "./auth";
 import {
     buildFingerprintTree,
-    splitByOrg,
 } from "./buildFingerprintTree";
 import {
     tagUsageIn,
 } from "./support/tagUtils";
+import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -316,6 +313,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         if (req.query.byOrg !== "false") {
             repoTree = splitByOrg(repoTree);
         }
+        repoTree.tree = addRepositoryViewUrl(repoTree.tree);
 
         const tagTree: TagTree = {
             tags: allTags,

@@ -38,6 +38,7 @@ import {
 } from "../tree/treeUtils";
 
 import * as _ from "lodash";
+import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
 
 /**
  * Return a tree from fingerprint name -> instances -> repos
@@ -126,6 +127,7 @@ export async function buildFingerprintTree(
     }
 
     applyTerminalSizing(aspect, pt.tree);
+    pt.tree = addRepositoryViewUrl(pt.tree);
 
     // Group all fingerprint nodes by their name at the first level
     pt.tree = groupSiblings(pt.tree, {
@@ -221,14 +223,4 @@ export function putRepoPathInNameOfRepoLeaves(pt: PlantedTree): void {
         }
         return true;
     });
-}
-
-export function splitByOrg(pt: PlantedTree): PlantedTree {
-    // Group by organization via an additional layer at the center
-    return introduceClassificationLayer<{ owner: string }>(pt,
-        {
-            descendantClassifier: l => l.owner,
-            newLayerDepth: 1,
-            newLayerMeaning: "owner",
-        });
 }

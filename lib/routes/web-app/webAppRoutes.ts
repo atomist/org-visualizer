@@ -90,7 +90,7 @@ export function addWebAppRoutes(
             exposeDriftPage(express, handlers, httpClientFactory, aspectRegistry);
             exposeOrgPage(express, handlers, orgRoute, aspectRegistry, store);
             exposeRepositoryListPage(express, handlers, aspectRegistry, store);
-            exposeProjectPage(express, handlers, aspectRegistry, store);
+            exposeRepositoryPage(express, handlers, aspectRegistry, store);
             exposeExplorePage(express, handlers, httpClientFactory, aspectRegistry);
             exposeFingerprintReportPage(express, handlers, httpClientFactory, aspectRegistry);
             exposeCustomReportPage(express, handlers, httpClientFactory, aspectRegistry);
@@ -98,11 +98,11 @@ export function addWebAppRoutes(
     };
 }
 
-function exposeProjectPage(express: Express,
-                           handlers: RequestHandler[],
-                           aspectRegistry: AspectRegistry,
-                           store: ProjectAnalysisResultStore): void {
-    express.get("/project", ...handlers, async (req, res) => {
+function exposeRepositoryPage(express: Express,
+                              handlers: RequestHandler[],
+                              aspectRegistry: AspectRegistry,
+                              store: ProjectAnalysisResultStore): void {
+    express.get("/repository", ...handlers, async (req, res) => {
         const id = req.query.id;
         const analysisResult = await store.loadById(id);
         if (!analysisResult) {

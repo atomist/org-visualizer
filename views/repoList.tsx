@@ -20,7 +20,7 @@ export interface RepoListProps {
 }
 
 function toListItem(rfd: RepoForDisplay): React.ReactElement {
-    const linkToIndividualProjectPage = `/project?id=${encodeURI(rfd.id)}`;
+    const linkToIndividualProjectPage = `/repository?id=${encodeURI(rfd.id)}`;
     return <li key={rfd.url}>{rfd.repo} {rfd.score && `(${rfd.score.toFixed(2)})`}:{" "}
         <a href={rfd.url}>
             Source

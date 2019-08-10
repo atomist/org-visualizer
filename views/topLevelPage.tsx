@@ -34,7 +34,7 @@ export function TopLevelPage(props: {
         <div className="around-page-title">
             <a href="/org"><img className="atomist-logo" src="/atomist-logo-small-white.png"/></a>
             <span className="page-title">
-                        {props.pageTitle || "Atomist Explorer"}
+                        {props.pageTitle || "Atomist Visualizer"}
                     </span>
         </div>
     </header>
