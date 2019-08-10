@@ -1,31 +1,44 @@
 import * as _ from "lodash";
 import * as React from "react";
+import { SortOrder } from "../lib/routes/web-app/repositoryListPage";
 import { collapsible } from "./utils";
 
-export interface RepoForDisplay { url: string; repo: string; owner: string; id: string; } // will likely add more data later
+export interface RepoForDisplay {
+    url: string;
+    repo: string;
+    owner: string;
+    id: string;
+    score?: number;
+}
 
 export interface RepoListProps {
     repos: RepoForDisplay[];
     virtualProjectCount: number;
+    sortOrder: SortOrder;
 }
 
-function toListItem(p: RepoForDisplay): React.ReactElement {
-    const linkToIndividualProjectPage = `/project?id=${encodeURI(p.id)}`;
-    return <li key={p.url}>{p.repo}:{" "}
-        <a href={p.url}>
+function toListItem(rfd: RepoForDisplay): React.ReactElement {
+    const linkToIndividualProjectPage = `/project?id=${encodeURI(rfd.id)}`;
+    return <li key={rfd.url}>{rfd.repo} {rfd.score && `(${rfd.score})`}:{" "}
+        <a href={rfd.url}>
             Source
-            </a>{" "}
+        </a>{" "}
         <a href={linkToIndividualProjectPage}>
             Insights
         </a>
-    </li >;
+    </li>;
 }
 
-function displayOrgProjects(owner: string, repos: RepoForDisplay[]): React.ReactElement {
+function displayProjects(owner: string,
+                         repos: RepoForDisplay[],
+                         props: RepoListProps): React.ReactElement {
+    const sorted = _.sortBy(repos,
+        p => props.sortOrder === "score" ?
+            p.score :
+            p.repo.toLowerCase());
     return collapsible(owner, `${owner} (${repos.length} projects)`,
         <ul>
-            {_.sortBy(repos, p => p.repo.toLowerCase())
-                .map(toListItem)}
+            {sorted.map(toListItem)}
         </ul>,
         repos.length === 1,
     );
@@ -38,7 +51,7 @@ export function RepoList(props: RepoListProps): React.ReactElement {
             {props.repos.length} repositories and {" "}
             {props.virtualProjectCount} virtual projects </h2>
         <ul>
-            {Object.entries(projectsByOrg).map(kv => displayOrgProjects(...kv))}
+            {Object.entries(projectsByOrg).map(kv => displayProjects(kv[0], kv[1], props))}
         </ul>
     </div>;
 }

@@ -128,7 +128,10 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
         </div>;
     }
 
-    const projectSummary = <RepoList repos={props.repos} virtualProjectCount={props.virtualProjectCount}></RepoList>;
+    const projectSummary =
+        <RepoList repos={props.repos}
+                  virtualProjectCount={props.virtualProjectCount}
+                  sortOrder="name" />;
 
     return <div>
 
@@ -153,7 +156,9 @@ function displayDashboards(): React.ReactElement {
             {collapsible("explore", "Explore",
                 <ul>
                     <li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li>
-                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the greatest entropy</li>
+                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the
+                        greatest entropy
+                    </li>
                 </ul>,
                 true)}
             {collapsible("custom-reports", "Custom Reports",
@@ -167,7 +172,8 @@ function displayCustomReports(): React.ReactElement {
     return <ul>
         {Object.getOwnPropertyNames(CustomReporters).map(name => {
             const reporter = CustomReporters[name];
-            return <li key={`report-${name}`}><a href={`./report/${name}?byOrg=true`}>{reporter.summary}</a> - {reporter.description}</li>;
+            return <li key={`report-${name}`}><a
+                href={`./report/${name}?byOrg=true`}>{reporter.summary}</a> - {reporter.description}</li>;
         })}
     </ul>;
 }
@@ -187,8 +193,11 @@ function displayDeveloper(): React.ReactElement {
         <ul>
             <li><a href="https://github.com/atomist-blogs/org-visualizer/blob/master/docs/developer.md">Developer
                 Guide</a> - Developer documentation on <a href="https://github.com/atomist-blogs">GitHub</a></li>
-            <li><a href="./api-docs">Swagger documentation</a> - Interactive documentation for API endpoints running on this server</li>
-            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a> - Example tree structured data return
+            <li><a href="./api-docs">Swagger documentation</a> - Interactive documentation for API endpoints running on
+                this server
+            </li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a> -
+                Example tree structured data return
             </li>
         </ul>
     </div>;
