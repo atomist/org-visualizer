@@ -15,21 +15,21 @@
  */
 
 import { BranchCountType } from "../aspect/git/branchCount";
-import { adjustBy, } from "../scorer/scoring";
+import { adjustBy } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import * as _ from "lodash";
-import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { hasNoLicense, LicenseType, } from "../aspect/community/license";
-import { TsLintType } from "../aspect/node/TsLintAspect";
-import { TypeScriptVersionType, } from "../aspect/node/TypeScriptVersion";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import * as _ from "lodash";
+import { RepositoryScorer } from "../aspect/AspectRegistry";
+import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
 import { CodeOfConduct, CodeOfConductType } from "../aspect/community/codeOfConduct";
+import { hasNoLicense, LicenseType } from "../aspect/community/license";
 import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyType } from "../aspect/git/gitActivity";
+import { TsLintType } from "../aspect/node/TsLintAspect";
+import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -133,7 +133,7 @@ function requireRecentCommit(opts: { days: number }): RepositoryScorer {
             name: "recency",
             score: adjustBy(-days / opts.days),
             reason: `Last commit ${days} days ago`,
-        }
+        };
     };
 }
 
@@ -148,7 +148,7 @@ function limitLanguages(opts: { limit: number }): RepositoryScorer {
             score: adjustBy(opts.limit - cm.data.languages.length),
             reason: `Found ${cm.data.languages.length} languages: ${cm.data.languages.map(l => l.language.name).join(",")}`,
         };
-    }
+    };
 }
 
 function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
@@ -162,7 +162,7 @@ function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
             score: adjustBy(-cm.data.lines / opts.limit),
             reason: `Found ${cm.data.totalFiles} total lines of code`,
         };
-    }
+    };
 }
 
 export function limitLinesIn(opts: { limit: number, language: Language }): RepositoryScorer {
@@ -178,7 +178,7 @@ export function limitLinesIn(opts: { limit: number, language: Language }): Repos
             score: adjustBy(-targetLoc / opts.limit),
             reason: `Found ${targetLoc} lines of ${opts.language.name}`,
         };
-    }
+    };
 }
 
 export function requireAspectOfType(opts: { type: string, reason: string }): RepositoryScorer {
@@ -189,5 +189,5 @@ export function requireAspectOfType(opts: { type: string, reason: string }): Rep
             score: !!found ? 5 : 1,
             reason: opts.reason,
         };
-    }
+    };
 }
