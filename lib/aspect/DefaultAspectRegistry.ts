@@ -17,8 +17,11 @@
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    ManagedAspect, RepositoryScorer, ScoredRepo,
-    Tag, TaggedRepo,
+    ManagedAspect,
+    RepositoryScorer,
+    ScoredRepo,
+    Tag,
+    TaggedRepo,
 } from "./AspectRegistry";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
@@ -30,7 +33,8 @@ import {
 } from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
 import {
-    chainUndesirableUsageCheckers, ProblemStore,
+    chainUndesirableUsageCheckers,
+    ProblemStore,
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";

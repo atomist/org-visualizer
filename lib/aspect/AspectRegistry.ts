@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-import { RemoteRepoRef, Severity } from "@atomist/automation-client";
-import { Score, WeightedScore } from "@atomist/sdm-pack-analysis";
-import { Aspect, AtomicAspect, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    RemoteRepoRef,
+    Severity,
+} from "@atomist/automation-client";
+import {
+    Score,
+    WeightedScore,
+} from "@atomist/sdm-pack-analysis";
+import {
+    Aspect,
+    AtomicAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { IdealStore } from "./IdealStore";
-import { ProblemStore, UndesirableUsageChecker } from "./ProblemStore";
+import {
+    ProblemStore,
+    UndesirableUsageChecker,
+} from "./ProblemStore";
 
 /**
  * Implemented by ProjectAnalysis or any other structure

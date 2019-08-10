@@ -15,7 +15,10 @@
  */
 
 import * as _ from "lodash";
-import { AspectRegistry, TaggedRepo } from "../../aspect/AspectRegistry";
+import {
+    AspectRegistry,
+    TaggedRepo,
+} from "../../aspect/AspectRegistry";
 import { TagUsage } from "../../tree/sunburst";
 
 export function tagUsageIn(aspectRegistry: AspectRegistry, relevantRepos: TaggedRepo[]): TagUsage[] {

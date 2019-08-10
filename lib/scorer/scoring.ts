@@ -20,7 +20,11 @@ import {
     ScoreWeightings,
     weightedCompositeScore,
 } from "@atomist/sdm-pack-analysis";
-import { RepositoryScorer, ScoredRepo, TaggedRepo } from "../aspect/AspectRegistry";
+import {
+    RepositoryScorer,
+    ScoredRepo,
+    TaggedRepo,
+} from "../aspect/AspectRegistry";
 
 export async function scoreRepos(scorers: RepositoryScorer[],
                                  repos: TaggedRepo[],
