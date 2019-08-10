@@ -15,23 +15,16 @@
  */
 
 import { BranchCountType } from "../aspect/git/branchCount";
-import {
-    adjustBy,
-} from "../scorer/scoring";
+import { adjustBy, } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import {
-    hasNoLicense,
-    LicenseData,
-    LicenseType,
-} from "../aspect/community/license";
+import { hasNoLicense, LicenseType, } from "../aspect/community/license";
 import { TsLintType } from "../aspect/node/TsLintAspect";
-import {
-    TypeScriptVersion,
-    TypeScriptVersionType,
-} from "../aspect/node/TypeScriptVersion";
+import { TypeScriptVersionType, } from "../aspect/node/TypeScriptVersion";
+import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import { FP } from "@atomist/sdm-pack-fingerprints";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -115,4 +108,34 @@ export const Scorers: RepositoryScorer[] = [
             reason: "Repositories should have a license",
         };
     },
+    limitLanguages({ limit: 2 }),
+    limitLinesOfCode({ limit: 15000 }),
 ];
+
+function limitLanguages(opts: { limit: number }): RepositoryScorer {
+    return async repo => {
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        if (!cm) {
+            return undefined;
+        }
+        return {
+            name: "multi-language",
+            score: adjustBy(opts.limit - cm.data.languages.length),
+            reason: `Found ${cm.data.languages.length} languages`,
+        };
+    }
+}
+
+function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
+    return async repo => {
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        if (!cm) {
+            return undefined;
+        }
+        return {
+            name: "total-loc",
+            score: adjustBy(-cm.data.lines / opts.limit),
+            reason: `Found ${cm.data.totalFiles} total lines of code`,
+        };
+    }
+}
