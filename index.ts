@@ -81,7 +81,7 @@ import {
     sdmConfigClientFactory,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
-import { orgPage } from "./lib/routes/orgPage";
+import { addWebAppRoutes } from "./lib/routes/web-app/webAppRoutes";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
@@ -285,7 +285,7 @@ function orgVisualizationEndpoints(dbClientFactory: ClientFactory, httpClientFac
         };
     }
 
-    const aboutStaticPages = orgPage(aspectRegistry, resultStore, httpClientFactory);
+    const aboutStaticPages = addWebAppRoutes(aspectRegistry, resultStore, httpClientFactory);
 
     return {
         routesToSuggestOnStartup:

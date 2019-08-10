@@ -40,47 +40,44 @@ import {
     AspectFingerprintsForDisplay,
     FingerprintForDisplay,
     OrgExplorer,
-} from "../../views/org";
-import {
-    RepoForDisplay,
-    RepoList,
-} from "../../views/repoList";
+} from "../../../views/org";
 import {
     ProjectAspectForDisplay,
     ProjectFingerprintForDisplay,
     RepoExplorer,
-} from "../../views/repository";
+} from "../../../views/repository";
 import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
     SunburstPage,
-} from "../../views/sunburstPage";
-import { renderStaticReactNode } from "../../views/topLevelPage";
+} from "../../../views/sunburstPage";
+import { renderStaticReactNode } from "../../../views/topLevelPage";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
-} from "../analysis/offline/persist/ProjectAnalysisResultStore";
+} from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
     ManagedAspect,
-} from "../aspect/AspectRegistry";
+} from "../../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
-} from "../aspect/DefaultAspectRegistry";
-import { scoreRepo } from "../scorer/scoring";
-import { TagTree } from "./api";
+} from "../../aspect/DefaultAspectRegistry";
+import { scoreRepo } from "../../scorer/scoring";
+import { TagTree } from "../api";
 import {
     tagRepo,
     tagRepos,
     tagUsageIn,
-} from "./support/tagUtils";
+} from "../support/tagUtils";
+import { exposeProjectListPage } from "./projectListPage";
 
 /**
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(
+export function addWebAppRoutes(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
@@ -115,29 +112,6 @@ export function orgPage(
             exposeCustomReportPage(express, handlers, httpClientFactory, aspectRegistry);
         },
     };
-}
-
-function exposeProjectListPage(express: Express,
-                               handlers: RequestHandler[],
-                               store: ProjectAnalysisResultStore): void {
-    express.get("/projects", ...handlers, async (req, res) => {
-        const workspaceId = req.query.workspace || req.params.workspace_id;
-        const allAnalysisResults = await store.loadInWorkspace(workspaceId, false);
-
-        // optional query parameter: owner
-        const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
-        if (relevantAnalysisResults.length === 0) {
-            return res.send(`No matching repos for organization ${req.query.owner}`);
-        }
-
-        const reposForDisplay: RepoForDisplay[] = relevantAnalysisResults.map(ar => ({
-            url: ar.repoRef.url, repo: ar.repoRef.repo, owner: ar.repoRef.repo, id: ar.id,
-        }));
-        const virtualProjectCount = await store.virtualProjectCount(workspaceId);
-        return res.send(renderStaticReactNode(
-            RepoList({ repos: reposForDisplay, virtualProjectCount }),
-            "Repository list"));
-    });
 }
 
 function exposeOrgPage(express: Express,

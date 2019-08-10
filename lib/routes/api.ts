@@ -41,7 +41,6 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     AspectRegistry,
     Tag,
-    tagsIn,
 } from "../aspect/AspectRegistry";
 import {
     driftTreeForAllAspects,
@@ -50,7 +49,6 @@ import {
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
 import {
-    scoreRepo,
     scoreRepos,
 } from "../scorer/scoring";
 import {
