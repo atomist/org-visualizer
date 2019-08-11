@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BaseAspect, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
     ManagedAspect,
