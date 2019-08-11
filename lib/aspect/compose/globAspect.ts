@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Aspect, BaseAspect, FP, sha256, } from "@atomist/sdm-pack-fingerprints";
 import { gatherFromFiles } from "@atomist/automation-client/lib/project/util/projectUtils";
+import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
 
 export interface GlobMatch {
@@ -49,7 +49,7 @@ export function globAspect(config: Omit<BaseAspect, "name" | "stats" | "apply"> 
                 matches: await gatherFromFiles(p, config.glob, async f => ({
                     path: f.path,
                     size: (await f.getContent()).length,
-                }))
+                })),
             };
             return {
                 name: config.glob,

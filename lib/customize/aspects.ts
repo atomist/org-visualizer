@@ -39,6 +39,7 @@ import {
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
 import { conditionalize } from "../aspect/compose/conditionalize";
+import { globAspect } from "../aspect/compose/globAspect";
 import { branchCount } from "../aspect/git/branchCount";
 import {
     gitActiveCommitters,
@@ -53,7 +54,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { globAspect } from "../aspect/compose/globAspect";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",

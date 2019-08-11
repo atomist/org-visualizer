@@ -38,11 +38,11 @@ import {
     hasNoLicense,
     LicenseType,
 } from "../aspect/community/license";
+import { GlobType } from "../aspect/compose/globAspect";
 import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyType } from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
-import { GlobType } from "../aspect/compose/globAspect";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
