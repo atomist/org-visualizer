@@ -56,7 +56,7 @@ export const License: Aspect<FP<LicenseData>> = {
     displayName: "License",
     baseOnly: true,
     extract: async p => {
-        const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt");
+        const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt", "LICENSE.md");
         let classification: string = NoLicense;
         let content: string;
         if (!!licenseFile) {
