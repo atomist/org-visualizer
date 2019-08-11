@@ -35,7 +35,7 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
 
         <h2>Resources</h2>
         <ul>
-            <li><a href={props.repo.repoRef.url}>Source - {props.repo.repoRef.url}</a></li>
+            <li>Source - <a href={props.repo.repoRef.url} target="_blank">{props.repo.repoRef.url}</a></li>
             <li><a href={props.repo.repoRef.cloneUrl(undefined)}>Clone URL</a> - {props.repo.repoRef.cloneUrl(undefined)}</li>
         </ul>
 
