@@ -23,7 +23,10 @@ interface UnfoundAspectForDisplay {
     displayName: string;
 }
 
-export interface OrgExplorerProps {
+/**
+ * Props for entry page
+ */
+export interface OverviewProps {
     projectsAnalyzed: number;
     importantAspects: AspectFingerprintsForDisplay[];
     unfoundAspects: UnfoundAspectForDisplay[];
@@ -117,7 +120,7 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     </li>;
 }
 
-export function displayAspects(props: OrgExplorerProps): React.ReactElement {
+export function displayAspects(props: OverviewProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div>
             <h2>No projects analyzed</h2>
@@ -128,18 +131,9 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
         </div>;
     }
 
-    const projectSummary =
-        <RepoList repos={props.repos}
-                  virtualProjectCount={props.virtualProjectCount}
-                  sortOrder="name"
-                  byOrg={true}
-                  expand={false}/>;
-
     return <div>
 
-        {displayDashboards()}
-
-        {/*{projectSummary}*/}
+        {displayDashboards(props)}
 
         <h2>Aspects</h2>
         <div className="importantFeatures">
@@ -151,13 +145,13 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     </div>;
 }
 
-function displayDashboards(): React.ReactElement {
+function displayDashboards(props: OverviewProps): React.ReactElement {
     return <div>
         <h2>Dashboards</h2>
         <ul>
             {collapsible("explore", "Explore",
                 <ul>
-                    <li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li>
+                    <li><a href="./explore">Interactive explorer</a> - Explore your {props.repos.length} repositories by tag</li>
                     <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the
                         greatest entropy
                     </li>
@@ -188,7 +182,7 @@ function displayCustomReports(): React.ReactElement {
 
 // tslint:disable:max-line-length
 
-export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
+export function OrgExplorer(props: OverviewProps): React.ReactElement {
     return <div>
         {displayAspects(props)}
         {displayDeveloper()}
