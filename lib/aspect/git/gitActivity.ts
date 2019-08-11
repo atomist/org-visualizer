@@ -139,31 +139,6 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
     };
 }
 
-// export const gitActivityExtractor: ExtractFingerprint =
-//     async p => {
-//         // TODO make this reusable so we can see for default branch and all others
-//         const r = await exec(sinceDays(7), { cwd: (p as LocalProject).baseDir });
-//         if (!r.stdout) {
-//             return undefined;
-//         }
-//         const last7 = parseInt(r.stdout.trim(), 10);
-//
-//         return {
-//             type: "git-activity"
-//             name: "gitActivity",
-//             last7,
-//         };
-//     };
-
-/**
- * Return a command
- * @param {number} days
- * @return {string}
- */
-function sinceDays(days: number): string {
-    return `git log --all --since=${days}.days --pretty=oneline | wc -l`;
-}
-
 function lastDateToActivityBand(date: Date): string {
     const days = daysSince(date);
     return bandFor<AgeBands>({
