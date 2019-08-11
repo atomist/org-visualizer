@@ -85,7 +85,7 @@ export function exposeOrgPage(express: Express,
                         url: r.repoRef.url,
                     })),
                     virtualProjectCount,
-                }), "Atomist Visualizer"));
+                }), `Atomist Visualizer (${repos.length} repositories)`));
         } catch (e) {
             logger.error(e.stack);
             res.status(500).send("failure");

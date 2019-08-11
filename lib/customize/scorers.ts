@@ -79,7 +79,7 @@ export const Scorers: RepositoryScorer[] = [
         return {
             name: "sev-count",
             score,
-            reason: `Errors: ${err.map(e => e.name).join(",")}, warnings: ${warn.map(w => w.name).join(",")}`,
+            reason: `Errors: [${err.map(e => e.name).join(",")}], warnings: [${warn.map(w => w.name).join(",")}]`,
         };
     },
     async repo => {

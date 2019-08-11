@@ -40,6 +40,8 @@ import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { CodeOfConductType } from "../aspect/community/codeOfConduct";
+import { hasNoLicense, isLicenseFingerprint, LicenseData } from "../aspect/community/license";
 
 export interface TaggersParams {
 
@@ -119,6 +121,16 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             name: "big (3-10K)",
             description: "Repo size",
             test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
+        },
+        {
+            name: "code-of-conduct",
+            description: "Repositories should have a code of conduct",
+            test: fp => fp.type === CodeOfConductType,
+        },
+        {
+            name: "license",
+            description: "Repositories should have a license",
+            test: fp => isLicenseFingerprint(fp) && !hasNoLicense(fp.data),
         },
         {
             name: "dead?",
