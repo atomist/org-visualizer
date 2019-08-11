@@ -59,11 +59,14 @@ export class GitHubSpider implements Spider {
         const analyzeAndPersistResults: AnalyzeAndPersistResult[] = [];
         try {
             const it = this.queryFunction(process.env.GITHUB_TOKEN, criteria);
-            let bucket: Array<Promise<AnalyzeAndPersistResult>> = [];
+            let bucket: Array<Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }>> = [];
 
             async function runAllPromisesInBucket(): Promise<void> {
-                const results = await Promise.all(bucket);
-                results.forEach(r => analyzeAndPersistResults.push(r));
+                const analyzeResults = await Promise.all(bucket);
+                for (const ar of analyzeResults) {
+                    // Avoid hitting the database in parallel to avoid locking
+                    analyzeAndPersistResults.push(await runPersist(criteria, opts, ar));
+                }
                 console.log("Computing analytics over fingerprints...");
                 await computeAnalytics(opts.persister, opts.workspaceId);
                 bucket = [];
@@ -83,11 +86,10 @@ export class GitHubSpider implements Spider {
                     logger.info("Performing fresh analysis of " + JSON.stringify(repo));
                     try {
                         bucket.push(
-                            analyzeAndPersist(this.cloneFunction,
+                            runAnalysis(this.cloneFunction,
                                 dropIrrelevantFields(sourceData),
                                 criteria,
-                                analyzer,
-                                opts));
+                                analyzer));
                         if (bucket.length >= opts.poolSize) {
                             // Run all promises together. Effectively promise pooling
                             await runAllPromisesInBucket();
@@ -115,8 +117,8 @@ export class GitHubSpider implements Spider {
             projectsDetected: analyzeResults.projectCount,
             failed:
                 [...errors,
-                ...analyzeResults.failedToPersist,
-                ...analyzeResults.failedToCloneOrAnalyze],
+                    ...analyzeResults.failedToPersist,
+                    ...analyzeResults.failedToCloneOrAnalyze],
             keptExisting: keepExisting,
             persistedAnalyses: analyzeResults.persisted,
         };
@@ -156,13 +158,16 @@ function cloneWithCredentialsFromEnv(sourceData: GitHubSearchResult): Promise<Pr
         });
 }
 
-export interface AnalyzeAndPersistResult {
+export interface AnalyzeResult {
     failedToCloneOrAnalyze: SpiderFailure[];
-    failedToPersist: SpiderFailure[];
     repoCount: number;
     projectCount: number;
-    persisted: PersistenceResult[];
     millisTaken: number;
+}
+
+export interface AnalyzeAndPersistResult extends AnalyzeResult {
+    failedToPersist: SpiderFailure[];
+    persisted: PersistenceResult[];
 }
 
 const emptyAnalyzeAndPersistResult: AnalyzeAndPersistResult = {
@@ -189,15 +194,15 @@ function combineAnalyzeAndPersistResult(one: AnalyzeAndPersistResult, two: Analy
  * Future for doing the work
  * @return {Promise<void>}
  */
-async function analyzeAndPersist(cloneFunction: CloneFunction,
-                                 sourceData: GitHubSearchResult,
-                                 criteria: ScmSearchCriteria,
-                                 analyzer: ProjectAnalyzer,
-                                 opts: SpiderOptions): Promise<AnalyzeAndPersistResult> {
+async function runAnalysis(cloneFunction: CloneFunction,
+                           sourceData: GitHubSearchResult,
+                           criteria: ScmSearchCriteria,
+                           analyzer: ProjectAnalyzer): Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }> {
     const startTime = new Date().getTime();
     let project;
     try {
         project = await cloneFunction(sourceData);
+        logger.info("Successfully cloned %s in %d milliseconds", sourceData.url, new Date().getTime() - startTime);
         if (!project.id.sha) {
             const sha = await execPromise("git", ["rev-parse", "HEAD"], {
                 cwd: (project as LocalProject).baseDir,
@@ -208,59 +213,86 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
     } catch (err) {
         return {
             failedToCloneOrAnalyze: [{ repoUrl: sourceData.url, whileTryingTo: "clone", message: err.message }],
-            failedToPersist: [],
             repoCount: 1,
             projectCount: 0,
-            persisted: [],
             millisTaken: new Date().getTime() - startTime,
+            sourceData,
         };
     }
     if (criteria.projectTest && !await criteria.projectTest(project)) {
         logger.info("Skipping analysis of %s as it doesn't pass projectTest", project.id.url);
         return {
             failedToCloneOrAnalyze: [],
-            failedToPersist: [],
             repoCount: 1,
             projectCount: 0,
-            persisted: [],
             millisTaken: new Date().getTime() - startTime,
+            sourceData,
         };
     }
     let analyzeResults: AnalyzeResults;
     try {
         analyzeResults = await analyze(project, analyzer, criteria);
+        const millisTaken = new Date().getTime() - startTime;
+        logger.info("Successfully analyzed %s in %d milliseconds", sourceData.url, millisTaken);
+        return {
+            failedToCloneOrAnalyze: [],
+            repoCount: 1,
+            projectCount: 0,
+            millisTaken,
+            analyzeResults,
+            sourceData,
+
+        };
     } catch (err) {
         logger.error("Could not clone/analyze " + sourceData.url + ": " + err.message, err);
         return {
             failedToCloneOrAnalyze: [{ repoUrl: sourceData.url, whileTryingTo: "analyze", message: err.message }],
-            failedToPersist: [],
             repoCount: 1,
             projectCount: 0,
-            persisted: [],
             millisTaken: new Date().getTime() - startTime,
+            sourceData,
         };
     }
+}
+
+async function runPersist(criteria: ScmSearchCriteria,
+                          opts: SpiderOptions,
+                          ar: AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }): Promise<AnalyzeAndPersistResult> {
     const persistResults: PersistResult[] = [];
-    for (const repoInfo of analyzeResults.repoInfos) {
+
+    logger.info("Persisting...");
+    if (!ar.analyzeResults) {
+        return {
+            failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
+            repoCount: 1,
+            projectCount: 1,
+            failedToPersist: [],
+            persisted: [],
+            millisTaken: ar.millisTaken,
+        }
+    }
+
+    for (const repoInfo of ar.analyzeResults.repoInfos) {
         if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
             const persistResult = await persistRepoInfo(opts, repoInfo, {
-                sourceData,
-                url: sourceData.html_url,
-                timestamp: sourceData.timestamp,
-                query: sourceData.query,
+                sourceData: ar.sourceData,
+                url: ar.sourceData.html_url,
+                timestamp: ar.sourceData.timestamp,
+                query: ar.sourceData.query,
             });
             persistResults.push(persistResult);
         }
     }
-    const millisTaken = new Date().getTime() - startTime;
-    logger.info("Analyzed %s in %s milliseconds", sourceData.url, millisTaken);
+    //const millisTaken = new Date().getTime() - startTime;
+    //logger.info("Analyzed %s in %s milliseconds", sourceData.url, millisTaken);
     return {
-        failedToCloneOrAnalyze: [],
-        failedToPersist: _.flatMap(persistResults, r => r.failed),
+        failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
         repoCount: 1,
-        projectCount: analyzeResults.projectsDetected,
+        projectCount: 1,
+        failedToPersist: _.flatMap(persistResults, r => r.failed),
         persisted: _.flatMap(persistResults, p => p.succeeded),
-        millisTaken,
+        // TODO add to this
+        millisTaken: ar.millisTaken,
     };
 }
 
