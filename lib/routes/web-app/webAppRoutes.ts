@@ -72,9 +72,9 @@ export function addWebAppRoutes(
         customizer: ExpressCustomizer,
         routesToSuggestOnStartup: Array<{ title: string, route: string }>,
     } {
-    const topLevelRoute = "/org";
+    const topLevelRoute = "/overview";
     return {
-        routesToSuggestOnStartup: [{ title: "Org Visualizations", route: topLevelRoute }],
+        routesToSuggestOnStartup: [{ title: "Atomist Visualizations", route: topLevelRoute }],
         customizer: (express: Express, ...handlers: RequestHandler[]) => {
             express.use(bodyParser.json());       // to support JSON-encoded bodies
             express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -103,9 +103,9 @@ export function addWebAppRoutes(
 }
 
 function exposeRepositoryPage(express: Express,
-    handlers: RequestHandler[],
-    aspectRegistry: AspectRegistry,
-    store: ProjectAnalysisResultStore): void {
+                              handlers: RequestHandler[],
+                              aspectRegistry: AspectRegistry,
+                              store: ProjectAnalysisResultStore): void {
     express.get("/repository", ...handlers, async (req, res) => {
         const id = req.query.id;
         const analysisResult = await store.loadById(id);
@@ -135,9 +135,9 @@ function exposeRepositoryPage(express: Express,
 }
 
 function exposeExplorePage(express: Express,
-    handlers: RequestHandler[],
-    httpClientFactory: HttpClientFactory,
-    aspectRegistry: AspectRegistry): void {
+                           handlers: RequestHandler[],
+                           httpClientFactory: HttpClientFactory,
+                           aspectRegistry: AspectRegistry): void {
     express.get("/explore", ...handlers, async (req, res) => {
         const tags = req.query.tags || "";
         const workspaceId = req.query.workspaceId || "*";
@@ -152,9 +152,9 @@ function exposeExplorePage(express: Express,
 }
 
 function exposeDriftPage(express: Express,
-    handlers: RequestHandler[],
-    httpClientFactory: HttpClientFactory,
-    aspectRegistry: AspectRegistry): void {
+                         handlers: RequestHandler[],
+                         httpClientFactory: HttpClientFactory,
+                         aspectRegistry: AspectRegistry): void {
     express.get("/drift", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
         const dataUrl = `/api/v1/${workspaceId}/drift` + (req.query.type ? `?type=${req.query.type}` : "");
@@ -166,9 +166,9 @@ function exposeDriftPage(express: Express,
 }
 
 function exposeFingerprintReportPage(express: Express,
-    handlers: RequestHandler[],
-    httpClientFactory: HttpClientFactory,
-    aspectRegistry: AspectRegistry): void {
+                                     handlers: RequestHandler[],
+                                     httpClientFactory: HttpClientFactory,
+                                     aspectRegistry: AspectRegistry): void {
     express.get("/fingerprint/:type/:name", ...handlers, async (req, res) => {
         const type = req.params.type;
         const name = req.params.name;
@@ -187,9 +187,9 @@ function exposeFingerprintReportPage(express: Express,
 }
 
 function exposeCustomReportPage(express: Express,
-    handlers: RequestHandler[],
-    httpClientFactory: HttpClientFactory,
-    aspectRegistry: AspectRegistry): void {
+                                handlers: RequestHandler[],
+                                httpClientFactory: HttpClientFactory,
+                                aspectRegistry: AspectRegistry): void {
     express.get("/report/:name", ...handlers, async (req, res) => {
         const name = req.params.name;
         const workspaceId = req.query.workspaceId || "*";
@@ -208,14 +208,14 @@ function exposeCustomReportPage(express: Express,
 
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
-    page: {
+                             page: {
         title: string,
         dataUrl: string,
     },
-    aspectRegistry: AspectRegistry,
-    httpClientFactory: HttpClientFactory,
-    req: any,
-    res: any): Promise<void> {
+                             aspectRegistry: AspectRegistry,
+                             httpClientFactory: HttpClientFactory,
+                             req: any,
+                             res: any): Promise<void> {
     let tree: TagTree;
     let currentIdealForDisplay: CurrentIdealForDisplay;
     const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];

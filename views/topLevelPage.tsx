@@ -22,25 +22,25 @@ export function TopLevelPage(props: {
     extraScripts?: string[],
 }): React.ReactElement {
     return <html>
-    <head>
-        <title>
-            {props.pageTitle}
-        </title>
-        <link rel="stylesheet" type="text/css" href="/styles.css"></link>
-    </head>
-    {(props.extraScripts || []).map(extraScript)}
-    <body>
-    <header>
-        <div className="around-page-title">
-            <a href="/org"><img className="atomist-logo" src="/atomist-logo-small-white.png"/></a>
-            <span className="page-title">
+        <head>
+            <title>
+                {props.pageTitle}
+            </title>
+            <link rel="stylesheet" type="text/css" href="/styles.css"></link>
+        </head>
+        {(props.extraScripts || []).map(extraScript)}
+        <body>
+            <header>
+                <div className="around-page-title">
+                    <a href={"/"}><img className="atomist-logo" src="/atomist-logo-small-white.png" /></a>
+                    <span className="page-title">
                         {props.pageTitle}
                     </span>
-        </div>
-    </header>
-    <main>
-        {props.bodyContent}
-    </main>
-    </body>
+                </div>
+            </header>
+            <main>
+                {props.bodyContent}
+            </main>
+        </body>
     </html>;
 }

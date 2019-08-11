@@ -45,10 +45,10 @@ import { defaultedToDisplayableFingerprintName } from "../../aspect/DefaultAspec
 
 export function exposeOverviewPage(express: Express,
                                    handlers: RequestHandler[],
-                                   orgRoute: string,
+                                   topLevelRoute: string,
                                    aspectRegistry: AspectRegistry,
                                    store: ProjectAnalysisResultStore): void {
-    express.get(orgRoute, ...handlers, async (req, res) => {
+    express.get(topLevelRoute, ...handlers, async (req, res) => {
         try {
             const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
             const workspaceId = "*";
