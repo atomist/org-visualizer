@@ -24,7 +24,11 @@ import {
 } from "../aspect/common/codeMetrics";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
-import { hasNoLicense, isLicenseFingerprint, LicenseData } from "../aspect/community/license";
+import {
+    hasNoLicense,
+    isLicenseFingerprint,
+    LicenseData,
+} from "../aspect/community/license";
 import {
     CombinationTagger,
     Tagger,
