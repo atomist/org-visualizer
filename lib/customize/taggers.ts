@@ -28,7 +28,10 @@ import {
     hasNoLicense,
     isLicenseFingerprint,
 } from "../aspect/community/license";
-import { GlobType, isGlobFingerprint } from "../aspect/compose/globAspect";
+import {
+    GlobType,
+    isGlobFingerprint,
+} from "../aspect/compose/globAspect";
 import {
     CombinationTagger,
     Tagger,
