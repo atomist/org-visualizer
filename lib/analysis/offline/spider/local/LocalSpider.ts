@@ -14,33 +14,16 @@
  * limitations under the License.
  */
 
-import {
-    GitCommandGitProject,
-    logger,
-    RepoId,
-    RepoRef,
-} from "@atomist/automation-client";
+import { GitCommandGitProject, logger, RepoId, RepoRef, } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as fs from "fs-extra";
 import * as path from "path";
-import {
-    combinePersistResults,
-    emptyPersistResult,
-    PersistResult,
-} from "../../persist/ProjectAnalysisResultStore";
-import {
-    analyze,
-    AnalyzeResults,
-    keepExistingPersisted,
-    persistRepoInfo,
-} from "../common";
+import { combinePersistResults, emptyPersistResult, PersistResult, } from "../../persist/ProjectAnalysisResultStore";
+import { analyze, AnalyzeResults, existingRecordShouldBeKept, persistRepoInfo, } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
-import {
-    Spider,
-    SpiderOptions,
-    SpiderResult,
-} from "../Spider";
+import { Spider, SpiderOptions, SpiderResult, } from "../Spider";
+import { computeAnalytics } from "../analytics";
 
 export class LocalSpider implements Spider {
 
@@ -55,6 +38,8 @@ export class LocalSpider implements Spider {
             results.push(await spiderOneLocalRepo(opts, criteria, analyzer, repoDir));
         }
 
+        console.log("Computing analytics over all fingerprints...");
+        await computeAnalytics(opts.persister, opts.workspaceId);
         return results.reduce(combineSpiderResults, emptySpiderResult);
     }
 
@@ -93,7 +78,7 @@ async function spiderOneLocalRepo(opts: SpiderOptions,
                                   repoDir: string): Promise<SpiderResult> {
     const localRepoRef = await repoRefFromLocalRepo(repoDir);
 
-    if (await keepExistingPersisted(opts, localRepoRef)) {
+    if (await existingRecordShouldBeKept(opts, localRepoRef)) {
         return {
             ...oneSpiderResult,
             keptExisting: [localRepoRef.url],

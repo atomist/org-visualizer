@@ -30,7 +30,7 @@ import { computeAnalytics } from "../analytics";
 import {
     analyze,
     AnalyzeResults,
-    keepExistingPersisted,
+    existingRecordShouldBeKept,
     persistRepoInfo,
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
@@ -76,7 +76,7 @@ export class GitHubSpider implements Spider {
                     repo: sourceData.name,
                     url: sourceData.url,
                 };
-                if (await keepExistingPersisted(opts, repo)) {
+                if (await existingRecordShouldBeKept(opts, repo)) {
                     keepExisting.push(repo.url);
                     logger.info("Found valid record for " + JSON.stringify(repo));
                 } else {
@@ -162,6 +162,7 @@ export interface AnalyzeAndPersistResult {
     repoCount: number;
     projectCount: number;
     persisted: PersistenceResult[];
+    millisTaken: number;
 }
 
 const emptyAnalyzeAndPersistResult: AnalyzeAndPersistResult = {
@@ -170,6 +171,7 @@ const emptyAnalyzeAndPersistResult: AnalyzeAndPersistResult = {
     repoCount: 0,
     projectCount: 0,
     persisted: [],
+    millisTaken: 0,
 };
 
 function combineAnalyzeAndPersistResult(one: AnalyzeAndPersistResult, two: AnalyzeAndPersistResult): AnalyzeAndPersistResult {
@@ -179,6 +181,7 @@ function combineAnalyzeAndPersistResult(one: AnalyzeAndPersistResult, two: Analy
         repoCount: one.repoCount + two.repoCount,
         projectCount: one.projectCount + two.projectCount,
         persisted: one.persisted.concat(two.persisted),
+        millisTaken: one.millisTaken + two.millisTaken,
     };
 }
 
@@ -191,6 +194,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
                                  criteria: ScmSearchCriteria,
                                  analyzer: ProjectAnalyzer,
                                  opts: SpiderOptions): Promise<AnalyzeAndPersistResult> {
+    const startTime = new Date().getTime();
     let project;
     try {
         project = await cloneFunction(sourceData);
@@ -208,6 +212,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
             repoCount: 1,
             projectCount: 0,
             persisted: [],
+            millisTaken: new Date().getTime() - startTime,
         };
     }
     if (criteria.projectTest && !await criteria.projectTest(project)) {
@@ -218,6 +223,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
             repoCount: 1,
             projectCount: 0,
             persisted: [],
+            millisTaken: new Date().getTime() - startTime,
         };
     }
     let analyzeResults: AnalyzeResults;
@@ -231,6 +237,7 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
             repoCount: 1,
             projectCount: 0,
             persisted: [],
+            millisTaken: new Date().getTime() - startTime,
         };
     }
     const persistResults: PersistResult[] = [];
@@ -245,12 +252,15 @@ async function analyzeAndPersist(cloneFunction: CloneFunction,
             persistResults.push(persistResult);
         }
     }
+    const millisTaken = new Date().getTime() - startTime;
+    logger.info("Analyzed %s in %s milliseconds", sourceData.url, millisTaken);
     return {
         failedToCloneOrAnalyze: [],
         failedToPersist: _.flatMap(persistResults, r => r.failed),
         repoCount: 1,
         projectCount: analyzeResults.projectsDetected,
         persisted: _.flatMap(persistResults, p => p.succeeded),
+        millisTaken,
     };
 }
 

@@ -110,11 +110,11 @@ export const Aspects: ManagedAspect[] = [
             canonicalize: c => c,
         }, ".gitignore",
     ), async p => p.hasFile("pom.xml")),
-    globAspect({ glob: "*.csproj", displayName: "CS project file" }),
-    globAspect({ glob: ".snyk", displayName: "Snyk policy" }),
-    globAspect({ glob: "CHANGELOG.md", displayName: "Changelog" }),
-    globAspect({ glob: "CONTRIBUTING.md", displayName: "Contributing" }),
-    globAspect({ glob: "azure-pipelines.yml", displayName: "Azure pipelines file" }),
+    globAspect({ glob: "*.csproj", toDisplayableFingerprintName: () => "C# project", }),
+    globAspect({ glob: ".snyk", toDisplayableFingerprintName: () => "Snyk policy", }),
+    globAspect({ glob: "CHANGELOG.md", toDisplayableFingerprintName: () => "Change log", }),
+    globAspect({ glob: "CONTRIBUTING.md", toDisplayableFingerprintName: () => "Contributing", }),
+    globAspect({ glob: "azure-pipelines.yml", toDisplayableFingerprintName: () => "Azure pipeline", }),
 
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive

@@ -35,13 +35,13 @@ import {
     SpiderOptions,
 } from "./Spider";
 
-export async function keepExistingPersisted(
+export async function existingRecordShouldBeKept(
     opts: {
         persister: ProjectAnalysisResultStore,
         keepExistingPersisted: ProjectAnalysisResultFilter,
     },
     repoId: RepoId): Promise<boolean> {
-    const found = await opts.persister.loadByRepoRef(repoId);
+    const found = await opts.persister.loadByRepoRef(repoId, false);
     if (!found) {
         return false;
     }

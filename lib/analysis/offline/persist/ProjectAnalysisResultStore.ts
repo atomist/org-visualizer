@@ -82,7 +82,7 @@ export interface ProjectAnalysisResultStore {
      */
     loadInWorkspace(workspaceId: string, deep: boolean): Promise<ProjectAnalysisResult[]>;
 
-    loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
+    loadByRepoRef(repo: RepoRef, deep: boolean): Promise<ProjectAnalysisResult | undefined>;
 
     /**
      * Load by our database id

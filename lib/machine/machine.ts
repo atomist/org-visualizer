@@ -72,7 +72,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
     const maxAgeMillis = 60 * 60 * 1000;
     return async pu => {
         try {
-            const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id);
+            const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id, false);
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
                 const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });
