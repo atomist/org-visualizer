@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import { BaseAspect, FP } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
     ManagedAspect,
@@ -172,10 +172,10 @@ export class DefaultAspectRegistry implements AspectRegistry {
     }
 }
 
-export function defaultedToDisplayableFingerprintName(aspect?: ManagedAspect): (fingerprintName: string) => string {
+export function defaultedToDisplayableFingerprintName(aspect?: BaseAspect): (fingerprintName: string) => string {
     return (aspect && aspect.toDisplayableFingerprintName) || (name => name);
 }
 
-export function defaultedToDisplayableFingerprint(aspect?: ManagedAspect): (fpi: FP) => string {
+export function defaultedToDisplayableFingerprint(aspect?: BaseAspect): (fpi: FP) => string {
     return (aspect && aspect.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

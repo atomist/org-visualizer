@@ -39,11 +39,9 @@ export function isGlobFingerprint(fp: FP): fp is FP<GlobAspectData> {
  * undefined to return no fingerprint.
  * Always return something, but may have an empty path.
  */
-export function globAspect(config: Omit<BaseAspect, "name" | "stats" | "apply" | "displayName"> &
+export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
     { glob: string }): Aspect<FP<GlobAspectData>> {
     return {
-        name: GlobType,
-        displayName: "Specified glob",
         toDisplayableFingerprintName: name => `Glob pattern '${name}'`,
         toDisplayableFingerprint: fp => fp.data.matches
             .map(m => `${m.path}(${m.size})`)
