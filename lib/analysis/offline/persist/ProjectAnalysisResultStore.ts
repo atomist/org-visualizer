@@ -101,7 +101,7 @@ export interface ProjectAnalysisResultStore {
     fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]>;
 
     /**
-     * Persist a record of analytics
+     * Persist a record of analytics. Can be invoked repeatedly on the same data without error.
      */
     persistAnalytics(params: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean>;
 

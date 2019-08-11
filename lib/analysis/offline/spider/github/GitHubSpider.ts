@@ -64,6 +64,8 @@ export class GitHubSpider implements Spider {
             async function runAllPromisesInBucket(): Promise<void> {
                 const results = await Promise.all(bucket);
                 results.forEach(r => analyzeAndPersistResults.push(r));
+                console.log("Computing analytics over fingerprints...");
+                await computeAnalytics(opts.persister, opts.workspaceId);
                 bucket = [];
             }
 
