@@ -33,17 +33,21 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
         <br/>
         {displayWeightedScores(props.repo.weightedScore.weightedScores)}
 
-        <h2>Resources</h2>
-        <ul>
-            <li>Source - <a href={props.repo.repoRef.url} target="_blank">{props.repo.repoRef.url}</a></li>
-            <li><a href={props.repo.repoRef.cloneUrl(undefined)}>Clone URL</a> - {props.repo.repoRef.cloneUrl(undefined)}</li>
-        </ul>
+        {displayResources(props)}
 
-        <h2></h2>
         {displayTags(props)}
 
         {displayAspects(props)}
     </div>;
+}
+
+function displayResources(props: RepoExplorerProps): React.ReactElement {
+    return collapsible("Resources", "Resources",
+        <ul>
+            <li>Source - <a href={props.repo.repoRef.url} target="_blank">{props.repo.repoRef.url}</a></li>
+            <li><a href={props.repo.repoRef.cloneUrl(undefined)}>Clone
+                URL</a> - {props.repo.repoRef.cloneUrl(undefined)}</li>
+        </ul>, true);
 }
 
 function displayWeightedScores(weightedScores: WeightedScores): React.ReactElement {

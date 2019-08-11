@@ -111,11 +111,11 @@ export const Aspects: ManagedAspect[] = [
         }, ".gitignore",
     ), async p => p.hasFile("pom.xml")),
     // Don't show these
-    globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj", }),
+    globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
     globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
-    globAspect({ name: "changelog", displayName: undefined, glob: "CHANGELOG.md", }),
-    globAspect({ name: "contributing", displayName: undefined, glob: "CONTRIBUTING.md", }),
-    globAspect({ name: "azure-pipelines", glob: undefined, displayName: "Azure pipeline", }),
+    globAspect({ name: "changelog", displayName: undefined, glob: "CHANGELOG.md" }),
+    globAspect({ name: "contributing", displayName: undefined, glob: "CONTRIBUTING.md" }),
+    globAspect({ name: "azure-pipelines", glob: undefined, displayName: "Azure pipeline" }),
 
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive

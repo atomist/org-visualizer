@@ -269,7 +269,7 @@ async function runPersist(criteria: ScmSearchCriteria,
             failedToPersist: [],
             persisted: [],
             millisTaken: ar.millisTaken,
-        }
+        };
     }
 
     for (const repoInfo of ar.analyzeResults.repoInfos) {
