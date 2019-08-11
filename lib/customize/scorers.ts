@@ -42,6 +42,7 @@ import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyType } from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
+import { GlobType } from "../aspect/compose/globAspect";
 
 export const scoreWeightings: ScoreWeightings = {
     // Bias this to penalize projects with few other scorers
@@ -131,6 +132,8 @@ export const Scorers: RepositoryScorer[] = [
     limitLinesIn({ language: ShellLanguage, limit: 200 }),
     requireRecentCommit({ days: 100 }),
     requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
+    requireGlobAspect({glob: "CHANGELOG.md"}),
+    requireGlobAspect({glob: "CONTRIBUTING.md"}),
 ];
 
 function requireRecentCommit(opts: { days: number }): RepositoryScorer {
@@ -200,6 +203,22 @@ export function requireAspectOfType(opts: { type: string, reason: string }): Rep
             name: `${opts.type}-required`,
             score: !!found ? 5 : 1,
             reason: opts.reason,
+        };
+    };
+}
+
+/**
+ * Must exactly match the glob pattern
+ * @param {{glob: string}} opts
+ * @return {RepositoryScorer}
+ */
+export function requireGlobAspect(opts: { glob: string }): RepositoryScorer {
+    return async repo => {
+        const found = repo.analysis.fingerprints.find(fp => fp.type === GlobType);
+        return {
+            name: `${opts.glob}-required`,
+            score: !!found ? 5 : 1,
+            reason: `Should have file ${opts.glob}`,
         };
     };
 }

@@ -33,7 +33,7 @@ export function hasNoLicense(ld: LicenseData): boolean {
 
 export function isLicenseFingerprint(fp: FP): fp is FP<LicenseData> {
     const maybe = fp as FP<LicenseData>;
-    return !!maybe.data.classification;
+    return fp.type === LicenseType && !!maybe.data.classification;
 }
 
 export interface LicenseData {

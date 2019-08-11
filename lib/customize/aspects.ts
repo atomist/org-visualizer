@@ -53,6 +53,7 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { globAspect } from "../aspect/compose/globAspect";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",
@@ -109,6 +110,12 @@ export const Aspects: ManagedAspect[] = [
             canonicalize: c => c,
         }, ".gitignore",
     ), async p => p.hasFile("pom.xml")),
+    globAspect({ glob: "*.csproj", displayName: "CS project file" }),
+    globAspect({ glob: ".snyk", displayName: "Snyk policy" }),
+    globAspect({ glob: "CHANGELOG.md", displayName: "Changelog" }),
+    globAspect({ glob: "CONTRIBUTING.md", displayName: "Contributing" }),
+    globAspect({ glob: "azure-pipelines.yml", displayName: "Azure pipelines file" }),
+
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive
     DirectMavenDependencies,

@@ -27,7 +27,6 @@ import { CodeOfConductType } from "../aspect/community/codeOfConduct";
 import {
     hasNoLicense,
     isLicenseFingerprint,
-    LicenseData,
 } from "../aspect/community/license";
 import {
     CombinationTagger,
@@ -46,6 +45,7 @@ import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { GlobType, isGlobFingerprint } from "../aspect/compose/globAspect";
 
 export interface TaggersParams {
 
@@ -106,6 +106,25 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => fp.type === CiAspect.name && fp.data.includes("circle"),
         },
         {
+            name: "azure-pipelines",
+            description: "Azure pipelines files",
+            test: fp => isGlobFingerprint(fp) &&
+                fp.name.includes("azure-pipeline") && fp.data.matches.length > 0,
+        },
+        {
+            name: "snyk",
+            description: "Snyk policy",
+            test: fp => isGlobFingerprint(fp) &&
+                fp.name.includes(".snyk") && fp.data.matches.length > 0,
+        },
+        {
+            // TODO allow to use #
+            name: "CSharp",
+            description: "C# build",
+            test: fp => isGlobFingerprint(fp) &&
+                fp.name.includes(".csproj") && fp.data.matches.length > 0,
+        },
+        {
             name: "solo",
             description: "Projects with one committer",
             test: fp => fp.type === GitActivesType && fp.data.count === 1,
@@ -130,6 +149,16 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             name: "code-of-conduct",
             description: "Repositories should have a code of conduct",
             test: fp => fp.type === CodeOfConductType,
+        },
+        {
+            name: "changelog",
+            description: "Repositories should have a changelog",
+            test: fp => fp.type === GlobType && fp.name === "CHANGELOG.md",
+        },
+        {
+            name: "contributing",
+            description: "Repositories should have a contributing",
+            test: fp => fp.type === GlobType && fp.name === "CONTRIBUTING.md",
         },
         {
             name: "license",
