@@ -34,7 +34,6 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
-import { CohortAnalysis } from "../../../lib/analysis/offline/spider/analytics";
 import { ScmSearchCriteria } from "../../../lib/analysis/offline/spider/ScmSearchCriteria";
 import {
     EmptySpiderResult,
@@ -123,29 +122,28 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return { attemptedCount: persisted, failed: [], succeeded: where };
     }
 
-    public fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
-        return undefined;
+    public async fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]> {
+        return [];
     }
 
     public fingerprintsForProject(snapshotId: string): Promise<[]> {
         return undefined;
     }
 
-
-    public computeAnalyticsForFingerprintKind(workspaceId: string, type: string, name: string): Promise<void> {
+    public computeAnalyticsForFingerprintKind(): Promise<void> {
         return undefined;
     }
 
-    public distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
-        return undefined;
+    public async distinctFingerprintKinds(): Promise<FingerprintKind[]> {
+        return [];
     }
 
     public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<any> {
         return undefined;
     }
 
-    public persistAnalytics(params: { workspaceId: string; kind: Pick<FP, "type" | "name">; cohortAnalysis: CohortAnalysis; }[]): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    public async persistAnalytics(): Promise<boolean> {
+        return true;
     }
 
     public fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
@@ -169,6 +167,7 @@ function opts(): SpiderOptions {
 }
 
 describe("GithubSpider", () => {
+
     it("gives empty results when query returns empty", async () => {
         const subject = new GitHubSpider(async function* (t, q) { },
         );

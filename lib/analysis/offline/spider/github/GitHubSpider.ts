@@ -264,8 +264,8 @@ async function runPersist(criteria: ScmSearchCriteria,
     if (!ar.analyzeResults) {
         return {
             failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
-            repoCount: 1,
-            projectCount: 1,
+            repoCount: ar.repoCount,
+            projectCount: ar.projectCount,
             failedToPersist: [],
             persisted: [],
             millisTaken: ar.millisTaken,
@@ -283,15 +283,12 @@ async function runPersist(criteria: ScmSearchCriteria,
             persistResults.push(persistResult);
         }
     }
-    //const millisTaken = new Date().getTime() - startTime;
-    //logger.info("Analyzed %s in %s milliseconds", sourceData.url, millisTaken);
     return {
         failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
         repoCount: 1,
         projectCount: 1,
         failedToPersist: _.flatMap(persistResults, r => r.failed),
         persisted: _.flatMap(persistResults, p => p.succeeded),
-        // TODO add to this
         millisTaken: ar.millisTaken,
     };
 }
