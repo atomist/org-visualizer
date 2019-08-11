@@ -23,6 +23,8 @@ import {
     CodeMetricsType,
 } from "../aspect/common/codeMetrics";
 import { CiAspect } from "../aspect/common/stackAspect";
+import { CodeOfConductType } from "../aspect/community/codeOfConduct";
+import { hasNoLicense, isLicenseFingerprint, LicenseData } from "../aspect/community/license";
 import {
     CombinationTagger,
     Tagger,
@@ -40,8 +42,6 @@ import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { CodeOfConductType } from "../aspect/community/codeOfConduct";
-import { hasNoLicense, isLicenseFingerprint, LicenseData } from "../aspect/community/license";
 
 export interface TaggersParams {
 
