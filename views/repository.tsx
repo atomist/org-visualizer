@@ -39,11 +39,8 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
             <li><a href={props.repo.repoRef.cloneUrl(undefined)}>Clone URL</a> - {props.repo.repoRef.cloneUrl(undefined)}</li>
         </ul>
 
-        <h2>Tags Found</h2>
-
+        <h2></h2>
         {displayTags(props)}
-
-        <h2>Aspects Found</h2>
 
         {displayAspects(props)}
     </div>;
@@ -66,7 +63,7 @@ function displayAspects(props: RepoExplorerProps): React.ReactElement {
         <ul>
             {props.aspects.map(displayAspect)}
         </ul>,
-        false);
+        true);
 }
 
 function displayAspect(feature: ProjectAspectForDisplay): React.ReactElement {
