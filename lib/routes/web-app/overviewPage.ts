@@ -43,11 +43,11 @@ import {
 } from "../../aspect/AspectRegistry";
 import { defaultedToDisplayableFingerprintName } from "../../aspect/DefaultAspectRegistry";
 
-export function exposeOrgPage(express: Express,
-                              handlers: RequestHandler[],
-                              orgRoute: string,
-                              aspectRegistry: AspectRegistry,
-                              store: ProjectAnalysisResultStore): void {
+export function exposeOverviewPage(express: Express,
+                                   handlers: RequestHandler[],
+                                   orgRoute: string,
+                                   aspectRegistry: AspectRegistry,
+                                   store: ProjectAnalysisResultStore): void {
     express.get(orgRoute, ...handlers, async (req, res) => {
         try {
             const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, false);
