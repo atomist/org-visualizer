@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    logger,
-    Project,
-    RepoId,
-} from "@atomist/automation-client";
-import {
-    Interpretation,
-    ProjectAnalysis,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
-import {
-    PersistResult,
-    ProjectAnalysisResultStore,
-} from "../persist/ProjectAnalysisResultStore";
+import { logger, Project, RepoId, } from "@atomist/automation-client";
+import { ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
+import { PersistResult, ProjectAnalysisResultStore, } from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
-import {
-    ProjectAnalysisResultFilter,
-    SpiderOptions,
-} from "./Spider";
+import { ProjectAnalysisResultFilter, SpiderOptions, } from "./Spider";
+import { Analyzed } from "../../../aspect/AspectRegistry";
 
 export async function existingRecordShouldBeKept(
     opts: {
@@ -56,8 +43,7 @@ export interface AnalyzeResults {
 export interface RepoInfo {
     readme: string;
     totalFileCount: number;
-    interpretation: Interpretation;
-    analysis: ProjectAnalysis;
+    analysis: Analyzed;
 }
 /**
  * Find project or subprojects
@@ -78,12 +64,10 @@ async function analyzeProject(project: Project,
     const totalFileCount = await project.totalFileCount();
 
     const analysis = await analyzer.analyze(project, undefined, { full: true });
-    const interpretation = await analyzer.interpret(analysis, undefined);
 
     return {
         readme,
         totalFileCount,
-        interpretation,
         analysis,
     };
 }

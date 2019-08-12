@@ -61,7 +61,8 @@ export class LocalSpider implements Spider {
         return results.reduce(combineSpiderResults, emptySpiderResult);
     }
 
-    constructor(public readonly localDirectory: string) { }
+    constructor(public readonly localDirectory: string) {
+    }
 }
 
 function combineSpiderResults(r1: SpiderResult, r2: SpiderResult): SpiderResult {
@@ -127,14 +128,12 @@ async function spiderOneLocalRepo(opts: SpiderOptions,
 
     const persistResults: PersistResult[] = [];
     for (const repoInfo of analyzeResults.repoInfos) {
-        if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
-            const persistResult = await persistRepoInfo(opts, repoInfo, {
-                sourceData: { localDirectory: repoDir },
-                url: localRepoRef.url,
-                timestamp: new Date(),
-            });
-            persistResults.push(persistResult);
-        }
+        const persistResult = await persistRepoInfo(opts, repoInfo, {
+            sourceData: { localDirectory: repoDir },
+            url: localRepoRef.url,
+            timestamp: new Date(),
+        });
+        persistResults.push(persistResult);
     }
     const combinedPersistResult = persistResults.reduce(combinePersistResults, emptyPersistResult);
 

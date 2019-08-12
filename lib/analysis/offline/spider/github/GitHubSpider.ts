@@ -276,15 +276,13 @@ async function runPersist(criteria: ScmSearchCriteria,
     }
 
     for (const repoInfo of ar.analyzeResults.repoInfos) {
-        if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
-            const persistResult = await persistRepoInfo(opts, repoInfo, {
-                sourceData: ar.sourceData,
-                url: ar.sourceData.html_url,
-                timestamp: ar.sourceData.timestamp,
-                query: ar.sourceData.query,
-            });
-            persistResults.push(persistResult);
-        }
+        const persistResult = await persistRepoInfo(opts, repoInfo, {
+            sourceData: ar.sourceData,
+            url: ar.sourceData.html_url,
+            timestamp: ar.sourceData.timestamp,
+            query: ar.sourceData.query,
+        });
+        persistResults.push(persistResult);
     }
     return {
         failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
