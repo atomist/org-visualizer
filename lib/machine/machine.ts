@@ -25,7 +25,7 @@ import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Analyzer } from "../analysis/offline/spider/Spider";
-import { spiderAnalyzer } from "../analysis/offline/spider/spiderAnalyzer";
+import { SpiderAnalyzer } from "../analysis/offline/spider/SpiderAnalyzer";
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { IdealStore } from "../aspect/IdealStore";
 import { ProblemStore } from "../aspect/ProblemStore";
@@ -35,7 +35,7 @@ import { ProblemStore } from "../aspect/ProblemStore";
  * @return {ProjectAnalyzer}
  */
 export function createAnalyzer(aspects: ManagedAspect[]): Analyzer {
-    return spiderAnalyzer(aspects);
+    return new SpiderAnalyzer(aspects);
 }
 
 const PoolHolder: { pool: Pool } = { pool: undefined };
@@ -65,7 +65,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
             const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id, false);
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
-                const analysis = await opts.analyzer(pu.project);
+                const analysis = await opts.analyzer.analyze(pu.project);
                 logger.info("Performing fresh analysis of project at %s", pu.id.url);
                 await opts.analyzedRepoStore.persist({
                     repoRef: analysis.id,

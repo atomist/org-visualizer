@@ -123,7 +123,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             name: "CSharp",
             description: "C# build",
             test: fp => isFileMatchFingerprint(fp) &&
-                fp.name.includes(".csproj") && fp.data.matches.length > 0,
+                fp.name.includes("csproj") && fp.data.matches.length > 0,
         },
         {
             name: "solo",

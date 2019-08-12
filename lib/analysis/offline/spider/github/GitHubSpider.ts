@@ -35,13 +35,13 @@ import {
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
-    Analyzer,
+    Analyzer, logTimings,
     PersistenceResult,
     RepoUrl,
     Spider,
     SpiderFailure,
     SpiderOptions,
-    SpiderResult,
+    SpiderResult, TimeRecorder,
 } from "../Spider";
 
 type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
@@ -58,6 +58,7 @@ export class GitHubSpider implements Spider {
         const keepExisting: RepoUrl[] = [];
         const errors: SpiderFailure[] = [];
         const analyzeAndPersistResults: AnalyzeAndPersistResult[] = [];
+
         try {
             const it = this.queryFunction(process.env.GITHUB_TOKEN, criteria);
             let bucket: Array<Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }>> = [];
@@ -68,8 +69,12 @@ export class GitHubSpider implements Spider {
                     // Avoid hitting the database in parallel to avoid locking
                     analyzeAndPersistResults.push(await runPersist(criteria, opts, ar));
                 }
+
                 logger.info("Computing analytics over fingerprints...");
                 await computeAnalytics(opts.persister, opts.workspaceId);
+
+                logTimings(analyzer.timings);
+
                 bucket = [];
             }
 

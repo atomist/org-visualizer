@@ -73,7 +73,7 @@ async function analyzeProject(project: Project,
     const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
     const totalFileCount = await project.totalFileCount();
 
-    const analysis = await analyzer(project);
+    const analysis = await analyzer.analyze(project);
 
     return {
         readme,

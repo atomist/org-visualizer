@@ -26,22 +26,25 @@ import {
     FP,
     isAtomicAspect,
 } from "@atomist/sdm-pack-fingerprints";
-import { ManagedAspect } from "../../../aspect/AspectRegistry";
+import { Analyzed, ManagedAspect } from "../../../aspect/AspectRegistry";
 import { time } from "../../../util/showTiming";
-import { Analyzer } from "./Spider";
+import { Analyzer, TimeRecorder } from "./Spider";
 
-export function spiderAnalyzer(aspects: ManagedAspect[]): Analyzer {
-    return async p => {
+export class SpiderAnalyzer implements Analyzer {
+
+    public readonly timings: TimeRecorder = {};
+
+    public async analyze(p: Project): Promise<Analyzed> {
         const fingerprints: FP[] = [];
-        await Promise.all(aspects
+        await Promise.all(this.aspects
             .filter(f => !isAtomicAspect(f))
             // TODO why is this needed?
-            .map(aspect => extractify(aspect as any, p)
+            .map(aspect => extractify(aspect as any, p, this.timings)
                 .then(fps =>
                     fingerprints.push(...fps),
                 )));
 
-        await Promise.all(aspects
+        await Promise.all(this.aspects
             .filter(isAtomicAspect)
             .map(aspect => extractAtomic(aspect, fingerprints)
                 .then(fps =>
@@ -52,17 +55,18 @@ export function spiderAnalyzer(aspects: ManagedAspect[]): Analyzer {
             id: p.id as RemoteRepoRef,
             fingerprints,
         };
-    };
+    }
+
+    constructor(private readonly aspects: ManagedAspect[]) {
+
+    }
 }
 
-async function extractify(aspect: Aspect, p: Project): Promise<FP[]> {
+async function extractify(aspect: Aspect, p: Project, timeRecorder: TimeRecorder): Promise<FP[]> {
     try {
         const timed = await time(
             async () => aspect.extract(p));
-        if (timed.millis > 500) {
-            logger.info("Slow extraction of aspect %s on project %s: took %s millis",
-                aspect.name, p.id.url, timed.millis);
-        }
+        addTiming(aspect.name, timed.millis, timeRecorder);
         const result = !!timed.result ? toArray(timed.result) : [];
         return result;
     } catch (err) {
@@ -70,6 +74,19 @@ async function extractify(aspect: Aspect, p: Project): Promise<FP[]> {
             aspect.name, err);
         return [];
     }
+}
+
+function addTiming(type: string, millis: number, timeRecorder: TimeRecorder): void {
+    let found = timeRecorder[type];
+    if (!found) {
+        found = {
+            extractions: 0,
+            totalMillis: 0,
+        };
+        timeRecorder[type] = found;
+    }
+    found.extractions++;
+    found.totalMillis += millis;
 }
 
 async function extractAtomic(aspect: AtomicAspect, existingFingerprints: FP[]): Promise<FP[]> {

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { Project } from "@atomist/automation-client";
+import { logger, Project } from "@atomist/automation-client";
 import { Analyzed } from "../../../aspect/AspectRegistry";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
+
+import * as _ from "lodash";
 
 export type ProjectAnalysisResultFilter = (pa: ProjectAnalysisResult) => Promise<boolean>;
 
@@ -71,7 +73,34 @@ export const EmptySpiderResult: SpiderResult = {
     persistedAnalyses: [],
 };
 
-export type Analyzer = (p: Project) => Promise<Analyzed>;
+export interface Timing {
+    totalMillis: number;
+    extractions: number;
+}
+
+/**
+ * Aspect type to total time taken to extract it
+ */
+export type TimeRecorder = Record<string, Timing>;
+
+export interface Analyzer {
+
+    analyze(p: Project): Promise<Analyzed>;
+
+    readonly timings: TimeRecorder;
+}
+
+export function logTimings(recorder: TimeRecorder): void {
+    const timings: Array<Timing & { name: string }> = Object.getOwnPropertyNames(recorder)
+        .map(name => ({
+            name,
+            ...recorder[name],
+        }));
+    const totalSeconds = _.sum(timings.map(t => t.totalMillis)) / 1000;
+    const sorted = _.sortBy(timings, t => -t.totalMillis);
+    logger.info("Aspect extraction total so far: %d seconds...", totalSeconds);
+    logger.info("\t" + sorted.map(s => `${s.name}: ${s.totalMillis / 1000} seconds`).join("\n\t"));
+}
 
 /**
  * Spider a data source and progressively persist what we find.

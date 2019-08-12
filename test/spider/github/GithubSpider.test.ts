@@ -63,7 +63,10 @@ const oneProjectAnalysis: ProjectAnalysis = {
     jessitronSays: "I am this project analysis object",
 } as any;
 // tslint:disable-next-line:no-object-literal-type-assertion
-const analyzer: Analyzer = async p => oneProjectAnalysis;
+const analyzer: Analyzer = {
+    analyze: async p => oneProjectAnalysis,
+    timings: {},
+};
 
 const hardCodedPlace = "place.json";
 
@@ -154,7 +157,7 @@ describe("GithubSpider", () => {
         const subject = new GitHubSpider(async function* (t, q) { },
         );
 
-        const result = await subject.spider(undefined, undefined,
+        const result = await subject.spider(undefined, analyzer,
             { persister: new FakeProjectAnalysisResultStore() } as any);
 
         assert.deepStrictEqual(result, EmptySpiderResult);
