@@ -391,9 +391,10 @@ GROUP by repo_snapshots.id) stats;`;
             const shaToUse = !!(analysisResult.analysis as ProjectAnalysis).gitStatus ?
                 (analysisResult.analysis as ProjectAnalysis).gitStatus.sha :
                 repoRef.sha;
-            await client.query(`
-            INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
+            const repoSnapshotsInsertSql = `INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`;
+            logger.info("Executing SQL:\n%s", repoSnapshotsInsertSql);
+            await client.query(repoSnapshotsInsertSql,
                 [id,
                     analysisResult.workspaceId,
                     "github",
@@ -443,9 +444,9 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`,
             // Create fp record if it doesn't exist
             try {
                 await this.ensureFingerprintStored(fp, client);
-                await client.query(`INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id, path)
-VALUES ($1, $2, $3) ON CONFLICT DO NOTHING
-`, [id, fingerprintId, fp.path || ""]);
+                const insertRepoFingerprintSql = `INSERT INTO repo_fingerprints (repo_snapshot_id, fingerprint_id, path)
+VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`;
+                await client.query(insertRepoFingerprintSql, [id, fingerprintId, fp.path || ""]);
                 insertedCount++;
             } catch (error) {
                 failures.push({ failedFingerprint: fp, error });
@@ -468,9 +469,10 @@ VALUES ($1, $2, $3) ON CONFLICT DO NOTHING
         const fingerprintId = aspectName + "_" + fp.name + "_" + fp.sha;
         //  console.log("Persist fingerprint " + JSON.stringify(fp) + " for id " + id);
         // Create fp record if it doesn't exist
-        await client.query(`INSERT INTO fingerprints (id, name, feature_name, sha, data)
-VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
-`, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
+        const insertFingerprintSql = `INSERT INTO fingerprints (id, name, feature_name, sha, data)
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`;
+        logger.info("Persisting fingerprint %j SQL\n%s", fp, insertFingerprintSql);
+        await client.query(insertFingerprintSql, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
         return fingerprintId;
     }
 
@@ -593,8 +595,9 @@ ORDER BY entropy DESC`;
  * Delete the data we hold for this repository.
  */
 async function deleteOldSnapshotForRepository(repoRef: RepoRef, client: ClientBase): Promise<void> {
-    await client.query(`DELETE from repo_fingerprints WHERE repo_snapshot_id IN
-            (SELECT id from repo_snapshots WHERE url = $1)`,
+    const deleteFingperintsSql = `DELETE from repo_fingerprints WHERE repo_snapshot_id IN
+    (SELECT id from repo_snapshots WHERE url = $1)`;
+    await client.query(deleteFingperintsSql,
         [repoRef.url]);
     await client.query(`DELETE from repo_snapshots WHERE url = $1`,
         [repoRef.url]);

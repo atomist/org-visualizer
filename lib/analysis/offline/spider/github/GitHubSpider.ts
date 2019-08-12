@@ -200,9 +200,11 @@ async function runAnalysis(cloneFunction: CloneFunction,
                            analyzer: ProjectAnalyzer): Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }> {
     const startTime = new Date().getTime();
     let project;
+    let clonedIn: number;
     try {
         project = await cloneFunction(sourceData);
-        logger.info("Successfully cloned %s in %d milliseconds", sourceData.url, new Date().getTime() - startTime);
+        clonedIn = new Date().getTime() - startTime;
+        logger.info("Successfully cloned %s in %d milliseconds", sourceData.url, clonedIn);
         if (!project.id.sha) {
             const sha = await execPromise("git", ["rev-parse", "HEAD"], {
                 cwd: (project as LocalProject).baseDir,
@@ -233,7 +235,8 @@ async function runAnalysis(cloneFunction: CloneFunction,
     try {
         analyzeResults = await analyze(project, analyzer, criteria);
         const millisTaken = new Date().getTime() - startTime;
-        logger.info("Successfully analyzed %s in %d milliseconds", sourceData.url, millisTaken);
+        logger.info("Successfully analyzed %s in %d milliseconds including clone time of %d",
+            sourceData.url, millisTaken, clonedIn);
         return {
             failedToCloneOrAnalyze: [],
             repoCount: 1,

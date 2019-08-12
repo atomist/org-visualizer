@@ -34,6 +34,7 @@ import {
     SizeBands,
 } from "../../util/commonBands";
 import { daysSince } from "./dateUtils";
+import { showTiming } from "../../util/showTiming";
 
 const exec = util.promisify(child_process.exec);
 
@@ -94,9 +95,10 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<A
     return async p => {
         const cwd = (p as LocalProject).baseDir;
         const cmds = committersCommands(commitDepth);
-        logger.debug("Running commands %s in %s", cwd, cmds);
-        await exec(cmds[0], { cwd });
-        const r = await exec(cmds[1], { cwd });
+        const r = await showTiming(`commands ${cmds} in ${cwd}`, async () => {
+            exec(cmds[0], { cwd });
+            return exec(cmds[1], { cwd });
+        });
         if (!r.stdout) {
             return undefined;
         }
