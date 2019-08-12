@@ -39,7 +39,10 @@ import {
 } from "../aspect/community/license";
 import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import { daysSince } from "../aspect/git/dateUtils";
-import { GitRecencyData, GitRecencyType } from "../aspect/git/gitActivity";
+import {
+    GitRecencyData,
+    GitRecencyType,
+} from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 

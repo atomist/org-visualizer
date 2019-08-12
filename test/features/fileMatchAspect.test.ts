@@ -1,5 +1,8 @@
 import { InMemoryProject } from "@atomist/automation-client";
-import { FileMatchData, microgrammarMatchAspect } from "../../lib/aspect/compose/fileMatchAspect";
+import {
+    FileMatchData,
+    microgrammarMatchAspect,
+} from "../../lib/aspect/compose/fileMatchAspect";
 
 import * as assert from "assert";
 

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { FileParser, MicrogrammarBasedFileParser } from "@atomist/automation-client";
+import {
+    FileParser,
+    MicrogrammarBasedFileParser,
+} from "@atomist/automation-client";
 import { fileHitIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
 import { Grammar } from "@atomist/microgrammar";
 import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";

@@ -1,6 +1,12 @@
 import { microgrammar } from "@atomist/microgrammar";
-import { Aspect, FP } from "@atomist/sdm-pack-fingerprints";
-import { FileMatchData, microgrammarMatchAspect } from "../compose/fileMatchAspect";
+import {
+    Aspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
+import {
+    FileMatchData,
+    microgrammarMatchAspect,
+} from "../compose/fileMatchAspect";
 
 const targetFrameworksGrammar = microgrammar({
     _open: /<TargetFrameworks?>/,
