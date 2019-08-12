@@ -62,7 +62,7 @@ export function createK8sSpecFingerprint(spec: K8sObject): FP<K8sObject> {
     }
     return {
         type: K8sSpecsType,
-        name: `${k8sSpecsFingerprintName(spec)}`,
+        name: k8sSpecsFingerprintName(spec),
         abbreviation: "k8sspecs",
         version: "0.0.1",
         data: spec,
@@ -148,15 +148,21 @@ export const diffK8sSpecsFingerprints: DiffSummaryFingerprint = (diff, target) =
 };
 
 /**
- * Aspect emitting 0 or more npm dependencies fingerprints.
+ * Aspect emitting 0 or more Kubernetes resource spec fingerprints.
+ * Each fingerprint represents a single resource spec.  Across
+ * multiple repositories, the fingerprints can be compared to check
+ * for drift in resources that provide core functionality like
+ * external-dns and nginx-ingress.  If a repo does not contain any
+ * JSON or YAML files in the root of the project that look like
+ * Kubernetes resource specs, no fingerprints are emitted.
  */
-export const NpmDeps: Aspect<FP<K8sObject>> = {
+export const K8sSpecs: Aspect<FP<K8sObject>> = {
     displayName: "Kubernetes specs",
     name: K8sSpecsType,
     extract: createK8sSpecsFingerprints,
     apply: applyK8sSpecsFingerprint,
     summary: diffK8sSpecsFingerprints,
-    toDisplayableFingerprint: fp => fp.data[1],
+    toDisplayableFingerprint: fp => k8sSpecsFingerprintDisplayName(k8sSpecsFingerprintName(fp.data)),
     toDisplayableFingerprintName: k8sSpecsFingerprintDisplayName,
     workflows: [
         DefaultTargetDiffHandler,
