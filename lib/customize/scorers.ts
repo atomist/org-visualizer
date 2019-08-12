@@ -37,9 +37,9 @@ import {
     hasNoLicense,
     LicenseType,
 } from "../aspect/community/license";
-import { GlobAspectData, isGlobMatchFingerprint } from "../aspect/compose/globAspect";
+import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import { daysSince } from "../aspect/git/dateUtils";
-import { GitRecencyType } from "../aspect/git/gitActivity";
+import { GitRecencyData, GitRecencyType } from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
@@ -137,11 +137,11 @@ export const Scorers: RepositoryScorer[] = [
 
 function requireRecentCommit(opts: { days: number }): RepositoryScorer {
     return async repo => {
-        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType);
+        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType) as FP<GitRecencyData>;
         if (!grt) {
             return undefined;
         }
-        const date = new Date(grt.data);
+        const date = new Date(grt.data.lastCommitTime);
         const days = daysSince(date);
         return {
             name: "recency",
