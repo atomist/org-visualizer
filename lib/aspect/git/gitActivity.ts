@@ -33,8 +33,8 @@ import {
     AgeBands,
     SizeBands,
 } from "../../util/commonBands";
-import { daysSince } from "./dateUtils";
 import { showTiming } from "../../util/showTiming";
+import { daysSince } from "./dateUtils";
 
 const exec = util.promisify(child_process.exec);
 

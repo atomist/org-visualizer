@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { FileParser, MicrogrammarBasedFileParser } from "@atomist/automation-client";
+import { fileHitIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
+import { Grammar } from "@atomist/microgrammar";
 import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
-import { FileParser, MicrogrammarBasedFileParser } from "@atomist/automation-client";
-import { Grammar } from "@atomist/microgrammar";
-import { fileHitIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
 
 export interface FileMatch {
     filePath: string;
@@ -27,7 +27,7 @@ export interface FileMatch {
 }
 
 export interface FileMatchData {
-    kind: "file-match",
+    kind: "file-match";
     glob: string;
     matches: FileMatch[];
 }
@@ -69,7 +69,7 @@ export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
             const data = {
                 kind: "file-match" as any,
                 matches,
-                glob: config.glob
+                glob: config.glob,
             };
             return {
                 type: config.name,

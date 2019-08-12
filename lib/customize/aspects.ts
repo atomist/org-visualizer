@@ -45,6 +45,7 @@ import {
     gitActiveCommitters,
     GitRecency,
 } from "../aspect/git/gitActivity";
+import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
 import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
@@ -54,7 +55,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",

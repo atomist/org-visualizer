@@ -65,7 +65,7 @@ describe("fileMatchAspect", () => {
             });
             const r = await aspect.extract(p) as FP<FileMatchData>;
             assert.strictEqual(r.data.matches.length, 1);
-            assert.strictEqual(r.data.matches[0].matchValue, "25")
+            assert.strictEqual(r.data.matches[0].matchValue, "25");
         });
 
         it("should match real world example", async () => {
@@ -100,7 +100,7 @@ describe("fileMatchAspect", () => {
             });
             const r = await aspect.extract(p) as FP<FileMatchData>;
             assert.strictEqual(r.data.matches.length, 1);
-            assert.strictEqual(r.data.matches[0].matchValue, "netcoreapp2.2")
+            assert.strictEqual(r.data.matches[0].matchValue, "netcoreapp2.2");
         });
     });
 

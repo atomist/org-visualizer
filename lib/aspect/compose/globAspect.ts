@@ -25,7 +25,7 @@ export interface GlobMatch {
 }
 
 export interface GlobAspectData {
-    kind: "glob",
+    kind: "glob";
     glob: string;
     matches: GlobMatch[];
 }

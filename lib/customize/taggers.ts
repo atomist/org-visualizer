@@ -28,6 +28,8 @@ import {
     hasNoLicense,
     isLicenseFingerprint,
 } from "../aspect/community/license";
+import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
+import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import {
     CombinationTagger,
     Tagger,
@@ -45,8 +47,6 @@ import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 
 export interface TaggersParams {
 
