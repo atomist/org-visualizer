@@ -42,13 +42,17 @@ const gitLastCommitCommand = "git log -1 --format=%cd --date=short";
 
 export const GitRecencyType = "git-recency";
 
-const gitRecencyExtractor: ExtractFingerprint =
+export interface GitRecencyData {
+    lastCommitTime: number;
+}
+
+const gitRecencyExtractor: ExtractFingerprint<FP<GitRecencyData>> =
     async p => {
         const r = await exec(gitLastCommitCommand, { cwd: (p as LocalProject).baseDir });
         if (!r.stdout) {
             return undefined;
         }
-        const data = new Date(r.stdout.trim());
+        const data = { lastCommitTime: new Date(r.stdout.trim()).getTime() };
 
         return {
             type: GitRecencyType,
@@ -61,14 +65,14 @@ const gitRecencyExtractor: ExtractFingerprint =
 /**
  * Classify since last commit
  */
-export const GitRecency: Aspect = {
-    name: "git-recency",
+export const GitRecency: Aspect<FP<GitRecencyData>> = {
+    name: GitRecencyType,
     displayName: "Recency of git activity",
     baseOnly: true,
     extract: gitRecencyExtractor,
     toDisplayableFingerprintName: () => "Recency of git activity",
     toDisplayableFingerprint: fp => {
-        const date = new Date(fp.data);
+        const date = new Date(fp.data.lastCommitTime);
         return lastDateToActivityBand(date);
     },
     stats: {
@@ -124,7 +128,7 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
         displayName: "Active git committers",
         baseOnly: true,
         extract: activeCommittersExtractor(commitDepth),
-        toDisplayableFingerprintName: () => "Active git committers",
+        toDisplayableFingerprintName: () => `Active git committers to ${commitDepth} commits`,
         toDisplayableFingerprint: fp => {
             return bandFor<SizeBands>({
                 low: { upTo: 4 },
