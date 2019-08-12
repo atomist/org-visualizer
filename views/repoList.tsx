@@ -9,6 +9,11 @@ export interface RepoForDisplay {
     owner: string;
     id: string;
     score?: number;
+
+    /**
+     * Whether to show the full path of the repo
+     */
+    showFullPath?: boolean;
 }
 
 export interface RepoListProps {
@@ -19,9 +24,9 @@ export interface RepoListProps {
     expand: boolean;
 }
 
-function toListItem(rfd: RepoForDisplay): React.ReactElement {
+function toRepoListItem(rfd: RepoForDisplay): React.ReactElement {
     const linkToIndividualProjectPage = `/repository?id=${encodeURI(rfd.id)}`;
-    return <li key={rfd.url}>{rfd.repo} {rfd.score && `(${rfd.score.toFixed(2)})`}:{" "}
+    return <li key={rfd.url}>{rfd.showFullPath && `${rfd.owner} / `}{rfd.repo} {rfd.score && `(${rfd.score.toFixed(2)})`}:{" "}
         <a href={rfd.url}>
             Source
         </a>{" "}
@@ -40,7 +45,7 @@ function displayProjects(owner: string,
             p.repo.toLowerCase());
     return collapsible(owner, `${owner} (${repos.length} repositories)`,
         <ul>
-            {sorted.map(toListItem)}
+            {sorted.map(toRepoListItem)}
         </ul>,
         repos.length === 1 || props.expand,
     );

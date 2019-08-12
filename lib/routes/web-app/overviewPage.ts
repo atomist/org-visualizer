@@ -30,7 +30,7 @@ import * as _ from "lodash";
 import {
     AspectFingerprintsForDisplay,
     FingerprintForDisplay,
-    OrgExplorer,
+    Overview,
 } from "../../../views/overview";
 import { renderStaticReactNode } from "../../../views/topLevelPage";
 import {
@@ -74,7 +74,7 @@ export function exposeOverviewPage(express: Express,
             const virtualProjectCount = await store.virtualProjectCount(workspaceId);
 
             res.send(renderStaticReactNode(
-                OrgExplorer({
+                Overview({
                     projectsAnalyzed: repos.length,
                     importantAspects,
                     unfoundAspects,

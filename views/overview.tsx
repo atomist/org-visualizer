@@ -182,7 +182,7 @@ function displayCustomReports(): React.ReactElement {
 
 // tslint:disable:max-line-length
 
-export function OrgExplorer(props: OverviewProps): React.ReactElement {
+export function Overview(props: OverviewProps): React.ReactElement {
     return <div>
         {displayAspects(props)}
         {displayDeveloper()}

@@ -56,6 +56,7 @@ export function exposeRepositoryListPage(express: Express,
                 owner: ar.repoRef.owner,
                 id: ar.id,
                 score: ar.weightedScore.weightedScore,
+                showFullPath: !byOrg,
             }));
         const virtualProjectCount = await store.virtualProjectCount(workspaceId);
         return res.send(renderStaticReactNode(
@@ -64,7 +65,7 @@ export function exposeRepositoryListPage(express: Express,
                 virtualProjectCount,
                 sortOrder,
                 byOrg,
-                expand: true,
+                expand: !byOrg,
             }),
             byOrg ? "Repositories by Organization" : "Repositories Ranked"));
     });
