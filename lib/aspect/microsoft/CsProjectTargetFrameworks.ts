@@ -41,4 +41,5 @@ export const CsProjectTargetFrameworks: Aspect<FP<FileMatchData>> =
         glob: "*.csproj",
         grammar: targetFrameworksGrammar,
         path: "targetFramework",
+        toDisplayableFingerprint: fp => fp.data.matches.length === 0 ? "None": fp.data.matches[0].matchValue,
     });
