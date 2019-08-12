@@ -42,6 +42,9 @@ export function isGlobMatchFingerprint(fp: FP): fp is FP<FileMatchData> {
  */
 export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
     { glob: string }): Aspect<FP<GlobAspectData>> {
+    if (!config.glob) {
+        throw new Error("Glob pattern must be supplied");
+    }
     return {
         toDisplayableFingerprintName: name => `Glob pattern '${name}'`,
         toDisplayableFingerprint: fp => fp.data.matches

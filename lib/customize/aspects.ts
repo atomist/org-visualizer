@@ -116,7 +116,7 @@ export const Aspects: ManagedAspect[] = [
     globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
     globAspect({ name: "changelog", displayName: undefined, glob: "CHANGELOG.md" }),
     globAspect({ name: "contributing", displayName: undefined, glob: "CONTRIBUTING.md" }),
-    globAspect({ name: "azure-pipelines", glob: undefined, displayName: "Azure pipeline" }),
+    globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
     CsProjectTargetFrameworks,
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive
