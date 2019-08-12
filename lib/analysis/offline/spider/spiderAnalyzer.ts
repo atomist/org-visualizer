@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { logger, Project, RemoteRepoRef } from "@atomist/automation-client";
+import {
+    logger,
+    Project,
+    RemoteRepoRef,
+} from "@atomist/automation-client";
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
-import { Aspect, AtomicAspect, FP, isAtomicAspect } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    AtomicAspect,
+    FP,
+    isAtomicAspect,
+} from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../../../aspect/AspectRegistry";
 import { time } from "../../../util/showTiming";
 import { Analyzer } from "./Spider";

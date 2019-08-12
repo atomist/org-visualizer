@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Configuration, logger } from "@atomist/automation-client";
+import {
+    Configuration,
+    logger,
+} from "@atomist/automation-client";
 import { PushImpactListener } from "@atomist/sdm";
 import * as _ from "lodash";
 import { Pool } from "pg";
