@@ -35,13 +35,15 @@ import {
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
-    Analyzer, logTimings,
+    Analyzer,
+    logTimings,
     PersistenceResult,
     RepoUrl,
     Spider,
     SpiderFailure,
     SpiderOptions,
-    SpiderResult, TimeRecorder,
+    SpiderResult,
+    TimeRecorder,
 } from "../Spider";
 
 type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;

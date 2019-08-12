@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { logger, Project } from "@atomist/automation-client";
+import {
+    logger,
+    Project,
+} from "@atomist/automation-client";
 import { Analyzed } from "../../../aspect/AspectRegistry";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";

@@ -26,9 +26,15 @@ import {
     FP,
     isAtomicAspect,
 } from "@atomist/sdm-pack-fingerprints";
-import { Analyzed, ManagedAspect } from "../../../aspect/AspectRegistry";
+import {
+    Analyzed,
+    ManagedAspect,
+} from "../../../aspect/AspectRegistry";
 import { time } from "../../../util/showTiming";
-import { Analyzer, TimeRecorder } from "./Spider";
+import {
+    Analyzer,
+    TimeRecorder,
+} from "./Spider";
 
 export class SpiderAnalyzer implements Analyzer {
 
