@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { InMemoryProject, RepoRef } from "@atomist/automation-client";
+import {
+    InMemoryProject,
+    RepoRef,
+} from "@atomist/automation-client";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
@@ -25,9 +28,20 @@ import {
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { ScmSearchCriteria } from "../../../lib/analysis/offline/spider/ScmSearchCriteria";
-import { Analyzer, EmptySpiderResult, SpiderOptions, SpiderResult } from "../../../lib/analysis/offline/spider/Spider";
-import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../../lib/analysis/ProjectAnalysisResult";
-import { GitHubSearchResult, GitHubSpider } from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
+import {
+    Analyzer,
+    EmptySpiderResult,
+    SpiderOptions,
+    SpiderResult,
+} from "../../../lib/analysis/offline/spider/Spider";
+import {
+    isProjectAnalysisResult,
+    ProjectAnalysisResult,
+} from "../../../lib/analysis/ProjectAnalysisResult";
+import {
+    GitHubSearchResult,
+    GitHubSpider,
+} from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
 
 // tslint:disable
 const oneSearchResult: GitHubSearchResult = {

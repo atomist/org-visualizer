@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import { logger, Project, RepoId } from "@atomist/automation-client";
+import {
+    logger,
+    Project,
+    RepoId,
+} from "@atomist/automation-client";
 import { Analyzed } from "../../../aspect/AspectRegistry";
-import { PersistResult, ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
+import {
+    PersistResult,
+    ProjectAnalysisResultStore,
+} from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
-import { Analyzer, ProjectAnalysisResultFilter, SpiderOptions } from "./Spider";
+import {
+    Analyzer,
+    ProjectAnalysisResultFilter,
+    SpiderOptions,
+} from "./Spider";
 
 export async function existingRecordShouldBeKept(
     opts: {
