@@ -44,8 +44,8 @@ import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 export const scoreWeightings: ScoreWeightings = {
-    // Bias this to penalize projects with few other scorers
-    "info-bias": 3,
+    // Weight this to penalize projects with few other scorers
+    anchor: 3,
 };
 
 /**
@@ -54,9 +54,9 @@ export const scoreWeightings: ScoreWeightings = {
 export const Scorers: RepositoryScorer[] = [
     async () => {
         return {
-            name: "info-bias",
-            reason: "Weight to norm to penalize projects with little information",
-            score: 3,
+            name: "anchor",
+            reason: "Weight to 2 star to penalize repositories about which we know little",
+            score: 2,
         };
     },
     async repo => {
@@ -79,14 +79,16 @@ export const Scorers: RepositoryScorer[] = [
         return {
             name: "sev-count",
             score,
-            reason: `Errors: [${err.map(e => e.name).join(",")}], warnings: [${warn.map(w => w.name).join(",")}]`,
+            reason: err.length + warn.length === 0 ?
+                "No errors or warnings" :
+                `Errors: [${err.map(e => e.name).join(",")}], warnings: [${warn.map(w => w.name).join(",")}]`,
         };
     },
     async repo => {
         const distinctPaths = _.uniq(repo.analysis.fingerprints.map(t => t.path)).length;
         return {
             name: "monorepo",
-            score: adjustBy(1 - distinctPaths),
+            score: adjustBy(1 - distinctPaths / 2),
             reason: distinctPaths > 1 ?
                 `${distinctPaths} virtual projects: Prefer one project per repository` :
                 "Single project in repository",
@@ -102,34 +104,24 @@ export const Scorers: RepositoryScorer[] = [
         return {
             name: "has-tslint",
             score: hasTsLint ? 5 : 1,
-        };
-    },
-    async repo => {
-        // TypeScript projects must use tslint
-        const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
-        if (!isTs) {
-            return undefined;
-        }
-        const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
-        return {
-            name: "has-tslint",
-            score: hasTsLint ? 5 : 1,
-            reason: "TypeScript projects should use tslint",
+            reason: hasTsLint ? "TypeScript projects should use tslint" : "TypeScript project using tslint",
         };
     },
     async repo => {
         const license = repo.analysis.fingerprints.find(fp => fp.type === LicenseType);
+        const bad = !license || hasNoLicense(license.data);
         return {
             name: "license",
-            score: !license || hasNoLicense(license.data) ? 1 : 5,
-            reason: "Repositories should have a license",
+            score: bad ? 1 : 5,
+            reason: bad ? "Repositories should have a license" : "Repository has a license",
         };
     },
-    limitLanguages({ limit: 2 }),
+    limitLanguages({ limit: 3 }),
+    // Adjust depending on the service granularity you want
     limitLinesOfCode({ limit: 15000 }),
     limitLinesIn({ language: YamlLanguage, limit: 500 }),
     limitLinesIn({ language: ShellLanguage, limit: 200 }),
-    requireRecentCommit({ days: 100 }),
+    requireRecentCommit({ days: 30 }),
     requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
     requireGlobAspect({ glob: "CHANGELOG.md" }),
     requireGlobAspect({ glob: "CONTRIBUTING.md" }),
@@ -174,7 +166,7 @@ function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
         return {
             name: "total-loc",
             score: adjustBy(-cm.data.lines / opts.limit),
-            reason: `Found ${cm.data.totalFiles} total lines of code`,
+            reason: `Found ${cm.data.lines} total lines of code`,
         };
     };
 }
@@ -201,7 +193,7 @@ export function requireAspectOfType(opts: { type: string, reason: string }): Rep
         return {
             name: `${opts.type}-required`,
             score: !!found ? 5 : 1,
-            reason: opts.reason,
+            reason: !found ? opts.reason : "Satisfactory",
         };
     };
 }
@@ -218,7 +210,7 @@ export function requireGlobAspect(opts: { glob: string }): RepositoryScorer {
         return {
             name: `${opts.glob}-required`,
             score: !!found ? 5 : 1,
-            reason: `Should have file for ${opts.glob}`,
+            reason: !found ? `Should have file for ${opts.glob}` : "Satisfactory",
         };
     };
 }
