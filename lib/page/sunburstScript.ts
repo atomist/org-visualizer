@@ -113,6 +113,7 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
     slice.exit().remove(); // does this remove any extraneous ones?
 
     const perLevelDataElements = perLevelDataElementIds.map(id => d3.select("#" + id)).filter(a => !!a);
+    const additionalDataElement = d3.select("#additionalDataAboutWhatYouClicked");
 
     const newSlice = slice.enter()
         .append("g").attr("class", "slice")
@@ -123,6 +124,7 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
         })
         .on("mouseover", (d: SunburstTreeNode) => {
             populatePerLevelData(perLevelDataElements, d);
+            populateAdditionalData(additionalDataElement, d);
         });
 
     // This is the hover text
@@ -192,6 +194,21 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
     }
 }
 
+function hasTags(data: SunburstTree | SunburstLeaf): data is (SunburstTree | SunburstLeaf) & { tags: Array<{ name: string }> } {
+    return !!(data as any).tags
+}
+function populateAdditionalData(additionalDataElement: d3.Selection<any, any, any, any> | undefined, d: SunburstTreeNode) {
+    if (!additionalDataElement) {
+        return;
+    }
+    let content = "";
+    const data = d.data;
+    if (hasTags(data)) {
+        content = "Tags: <ul>" + data.tags.map(t => `<li>${t.name}</li>`).join("") + "</ul>";
+    }
+    additionalDataElement.html(content);
+}
+
 function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
@@ -213,6 +230,7 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
         // put that count in the last level data
         perLevelDataElements[perLevelDataElements.length - 1].html("(" + d.value + " of them)");
     }
+
 }
 
 function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
@@ -237,9 +255,14 @@ function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any,
     });
 }
 
-function formatLevelData(data: { name: string, url?: string, viewUrl?: string }): string {
+function formatLevelData(data: { name: string, url?: string, viewUrl?: string, tags?: Array<{ name: string }> }): string {
+    console.log("tags: " + data.tags);
     const urlToUse = data.viewUrl || data.url;
-    return urlToUse ? `<a href="${urlToUse}">${data.name}</a>` : data.name;
+    let tagList: string = "";
+    if (data.tags) {
+        tagList = "<ul>" + data.tags.map(t => `<li>${t.name}</li>`).join("") + "</ul>"
+    }
+    return urlToUse ? `<a href="${urlToUse}">${data.name}</a>${tagList}` : data.name;
 }
 
 function htmlForSetIdeal(workspaceId, dataId) {

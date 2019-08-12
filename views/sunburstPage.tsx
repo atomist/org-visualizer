@@ -102,7 +102,7 @@ export class TagGroup {
     private readonly totalProjectsDisplayed: number;
 
     constructor(public readonly tagSelection: string[],
-                treeWithTags?: { tags?: TagUsage[], matchingRepoCount?: number }) {
+        treeWithTags?: { tags?: TagUsage[], matchingRepoCount?: number }) {
         this.tagsInData = treeWithTags && treeWithTags.tags ? treeWithTags.tags : [];
         this.totalProjectsDisplayed = treeWithTags ? treeWithTags.matchingRepoCount : 0;
     }
@@ -230,7 +230,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         {idealDisplay}
         <div className="wrapper">
             <div id="putSvgHere" className="sunburstSvg"></div>
-            <div id="dataAboutWhatYouClicked" className="sunburstData">{thingies}</div>
+            <div id="dataAboutWhatYouClicked" className="sunburstData">{thingies}<div id="additionalDataAboutWhatYouClicked"></div></div>
         </div>
         <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
         <a href={props.dataUrl} type="application/json">Raw data</a>
