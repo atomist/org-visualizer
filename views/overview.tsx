@@ -108,7 +108,7 @@ function displayUnfoundAspect(mf: { documentationUrl?: string, displayName: stri
 
 function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     const displayName = f.displayName || f.name;
-    const variantsQueryLink: string = `./fingerprint/${f.type}/${f.name}?byOrg=true`;
+    const variantsQueryLink: string = `./fingerprint/${encodeURIComponent(f.type)}/${encodeURIComponent(f.name)}?byOrg=true`;
     const existsLink: string = `./fingerprint/${f.type}/${f.name}?byOrg=true&presence=true&otherLabel=true`;
     const ent = f.entropy ? <span>{`entropy=${f.entropy.toFixed(2)}`}</span> : "";
 
@@ -126,7 +126,7 @@ export function displayAspects(props: OverviewProps): React.ReactElement {
             <h2>No projects analyzed</h2>
             Use the spider command to analyze some projects.
             See <a
-            href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the
+                href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the
             README</a> for details.
         </div>;
     }
