@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Configuration, logger, } from "@atomist/automation-client";
-import { PushImpactListener, } from "@atomist/sdm";
+import { Configuration, logger } from "@atomist/automation-client";
+import { PushImpactListener } from "@atomist/sdm";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Analyzer } from "../analysis/offline/spider/Spider";
-import { IdealStore } from "../aspect/IdealStore";
-import { ProblemStore, } from "../aspect/ProblemStore";
 import { spiderAnalyzer } from "../analysis/offline/spider/spiderAnalyzer";
 import { ManagedAspect } from "../aspect/AspectRegistry";
+import { IdealStore } from "../aspect/IdealStore";
+import { ProblemStore } from "../aspect/ProblemStore";
 
 /**
  * Add scanners to the analyzer to extract data

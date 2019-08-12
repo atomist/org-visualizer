@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Analyzer } from "./Spider";
-import { Aspect, AtomicAspect, FP, isAtomicAspect } from "@atomist/sdm-pack-fingerprints";
 import { logger, Project, RemoteRepoRef } from "@atomist/automation-client";
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
-import { time } from "../../../util/showTiming";
+import { Aspect, AtomicAspect, FP, isAtomicAspect } from "@atomist/sdm-pack-fingerprints";
 import { ManagedAspect } from "../../../aspect/AspectRegistry";
+import { time } from "../../../util/showTiming";
+import { Analyzer } from "./Spider";
 
 export function spiderAnalyzer(aspects: ManagedAspect[]): Analyzer {
     return async p => {
@@ -42,14 +42,14 @@ export function spiderAnalyzer(aspects: ManagedAspect[]): Analyzer {
         return {
             id: p.id as RemoteRepoRef,
             fingerprints,
-        }
+        };
     };
 }
 
 async function extractify(aspect: Aspect, p: Project): Promise<FP[]> {
     try {
         const timed = await time(
-            async () => await aspect.extract(p));
+            async () => aspect.extract(p));
         if (timed.millis > 500) {
             logger.info("Slow extraction of aspect %s on project %s: took %s millis",
                 aspect.name, p.id.url, timed.millis);
