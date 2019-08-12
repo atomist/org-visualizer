@@ -102,7 +102,7 @@ export class TagGroup {
     private readonly totalProjectsDisplayed: number;
 
     constructor(public readonly tagSelection: string[],
-        treeWithTags?: { tags?: TagUsage[], matchingRepoCount?: number }) {
+                treeWithTags?: { tags?: TagUsage[], matchingRepoCount?: number }) {
         this.tagsInData = treeWithTags && treeWithTags.tags ? treeWithTags.tags : [];
         this.totalProjectsDisplayed = treeWithTags ? treeWithTags.matchingRepoCount : 0;
     }
