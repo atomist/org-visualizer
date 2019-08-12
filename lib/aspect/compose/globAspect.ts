@@ -42,7 +42,6 @@ export function isGlobFingerprint(fp: FP): fp is FP<GlobAspectData> {
 export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
     { glob: string }): Aspect<FP<GlobAspectData>> {
     return {
-        name: `glob-${sha256(config.glob)}`,
         toDisplayableFingerprintName: name => `Glob pattern '${name}'`,
         toDisplayableFingerprint: fp => fp.data.matches
             .map(m => `${m.path}(${m.size})`)
@@ -56,7 +55,7 @@ export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
                 })),
             };
             return {
-                name: config.glob,
+                name: config.name,
                 type: GlobType,
                 data,
                 sha: sha256(JSON.stringify(data)),
