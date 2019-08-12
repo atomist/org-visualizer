@@ -248,7 +248,7 @@ async function runAnalysis(cloneFunction: CloneFunction,
 
         };
     } catch (err) {
-        logger.error("Could not clone/analyze " + sourceData.url + ": " + err.message, err);
+        logger.error("Could not analyze " + sourceData.url + ": " + err.message, err);
         return {
             failedToCloneOrAnalyze: [{ repoUrl: sourceData.url, whileTryingTo: "analyze", message: err.message }],
             repoCount: 1,

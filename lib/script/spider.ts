@@ -41,6 +41,7 @@ import {
     sdmConfigClientFactory,
 } from "../machine/machine";
 import { computeAnalytics } from "../analysis/offline/spider/analytics";
+import { Aspects } from "../customize/aspects";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(PlainLogging);
@@ -82,7 +83,7 @@ interface SpiderAppOptions {
  * Spider a GitHub.com org
  */
 async function spider(params: SpiderAppOptions) {
-    const analyzer = createAnalyzer();
+    const analyzer = createAnalyzer(Aspects);
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 

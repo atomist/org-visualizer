@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    Configuration,
-    logger,
-} from "@atomist/automation-client";
-import {
-    PushImpactListener,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { Configuration, logger, } from "@atomist/automation-client";
+import { PushImpactListener, } from "@atomist/sdm";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -33,21 +23,16 @@ import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Analyzer } from "../analysis/offline/spider/Spider";
 import { IdealStore } from "../aspect/IdealStore";
-import {
-    ProblemStore,
-} from "../aspect/ProblemStore";
-import { Aspects } from "../customize/aspects";
+import { ProblemStore, } from "../aspect/ProblemStore";
+import { spiderAnalyzer } from "../analysis/offline/spider/spiderAnalyzer";
+import { ManagedAspect } from "../aspect/AspectRegistry";
 
 /**
  * Add scanners to the analyzer to extract data
- * @param {SoftwareDeliveryMachine} sdm
  * @return {ProjectAnalyzer}
  */
-export function createAnalyzer(): Analyzer {
-    const pa = analyzerBuilder(undefined)
-        .withAspects(Aspects)
-        .build();
-    return async p => pa.analyze(p, undefined, undefined);
+export function createAnalyzer(aspects: ManagedAspect[]): Analyzer {
+    return spiderAnalyzer(aspects);
 }
 
 const PoolHolder: { pool: Pool } = { pool: undefined };
@@ -68,7 +53,7 @@ export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResu
 
 export function updatedStoredAnalysisIfNecessary(opts: {
     analyzedRepoStore: ProjectAnalysisResultStore,
-    analyzer: ProjectAnalyzer,
+    analyzer: Analyzer,
     maxAgeHours: number,
 }): PushImpactListener<any> {
     const maxAgeMillis = 60 * 60 * 1000;
@@ -77,7 +62,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
             const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id, false);
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
-                const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });
+                const analysis = await opts.analyzer(pu.project);
                 logger.info("Performing fresh analysis of project at %s", pu.id.url);
                 await opts.analyzedRepoStore.persist({
                     repoRef: analysis.id,

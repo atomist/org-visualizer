@@ -34,3 +34,16 @@ export async function showTiming<T>(description: string,
             description, endTime - startTime);
     }
 }
+
+export async function time<T>(what: () => Promise<T>): Promise<{ result: T, millis: number }> {
+    const startTime = new Date().getTime();
+    let endTime: number;
+    let result: T;
+    try {
+        result = await what();
+    } finally {
+        endTime = new Date().getTime();
+    }
+    return { result, millis: endTime - startTime };
+
+}
