@@ -33,6 +33,7 @@ import {
     AgeBands,
     SizeBands,
 } from "../../util/commonBands";
+import { showTiming } from "../../util/showTiming";
 import { daysSince } from "./dateUtils";
 
 const exec = util.promisify(child_process.exec);
@@ -41,13 +42,17 @@ const gitLastCommitCommand = "git log -1 --format=%cd --date=short";
 
 export const GitRecencyType = "git-recency";
 
-const gitRecencyExtractor: ExtractFingerprint =
+export interface GitRecencyData {
+    lastCommitTime: number;
+}
+
+const gitRecencyExtractor: ExtractFingerprint<FP<GitRecencyData>> =
     async p => {
         const r = await exec(gitLastCommitCommand, { cwd: (p as LocalProject).baseDir });
         if (!r.stdout) {
             return undefined;
         }
-        const data = new Date(r.stdout.trim());
+        const data = { lastCommitTime: new Date(r.stdout.trim()).getTime() };
 
         return {
             type: GitRecencyType,
@@ -60,13 +65,14 @@ const gitRecencyExtractor: ExtractFingerprint =
 /**
  * Classify since last commit
  */
-export const GitRecency: Aspect = {
-    name: "git-recency",
+export const GitRecency: Aspect<FP<GitRecencyData>> = {
+    name: GitRecencyType,
     displayName: "Recency of git activity",
+    baseOnly: true,
     extract: gitRecencyExtractor,
     toDisplayableFingerprintName: () => "Recency of git activity",
     toDisplayableFingerprint: fp => {
-        const date = new Date(fp.data);
+        const date = new Date(fp.data.lastCommitTime);
         return lastDateToActivityBand(date);
     },
     stats: {
@@ -93,9 +99,10 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<A
     return async p => {
         const cwd = (p as LocalProject).baseDir;
         const cmds = committersCommands(commitDepth);
-        logger.debug("Running commands %s in %s", cwd, cmds);
-        await exec(cmds[0], { cwd });
-        const r = await exec(cmds[1], { cwd });
+        const r = await showTiming(`commands ${cmds} in ${cwd}`, async () => {
+            exec(cmds[0], { cwd });
+            return exec(cmds[1], { cwd });
+        });
         if (!r.stdout) {
             return undefined;
         }
@@ -119,8 +126,9 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
     return {
         name: GitActivesType,
         displayName: "Active git committers",
+        baseOnly: true,
         extract: activeCommittersExtractor(commitDepth),
-        toDisplayableFingerprintName: () => "Active git committers",
+        toDisplayableFingerprintName: () => `Active git committers to ${commitDepth} commits`,
         toDisplayableFingerprint: fp => {
             return bandFor<SizeBands>({
                 low: { upTo: 4 },
@@ -135,31 +143,6 @@ export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommit
             basicStatsPath: "count",
         },
     };
-}
-
-// export const gitActivityExtractor: ExtractFingerprint =
-//     async p => {
-//         // TODO make this reusable so we can see for default branch and all others
-//         const r = await exec(sinceDays(7), { cwd: (p as LocalProject).baseDir });
-//         if (!r.stdout) {
-//             return undefined;
-//         }
-//         const last7 = parseInt(r.stdout.trim(), 10);
-//
-//         return {
-//             type: "git-activity"
-//             name: "gitActivity",
-//             last7,
-//         };
-//     };
-
-/**
- * Return a command
- * @param {number} days
- * @return {string}
- */
-function sinceDays(days: number): string {
-    return `git log --all --since=${days}.days --pretty=oneline | wc -l`;
 }
 
 function lastDateToActivityBand(date: Date): string {

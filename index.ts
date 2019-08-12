@@ -62,14 +62,20 @@ import { SpringBootVersion } from "./lib/aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "./lib/aspect/travis/travisAspects";
 import {
     Aspects,
-    combinationTaggers,
-    taggers,
 } from "./lib/customize/aspects";
 import {
     registerCategories,
     registerReportDetails,
 } from "./lib/customize/categories";
 import { demoUndesirableUsageChecker } from "./lib/customize/demoUndesirableUsageChecker";
+import {
+    Scorers,
+    scoreWeightings,
+} from "./lib/customize/scorers";
+import {
+    combinationTaggers,
+    taggers,
+} from "./lib/customize/taggers";
 import {
     CreateFingerprintJob,
     CreateFingerprintJobCommand,
@@ -80,7 +86,7 @@ import {
     sdmConfigClientFactory,
 } from "./lib/machine/machine";
 import { api } from "./lib/routes/api";
-import { orgPage } from "./lib/routes/orgPage";
+import { addWebAppRoutes } from "./lib/routes/web-app/webAppRoutes";
 
 // Mode can be online or mode
 const mode = process.env.ATOMIST_ORG_VISUALIZER_MODE || "online";
@@ -271,6 +277,8 @@ function orgVisualizationEndpoints(dbClientFactory: ClientFactory, httpClientFac
         problemStore: resultStore,
         aspects: Aspects,
         undesirableUsageChecker: demoUndesirableUsageChecker,
+        scorers: Scorers,
+        scoreWeightings,
     })
         .withTaggers(...taggers({}))
         .withCombinationTaggers(...combinationTaggers({}));
@@ -284,7 +292,7 @@ function orgVisualizationEndpoints(dbClientFactory: ClientFactory, httpClientFac
         };
     }
 
-    const aboutStaticPages = orgPage(aspectRegistry, resultStore, httpClientFactory);
+    const aboutStaticPages = addWebAppRoutes(aspectRegistry, resultStore, httpClientFactory);
 
     return {
         routesToSuggestOnStartup:

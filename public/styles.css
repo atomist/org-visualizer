@@ -125,6 +125,11 @@ header .page-title {
     text-decoration: line-through;
 }
 
+.score {
+    font-size: larger;
+    font-family: "American Typewriter";
+}
+
 /* d3 sunburst stuff */
 
 svg .slice {

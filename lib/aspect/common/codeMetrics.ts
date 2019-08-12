@@ -46,6 +46,7 @@ export const CodeMetricsAspect: Aspect<FP<CodeMetricsData>> = {
     name: CodeMetricsType,
     // Suppress display
     displayName: undefined,
+    baseOnly: true,
     extract: async p => {
         const data = await scanForCodeMetrics(p);
         return {

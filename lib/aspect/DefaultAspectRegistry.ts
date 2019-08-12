@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-import { FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    chainUndesirableUsageCheckers,
     ManagedAspect,
-    ProblemStore,
-    problemStoreBackedUndesirableUsageCheckerFor,
+    RepositoryScorer,
+    ScoredRepo,
     Tag,
-    UndesirableUsageChecker,
+    TaggedRepo,
 } from "./AspectRegistry";
 
+import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
+import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
+import {
+    scoreRepos,
+} from "../scorer/scoring";
 import { IdealStore } from "./IdealStore";
+import {
+    chainUndesirableUsageCheckers,
+    ProblemStore,
+    problemStoreBackedUndesirableUsageCheckerFor,
+    UndesirableUsageChecker,
+} from "./ProblemStore";
 
 /**
  * Determine zero or one tag in this fingerprint
@@ -82,6 +95,17 @@ export class DefaultAspectRegistry implements AspectRegistry {
             tag => tag.name);
     }
 
+    public async tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
+        return scoreRepos(
+            this.scorers,
+            this.tagRepos({
+                repoCount: repos.length,
+                // TODO fix this
+                averageFingerprintCount: -1,
+            }, repos),
+            this.opts.scoreWeightings);
+    }
+
     get availableTags(): Tag[] {
         return _.uniqBy(
             [...this.taggers, ...this.combinationTaggers],
@@ -111,11 +135,37 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this.opts.problemStore;
     }
 
+    get scorers(): RepositoryScorer[] {
+        return this.opts.scorers || [];
+    }
+
+    private tagRepos(tagContext: TagContext,
+                     repos: ProjectAnalysisResult[]): TaggedRepo[] {
+        return repos.map(repo => this.tagRepo(tagContext, repo));
+    }
+
+    private tagRepo(
+        tagContext: TagContext,
+        repo: ProjectAnalysisResult): TaggedRepo {
+        return {
+            ...repo,
+            tags: this.tagsIn(repo.analysis.fingerprints, tagContext)
+                .concat(this.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
+        };
+    }
+
+    private tagsIn(fps: FP[], tagContext: TagContext): Tag[] {
+        return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, tagContext))), tag => tag.name)
+            .sort();
+    }
+
     constructor(private readonly opts: {
         idealStore: IdealStore,
         problemStore: ProblemStore,
         aspects: ManagedAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
+        scorers?: RepositoryScorer[],
+        scoreWeightings?: ScoreWeightings,
     }) {
         opts.aspects.forEach(f => {
             if (!f) {
@@ -125,10 +175,10 @@ export class DefaultAspectRegistry implements AspectRegistry {
     }
 }
 
-export function defaultedToDisplayableFingerprintName(aspect?: ManagedAspect): (fingerprintName: string) => string {
+export function defaultedToDisplayableFingerprintName(aspect?: BaseAspect): (fingerprintName: string) => string {
     return (aspect && aspect.toDisplayableFingerprintName) || (name => name);
 }
 
-export function defaultedToDisplayableFingerprint(aspect?: ManagedAspect): (fpi: FP) => string {
+export function defaultedToDisplayableFingerprint(aspect?: BaseAspect): (fpi: FP) => string {
     return (aspect && aspect.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

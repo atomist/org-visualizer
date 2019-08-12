@@ -193,8 +193,6 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
 }
 
 function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
-
-
     const namesUpTree = [d.data.name];
     for (let place: any = d; place = place.parent; !!place) {
         namesUpTree.push(place.data.name);
@@ -205,8 +203,6 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
         if (e.attr("class") === "frozenLevelData") {
             return;
         }
-        console.log("Class is " + e.attr("class"))
-
         const value = namesDownTree[i] || "(various)";
         e.html(value);
     });
@@ -220,7 +216,6 @@ function populatePerLevelData(perLevelDataElements: d3.Selection<any, any, any, 
 }
 
 function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any, any, any, any>[], d: SunburstTreeNode) {
-
     const htmlUpTree = [formatLevelData(d.data)];
     for (let place: any = d; place = place.parent; !!place) {
         htmlUpTree.push(formatLevelData(place.data))
@@ -242,9 +237,9 @@ function setFrozenLevelData(workspaceId, perLevelDataElements: d3.Selection<any,
     });
 }
 
-function formatLevelData(data: { name: string, url?: string }): string {
-    return data.url ? `<a href="${data.url}">${data.name}</a>` : data.name;
-
+function formatLevelData(data: { name: string, url?: string, viewUrl?: string }): string {
+    const urlToUse = data.viewUrl || data.url;
+    return urlToUse ? `<a href="${urlToUse}">${data.name}</a>` : data.name;
 }
 
 function htmlForSetIdeal(workspaceId, dataId) {

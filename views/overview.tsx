@@ -3,7 +3,7 @@ import * as React from "react";
 import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { CustomReporters } from "../lib/customize/customReporters";
-import { ProjectForDisplay, ProjectList } from "./projectList";
+import { RepoForDisplay, RepoList } from "./repoList";
 import { collapsible } from "./utils";
 
 export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "name">, Pick<CohortAnalysis, "count" | "variants">, MaybeAnIdeal {
@@ -23,11 +23,15 @@ interface UnfoundAspectForDisplay {
     displayName: string;
 }
 
-export interface OrgExplorerProps {
+/**
+ * Props for entry page
+ */
+export interface OverviewProps {
     projectsAnalyzed: number;
     importantAspects: AspectFingerprintsForDisplay[];
     unfoundAspects: UnfoundAspectForDisplay[];
-    projects: ProjectForDisplay[];
+    repos: RepoForDisplay[];
+    virtualProjectCount: number;
 }
 
 export interface MaybeAnIdeal {
@@ -116,24 +120,20 @@ function fingerprintListItem(f: FingerprintForDisplay): React.ReactElement {
     </li>;
 }
 
-export function displayAspects(props: OrgExplorerProps): React.ReactElement {
+export function displayAspects(props: OverviewProps): React.ReactElement {
     if (props.projectsAnalyzed === 0) {
         return <div>
             <h2>No projects analyzed</h2>
-            Use the <pre>spider</pre> command to investigate some projects.
+            Use the spider command to analyze some projects.
             See <a
             href="https://github.com/atomist-blogs/org-visualizer/blob/master/README.md#analyze-your-repositories">the
             README</a> for details.
         </div>;
     }
 
-    const projectSummary = <ProjectList projects={props.projects}></ProjectList>;
-
     return <div>
 
-        {projectSummary}
-
-        {displayDashboards()}
+        {displayDashboards(props)}
 
         <h2>Aspects</h2>
         <div className="importantFeatures">
@@ -145,14 +145,22 @@ export function displayAspects(props: OrgExplorerProps): React.ReactElement {
     </div>;
 }
 
-function displayDashboards(): React.ReactElement {
+function displayDashboards(props: OverviewProps): React.ReactElement {
     return <div>
         <h2>Dashboards</h2>
         <ul>
             {collapsible("explore", "Explore",
                 <ul>
-                    <li><a href="./explore">Interactive explorer</a> - Explore your repository by tags</li>
-                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the greatest entropy</li>
+                    <li><a href="./explore">Interactive explorer</a> - Explore your {props.repos.length} repositories by tag</li>
+                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the
+                        greatest entropy
+                    </li>
+                </ul>,
+                true)}
+            {collapsible("repo-nav", "Repository List",
+                <ul>
+                    <li><a href="./repositories?byOrg=true">By organization</a></li>
+                    <li><a href="./repositories?byOrg=false">Ranked</a></li>
                 </ul>,
                 true)}
             {collapsible("custom-reports", "Custom Reports",
@@ -166,14 +174,15 @@ function displayCustomReports(): React.ReactElement {
     return <ul>
         {Object.getOwnPropertyNames(CustomReporters).map(name => {
             const reporter = CustomReporters[name];
-            return <li key={`report-${name}`}><a href={`./report/${name}?byOrg=true`}>{reporter.summary}</a> - {reporter.description}</li>;
+            return <li key={`report-${name}`}><a
+                href={`./report/${name}?byOrg=true`}>{reporter.summary}</a> - {reporter.description}</li>;
         })}
     </ul>;
 }
 
 // tslint:disable:max-line-length
 
-export function OrgExplorer(props: OrgExplorerProps): React.ReactElement {
+export function OrgExplorer(props: OverviewProps): React.ReactElement {
     return <div>
         {displayAspects(props)}
         {displayDeveloper()}
@@ -186,8 +195,11 @@ function displayDeveloper(): React.ReactElement {
         <ul>
             <li><a href="https://github.com/atomist-blogs/org-visualizer/blob/master/docs/developer.md">Developer
                 Guide</a> - Developer documentation on <a href="https://github.com/atomist-blogs">GitHub</a></li>
-            <li><a href="./api-docs">Swagger documentation</a> - Interactive documentation for API endpoints running on this server</li>
-            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a> - Example tree structured data return
+            <li><a href="./api-docs">Swagger documentation</a> - Interactive documentation for API endpoints running on
+                this server
+            </li>
+            <li><a href="./api/v1/*/fingerprint/npm-project-deps/tslint?byOrg=true">Example of backing JSON data</a> -
+                Example tree structured data return
             </li>
         </ul>
     </div>;

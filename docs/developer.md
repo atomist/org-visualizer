@@ -198,7 +198,7 @@ export const Aspects: ManagedAspect[] = [
     //... add your aspects here
 ```
 
-Add your simple or combination taggers to the respective array in the same file.
+Add your simple or combination taggers to the array in the `taggers.ts` file in the same directory.
 
 ## Advanced Concepts
 

@@ -20,6 +20,8 @@ import {
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 
+export const CodeOfConductType = "code-of-conduct";
+
 export interface CodeOfConductData {
 
     /**
@@ -38,8 +40,9 @@ export interface CodeOfConductData {
  * @constructor
  */
 export const CodeOfConduct: Aspect<FP<CodeOfConductData>> = {
-    name: "code-of-conduct",
+    name: CodeOfConductType,
     displayName: "Code of conduct",
+    baseOnly: true,
     extract: async p => {
         const codeOfConductFile = await
             p.getFile("CODE_OF_CONDUCT.md");
@@ -50,8 +53,8 @@ export const CodeOfConduct: Aspect<FP<CodeOfConductData>> = {
                 content,
             };
             return {
-                name: "code-of-conduct",
-                type: "code-of-conduct",
+                name: CodeOfConductType,
+                type: CodeOfConductType,
                 data,
                 sha: sha256(JSON.stringify(data)),
             };

@@ -1,12 +1,13 @@
-## create the database if needed (in psql):
+-- create the database if needed (in psql):
 
-# DROP DATABASE org_viz;
-# CREATE DATABASE org_viz;
+-- DROP DATABASE org_viz;
+-- CREATE DATABASE org_viz;
 
-## Connect to that database (in psql)
-# \connect org_viz
+-- Connect to that database (in psql):
+-- \connect org_viz
 
-## Run this DDL in either psql or pgadmin:
+-- Or, run this in psql from the terminal:
+-- psql -d org_viz -f ddl/create.ddl
 
 DROP TABLE IF EXISTS repo_fingerprints;
 
@@ -33,7 +34,6 @@ CREATE TABLE repo_snapshots (
  name text NOT NULL,
  url text NOT NULL,
  branch text,
- path text,
  commit_sha varchar NOT NULL,
  analysis jsonb,
  timestamp TIMESTAMP  NOT NULL,
@@ -53,7 +53,9 @@ CREATE TABLE fingerprints (
 CREATE TABLE IF NOT EXISTS repo_fingerprints (
   repo_snapshot_id varchar references repo_snapshots(id),
   fingerprint_id varchar references fingerprints(id),
-  PRIMARY KEY (repo_snapshot_id, fingerprint_id)
+  -- Path below the root if this is a virtual repo
+  path varchar,
+  PRIMARY KEY (repo_snapshot_id, fingerprint_id, path)
 );
 
 -- Usage information about fingerprints

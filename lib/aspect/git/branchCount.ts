@@ -20,7 +20,7 @@ import {
 } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import {
-    Aspect,
+    Aspect, FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -31,9 +31,14 @@ import { SizeBands } from "../../util/commonBands";
 
 export const BranchCountType = "branch-count";
 
-export const branchCount: Aspect = {
+export interface BranchCountData {
+    count: number;
+}
+
+export const branchCount: Aspect<FP<BranchCountData>> = {
     name: BranchCountType,
     displayName: "Branch count",
+    baseOnly: true,
     extract: async p => {
         const lp = p as LocalProject;
         const commandResult = await execPromise(
@@ -42,8 +47,8 @@ export const branchCount: Aspect = {
                 cwd: lp.baseDir,
             });
         const count = commandResult.stdout
-            .split("\n")
-            .filter(l => !l.includes("origin/HEAD")).length - 1;
+                .split("\n")
+                .filter(l => !l.includes("origin/HEAD")).length - 1;
         const data = { count };
         logger.debug("Branch count for %s is %d", p.id.url, count);
         return {
@@ -55,13 +60,12 @@ export const branchCount: Aspect = {
     },
     toDisplayableFingerprintName: () => "Branch count",
     toDisplayableFingerprint: fp => {
-        const count = parseInt(fp.data.count, 10);
         return bandFor<SizeBands | "excessive">({
             low: { upTo: 5 },
             medium: { upTo: 12 },
-            high: { upTo: 12},
+            high: { upTo: 12 },
             excessive: Default,
-        }, count, { includeNumber: true });
+        }, fp.data.count, { includeNumber: true });
     },
     stats: {
         defaultStatStatus: {

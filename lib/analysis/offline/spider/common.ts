@@ -19,11 +19,7 @@ import {
     Project,
     RepoId,
 } from "@atomist/automation-client";
-import {
-    Interpretation,
-    ProjectAnalysis,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { Analyzed } from "../../../aspect/AspectRegistry";
 import {
     PersistResult,
     ProjectAnalysisResultStore,
@@ -31,17 +27,18 @@ import {
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
 import {
+    Analyzer,
     ProjectAnalysisResultFilter,
     SpiderOptions,
 } from "./Spider";
 
-export async function keepExistingPersisted(
+export async function existingRecordShouldBeKept(
     opts: {
         persister: ProjectAnalysisResultStore,
         keepExistingPersisted: ProjectAnalysisResultFilter,
     },
     repoId: RepoId): Promise<boolean> {
-    const found = await opts.persister.loadByRepoRef(repoId);
+    const found = await opts.persister.loadByRepoRef(repoId, false);
     if (!found) {
         return false;
     }
@@ -56,14 +53,13 @@ export interface AnalyzeResults {
 export interface RepoInfo {
     readme: string;
     totalFileCount: number;
-    interpretation: Interpretation;
-    analysis: ProjectAnalysis;
+    analysis: Analyzed;
 }
 /**
  * Find project or subprojects
  */
 export async function analyze(project: Project,
-                              analyzer: ProjectAnalyzer,
+                              analyzer: Analyzer,
                               criteria: ScmSearchCriteria): Promise<AnalyzeResults> {
     return { projectsDetected: 1, repoInfos: [await analyzeProject(project, analyzer)] };
 }
@@ -72,18 +68,16 @@ export async function analyze(project: Project,
  * Analyze a project.
  */
 async function analyzeProject(project: Project,
-                              analyzer: ProjectAnalyzer): Promise<RepoInfo> {
+                              analyzer: Analyzer): Promise<RepoInfo> {
     const readmeFile = await project.getFile("README.md");
     const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
     const totalFileCount = await project.totalFileCount();
 
-    const analysis = await analyzer.analyze(project, undefined, { full: true });
-    const interpretation = await analyzer.interpret(analysis, undefined);
+    const analysis = await analyzer(project);
 
     return {
         readme,
         totalFileCount,
-        interpretation,
         analysis,
     };
 }

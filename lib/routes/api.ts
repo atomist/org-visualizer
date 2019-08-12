@@ -41,7 +41,6 @@ import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import {
     AspectRegistry,
     Tag,
-    tagsIn,
 } from "../aspect/AspectRegistry";
 import {
     driftTreeForAllAspects,
@@ -66,8 +65,14 @@ import {
 } from "./auth";
 import {
     buildFingerprintTree,
-    splitByOrg,
 } from "./buildFingerprintTree";
+import {
+    tagUsageIn,
+} from "./support/tagUtils";
+import {
+    addRepositoryViewUrl,
+    splitByOrg,
+} from "./support/treeMunging";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -76,9 +81,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     projectAnalysisResultStore: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -237,23 +242,23 @@ function exposeFingerprintByTypeAndName(express: Express,
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
-        try {
-            const type = req.query.type;
-            let driftTree = type ?
-                await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
-                await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
-            fillInAspectNames(aspectRegistry, driftTree.tree);
-            if (!type) {
-                driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+            try {
+                const type = req.query.type;
+                let driftTree = type ?
+                    await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
+                    await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
+                fillInAspectNames(aspectRegistry, driftTree.tree);
+                if (!type) {
+                    driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+                }
+                driftTree.tree = flattenSoleFingerprints(driftTree.tree);
+                return res.json(driftTree);
+            } catch
+                (err) {
+                logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
+                res.sendStatus(500);
             }
-            driftTree.tree = flattenSoleFingerprints(driftTree.tree);
-            return res.json(driftTree);
-        } catch
-        (err) {
-            logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
-            res.sendStatus(500);
-        }
-    },
+        },
     );
 }
 
@@ -279,17 +284,10 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
     express.options("/api/v1/:workspace_id/explore", corsHandler());
     express.get("/api/v1/:workspace_id/explore", [corsHandler(), ...authHandlers()], async (req, res) => {
         const workspaceId = req.params.workspace_id || "*";
-        const repos = await store.loadInWorkspace(workspaceId);
+        const repos = await store.loadInWorkspace(workspaceId, true);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
-        const averageFingerprintCount = await store.averageFingerprintCount(workspaceId);
-
-        const tagContext: TagContext = {
-            averageFingerprintCount,
-            repoCount: repos.length,
-        };
-
-        const taggedRepos = tagRepos(aspectRegistry, tagContext, repos);
+        const taggedRepos = await aspectRegistry.tagAndScoreRepos(repos);
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
@@ -309,6 +307,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
                         url: r.repoRef.url,
                         size: r.analysis.fingerprints.length,
                         tags: r.tags,
+                        weightedScore: r.weightedScore,
                     };
                 }),
             },
@@ -317,13 +316,15 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         if (req.query.byOrg !== "false") {
             repoTree = splitByOrg(repoTree);
         }
+        repoTree.tree = addRepositoryViewUrl(repoTree.tree);
 
         const tagTree: TagTree = {
             tags: allTags,
             selectedTags,
             repoCount: repos.length,
             matchingRepoCount: relevantRepos.length,
-            averageFingerprintCount,
+            // TODO fix this
+            averageFingerprintCount: -1,
             ...repoTree,
         };
         res.send(tagTree);
@@ -347,27 +348,6 @@ export interface TagTree extends TagContext, PlantedTree {
     matchingRepoCount: number;
     tags: TagUsage[];
     selectedTags: string[];
-}
-
-function tagRepos(aspectRegistry: AspectRegistry,
-                  tagContext: TagContext,
-                  repos: ProjectAnalysisResult[]): Array<ProjectAnalysisResult & { tags: Tag[] }> {
-    return repos.map(repo =>
-        ({
-            ...repo,
-            tags: tagsIn(aspectRegistry, repo.analysis.fingerprints, tagContext)
-                .concat(aspectRegistry.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
-        }));
-}
-
-function tagUsageIn(aspectRegistry: AspectRegistry, relevantRepos: Array<ProjectAnalysisResult & { tags: Tag[] }>): TagUsage[] {
-    const relevantTags = _.groupBy(_.flatten(relevantRepos.map(r => r.tags.map(tag => tag.name))));
-    return Object.getOwnPropertyNames(relevantTags).map(name => ({
-        name,
-        description: aspectRegistry.availableTags.find(t => t.name === name).description,
-        severity: aspectRegistry.availableTags.find(t => t.name === name).severity,
-        count: relevantTags[name].length,
-    }));
 }
 
 /**
@@ -430,7 +410,7 @@ function exposeCustomReports(express: Express, store: ProjectAnalysisResultStore
                 throw new Error(`No report named '${req.params.name}'`);
             }
 
-            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
+            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id, true);
             const relevantRepos = repos.filter(ar => req.query.owner ? ar.analysis.id.owner === req.params.owner : true);
             let pt = await q.builder.toPlantedTree(() => relevantRepos.map(r => r.analysis));
             if (req.query.byOrg !== "false") {

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import { Project } from "@atomist/automation-client";
+import { Analyzed } from "../../../aspect/AspectRegistry";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
@@ -69,12 +70,15 @@ export const EmptySpiderResult: SpiderResult = {
     keptExisting: [],
     persistedAnalyses: [],
 };
+
+export type Analyzer = (p: Project) => Promise<Analyzed>;
+
 /**
  * Spider a data source and progressively persist what we find.
  */
 export interface Spider {
 
     spider(criteria: ScmSearchCriteria,
-           analyzer: ProjectAnalyzer,
+           analyzer: Analyzer,
            opts: SpiderOptions): Promise<SpiderResult>;
 }

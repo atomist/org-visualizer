@@ -41,6 +41,7 @@ import {
     sdmConfigClientFactory,
 } from "../machine/machine";
 import { computeAnalytics } from "../analysis/offline/spider/analytics";
+import { Aspects } from "../customize/aspects";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(PlainLogging);
@@ -82,7 +83,7 @@ interface SpiderAppOptions {
  * Spider a GitHub.com org
  */
 async function spider(params: SpiderAppOptions) {
-    const analyzer = createAnalyzer(undefined);
+    const analyzer = createAnalyzer(Aspects);
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
@@ -111,7 +112,7 @@ async function spider(params: SpiderAppOptions) {
     _.fill(arr, "-");
     const sep = arr.join("");
     logger.info("%s\nOptions: %j\nSpider criteria: %j\n%s\n", sep, params, criteria, sep);
-    const spiderResult = await spider.spider(criteria,
+    return spider.spider(criteria,
         analyzer,
         {
             persister,
@@ -127,9 +128,6 @@ async function spider(params: SpiderAppOptions) {
             poolSize: 40,
             workspaceId,
         });
-    console.log("Computing analytics over all fingerprints...");
-    await computeAnalytics(persister, workspaceId);
-    return spiderResult;
 }
 
 yargs

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import {
     BaseAspect,
     ConcreteIdeal,
@@ -22,7 +21,6 @@ import {
     Ideal,
 } from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
-import { Client } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { AspectRegistry } from "../aspect/AspectRegistry";
 import { fingerprintsToReposTree } from "../aspect/repoTree";
@@ -40,6 +38,10 @@ import {
 } from "../tree/treeUtils";
 
 import * as _ from "lodash";
+import {
+    addRepositoryViewUrl,
+    splitByOrg,
+} from "./support/treeMunging";
 
 /**
  * Return a tree from fingerprint name -> instances -> repos
@@ -128,6 +130,7 @@ export async function buildFingerprintTree(
     }
 
     applyTerminalSizing(aspect, pt.tree);
+    pt.tree = addRepositoryViewUrl(pt.tree);
 
     // Group all fingerprint nodes by their name at the first level
     pt.tree = groupSiblings(pt.tree, {
@@ -138,6 +141,8 @@ export async function buildFingerprintTree(
 
     if (trim) {
         pt.tree = trimOuterRim(pt.tree);
+    } else {
+        putRepoPathInNameOfRepoLeaves(pt);
     }
 
     return pt;
@@ -206,12 +211,19 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
     });
 }
 
-export function splitByOrg(pt: PlantedTree): PlantedTree {
-    // Group by organization via an additional layer at the center
-    return introduceClassificationLayer<{ owner: string }>(pt,
-        {
-            descendantClassifier: l => l.owner,
-            newLayerDepth: 1,
-            newLayerMeaning: "owner",
-        });
+/**
+ * Show virtual repos
+ * @param {PlantedTree} pt
+ */
+export function putRepoPathInNameOfRepoLeaves(pt: PlantedTree): void {
+    interface EndNode { name: string; size: number; path?: string; url?: string; }
+
+    visit(pt.tree, l => {
+        const en = l as EndNode;
+        if (!isSunburstTree(en) && en.name && en.url && en.path) {
+            // It's an eligible end node
+            en.name = en.name + "/" + en.path;
+        }
+        return true;
+    });
 }

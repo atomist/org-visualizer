@@ -18,34 +18,24 @@ import {
     Configuration,
     logger,
 } from "@atomist/automation-client";
-import {
-    PushImpactListener,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
-import {
-    analyzerBuilder,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
+import { PushImpactListener } from "@atomist/sdm";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import {
-    ProblemStore,
-} from "../aspect/AspectRegistry";
+import { Analyzer } from "../analysis/offline/spider/Spider";
+import { spiderAnalyzer } from "../analysis/offline/spider/spiderAnalyzer";
+import { ManagedAspect } from "../aspect/AspectRegistry";
 import { IdealStore } from "../aspect/IdealStore";
-import { Aspects } from "../customize/aspects";
+import { ProblemStore } from "../aspect/ProblemStore";
 
 /**
  * Add scanners to the analyzer to extract data
- * @param {SoftwareDeliveryMachine} sdm
  * @return {ProjectAnalyzer}
  */
-export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
-    return analyzerBuilder(sdm)
-        .withAspects(Aspects)
-        .build();
+export function createAnalyzer(aspects: ManagedAspect[]): Analyzer {
+    return spiderAnalyzer(aspects);
 }
 
 const PoolHolder: { pool: Pool } = { pool: undefined };
@@ -66,16 +56,16 @@ export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResu
 
 export function updatedStoredAnalysisIfNecessary(opts: {
     analyzedRepoStore: ProjectAnalysisResultStore,
-    analyzer: ProjectAnalyzer,
+    analyzer: Analyzer,
     maxAgeHours: number,
 }): PushImpactListener<any> {
     const maxAgeMillis = 60 * 60 * 1000;
     return async pu => {
         try {
-            const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id);
+            const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id, false);
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
-                const analysis = await opts.analyzer.analyze(pu.project, pu, { full: true });
+                const analysis = await opts.analyzer(pu.project);
                 logger.info("Performing fresh analysis of project at %s", pu.id.url);
                 await opts.analyzedRepoStore.persist({
                     repoRef: analysis.id,

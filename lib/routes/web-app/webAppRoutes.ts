@@ -20,14 +20,11 @@ import {
 } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
-    BaseAspect,
     ConcreteIdeal,
     FP,
     Ideal,
     isConcreteIdeal,
-    supportsEntropy,
 } from "@atomist/sdm-pack-fingerprints";
-import { idealCoordinates } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -37,53 +34,47 @@ import * as _ from "lodash";
 import { CSSProperties } from "react";
 import serveStatic = require("serve-static");
 import {
-    AspectFingerprintsForDisplay,
-    FingerprintForDisplay,
-    OrgExplorer,
-} from "../../views/org";
-import {
     ProjectAspectForDisplay,
-    ProjectExplorer,
     ProjectFingerprintForDisplay,
-} from "../../views/project";
-import {
-    ProjectForDisplay,
-    ProjectList,
-} from "../../views/projectList";
+    RepoExplorer,
+} from "../../../views/repository";
 import {
     CurrentIdealForDisplay,
     PossibleIdealForDisplay,
     SunburstPage,
-} from "../../views/sunburstPage";
-import { renderStaticReactNode } from "../../views/topLevelPage";
-import {
-    FingerprintUsage,
-    ProjectAnalysisResultStore,
-} from "../analysis/offline/persist/ProjectAnalysisResultStore";
+} from "../../../views/sunburstPage";
+import { renderStaticReactNode } from "../../../views/topLevelPage";
+import { ProjectAnalysisResultStore } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
     ManagedAspect,
-} from "../aspect/AspectRegistry";
+} from "../../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
     defaultedToDisplayableFingerprintName,
-} from "../aspect/DefaultAspectRegistry";
-import { TagTree } from "./api";
+} from "../../aspect/DefaultAspectRegistry";
+import { CustomReporters } from "../../customize/customReporters";
+import {
+    describeSelectedTagsToAnimals,
+    TagTree,
+} from "../api";
+import { exposeOverviewPage } from "./overviewPage";
+import { exposeRepositoryListPage } from "./repositoryListPage";
 
 /**
  * Add the org page route to Atomist SDM Express server.
  * @return {ExpressCustomizer}
  */
-export function orgPage(
+export function addWebAppRoutes(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
         customizer: ExpressCustomizer,
         routesToSuggestOnStartup: Array<{ title: string, route: string }>,
     } {
-    const orgRoute = "/org";
+    const topLevelRoute = "/overview";
     return {
-        routesToSuggestOnStartup: [{ title: "Org Visualizations", route: orgRoute }],
+        routesToSuggestOnStartup: [{ title: "Atomist Visualizations", route: topLevelRoute }],
         customizer: (express: Express, ...handlers: RequestHandler[]) => {
             express.use(bodyParser.json());       // to support JSON-encoded bodies
             express.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -97,13 +88,13 @@ export function orgPage(
              * for now, and later make a higher-level page if we want.
              */
             express.get("/", ...handlers, async (req, res) => {
-                res.redirect(orgRoute);
+                res.redirect(topLevelRoute);
             });
 
             exposeDriftPage(express, handlers, httpClientFactory, aspectRegistry);
-            exposeOrgPage(express, handlers, orgRoute, aspectRegistry, store);
-            exposeProjectListPage(express, handlers, store);
-            exposeProjectPage(express, handlers, aspectRegistry, store);
+            exposeOverviewPage(express, handlers, topLevelRoute, aspectRegistry, store);
+            exposeRepositoryListPage(express, handlers, aspectRegistry, store);
+            exposeRepositoryPage(express, handlers, aspectRegistry, store);
             exposeExplorePage(express, handlers, httpClientFactory, aspectRegistry);
             exposeFingerprintReportPage(express, handlers, httpClientFactory, aspectRegistry);
             exposeCustomReportPage(express, handlers, httpClientFactory, aspectRegistry);
@@ -111,72 +102,11 @@ export function orgPage(
     };
 }
 
-function exposeProjectListPage(express: Express,
-                               handlers: RequestHandler[],
-                               store: ProjectAnalysisResultStore): void {
-    express.get("/projects", ...handlers, async (req, res) => {
-        const allAnalysisResults = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
-
-        // optional query parameter: owner
-        const relevantAnalysisResults = allAnalysisResults.filter(ar => req.query.owner ? ar.analysis.id.owner === req.query.owner : true);
-        if (relevantAnalysisResults.length === 0) {
-            return res.send(`No matching repos for organization ${req.query.owner}`);
-        }
-
-        const projectsForDisplay: ProjectForDisplay[] = relevantAnalysisResults.map(ar => ({ id: ar.id, ...ar.analysis.id }));
-
-        return res.send(renderStaticReactNode(
-            ProjectList({ projects: projectsForDisplay }),
-            "Project list"));
-    });
-}
-
-function exposeOrgPage(express: Express,
-                       handlers: RequestHandler[],
-                       orgRoute: string,
-                       aspectRegistry: AspectRegistry,
-                       store: ProjectAnalysisResultStore): void {
-    express.get(orgRoute, ...handlers, async (req, res) => {
-        try {
-            const repos = await store.loadInWorkspace(req.query.workspace || req.params.workspace_id);
-            const fingerprintUsage = await store.fingerprintUsageForType("*");
-
-            const ideals = await aspectRegistry.idealStore.loadIdeals("*");
-
-            const aspectsEligibleForDisplay = aspectRegistry.aspects.filter(a => !!a.displayName)
-                .filter(a => fingerprintUsage.some(fu => fu.type === a.name));
-            const importantAspects: AspectFingerprintsForDisplay[] = _.sortBy(aspectsEligibleForDisplay, a => a.displayName)
-                .map(aspect => {
-                    const fingerprintsForThisAspect = fingerprintUsage.filter(fu => fu.type === aspect.name);
-                    return {
-                        aspect,
-                        fingerprints: fingerprintsForThisAspect
-                            .map(fp => formatFingerprintUsageForDisplay(aspect, ideals, fp)),
-                    };
-                });
-
-            const unfoundAspects: BaseAspect[] = aspectRegistry.aspects
-                .filter(f => !!f.displayName)
-                .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
-
-            res.send(renderStaticReactNode(OrgExplorer({
-                projectsAnalyzed: repos.length,
-                importantAspects,
-                unfoundAspects,
-                projects: repos.map(r => ({ ...r.repoRef, id: r.id })),
-            })));
-        } catch (e) {
-            logger.error(e.stack);
-            res.status(500).send("failure");
-        }
-    });
-}
-
-function exposeProjectPage(express: Express,
-                           handlers: RequestHandler[],
-                           aspectRegistry: AspectRegistry,
-                           store: ProjectAnalysisResultStore): void {
-    express.get("/project", ...handlers, async (req, res) => {
+function exposeRepositoryPage(express: Express,
+                              handlers: RequestHandler[],
+                              aspectRegistry: AspectRegistry,
+                              store: ProjectAnalysisResultStore): void {
+    express.get("/repository", ...handlers, async (req, res) => {
         const id = req.query.id;
         const analysisResult = await store.loadById(id);
         if (!analysisResult) {
@@ -195,10 +125,12 @@ function exposeProjectPage(express: Express,
             })),
         }));
 
-        return res.send(renderStaticReactNode(ProjectExplorer({
-            analysisResult,
-            aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
-        })));
+        const repo = (await aspectRegistry.tagAndScoreRepos([analysisResult]))[0];
+        return res.send(renderStaticReactNode(
+            RepoExplorer({
+                repo,
+                aspects: _.sortBy(ffd.filter(f => !!f.aspect.displayName), f => f.aspect.displayName),
+            }), `${repo.analysis.id.owner} / ${repo.analysis.id.repo}`));
     });
 }
 
@@ -207,9 +139,15 @@ function exposeExplorePage(express: Express,
                            httpClientFactory: HttpClientFactory,
                            aspectRegistry: AspectRegistry): void {
     express.get("/explore", ...handlers, async (req, res) => {
+        const tags = req.query.tags || "";
         const workspaceId = req.query.workspaceId || "*";
-        const dataUrl = `/api/v1/${workspaceId}/explore?tags=${req.query.tags || ""}`;
-        return renderDataUrl(workspaceId, { dataUrl, title: "Explorer" }, aspectRegistry, httpClientFactory, req, res);
+        const dataUrl = `/api/v1/${workspaceId}/explore?tags=${tags}`;
+        const readable = describeSelectedTagsToAnimals(tags.split(","));
+        return renderDataUrl(workspaceId, {
+            dataUrl,
+            title: `Repositories matching ${readable}`,
+        },
+            aspectRegistry, httpClientFactory, req, res);
     });
 }
 
@@ -257,9 +195,13 @@ function exposeCustomReportPage(express: Express,
         const workspaceId = req.query.workspaceId || "*";
         const queryString = jsonToQueryString(req.query);
         const dataUrl = `/api/v1/${workspaceId}/report/${name}?${queryString}`;
+        const reporter = CustomReporters[name];
+        if (!reporter) {
+            throw new Error(`No report named ${name}`);
+        }
         return renderDataUrl(workspaceId, {
             dataUrl,
-            title: `Atomist report ${name}`,
+            title: reporter.summary,
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -316,7 +258,7 @@ async function renderDataUrl(workspaceId: string,
             currentIdeal: currentIdealForDisplay,
             possibleIdeals: possibleIdealsForDisplay,
             query: req.params.query,
-            dataUrl: page.dataUrl,
+            dataUrl: fullUrl,
             tree,
             selectedTags: req.query.tags ? req.query.tags.split(",") : [],
         }),
@@ -403,22 +345,4 @@ async function projectFingerprints(fm: AspectRegistry, allFingerprintsInOneProje
         }
     }
     return result;
-}
-
-function idealMatchesFingerprint(id: Ideal, fp: FingerprintUsage): boolean {
-    const c = idealCoordinates(id);
-    return c.type === fp.type && c.name === fp.name;
-}
-
-function formatFingerprintUsageForDisplay(aspect: ManagedAspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
-    const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
-    const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
-        { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }
-        : undefined;
-    return {
-        ...fp,
-        ideal,
-        displayName: defaultedToDisplayableFingerprintName(aspect)(fp.name),
-        entropy: supportsEntropy(aspect) ? fp.entropy : undefined,
-    };
 }

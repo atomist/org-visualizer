@@ -29,14 +29,16 @@ import {
     emptyPersistResult,
     PersistResult,
 } from "../../persist/ProjectAnalysisResultStore";
+import { computeAnalytics } from "../analytics";
 import {
     analyze,
     AnalyzeResults,
-    keepExistingPersisted,
+    existingRecordShouldBeKept,
     persistRepoInfo,
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
+    Analyzer,
     Spider,
     SpiderOptions,
     SpiderResult,
@@ -45,7 +47,7 @@ import {
 export class LocalSpider implements Spider {
 
     public async spider(criteria: ScmSearchCriteria,
-                        analyzer: ProjectAnalyzer,
+                        analyzer: Analyzer,
                         opts: SpiderOptions): Promise<SpiderResult> {
         const repoIterator = findRepositoriesUnder(this.localDirectory);
         const results: SpiderResult[] = [];
@@ -55,10 +57,13 @@ export class LocalSpider implements Spider {
             results.push(await spiderOneLocalRepo(opts, criteria, analyzer, repoDir));
         }
 
+        logger.info("Computing analytics over all fingerprints...");
+        await computeAnalytics(opts.persister, opts.workspaceId);
         return results.reduce(combineSpiderResults, emptySpiderResult);
     }
 
-    constructor(public readonly localDirectory: string) { }
+    constructor(public readonly localDirectory: string) {
+    }
 }
 
 function combineSpiderResults(r1: SpiderResult, r2: SpiderResult): SpiderResult {
@@ -89,11 +94,11 @@ const oneSpiderResult = {
 
 async function spiderOneLocalRepo(opts: SpiderOptions,
                                   criteria: ScmSearchCriteria,
-                                  analyzer: ProjectAnalyzer,
+                                  analyzer: Analyzer,
                                   repoDir: string): Promise<SpiderResult> {
     const localRepoRef = await repoRefFromLocalRepo(repoDir);
 
-    if (await keepExistingPersisted(opts, localRepoRef)) {
+    if (await existingRecordShouldBeKept(opts, localRepoRef)) {
         return {
             ...oneSpiderResult,
             keptExisting: [localRepoRef.url],
@@ -124,14 +129,12 @@ async function spiderOneLocalRepo(opts: SpiderOptions,
 
     const persistResults: PersistResult[] = [];
     for (const repoInfo of analyzeResults.repoInfos) {
-        if (!criteria.interpretationTest || criteria.interpretationTest(repoInfo.interpretation)) {
-            const persistResult = await persistRepoInfo(opts, repoInfo, {
-                sourceData: { localDirectory: repoDir },
-                url: localRepoRef.url,
-                timestamp: new Date(),
-            });
-            persistResults.push(persistResult);
-        }
+        const persistResult = await persistRepoInfo(opts, repoInfo, {
+            sourceData: { localDirectory: repoDir },
+            url: localRepoRef.url,
+            timestamp: new Date(),
+        });
+        persistResults.push(persistResult);
     }
     const combinedPersistResult = persistResults.reduce(combinePersistResults, emptyPersistResult);
 

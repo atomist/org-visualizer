@@ -44,11 +44,4 @@ export interface ScmSearchCriteria {
      */
     projectTest?: (p: Project) => Promise<boolean>;
 
-    /**
-     * Further narrow whether to persist based on interpretation
-     * @param {Interpretation} i
-     * @return {Promise<boolean>}
-     */
-    interpretationTest?: (i: Interpretation) => boolean;
-
 }

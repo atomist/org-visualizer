@@ -58,6 +58,8 @@ export interface FingerprintUsage extends CohortAnalysis {
  * Interface for basic persistence operations.
  * Implementations can provide additional querying options,
  * e.g. through SQL.
+ * '*' is consistently used in place for workspaceId to return
+ * data for all workspaces.
  */
 export interface ProjectAnalysisResultStore {
 
@@ -66,15 +68,21 @@ export interface ProjectAnalysisResultStore {
      */
     distinctRepoCount(workspaceId: string): Promise<number>;
 
+    /**
+     * Virtual project count. One repository may contain multiple virtual projects
+     */
+    virtualProjectCount(workspaceId: string): Promise<number>;
+
     latestTimestamp(workspaceId: string): Promise<Date>;
 
     /**
      * Load in the given workspace
-     * @param workspaceId undefined or * for all workspaces
+     * @param workspaceId  '*' for all workspaces
+     * @param deep whether to load deep
      */
-    loadInWorkspace(workspaceId?: string): Promise<ProjectAnalysisResult[]>;
+    loadInWorkspace(workspaceId: string, deep: boolean): Promise<ProjectAnalysisResult[]>;
 
-    loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult | undefined>;
+    loadByRepoRef(repo: RepoRef, deep: boolean): Promise<ProjectAnalysisResult | undefined>;
 
     /**
      * Load by our database id
@@ -93,7 +101,7 @@ export interface ProjectAnalysisResultStore {
     fingerprintUsageForType(workspaceId: string, type?: string): Promise<FingerprintUsage[]>;
 
     /**
-     * Persist a record of analytics
+     * Persist a record of analytics. Can be invoked repeatedly on the same data without error.
      */
     persistAnalytics(params: Array<{ workspaceId: string, kind: FingerprintKind, cohortAnalysis: CohortAnalysis }>): Promise<boolean>;
 

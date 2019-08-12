@@ -24,6 +24,7 @@ const FileCountType = "fileCount";
 export const fileCount: Aspect = {
     name: FileCountType,
     displayName: "File count",
+    baseOnly: true,
     extract: async p => {
         const data = { count: await p.totalFileCount() };
         return {

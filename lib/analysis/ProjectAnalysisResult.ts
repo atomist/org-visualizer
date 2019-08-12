@@ -32,6 +32,9 @@ export interface ProjectAnalysisResult {
 
     readonly workspaceId: string;
 
+    /**
+     * If this is a deep retrieval, analysis
+     */
     readonly analysis?: Analyzed;
 
     /**
@@ -43,5 +46,5 @@ export interface ProjectAnalysisResult {
 
 export function isProjectAnalysisResult(r: any): r is ProjectAnalysisResult {
     const maybe = r as ProjectAnalysisResult;
-    return !!maybe.analysis;
+    return !!maybe.repoRef && !!maybe.timestamp;
 }

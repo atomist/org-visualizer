@@ -19,13 +19,22 @@ import {
     ProjectFile,
 } from "@atomist/automation-client";
 import {
-    Aspect,
+    Aspect, FP,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 
 export const NoLicense = "None";
 
-const LicenseType = "license";
+export const LicenseType = "license";
+
+export function hasNoLicense(ld: LicenseData): boolean {
+    return ld.classification === NoLicense;
+}
+
+export function isLicenseFingerprint(fp: FP): fp is FP<LicenseData> {
+    const maybe = fp as FP<LicenseData>;
+    return fp.type === LicenseType && !!maybe.data.classification;
+}
 
 export interface LicenseData {
     path: string;
@@ -42,11 +51,12 @@ export interface LicenseData {
  * License aspect. Every repository gets a license fingerprint, which may have unknown
  * as a license.
  */
-export const License: Aspect = {
+export const License: Aspect<FP<LicenseData>> = {
     name: LicenseType,
     displayName: "License",
+    baseOnly: true,
     extract: async p => {
-        const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt");
+        const licenseFile = await firstFileFound(p, "LICENSE", "LICENSE.txt", "license.txt", "LICENSE.md");
         let classification: string = NoLicense;
         let content: string;
         if (!!licenseFile) {

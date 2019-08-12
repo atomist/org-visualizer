@@ -24,6 +24,9 @@ import {
     SunburstTree,
 } from "./sunburst";
 
+/**
+ * Visit all nodes of a tree. May mutate them.
+ */
 export function visit(
     t: SunburstLevel,
     visitor: (sl: SunburstLevel, depth: number) => boolean,
