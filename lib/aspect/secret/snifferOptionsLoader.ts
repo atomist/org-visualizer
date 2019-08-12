@@ -45,7 +45,7 @@ export async function loadSnifferOptions(): Promise<SnifferOptions> {
         return {
             secretDefinitions,
             whitelist: native.whitelist || [],
-            globs: native.globs || [AllFiles],
+            globs: native.glob || [AllFiles],
             scanOnlyChangedFiles: native.scanOnlyChangedFiles || false,
         };
     } catch (err) {

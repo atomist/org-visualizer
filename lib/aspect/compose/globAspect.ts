@@ -17,6 +17,7 @@
 import { gatherFromFiles } from "@atomist/automation-client/lib/project/util/projectUtils";
 import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
+import { FileMatchData } from "./fileMatchAspect";
 
 export interface GlobMatch {
     path: string;
@@ -24,14 +25,14 @@ export interface GlobMatch {
 }
 
 export interface GlobAspectData {
+    kind: "glob",
+    glob: string;
     matches: GlobMatch[];
 }
 
-export const GlobType = "glob";
-
-export function isGlobFingerprint(fp: FP): fp is FP<GlobAspectData> {
-    const maybe = fp as FP<GlobAspectData>;
-    return maybe.type === GlobType && maybe.data.matches !== undefined;
+export function isGlobMatchFingerprint(fp: FP): fp is FP<FileMatchData> {
+    const maybe = fp.data as GlobAspectData;
+    return !!maybe && maybe.kind === "glob" && !!maybe.glob;
 }
 
 /**
@@ -49,14 +50,16 @@ export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
         ...config,
         extract: async p => {
             const data = {
+                glob: config.glob,
+                kind: "glob" as any,
                 matches: await gatherFromFiles(p, config.glob, async f => ({
                     path: f.path,
                     size: (await f.getContent()).length,
                 })),
             };
             return {
+                type: config.name,
                 name: config.name,
-                type: GlobType,
                 data,
                 sha: sha256(JSON.stringify(data)),
             };

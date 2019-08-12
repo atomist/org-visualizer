@@ -31,14 +31,13 @@ import {
     CodeMetricsType,
 } from "../aspect/common/codeMetrics";
 import {
-    CodeOfConduct,
     CodeOfConductType,
 } from "../aspect/community/codeOfConduct";
 import {
     hasNoLicense,
     LicenseType,
 } from "../aspect/community/license";
-import { GlobType } from "../aspect/compose/globAspect";
+import { GlobAspectData, isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyType } from "../aspect/git/gitActivity";
 import { TsLintType } from "../aspect/node/TsLintAspect";
@@ -132,8 +131,8 @@ export const Scorers: RepositoryScorer[] = [
     limitLinesIn({ language: ShellLanguage, limit: 200 }),
     requireRecentCommit({ days: 100 }),
     requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
-    requireGlobAspect({glob: "CHANGELOG.md"}),
-    requireGlobAspect({glob: "CONTRIBUTING.md"}),
+    requireGlobAspect({ glob: "CHANGELOG.md" }),
+    requireGlobAspect({ glob: "CONTRIBUTING.md" }),
 ];
 
 function requireRecentCommit(opts: { days: number }): RepositoryScorer {
@@ -214,11 +213,12 @@ export function requireAspectOfType(opts: { type: string, reason: string }): Rep
  */
 export function requireGlobAspect(opts: { glob: string }): RepositoryScorer {
     return async repo => {
-        const found = repo.analysis.fingerprints.find(fp => fp.type === GlobType);
+        const globs = repo.analysis.fingerprints.filter(isGlobMatchFingerprint);
+        const found = globs.filter(gf => gf.data.glob === opts.glob);
         return {
             name: `${opts.glob}-required`,
             score: !!found ? 5 : 1,
-            reason: `Should have file ${opts.glob}`,
+            reason: `Should have file for ${opts.glob}`,
         };
     };
 }

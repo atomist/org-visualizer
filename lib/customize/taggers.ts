@@ -29,10 +29,6 @@ import {
     isLicenseFingerprint,
 } from "../aspect/community/license";
 import {
-    GlobType,
-    isGlobFingerprint,
-} from "../aspect/compose/globAspect";
-import {
     CombinationTagger,
     Tagger,
 } from "../aspect/DefaultAspectRegistry";
@@ -49,6 +45,8 @@ import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
+import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 
 export interface TaggersParams {
 
@@ -111,20 +109,20 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: "azure-pipelines",
             description: "Azure pipelines files",
-            test: fp => isGlobFingerprint(fp) &&
+            test: fp => isFileMatchFingerprint(fp) &&
                 fp.name.includes("azure-pipeline") && fp.data.matches.length > 0,
         },
         {
             name: "snyk",
             description: "Snyk policy",
-            test: fp => isGlobFingerprint(fp) &&
-                fp.name.includes(".snyk") && fp.data.matches.length > 0,
+            test: fp => isFileMatchFingerprint(fp) &&
+                fp.data.glob.includes("snyk") && fp.data.matches.length > 0,
         },
         {
             // TODO allow to use #
             name: "CSharp",
             description: "C# build",
-            test: fp => isGlobFingerprint(fp) &&
+            test: fp => isFileMatchFingerprint(fp) &&
                 fp.name.includes(".csproj") && fp.data.matches.length > 0,
         },
         {
@@ -156,12 +154,12 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         {
             name: "changelog",
             description: "Repositories should have a changelog",
-            test: fp => fp.type === GlobType && fp.name === "CHANGELOG.md",
+            test: fp => isGlobMatchFingerprint(fp) && fp.data.glob === "CHANGELOG.md",
         },
         {
             name: "contributing",
             description: "Repositories should have a contributing",
-            test: fp => fp.type === GlobType && fp.name === "CONTRIBUTING.md",
+            test: fp => isGlobMatchFingerprint(fp) && fp.data.glob === "CONTRIBUTING.md",
         },
         {
             name: "license",

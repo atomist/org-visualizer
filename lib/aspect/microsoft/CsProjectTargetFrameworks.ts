@@ -15,8 +15,8 @@ const targetFrameworksGrammar = microgrammar({
 export const CsProjectTargetFrameworks: Aspect<FP<FileMatchData>> =
     microgrammarMatchAspect({
         name: "csproject-targetframeworks",
-        displayName: ".csproj TargetFrameworks",
-        globs: "*.csproj",
+        displayName: "CSProject TargetFrameworks",
+        glob: "*.csproj",
         grammar: targetFrameworksGrammar,
         path: "targetFramework",
     });

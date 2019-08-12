@@ -15,7 +15,7 @@ describe("fileMatchAspect", () => {
             const aspect = microgrammarMatchAspect({
                 name: "foo",
                 displayName: "foo",
-                globs: "thing",
+                glob: "thing",
                 grammar: microgrammar({
                     name: /.*/,
                 }),
@@ -34,7 +34,7 @@ describe("fileMatchAspect", () => {
             const aspect = microgrammarMatchAspect({
                 name: "foo",
                 displayName: "foo",
-                globs: "thing",
+                glob: "thing",
                 grammar: microgrammar({
                     name: "_",
                     age: /[0-9]+/,
@@ -55,7 +55,7 @@ describe("fileMatchAspect", () => {
             const aspect = microgrammarMatchAspect({
                 name: "foo",
                 displayName: "foo",
-                globs: "thing",
+                glob: "thing",
                 grammar: microgrammar({
                     name: "_",
                     age: /[0-9]+/,
@@ -94,7 +94,7 @@ describe("fileMatchAspect", () => {
             const aspect = microgrammarMatchAspect({
                 name: "foo",
                 displayName: "foo",
-                globs: "*.csproj",
+                glob: "*.csproj",
                 grammar,
                 path: "targetFramework",
             });
