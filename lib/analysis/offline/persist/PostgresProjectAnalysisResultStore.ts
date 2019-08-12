@@ -388,7 +388,8 @@ GROUP by repo_snapshots.id) stats;`;
             // Use this as unique database id
             const id = repoRef.url.replace("/", "") + "_" + repoRef.sha;
             const shaToUse = repoRef.sha;
-            const repoSnapshotsInsertSql = `INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url, commit_sha, analysis, query, timestamp)
+            const repoSnapshotsInsertSql = `INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url,
+    commit_sha, analysis, query, timestamp)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`;
             logger.info("Executing SQL:\n%s", repoSnapshotsInsertSql);
             await client.query(repoSnapshotsInsertSql,

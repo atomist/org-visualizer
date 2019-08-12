@@ -82,7 +82,7 @@ interface SpiderAppOptions {
  * Spider a GitHub.com org
  */
 async function spider(params: SpiderAppOptions) {
-    const analyzer = createAnalyzer(undefined);
+    const analyzer = createAnalyzer();
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 

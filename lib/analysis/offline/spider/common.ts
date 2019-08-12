@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { logger, Project, RepoId, } from "@atomist/automation-client";
-import { ProjectAnalyzer, } from "@atomist/sdm-pack-analysis";
-import { PersistResult, ProjectAnalysisResultStore, } from "../persist/ProjectAnalysisResultStore";
+import { logger, Project, RepoId } from "@atomist/automation-client";
+import { Analyzed } from "../../../aspect/AspectRegistry";
+import { PersistResult, ProjectAnalysisResultStore } from "../persist/ProjectAnalysisResultStore";
 import { SpideredRepo } from "../SpideredRepo";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
-import { ProjectAnalysisResultFilter, SpiderOptions, } from "./Spider";
-import { Analyzed } from "../../../aspect/AspectRegistry";
+import { Analyzer, ProjectAnalysisResultFilter, SpiderOptions } from "./Spider";
 
 export async function existingRecordShouldBeKept(
     opts: {
@@ -49,7 +48,7 @@ export interface RepoInfo {
  * Find project or subprojects
  */
 export async function analyze(project: Project,
-                              analyzer: ProjectAnalyzer,
+                              analyzer: Analyzer,
                               criteria: ScmSearchCriteria): Promise<AnalyzeResults> {
     return { projectsDetected: 1, repoInfos: [await analyzeProject(project, analyzer)] };
 }
@@ -58,12 +57,12 @@ export async function analyze(project: Project,
  * Analyze a project.
  */
 async function analyzeProject(project: Project,
-                              analyzer: ProjectAnalyzer): Promise<RepoInfo> {
+                              analyzer: Analyzer): Promise<RepoInfo> {
     const readmeFile = await project.getFile("README.md");
     const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
     const totalFileCount = await project.totalFileCount();
 
-    const analysis = await analyzer.analyze(project, undefined, { full: true });
+    const analysis = await analyzer(project);
 
     return {
         readme,

@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    InMemoryProject,
-    Project,
-    RepoRef,
-} from "@atomist/automation-client";
-import { SdmContext } from "@atomist/sdm";
-import {
-    Interpretation,
-    ProjectAnalysis,
-    ProjectAnalyzer,
-} from "@atomist/sdm-pack-analysis";
-import { ProjectAnalysisOptions } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalysis";
+import { InMemoryProject, RepoRef } from "@atomist/automation-client";
+import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
 import {
@@ -35,19 +25,9 @@ import {
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { ScmSearchCriteria } from "../../../lib/analysis/offline/spider/ScmSearchCriteria";
-import {
-    EmptySpiderResult,
-    SpiderOptions,
-    SpiderResult,
-} from "../../../lib/analysis/offline/spider/Spider";
-import {
-    isProjectAnalysisResult,
-    ProjectAnalysisResult,
-} from "../../../lib/analysis/ProjectAnalysisResult";
-import {
-    GitHubSearchResult,
-    GitHubSpider,
-} from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
+import { Analyzer, EmptySpiderResult, SpiderOptions, SpiderResult } from "../../../lib/analysis/offline/spider/Spider";
+import { isProjectAnalysisResult, ProjectAnalysisResult } from "../../../lib/analysis/ProjectAnalysisResult";
+import { GitHubSearchResult, GitHubSpider } from "./../../../lib/analysis/offline/spider/github/GitHubSpider";
 
 // tslint:disable
 const oneSearchResult: GitHubSearchResult = {
@@ -69,20 +49,8 @@ const oneProjectAnalysis: ProjectAnalysis = {
     jessitronSays: "I am this project analysis object",
 } as any;
 // tslint:disable-next-line:no-object-literal-type-assertion
-const analyzer: ProjectAnalyzer = {
-    async analyze(p: Project,
-        sdmContext: SdmContext,
-        options?: ProjectAnalysisOptions): Promise<ProjectAnalysis> {
-        return oneProjectAnalysis;
-    },
-    async interpret(p: Project | ProjectAnalysis,
-        sdmContext: SdmContext,
-        options?: ProjectAnalysisOptions): Promise<Interpretation> {
-        // tslint:disable-next-line:no-object-literal-type-assertion
-        return { jessitronSays: "Fake interpretation object" } as any as Interpretation;
-    },
+const analyzer: Analyzer = async p => oneProjectAnalysis;
 
-} as ProjectAnalyzer;
 const hardCodedPlace = "place.json";
 
 class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {

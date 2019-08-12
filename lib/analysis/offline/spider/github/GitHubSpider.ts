@@ -35,6 +35,7 @@ import {
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
+    Analyzer,
     PersistenceResult,
     RepoUrl,
     Spider,
@@ -51,7 +52,7 @@ type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
 export class GitHubSpider implements Spider {
 
     public async spider(criteria: ScmSearchCriteria,
-                        analyzer: ProjectAnalyzer,
+                        analyzer: Analyzer,
                         opts: SpiderOptions): Promise<SpiderResult> {
         let repoCount = 0;
         const keepExisting: RepoUrl[] = [];
@@ -62,12 +63,12 @@ export class GitHubSpider implements Spider {
             let bucket: Array<Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }>> = [];
 
             async function runAllPromisesInBucket(): Promise<void> {
-                const analyzeResults = await Promise.all(bucket);
-                for (const ar of analyzeResults) {
+                const aResults = await Promise.all(bucket);
+                for (const ar of aResults) {
                     // Avoid hitting the database in parallel to avoid locking
                     analyzeAndPersistResults.push(await runPersist(criteria, opts, ar));
                 }
-                console.log("Computing analytics over fingerprints...");
+                logger.info("Computing analytics over fingerprints...");
                 await computeAnalytics(opts.persister, opts.workspaceId);
                 bucket = [];
             }
@@ -197,7 +198,7 @@ function combineAnalyzeAndPersistResult(one: AnalyzeAndPersistResult, two: Analy
 async function runAnalysis(cloneFunction: CloneFunction,
                            sourceData: GitHubSearchResult,
                            criteria: ScmSearchCriteria,
-                           analyzer: ProjectAnalyzer): Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }> {
+                           analyzer: Analyzer): Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }> {
     const startTime = new Date().getTime();
     let project;
     let clonedIn: number;

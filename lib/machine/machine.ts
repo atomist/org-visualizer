@@ -31,6 +31,7 @@ import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { Analyzer } from "../analysis/offline/spider/Spider";
 import { IdealStore } from "../aspect/IdealStore";
 import {
     ProblemStore,
@@ -42,10 +43,11 @@ import { Aspects } from "../customize/aspects";
  * @param {SoftwareDeliveryMachine} sdm
  * @return {ProjectAnalyzer}
  */
-export function createAnalyzer(sdm: SoftwareDeliveryMachine): ProjectAnalyzer {
-    return analyzerBuilder(sdm)
+export function createAnalyzer(): Analyzer {
+    const pa = analyzerBuilder(undefined)
         .withAspects(Aspects)
         .build();
+    return async p => pa.analyze(p, undefined, undefined);
 }
 
 const PoolHolder: { pool: Pool } = { pool: undefined };

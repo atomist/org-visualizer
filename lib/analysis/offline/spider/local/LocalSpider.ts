@@ -38,6 +38,7 @@ import {
 } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
+    Analyzer,
     Spider,
     SpiderOptions,
     SpiderResult,
@@ -46,7 +47,7 @@ import {
 export class LocalSpider implements Spider {
 
     public async spider(criteria: ScmSearchCriteria,
-                        analyzer: ProjectAnalyzer,
+                        analyzer: Analyzer,
                         opts: SpiderOptions): Promise<SpiderResult> {
         const repoIterator = findRepositoriesUnder(this.localDirectory);
         const results: SpiderResult[] = [];
@@ -93,7 +94,7 @@ const oneSpiderResult = {
 
 async function spiderOneLocalRepo(opts: SpiderOptions,
                                   criteria: ScmSearchCriteria,
-                                  analyzer: ProjectAnalyzer,
+                                  analyzer: Analyzer,
                                   repoDir: string): Promise<SpiderResult> {
     const localRepoRef = await repoRefFromLocalRepo(repoDir);
 
