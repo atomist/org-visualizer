@@ -19,7 +19,10 @@ import {
     Project,
 } from "@atomist/automation-client";
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
-import { Aspect, BaseAspect } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    BaseAspect,
+} from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Make this aspect conditional
