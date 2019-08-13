@@ -17,7 +17,7 @@
 import { adjustBy } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import { ShellLanguage, YamlLanguage, } from "@atomist/sdm-pack-sloc/lib/languages";
+import { ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
 import { TsLintType } from "../aspect/node/TsLintAspect";
@@ -32,7 +32,7 @@ import {
     PenalizeNoLicense,
     requireRecentCommit,
 } from "../scorer/commonScorers";
-import { requireAspectOfType, requireGlobAspect, } from "../scorer/scorerUtils";
+import { requireAspectOfType, requireGlobAspect } from "../scorer/scorerUtils";
 
 export const scoreWeightings: ScoreWeightings = {
     // Weight this to penalize projects with few other scorers

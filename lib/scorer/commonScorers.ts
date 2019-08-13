@@ -17,20 +17,20 @@
 import { FiveStar } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import {
     CodeMetricsData,
     CodeMetricsType,
 } from "../aspect/common/codeMetrics";
+import { hasNoLicense, LicenseType } from "../aspect/community/license";
+import { BranchCountType } from "../aspect/git/branchCount";
 import { daysSince } from "../aspect/git/dateUtils";
 import {
     GitRecencyData,
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { adjustBy } from "./scoring";
-import { BranchCountType } from "../aspect/git/branchCount";
-import * as _ from "lodash";
-import { hasNoLicense, LicenseType } from "../aspect/community/license";
 
 /**
  * Use to anchor scores to penalize repositories about which we know little.
