@@ -1,9 +1,9 @@
 import { WeightedScore, WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
 import { ScoredRepo } from "../lib/aspect/AspectRegistry";
+import { isCodeMetricsFingerprint } from "../lib/aspect/common/codeMetrics";
 import { TagUsage } from "../lib/tree/sunburst";
 import { collapsible } from "./utils";
-import { isCodeMetricsFingerprint } from "../lib/aspect/common/codeMetrics";
 
 type DisplayName = string;
 
@@ -110,7 +110,7 @@ function displayCodeMetrics(props: RepoExplorerProps): React.ReactElement {
     return collapsible("languages", "Languages",
         <ul>
             {cmf.data.languages.map(lang => {
-                return <li key={"lang_" + lang}><b>{lang.language.name}</b>: {lang.total}</li>
+                return <li key={"lang_" + lang}><b>{lang.language.name}</b>: {lang.total}</li>;
             })}
         </ul>,
         true);
