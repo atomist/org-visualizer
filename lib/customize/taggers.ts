@@ -16,21 +16,16 @@
 
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
-import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import {
-    CombinationTagger,
-    Tagger,
-} from "../aspect/AspectRegistry";
+import { CombinationTagger, Tagger, } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
-import { TsLintType } from "../aspect/node/TsLintAspect";
-import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as commonTaggers from "../tagger/commonTaggers";
+import * as nodeTaggers from "../tagger/nodeTaggers";
 
 export interface TaggersParams {
 
@@ -64,29 +59,27 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         commonTaggers.Vulnerable,
         // commonTaggers.isProblematic(),
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
-        { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
+        nodeTaggers.Node,
         {
             name: "maven",
             description: "Direct Maven dependencies",
             test: fp => fp.type === DirectMavenDependencies.name,
         },
-        { name: "typescript", description: "TypeScript version", test: fp => fp.type === TypeScriptVersion.name },
-        { name: "tslint", description: "tslint (TypeScript)", test: fp => fp.type === TsLintType },
+        nodeTaggers.TypeScript,
+        nodeTaggers.TsLint,
         { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
         commonTaggers.Monorepo,
-        {
+        nodeTaggers.usesNodeLibraryWhen({
             name: "angular",
-            description: "Uses Angular",
-            test: fp => fp.type === NpmDeps.name && fp.data[0].includes("angular"),
-        },
-        {
-            name: "react",
-            description: "Uses React",
-            test: fp => fp.type === NpmDeps.name && fp.data[0].includes("react"),
-        },
+            description: "Angular",
+            test: library => library.includes("angular"),
+        }),
+        nodeTaggers.usesNodeLibrary({ library: "react" }),
+        nodeTaggers.usesNodeLibrary({ library: "chai" }),
+        nodeTaggers.usesNodeLibrary({ library: "mocha" }),
         {
             name: "jenkins",
             description: "Jenkins",
