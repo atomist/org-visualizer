@@ -70,6 +70,10 @@ header .page-title {
     vertical-align: top;
 }
 
+.taggydoober {
+    width: 20px;
+}
+
 .errorTagGroup {
     border: 4px red solid;
 }

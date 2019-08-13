@@ -76,6 +76,7 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
         (tagGroup.isRequired(tagName) ? "requiredTag " : "") +
         (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
         {percentageBar}
+        <img className="taggydoober" src="/taggydoober.png"></img>
         <span className="tagDescription" title={tagGroup.getDescription(tagName)}>{tagName}</span>
         <form method="GET" action="/explore">
             <input type="hidden" name="explore" value="true" />
