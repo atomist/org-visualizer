@@ -18,6 +18,7 @@ import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
+import { AspectRegistry } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
 import {
@@ -31,7 +32,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as commonTaggers from "../tagger/commonTaggers";
-import { AspectRegistry } from "../aspect/AspectRegistry";
 
 export interface TaggersParams {
 

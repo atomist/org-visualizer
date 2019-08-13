@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AspectRegistry } from "../aspect/AspectRegistry";
 import { isCodeMetricsFingerprint } from "../aspect/common/codeMetrics";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
 import {
@@ -32,7 +33,6 @@ import {
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
-import { AspectRegistry } from "../aspect/AspectRegistry";
 
 export const Monorepo: Tagger = {
     name: "monorepo",
