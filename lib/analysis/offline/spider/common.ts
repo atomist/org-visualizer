@@ -51,8 +51,6 @@ export interface AnalyzeResults {
 }
 
 export interface RepoInfo {
-    readme: string;
-    totalFileCount: number;
     analysis: Analyzed;
 }
 /**
@@ -69,15 +67,8 @@ export async function analyze(project: Project,
  */
 async function analyzeProject(project: Project,
                               analyzer: Analyzer): Promise<RepoInfo> {
-    const readmeFile = await project.getFile("README.md");
-    const readme = !!readmeFile ? await readmeFile.getContent() : undefined;
-    const totalFileCount = await project.totalFileCount();
-
     const analysis = await analyzer.analyze(project);
-
     return {
-        readme,
-        totalFileCount,
         analysis,
     };
 }
@@ -108,7 +99,6 @@ export async function persistRepoInfo(
         sourceData: moreInfo.sourceData,
         timestamp: moreInfo.timestamp,
         query: moreInfo.query,
-        readme: repoInfo.readme,
     };
     const persistResult = await opts.persister.persist(toPersist);
     if (opts.onPersisted) {

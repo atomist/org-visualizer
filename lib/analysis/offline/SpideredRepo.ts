@@ -30,5 +30,4 @@ export interface SpideredRepo extends ProjectAnalysisResult {
      */
     sourceData: any;
 
-    readme?: string;
 }
