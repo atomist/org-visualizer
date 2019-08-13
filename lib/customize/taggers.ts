@@ -23,13 +23,13 @@ import {
 } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
+import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as commonTaggers from "../tagger/commonTaggers";
 import * as nodeTaggers from "../tagger/nodeTaggers";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 
 export interface TaggersParams {
 

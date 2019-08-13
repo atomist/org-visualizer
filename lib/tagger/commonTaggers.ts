@@ -147,4 +147,3 @@ export function inadequateReadme(opts: { minLength: number}): Tagger {
             fp.data.glob === "README.md" && (fp.data.matches.length === 0 || fp.data.matches[0].size < opts.minLength),
     };
 }
-
