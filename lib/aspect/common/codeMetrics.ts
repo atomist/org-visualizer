@@ -42,6 +42,11 @@ async function scanForCodeMetrics(p: Project): Promise<CodeMetricsData> {
 
 export const CodeMetricsType = "code-metrics";
 
+export function isCodeMetricsFingerprint(fp: FP): fp is FP<CodeMetricsData> {
+    const maybe = fp as FP<CodeMetricsData>;
+    return !!maybe && maybe.type === CodeMetricsType && maybe.data.languages !== undefined;
+}
+
 export const CodeMetricsAspect: Aspect<FP<CodeMetricsData>> = {
     name: CodeMetricsType,
     // Suppress display

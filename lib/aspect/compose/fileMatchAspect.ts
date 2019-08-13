@@ -29,20 +29,22 @@ export interface FileMatch {
     matchValue: string;
 }
 
+const FileMatchType = "file-match";
+type FileMatchType = "file-match";
+
 export interface FileMatchData {
-    kind: "file-match";
+    kind: FileMatchType;
     glob: string;
     matches: FileMatch[];
 }
 
 export function isFileMatchFingerprint(fp: FP): fp is FP<FileMatchData> {
     const maybe = fp.data as FileMatchData;
-    return !!maybe && maybe.kind === "file-match" && !!maybe.glob;
+    return !!maybe && maybe.kind === FileMatchType && maybe.kind === "file-match" && !!maybe.glob;
 }
 
 /**
- * Check for presence of a match within a single file
- * undefined to return no fingerprint.
+ * Check for presence of a match within the AST of files matching the glob.
  * Always return something, but may have an empty path.
  */
 export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
@@ -70,7 +72,7 @@ export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
                 });
             }
             const data = {
-                kind: "file-match" as any,
+                kind: FileMatchType as any,
                 matches,
                 glob: config.glob,
             };

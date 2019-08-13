@@ -18,35 +18,16 @@ import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import {
-    CodeMetricsData,
-    CodeMetricsType,
-} from "../aspect/common/codeMetrics";
 import { CiAspect } from "../aspect/common/stackAspect";
-import { CodeOfConductType } from "../aspect/community/codeOfConduct";
-import {
-    hasNoLicense,
-    isLicenseFingerprint,
-} from "../aspect/community/license";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
-import {
-    CombinationTagger,
-    Tagger,
-} from "../aspect/DefaultAspectRegistry";
-import { BranchCountType } from "../aspect/git/branchCount";
-import { daysSince } from "../aspect/git/dateUtils";
-import {
-    GitActivesType,
-    GitRecencyType,
-} from "../aspect/git/gitActivity";
+import { CombinationTagger, Tagger } from "../aspect/DefaultAspectRegistry";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
-import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import * as commonTaggers from "../tagger/commonTaggers";
 
 export interface TaggersParams {
 
@@ -66,17 +47,18 @@ const DefaultTaggersParams: TaggersParams = {
     deadDays: 365,
 };
 
+/**
+ * Add your own taggers
+ * @param {Partial<TaggersParams>} opts
+ * @return {Tagger[]}
+ */
 export function taggers(opts: Partial<TaggersParams>): Tagger[] {
     const optsToUse = {
         ...DefaultTaggersParams,
         ...opts,
     };
     return [
-        {
-            name: "vulnerable",
-            description: "Has exposed secrets", test: fp => fp.type === ExposedSecrets.name,
-            severity: "error",
-        },
+        commonTaggers.Vulnerable,
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
         { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
         {
@@ -90,12 +72,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
-        {
-            name: "monorepo",
-            description: "Contains multiple virtual projects",
-            severity: "warn",
-            test: fp => !!fp.path && fp.path.length > 0,
-        },
+        commonTaggers.Monorepo,
         {
             name: "jenkins",
             description: "Jenkins",
@@ -112,12 +89,11 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => isFileMatchFingerprint(fp) &&
                 fp.name.includes("azure-pipeline") && fp.data.matches.length > 0,
         },
-        {
+        commonTaggers.globRequired({
             name: "snyk",
             description: "Snyk policy",
-            test: fp => isFileMatchFingerprint(fp) &&
-                fp.data.glob.includes("snyk") && fp.data.matches.length > 0,
-        },
+            glob: ".snyk",
+        }),
         {
             // TODO allow to use #
             name: "CSharp",
@@ -125,59 +101,24 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => isFileMatchFingerprint(fp) &&
                 fp.name.includes("csproj") && fp.data.matches.length > 0,
         },
-        {
-            name: "solo",
-            description: "Projects with one committer",
-            test: fp => fp.type === GitActivesType && fp.data.count === 1,
-        },
-        {
-            name: `>${optsToUse.maxBranches} branches`,
-            description: "git branch count",
-            severity: "warn",
-            test: fp => fp.type === BranchCountType && fp.data.count > optsToUse.maxBranches,
-        },
-        {
-            name: "huge (>10K)",
-            description: "Repo size",
-            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 10000,
-        },
-        {
-            name: "big (3-10K)",
-            description: "Repo size",
-            test: fp => fp.type === CodeMetricsType && (fp.data as CodeMetricsData).lines > 3000 && (fp.data as CodeMetricsData).lines < 10000,
-        },
-        {
-            name: "code-of-conduct",
-            description: "Repositories should have a code of conduct",
-            test: fp => fp.type === CodeOfConductType,
-        },
-        {
+        commonTaggers.SoleCommitter,
+        commonTaggers.excessiveBranchCount(optsToUse),
+        commonTaggers.lineCountTest({ name: "huge (>10k)", lineCountTest: count => count > 10000 }),
+        commonTaggers.lineCountTest({ name: "big (3-10k)", lineCountTest: count => count >= 3000 && count <= 10000 }),
+        commonTaggers.lineCountTest({ name: "tiny (<200)", lineCountTest: count => count < 200 }),
+        commonTaggers.HasCodeOfConduct,
+        commonTaggers.globRequired({
             name: "changelog",
             description: "Repositories should have a changelog",
-            test: fp => isGlobMatchFingerprint(fp) && fp.data.glob === "CHANGELOG.md",
-        },
-        {
+            glob: "CHANGELOG.md",
+        }),
+        commonTaggers.globRequired({
             name: "contributing",
             description: "Repositories should have a contributing",
-            test: fp => isGlobMatchFingerprint(fp) && fp.data.glob === "CONTRIBUTING.md",
-        },
-        {
-            name: "license",
-            description: "Repositories should have a license",
-            test: fp => isLicenseFingerprint(fp) && !hasNoLicense(fp.data),
-        },
-        {
-            name: "dead?",
-            description: `No git activity in last ${optsToUse.deadDays} days`,
-            severity: "error",
-            test: fp => {
-                if (fp.type === GitRecencyType) {
-                    const date = new Date(fp.data);
-                    return daysSince(date) > optsToUse.deadDays;
-                }
-                return false;
-            },
-        },
+            glob: "CONTRIBUTING.md",
+        }),
+        commonTaggers.HasLicense,
+        commonTaggers.dead(optsToUse),
     ];
 }
 
@@ -202,8 +143,8 @@ export interface CombinationTaggersParams {
 // TODO can reduce days with non stale data
 const DefaultCombinationTaggersParams: CombinationTaggersParams = {
     minAverageAspectCountFractionToExpect: .75,
-    hotDays: 10,
-    hotContributors: 2,
+    hotDays: 3,
+    hotContributors: 3,
 };
 
 export function combinationTaggers(opts: Partial<CombinationTaggersParams>): CombinationTagger[] {
@@ -223,31 +164,6 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
                 return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
             },
         },
-        {
-            name: "not understood",
-            description: "You may want to write aspects for these outlier projects",
-            severity: "warn",
-            test: (fps, id, tagContext) => {
-                const aspectCount = _.uniq(fps.map(f => f.type)).length;
-                // There are quite a few aspects that are found on everything, e.g. git
-                // We need to set the threshold count probably
-                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
-            },
-        },
-        {
-            name: "hot",
-            description: "How hot is git",
-            test: fps => {
-                const grt = fps.find(fp => fp.type === GitRecencyType);
-                const acc = fps.find(fp => fp.type === GitActivesType);
-                if (!!grt && !!acc) {
-                    const days = daysSince(new Date(grt.data));
-                    if (days < optsToUse.hotDays && acc.data.count > optsToUse.hotContributors) {
-                        return true;
-                    }
-                }
-                return false;
-            },
-        },
+        commonTaggers.gitHot(optsToUse),
     ];
 }
