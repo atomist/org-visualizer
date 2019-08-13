@@ -17,7 +17,6 @@
 import { gatherFromFiles } from "@atomist/automation-client/lib/project/util/projectUtils";
 import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
-import { FileMatchData } from "./fileMatchAspect";
 
 export interface GlobMatch {
     path: string;
@@ -30,9 +29,9 @@ export interface GlobAspectData {
     matches: GlobMatch[];
 }
 
-export function isGlobMatchFingerprint(fp: FP): fp is FP<FileMatchData> {
+export function isGlobMatchFingerprint(fp: FP): fp is FP<GlobAspectData> {
     const maybe = fp.data as GlobAspectData;
-    return !!maybe && maybe.kind === "glob" && !!maybe.glob;
+    return !!maybe && maybe.kind === "glob" && !!maybe.glob && maybe.matches !== undefined;
 }
 
 /**

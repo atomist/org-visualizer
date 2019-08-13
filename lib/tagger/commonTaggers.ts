@@ -137,3 +137,14 @@ export function gitHot(opts: { name?: string, hotDays: number, hotContributors: 
         },
     };
 }
+
+export function inadequateReadme(opts: { minLength: number}): Tagger {
+    return {
+        name: "readme-ok",
+        description: "README is adequate",
+        severity: "warn",
+        test: fp => isGlobMatchFingerprint(fp) &&
+            fp.data.glob === "README.md" && (fp.data.matches.length === 0 || fp.data.matches[0].size < opts.minLength),
+    };
+}
+

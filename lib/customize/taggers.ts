@@ -29,6 +29,7 @@ import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as commonTaggers from "../tagger/commonTaggers";
 import * as nodeTaggers from "../tagger/nodeTaggers";
+import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 
 export interface TaggersParams {
 
@@ -111,6 +112,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: fp => isFileMatchFingerprint(fp) &&
                 fp.name.includes("csproj") && fp.data.matches.length > 0,
         },
+        commonTaggers.inadequateReadme({ minLength: 200}),
         commonTaggers.SoleCommitter,
         commonTaggers.excessiveBranchCount(optsToUse),
         commonTaggers.lineCountTest({ name: "huge (>10k)", lineCountTest: count => count > 10000 }),
