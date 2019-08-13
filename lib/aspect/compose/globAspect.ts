@@ -47,9 +47,11 @@ export function globAspect(config: Omit<BaseAspect, "stats" | "apply"> &
     }
     return {
         toDisplayableFingerprintName: name => `Glob pattern '${name}'`,
-        toDisplayableFingerprint: fp => fp.data.matches
-            .map(m => `${m.path}(${m.size})`)
-            .join(),
+        toDisplayableFingerprint: fp => fp.data.matches.length === 0 ?
+            "None" :
+            fp.data.matches
+                .map(m => `${m.path}(${m.size})`)
+                .join(),
         ...config,
         extract: async p => {
             const data = {
