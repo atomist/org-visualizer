@@ -72,14 +72,17 @@ header .page-title {
 
 .taggydoober {
     width: 20px;
+    display: none;
 }
 
-.errorTagGroup {
-    border: 4px red solid;
+.errorTagGroup img.taggydoober {
+    content: url("/taggydoober-error.png");
+    display: inline;
 }
 
-.warnTagGroup {
-    border: 4px orange solid;
+.warnTagGroup img.taggydoober {
+    content: url("/taggydoober-warning.png");
+    display: inline;
 }
 
 .tagGroup form {

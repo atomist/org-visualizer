@@ -70,14 +70,16 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
             {percentageWithTag}%
         </div>
         {100 - percentageWithTag}%</div>;
+    const description = tagGroup.getDescription(tagName) + (tagGroup.isWarning(tagName) ? " - WARN" : "")
+        + (tagGroup.isError(tagName) ? " - ERROR" : "");
     return <div className={"tagGroup " +
         (tagGroup.isWarning(tagName) ? "warnTagGroup " : "") +
         (tagGroup.isError(tagName) ? "errorTagGroup " : "") +
         (tagGroup.isRequired(tagName) ? "requiredTag " : "") +
         (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
         {percentageBar}
-        <img className="taggydoober" src="/taggydoober.png"></img>
-        <span className="tagDescription" title={tagGroup.getDescription(tagName)}>{tagName}</span>
+        <img className="taggydoober" src="/taggydoober.png" title={description}></img>
+        <span className="tagDescription" title={description}>{tagName}</span>
         <form method="GET" action="/explore">
             <input type="hidden" name="explore" value="true" />
             <input type="hidden" name="tags" value={tagGroup.tagSelectionForRequire(tagName).join(",")} />
