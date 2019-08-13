@@ -27,6 +27,7 @@ export function TopLevelPage(props: {
                 {props.pageTitle}
             </title>
             <link rel="stylesheet" type="text/css" href="/styles.css"></link>
+            <meta name="google" content="notranslate" />
         </head>
         {(props.extraScripts || []).map(extraScript)}
         <body>
