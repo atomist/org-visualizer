@@ -55,6 +55,7 @@ import {
     StackAspect,
 } from "./lib/aspect/common/stackAspect";
 import { DefaultAspectRegistry } from "./lib/aspect/DefaultAspectRegistry";
+import { K8sSpecs } from "./lib/aspect/k8s/spec";
 import { TypeScriptVersion } from "./lib/aspect/node/TypeScriptVersion";
 import { DirectMavenDependencies } from "./lib/aspect/spring/directMavenDependencies";
 import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
@@ -110,6 +111,7 @@ export const configuration: Configuration = configure(async sdm => {
         JavaBuild,
         SpringBootVersion,
         DirectMavenDependencies,
+        K8sSpecs,
         ...optionalAspects,
     ];
     const handlers = [];

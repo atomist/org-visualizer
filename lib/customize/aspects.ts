@@ -44,6 +44,7 @@ import {
     gitActiveCommitters,
     GitRecency,
 } from "../aspect/git/gitActivity";
+import { K8sSpecs } from "../aspect/k8s/spec";
 import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
 import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
@@ -122,5 +123,6 @@ export const Aspects: ManagedAspect[] = [
     // allMavenDependenciesAspect,    // This is expensive
     DirectMavenDependencies,
     PythonDependencies,
+    K8sSpecs,
     LeinDeps,
 ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
