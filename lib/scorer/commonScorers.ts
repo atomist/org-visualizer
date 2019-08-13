@@ -107,7 +107,7 @@ export function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
     };
 }
 
-export function limitLinesOfCodeIn(opts: { limit: number, language: Language }): RepositoryScorer {
+export function limitLinesOfCodeIn(opts: { limit: number, language: Language, freeAmount?: number }): RepositoryScorer {
     return async repo => {
         const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
         if (!cm) {
@@ -117,7 +117,7 @@ export function limitLinesOfCodeIn(opts: { limit: number, language: Language }):
         const targetLoc = target ? target.total : 0;
         return {
             name: `limit-${opts.language.name} (${opts.limit})`,
-            score: adjustBy(-targetLoc / opts.limit),
+            score: adjustBy(((opts.freeAmount || 0) - targetLoc) / opts.limit),
             reason: `Found ${targetLoc} lines of ${opts.language.name}`,
         };
     };
@@ -150,6 +150,24 @@ export const PenalizeMonorepos: RepositoryScorer =
                 "Single project in repository",
         };
     };
+
+/**
+ * Penalize repos for warnings and errors.
+ * Note that this can produce double counting if we have a scorer for those things.
+ * However it can minimize the need to write scorers in a good tagging setup.
+ */
+export const PenalizeWarningAndErrorTags: RepositoryScorer = async repo => {
+    const err = repo.tags.filter(t => t.severity === "error");
+    const warn = repo.tags.filter(t => t.severity === "warn");
+    const score = adjustBy(-3 * err.length - 2 * warn.length);
+    return {
+        name: "sev-count",
+        score,
+        reason: err.length + warn.length === 0 ?
+            "No errors or warnings" :
+            `Errors: [${err.map(e => e.name).join(",")}], warnings: [${warn.map(w => w.name).join(",")}]`,
+    };
+};
 
 export const PenalizeNoLicense: RepositoryScorer =
     async repo => {

@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { adjustBy } from "../scorer/scoring";
-
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import {
-    ShellLanguage,
-    YamlLanguage,
-} from "@atomist/sdm-pack-sloc/lib/languages";
+import { PowerShellLanguage, ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
-import { TsLintType } from "../aspect/node/TsLintAspect";
-import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 import {
     anchorScoreAt,
     limitLanguages,
@@ -33,12 +26,11 @@ import {
     penalizeForExcessiveBranches,
     PenalizeMonorepos,
     PenalizeNoLicense,
+    PenalizeWarningAndErrorTags,
     requireRecentCommit,
 } from "../scorer/commonScorers";
-import {
-    requireAspectOfType,
-    requireGlobAspect,
-} from "../scorer/scorerUtils";
+import { TypeScriptProjectsMustUseTsLint } from "../scorer/nodeScorers";
+import { requireAspectOfType, requireGlobAspect } from "../scorer/scorerUtils";
 
 export const scoreWeightings: ScoreWeightings = {
     // Weight this to penalize projects with few other scorers
@@ -51,44 +43,18 @@ export const scoreWeightings: ScoreWeightings = {
 export const Scorers: RepositoryScorer[] = [
     anchorScoreAt(2),
     penalizeForExcessiveBranches({ branchLimit: 5 }),
-    async repo => {
-        const err = repo.tags.filter(t => t.severity === "error");
-        const warn = repo.tags.filter(t => t.severity === "warn");
-        const score = adjustBy(-3 * err.length - 2 * warn.length);
-        return {
-            name: "sev-count",
-            score,
-            reason: err.length + warn.length === 0 ?
-                "No errors or warnings" :
-                `Errors: [${err.map(e => e.name).join(",")}], warnings: [${warn.map(w => w.name).join(",")}]`,
-        };
-    },
+    PenalizeWarningAndErrorTags,
     PenalizeMonorepos,
-    typeScriptProjectsMustUseTsLint(),
+    TypeScriptProjectsMustUseTsLint,
     PenalizeNoLicense,
     limitLanguages({ limit: 4 }),
     // Adjust depending on the service granularity you want
     limitLinesOfCode({ limit: 30000 }),
-    limitLinesOfCodeIn({ language: YamlLanguage, limit: 500 }),
-    limitLinesOfCodeIn({ language: ShellLanguage, limit: 200 }),
+    limitLinesOfCodeIn({ language: YamlLanguage, limit: 500, freeAmount: 200 }),
+    limitLinesOfCodeIn({ language: PowerShellLanguage, limit: 200, freeAmount: 100 }),
+    limitLinesOfCodeIn({ language: ShellLanguage, limit: 200, freeAmount: 100 }),
     requireRecentCommit({ days: 30 }),
     requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
     requireGlobAspect({ glob: "CHANGELOG.md" }),
     requireGlobAspect({ glob: "CONTRIBUTING.md" }),
 ];
-
-export function typeScriptProjectsMustUseTsLint(): RepositoryScorer {
-    return async repo => {
-        // TypeScript projects must use tslint
-        const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
-        if (!isTs) {
-            return undefined;
-        }
-        const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
-        return {
-            name: "has-tslint",
-            score: hasTsLint ? 5 : 1,
-            reason: hasTsLint ? "TypeScript projects should use tslint" : "TypeScript project using tslint",
-        };
-    };
-}

@@ -17,7 +17,7 @@
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import * as _ from "lodash";
-import { CombinationTagger, Tagger, } from "../aspect/AspectRegistry";
+import { CombinationTagger, Tagger } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
