@@ -78,6 +78,16 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
         commonTaggers.Monorepo,
         {
+            name: "angular",
+            description: "Uses Angular",
+            test: fp => fp.type === NpmDeps.name && fp.data[0].includes("angular"),
+        },
+        {
+            name: "react",
+            description: "Uses React",
+            test: fp => fp.type === NpmDeps.name && fp.data[0].includes("react"),
+        },
+        {
             name: "jenkins",
             description: "Jenkins",
             test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins"),
