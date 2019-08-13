@@ -18,9 +18,15 @@ import { FiveStar } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import {
+    CodeMetricsData,
+    CodeMetricsType,
+} from "../aspect/common/codeMetrics";
 import { daysSince } from "../aspect/git/dateUtils";
-import { GitRecencyData, GitRecencyType } from "../aspect/git/gitActivity";
+import {
+    GitRecencyData,
+    GitRecencyType,
+} from "../aspect/git/gitActivity";
 import { adjustBy } from "./scoring";
 
 export function anchorScoreAt(score: FiveStar): RepositoryScorer {
