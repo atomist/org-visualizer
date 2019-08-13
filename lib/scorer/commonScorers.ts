@@ -23,7 +23,10 @@ import {
     CodeMetricsData,
     CodeMetricsType,
 } from "../aspect/common/codeMetrics";
-import { hasNoLicense, LicenseType } from "../aspect/community/license";
+import {
+    hasNoLicense,
+    LicenseType,
+} from "../aspect/community/license";
 import { BranchCountType } from "../aspect/git/branchCount";
 import { daysSince } from "../aspect/git/dateUtils";
 import {
