@@ -55,7 +55,7 @@ function displayWeightedScores(weightedScores: WeightedScores): React.ReactEleme
         <ul>
             {Object.getOwnPropertyNames(weightedScores).map(name => {
                 const score = weightedScores[name];
-                return <li><b>{score.name}</b>: {score.score} (x{score.weighting}) - {score.reason}</li>;
+                return <li><b>{score.name}</b>: {score.score.toFixed(2)} (x{score.weighting}) - {score.reason}</li>;
             })
             }
         </ul>,

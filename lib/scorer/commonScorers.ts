@@ -28,6 +28,9 @@ import {
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { adjustBy } from "./scoring";
+import { BranchCountType } from "../aspect/git/branchCount";
+import * as _ from "lodash";
+import { hasNoLicense, LicenseType } from "../aspect/community/license";
 
 /**
  * Use to anchor scores to penalize repositories about which we know little.
@@ -116,3 +119,42 @@ export function limitLinesOfCodeIn(opts: { limit: number, language: Language }):
         };
     };
 }
+
+export function penalizeForExcessiveBranches(opts: { branchLimit: number }): RepositoryScorer {
+    return async repo => {
+        const branchCount = repo.analysis.fingerprints.find(f => f.type === BranchCountType);
+        if (!branchCount) {
+            return undefined;
+        }
+        // You get the first 2 branches for free. After that they start to cost
+        const score = adjustBy(-(branchCount.data.count - 2) / opts.branchLimit);
+        return branchCount ? {
+            name: BranchCountType,
+            score,
+            reason: `${branchCount.data.count} branches: Should not have more than ${opts.branchLimit}`,
+        } : undefined;
+    };
+}
+
+export const PenalizeMonorepos: RepositoryScorer =
+    async repo => {
+        const distinctPaths = _.uniq(repo.analysis.fingerprints.map(t => t.path)).length;
+        return {
+            name: "monorepo",
+            score: adjustBy(1 - distinctPaths / 2),
+            reason: distinctPaths > 1 ?
+                `${distinctPaths} virtual projects: Prefer one project per repository` :
+                "Single project in repository",
+        };
+    };
+
+export const PenalizeNoLicense: RepositoryScorer =
+    async repo => {
+        const license = repo.analysis.fingerprints.find(fp => fp.type === LicenseType);
+        const bad = !license || hasNoLicense(license.data);
+        return {
+            name: "license",
+            score: bad ? 1 : 5,
+            reason: bad ? "Repositories should have a license" : "Repository has a license",
+        };
+    };
