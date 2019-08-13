@@ -107,6 +107,7 @@ function exposeRepositoryPage(express: Express,
                               aspectRegistry: AspectRegistry,
                               store: ProjectAnalysisResultStore): void {
     express.get("/repository", ...handlers, async (req, res) => {
+        const workspaceId = req.query.workspaceId || "*";
         const id = req.query.id;
         const analysisResult = await store.loadById(id);
         if (!analysisResult) {
@@ -125,7 +126,7 @@ function exposeRepositoryPage(express: Express,
             })),
         }));
 
-        const repo = (await aspectRegistry.tagAndScoreRepos([analysisResult]))[0];
+        const repo = (await aspectRegistry.tagAndScoreRepos(workspaceId, [analysisResult]))[0];
         return res.send(renderStaticReactNode(
             RepoExplorer({
                 repo,

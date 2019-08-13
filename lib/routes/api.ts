@@ -287,7 +287,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
         const repos = await store.loadInWorkspace(workspaceId, true);
         const selectedTags: string[] = req.query.tags ? req.query.tags.split(",") : [];
 
-        const taggedRepos = await aspectRegistry.tagAndScoreRepos(repos);
+        const taggedRepos = await aspectRegistry.tagAndScoreRepos(workspaceId, repos);
 
         const relevantRepos = taggedRepos.filter(repo => selectedTags.every(tag => relevant(tag, repo)));
         logger.info("Found %d relevant repos of %d", relevantRepos.length, repos.length);
@@ -326,6 +326,7 @@ function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: 
             // TODO fix this
             averageFingerprintCount: -1,
             ...repoTree,
+            workspaceId,
         };
         res.send(tagTree);
     });
@@ -342,9 +343,13 @@ export interface TagContext {
      * Average number of distinct fingerprint types in the workspace
      */
     averageFingerprintCount: number;
+
+    workspaceId: string;
+
+    aspectRegistry: AspectRegistry;
 }
 
-export interface TagTree extends TagContext, PlantedTree {
+export interface TagTree extends Omit<TagContext, "aspectRegistry">, PlantedTree {
     matchingRepoCount: number;
     tags: TagUsage[];
     selectedTags: string[];

@@ -78,7 +78,7 @@ export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | unde
  */
 export interface AspectRegistry {
 
-    tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]>;
+    tagAndScoreRepos(workspaceId: string, repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]>;
 
     availableTags: Tag[];
 

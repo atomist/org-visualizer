@@ -32,6 +32,7 @@ import {
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
+import { AspectRegistry } from "../aspect/AspectRegistry";
 
 export const Monorepo: Tagger = {
     name: "monorepo",
@@ -107,6 +108,18 @@ export function globRequired(opts: { name: string, description: string, glob: st
         test: fp => isGlobMatchFingerprint(fp) && fp.data.glob === opts.glob && fp.data.matches.length > 0,
     };
 }
+
+// TODO queries database excessively
+// export function isProblematic(): Tagger {
+//     return {
+//         name: "problem",
+//         description: "Undesirable usage",
+//         test: async (fp, id, tagContext) => {
+//             const uuc = await tagContext.aspectRegistry.undesirableUsageCheckerFor(tagContext.workspaceId);
+//             return !!(await uuc.check(tagContext.workspaceId, fp));
+//         }
+//     }
+// }
 
 export function gitHot(opts: { name?: string, hotDays: number, hotContributors: number }): CombinationTagger {
     return {

@@ -55,7 +55,7 @@ export interface Tagger extends Tag {
      * @param {TagContext} tagContext context of this cohort of repos
      * @return {boolean}
      */
-    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean;
+    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean | Promise<boolean>;
 }
 
 /**
@@ -110,13 +110,15 @@ export class DefaultAspectRegistry implements AspectRegistry {
             tag => tag.name);
     }
 
-    public async tagAndScoreRepos(repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
+    public async tagAndScoreRepos(workspaceId: string, repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
         return scoreRepos(
             this.scorers,
             this.tagRepos({
                 repoCount: repos.length,
                 // TODO fix this
                 averageFingerprintCount: -1,
+                workspaceId,
+                aspectRegistry: this,
             }, repos),
             this.opts.scoreWeightings);
     }

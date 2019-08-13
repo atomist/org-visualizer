@@ -31,6 +31,7 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as commonTaggers from "../tagger/commonTaggers";
+import { AspectRegistry } from "../aspect/AspectRegistry";
 
 export interface TaggersParams {
 
@@ -62,6 +63,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
     };
     return [
         commonTaggers.Vulnerable,
+        // commonTaggers.isProblematic(),
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
         { name: "node", description: "Node", test: fp => fp.type === NpmDeps.name },
         {

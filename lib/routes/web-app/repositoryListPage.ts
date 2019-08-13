@@ -48,7 +48,7 @@ export function exposeRepositoryListPage(express: Express,
             return res.send(`No matching repos for organization ${req.query.owner}`);
         }
 
-        const relevantRepos = await aspectRegistry.tagAndScoreRepos(relevantAnalysisResults);
+        const relevantRepos = await aspectRegistry.tagAndScoreRepos(workspaceId, relevantAnalysisResults);
         const reposForDisplay: RepoForDisplay[] = relevantRepos
             .map(ar => ({
                 url: ar.repoRef.url,
