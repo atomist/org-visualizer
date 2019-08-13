@@ -58,7 +58,7 @@ function nonMatchingRepos(tq: TreeQuery): string {
            SELECT json_agg(row_to_json(repo))
            FROM (
                   SELECT
-                    repo.snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
+                    repo_snapshots.id, repo_snapshots.owner, repo_snapshots.name, repo_snapshots.url, 1 as size
                   FROM repo_snapshots
                    WHERE workspace_id ${tq.workspaceId === "*" ? "<>" : "="} $1
                    AND repo_snapshots.id not in (select repo_fingerprints.repo_snapshot_id

@@ -31,7 +31,7 @@ import {
 } from "../tree/sunburst";
 import {
     groupSiblings,
-    introduceClassificationLayer,
+    introduceClassificationLayer, killChildren,
     trimOuterRim,
     visit,
     visitAsync,
@@ -111,6 +111,12 @@ export async function buildFingerprintTree(
     }
 
     resolveAspectNames(aspectRegistry, pt.tree);
+
+    if (!showPresence) {
+        // Suppress branches from aspects that use name "None" for not found
+        pt.tree = killChildren(pt.tree, c => c.name === "None");
+    }
+
     if (byOrg) {
         pt = splitByOrg(pt);
     }
