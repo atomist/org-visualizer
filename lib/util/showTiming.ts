@@ -30,7 +30,7 @@ export async function showTiming<T>(description: string,
         return result;
     } finally {
         const endTime = new Date().getTime();
-        logger.info("Performed '%s' in %d milliseconds",
+        logger.debug("Performed '%s' in %d milliseconds",
             description, endTime - startTime);
     }
 }

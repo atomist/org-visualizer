@@ -54,7 +54,7 @@ export async function doWithClient<R>(description: string,
     } finally {
         client.release();
         const endTime = new Date().getTime();
-        logger.info("============= RDBMS operation ==================\n%s\n>>> Executed in %d milliseconds",
+        logger.debug("============= RDBMS operation ==================\n%s\n>>> Executed in %d milliseconds",
             description, endTime - startTime);
     }
     return result;

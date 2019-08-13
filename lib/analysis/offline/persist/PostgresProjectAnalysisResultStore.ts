@@ -211,7 +211,7 @@ GROUP BY repo_snapshots.id`;
                 const fid = await this.ensureFingerprintStored(ideal.ideal, client);
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, fingerprint_id, authority)
 values ($1, $2, 'local-user')`, [
-                    workspaceId, fid]);
+                        workspaceId, fid]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -339,7 +339,7 @@ GROUP by repo_snapshots.id) stats;`;
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
                 await client.query(sql, [kind.type, kind.name, workspaceId,
-                    cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
             }
             return true;
         });
@@ -391,7 +391,7 @@ GROUP by repo_snapshots.id) stats;`;
             const repoSnapshotsInsertSql = `INSERT INTO repo_snapshots (id, workspace_id, provider_id, owner, name, url,
     commit_sha, analysis, query, timestamp)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp)`;
-            logger.info("Executing SQL:\n%s", repoSnapshotsInsertSql);
+            logger.debug("Executing SQL:\n%s", repoSnapshotsInsertSql);
             await client.query(repoSnapshotsInsertSql,
                 [id,
                     analysisResult.workspaceId,
@@ -469,7 +469,7 @@ VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`;
         // Create fp record if it doesn't exist
         const insertFingerprintSql = `INSERT INTO fingerprints (id, name, feature_name, sha, data)
 VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING`;
-        logger.info("Persisting fingerprint %j SQL\n%s", fp, insertFingerprintSql);
+        logger.debug("Persisting fingerprint %j SQL\n%s", fp, insertFingerprintSql);
         await client.query(insertFingerprintSql, [fingerprintId, fp.name, aspectName, fp.sha, JSON.stringify(fp.data)]);
         return fingerprintId;
     }
@@ -538,7 +538,7 @@ ORDER BY feature_name, fingerprintName ASC`;
                 path: row.path,
             };
         });
-        logger.info("%d fingerprints in workspace '%s'", fps.length, workspaceId);
+        logger.debug("%d fingerprints in workspace '%s'", fps.length, workspaceId);
         return fps;
     }, []);
 }

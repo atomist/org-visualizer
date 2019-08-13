@@ -203,9 +203,9 @@ export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
         if (depth === (opts.newLayerDepth - 1) && isSunburstTree(node)) {
             // Split children
             const descendantsToClassifyBy = descendantPicker(node);
-            logger.info("Found %d leaves for %s", descendantsToClassifyBy.length, t.name);
+            logger.debug("Found %d leaves for %s", descendantsToClassifyBy.length, t.name);
             if (node === t && descendantsToClassifyBy.length === 0) {
-                logger.info("Nothing to do on %s", t.name);
+                logger.debug("Nothing to do on %s", t.name);
                 return false;
             }
             // Introduce a new node for each classification

@@ -40,7 +40,6 @@ import {
     createAnalyzer,
     sdmConfigClientFactory,
 } from "../machine/machine";
-import { computeAnalytics } from "../analysis/offline/spider/analytics";
 import { Aspects } from "../customize/aspects";
 
 // Ensure we see console logging, and send info to the console
@@ -111,7 +110,7 @@ async function spider(params: SpiderAppOptions) {
     const arr = new Array<string>(JSON.stringify(criteria).length + 20);
     _.fill(arr, "-");
     const sep = arr.join("");
-    logger.info("%s\nOptions: %j\nSpider criteria: %j\n%s\n", sep, params, criteria, sep);
+    logger.debug("%s\nOptions: %j\nSpider criteria: %j\n%s\n", sep, params, criteria, sep);
     return spider.spider(criteria,
         analyzer,
         {
@@ -119,7 +118,7 @@ async function spider(params: SpiderAppOptions) {
             keepExistingPersisted: async existing => {
                 // Perform a computation here to return true if an existing analysis seems valid
                 const keep = !params.update;
-                logger.info(keep ?
+                logger.debug(keep ?
                     `Retaining existing analysis for ${existing.analysis.id.url}:${existing.analysis.id.sha}` :
                     `Recomputing analysis for ${existing.analysis.id.url}:${existing.analysis.id.sha}`);
                 return keep;

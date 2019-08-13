@@ -101,8 +101,8 @@ export function logTimings(recorder: TimeRecorder): void {
         }));
     const totalSeconds = _.sum(timings.map(t => t.totalMillis)) / 1000;
     const sorted = _.sortBy(timings, t => -t.totalMillis);
-    logger.info("Aspect extraction total so far: %d seconds...", totalSeconds);
-    logger.info("\t" + sorted.map(s => `${s.name}: ${s.totalMillis / 1000} seconds`).join("\n\t"));
+    logger.debug("Aspect extraction total so far: %d seconds...", totalSeconds);
+    logger.debug("\t" + sorted.map(s => `${s.name}: ${s.totalMillis / 1000} seconds`).join("\n\t"));
 }
 
 /**
