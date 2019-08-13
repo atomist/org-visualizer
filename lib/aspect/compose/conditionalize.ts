@@ -19,17 +19,14 @@ import {
     Project,
 } from "@atomist/automation-client";
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
-import { Aspect } from "@atomist/sdm-pack-fingerprints";
-
-// TODO move to fingerprints pack
+import { Aspect, BaseAspect } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * Make this aspect conditional
  */
 export function conditionalize(aspect: Aspect,
                                test: (p: Project) => Promise<boolean>,
-                               details: Partial<Pick<Aspect, "name" | "displayName" |
-                                   "toDisplayableFingerprint" | "toDisplayableFingerprintName">> = {}): Aspect {
+                               details: Partial<BaseAspect> = {}): Aspect {
     return {
         ...aspect,
         name: details.name || aspect.name,
