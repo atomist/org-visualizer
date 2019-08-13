@@ -66,7 +66,7 @@ export function updatedStoredAnalysisIfNecessary(opts: {
             const now = new Date();
             if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
                 const analysis = await opts.analyzer.analyze(pu.project);
-                logger.info("Performing fresh analysis of project at %s", pu.id.url);
+                logger.debug("Performing fresh analysis of project at %s", pu.id.url);
                 await opts.analyzedRepoStore.persist({
                     repoRef: analysis.id,
                     analysis,

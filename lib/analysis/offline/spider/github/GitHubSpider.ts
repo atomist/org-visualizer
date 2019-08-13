@@ -72,7 +72,7 @@ export class GitHubSpider implements Spider {
                     analyzeAndPersistResults.push(await runPersist(criteria, opts, ar));
                 }
 
-                logger.info("Computing analytics over fingerprints...");
+                logger.debug("Computing analytics over fingerprints...");
                 await computeAnalytics(opts.persister, opts.workspaceId);
 
                 logTimings(analyzer.timings);
@@ -89,9 +89,9 @@ export class GitHubSpider implements Spider {
                 };
                 if (await existingRecordShouldBeKept(opts, repo)) {
                     keepExisting.push(repo.url);
-                    logger.info("Found valid record for " + JSON.stringify(repo));
+                    logger.debug("Found valid record for " + JSON.stringify(repo));
                 } else {
-                    logger.info("Performing fresh analysis of " + JSON.stringify(repo));
+                    logger.debug("Performing fresh analysis of " + JSON.stringify(repo));
                     try {
                         bucket.push(
                             runAnalysis(this.cloneFunction,
@@ -125,8 +125,8 @@ export class GitHubSpider implements Spider {
             projectsDetected: analyzeResults.projectCount,
             failed:
                 [...errors,
-                    ...analyzeResults.failedToPersist,
-                    ...analyzeResults.failedToCloneOrAnalyze],
+                ...analyzeResults.failedToPersist,
+                ...analyzeResults.failedToCloneOrAnalyze],
             keptExisting: keepExisting,
             persistedAnalyses: analyzeResults.persisted,
         };
@@ -212,7 +212,7 @@ async function runAnalysis(cloneFunction: CloneFunction,
     try {
         project = await cloneFunction(sourceData);
         clonedIn = new Date().getTime() - startTime;
-        logger.info("Successfully cloned %s in %d milliseconds", sourceData.url, clonedIn);
+        logger.debug("Successfully cloned %s in %d milliseconds", sourceData.url, clonedIn);
         if (!project.id.sha) {
             const sha = await execPromise("git", ["rev-parse", "HEAD"], {
                 cwd: (project as LocalProject).baseDir,
@@ -230,7 +230,7 @@ async function runAnalysis(cloneFunction: CloneFunction,
         };
     }
     if (criteria.projectTest && !await criteria.projectTest(project)) {
-        logger.info("Skipping analysis of %s as it doesn't pass projectTest", project.id.url);
+        logger.debug("Skipping analysis of %s as it doesn't pass projectTest", project.id.url);
         return {
             failedToCloneOrAnalyze: [],
             repoCount: 1,
@@ -243,7 +243,7 @@ async function runAnalysis(cloneFunction: CloneFunction,
     try {
         analyzeResults = await analyze(project, analyzer, criteria);
         const millisTaken = new Date().getTime() - startTime;
-        logger.info("Successfully analyzed %s in %d milliseconds including clone time of %d",
+        logger.debug("Successfully analyzed %s in %d milliseconds including clone time of %d",
             sourceData.url, millisTaken, clonedIn);
         return {
             failedToCloneOrAnalyze: [],
@@ -271,7 +271,7 @@ async function runPersist(criteria: ScmSearchCriteria,
                           ar: AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }): Promise<AnalyzeAndPersistResult> {
     const persistResults: PersistResult[] = [];
 
-    logger.info("Persisting...");
+    logger.debug("Persisting...");
     if (!ar.analyzeResults) {
         return {
             failedToCloneOrAnalyze: ar.failedToCloneOrAnalyze,
@@ -322,7 +322,7 @@ async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): Asy
     let results: any[] = [];
     let retrieved = 0;
     for (const q of criteria.githubQueries) {
-        logger.info("Running query " + q + "...");
+        logger.debug("Running query " + q + "...");
         const options = octokit.search.repos.endpoint.merge({ q });
         for await (const response of octokit.paginate.iterator(options)) {
             retrieved += response.data.length;
@@ -335,7 +335,7 @@ async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): Asy
             for (const newResult of newResults) {
                 yield newResult;
             }
-            logger.info(`Looked at ${retrieved} repos of max ${criteria.maxRetrieved}...`);
+            logger.debug(`Looked at ${retrieved} repos of max ${criteria.maxRetrieved}...`);
             if (retrieved > criteria.maxRetrieved) {
                 break;
             }

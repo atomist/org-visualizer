@@ -241,7 +241,7 @@ export const configuration: Configuration = configure(async sdm => {
 
                 // start up embedded postgres if needed
                 if (process.env.ATOMIST_POSTGRES === "start" && !_.get(cfg, "sdm.postgres")) {
-                    logger.info("Starting embedded Postgres");
+                    logger.debug("Starting embedded Postgres");
                     await execPromise("/etc/init.d/postgresql", ["start"]);
 
                     const postgresCfg = {

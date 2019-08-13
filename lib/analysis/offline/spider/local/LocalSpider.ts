@@ -57,7 +57,7 @@ export class LocalSpider implements Spider {
             results.push(await spiderOneLocalRepo(opts, criteria, analyzer, repoDir));
         }
 
-        logger.info("Computing analytics over all fingerprints...");
+        logger.debug("Computing analytics over all fingerprints...");
         await computeAnalytics(opts.persister, opts.workspaceId);
         return results.reduce(combineSpiderResults, emptySpiderResult);
     }
