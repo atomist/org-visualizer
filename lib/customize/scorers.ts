@@ -15,7 +15,11 @@
  */
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import { PowerShellLanguage, ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
+import {
+    PowerShellLanguage,
+    ShellLanguage,
+    YamlLanguage,
+} from "@atomist/sdm-pack-sloc/lib/languages";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
 import {
@@ -30,7 +34,10 @@ import {
     requireRecentCommit,
 } from "../scorer/commonScorers";
 import { TypeScriptProjectsMustUseTsLint } from "../scorer/nodeScorers";
-import { requireAspectOfType, requireGlobAspect } from "../scorer/scorerUtils";
+import {
+    requireAspectOfType,
+    requireGlobAspect,
+} from "../scorer/scorerUtils";
 
 export const scoreWeightings: ScoreWeightings = {
     // Weight this to penalize projects with few other scorers
