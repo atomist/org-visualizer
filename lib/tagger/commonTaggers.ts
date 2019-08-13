@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { AspectRegistry } from "../aspect/AspectRegistry";
+import {
+    CombinationTagger,
+    Tagger,
+} from "../aspect/AspectRegistry";
 import { isCodeMetricsFingerprint } from "../aspect/common/codeMetrics";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
 import {
@@ -22,10 +25,6 @@ import {
     isLicenseFingerprint,
 } from "../aspect/community/license";
 import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
-import {
-    CombinationTagger,
-    Tagger,
-} from "../aspect/DefaultAspectRegistry";
 import { BranchCountType } from "../aspect/git/branchCount";
 import { daysSince } from "../aspect/git/dateUtils";
 import {

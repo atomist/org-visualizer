@@ -28,6 +28,7 @@ import {
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
+import { TagContext } from "../routes/api";
 import { IdealStore } from "./IdealStore";
 import {
     ProblemStore,
@@ -65,6 +66,36 @@ export interface Tag {
      * Severity if this tag is associated with an action
      */
     severity?: Severity;
+}
+
+/**
+ * Determine zero or one tag in this fingerprint
+ */
+export interface Tagger extends Tag {
+
+    /**
+     * Test for the relevance of this tag
+     * @param {FP} fp fingerprint to test
+     * @param {RemoteRepoRef} id id of repo to text
+     * @param {TagContext} tagContext context of this cohort of repos
+     * @return {boolean}
+     */
+    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean | Promise<boolean>;
+}
+
+/**
+ * Determine zero or one tag from this set of fingerprints
+ */
+export interface CombinationTagger extends Tag {
+
+    /**
+     * Test for the relevance of this tag given all fingerprints on this repository
+     * @param {FP} fp fingerprint to test
+     * @param {RemoteRepoRef} id id of repo to text
+     * @param {TagContext} tagContext context of this cohort of repos
+     * @return {boolean}
+     */
+    test(fp: FP[], id: RemoteRepoRef, tagContext: TagContext): boolean;
 }
 
 export type TaggedRepo = ProjectAnalysisResult & { tags: Tag[] };

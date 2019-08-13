@@ -19,12 +19,12 @@ import {
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import {
-    AspectRegistry,
+    AspectRegistry, CombinationTagger,
     ManagedAspect,
     RepositoryScorer,
     ScoredRepo,
     Tag,
-    TaggedRepo,
+    TaggedRepo, Tagger,
 } from "./AspectRegistry";
 
 import { RemoteRepoRef } from "@atomist/automation-client";
@@ -42,36 +42,6 @@ import {
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";
-
-/**
- * Determine zero or one tag in this fingerprint
- */
-export interface Tagger extends Tag {
-
-    /**
-     * Test for the relevance of this tag
-     * @param {FP} fp fingerprint to test
-     * @param {RemoteRepoRef} id id of repo to text
-     * @param {TagContext} tagContext context of this cohort of repos
-     * @return {boolean}
-     */
-    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean | Promise<boolean>;
-}
-
-/**
- * Determine zero or one tag from this set of fingerprints
- */
-export interface CombinationTagger extends Tag {
-
-    /**
-     * Test for the relevance of this tag given all fingerprints on this repository
-     * @param {FP} fp fingerprint to test
-     * @param {RemoteRepoRef} id id of repo to text
-     * @param {TagContext} tagContext context of this cohort of repos
-     * @return {boolean}
-     */
-    test(fp: FP[], id: RemoteRepoRef, tagContext: TagContext): boolean;
-}
 
 /**
  * Aspects must have unique names

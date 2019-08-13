@@ -18,13 +18,12 @@ import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { AspectRegistry } from "../aspect/AspectRegistry";
-import { CiAspect } from "../aspect/common/stackAspect";
-import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
 import {
     CombinationTagger,
     Tagger,
-} from "../aspect/DefaultAspectRegistry";
+} from "../aspect/AspectRegistry";
+import { CiAspect } from "../aspect/common/stackAspect";
+import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
