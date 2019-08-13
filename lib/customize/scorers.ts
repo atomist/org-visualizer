@@ -18,33 +18,21 @@ import { BranchCountType } from "../aspect/git/branchCount";
 import { adjustBy } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import { FP } from "@atomist/sdm-pack-fingerprints";
-import {
-    ShellLanguage,
-    YamlLanguage,
-} from "@atomist/sdm-pack-sloc/lib/languages";
-import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import { ShellLanguage, YamlLanguage, } from "@atomist/sdm-pack-sloc/lib/languages";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import {
-    CodeMetricsData,
-    CodeMetricsType,
-} from "../aspect/common/codeMetrics";
-import {
-    CodeOfConductType,
-} from "../aspect/community/codeOfConduct";
-import {
-    hasNoLicense,
-    LicenseType,
-} from "../aspect/community/license";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
-import { daysSince } from "../aspect/git/dateUtils";
-import {
-    GitRecencyData,
-    GitRecencyType,
-} from "../aspect/git/gitActivity";
+import { CodeOfConductType, } from "../aspect/community/codeOfConduct";
+import { hasNoLicense, LicenseType, } from "../aspect/community/license";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
+import {
+    anchorScoreAt,
+    limitLanguages,
+    limitLinesOfCode,
+    limitLinesOfCodeIn,
+    requireRecentCommit
+} from "../scorer/commonScorers";
+import { requireAspectOfType, requireGlobAspect } from "../scorer/scorerUtils";
 
 export const scoreWeightings: ScoreWeightings = {
     // Weight this to penalize projects with few other scorers
@@ -55,13 +43,7 @@ export const scoreWeightings: ScoreWeightings = {
  * Scorers to rate projects
  */
 export const Scorers: RepositoryScorer[] = [
-    async () => {
-        return {
-            name: "anchor",
-            reason: "Weight to 2 star to penalize repositories about which we know little",
-            score: 2,
-        };
-    },
+    anchorScoreAt(2),
     async repo => {
         const branchCount = repo.analysis.fingerprints.find(f => f.type === BranchCountType);
         if (!branchCount) {
@@ -122,98 +104,10 @@ export const Scorers: RepositoryScorer[] = [
     limitLanguages({ limit: 3 }),
     // Adjust depending on the service granularity you want
     limitLinesOfCode({ limit: 15000 }),
-    limitLinesIn({ language: YamlLanguage, limit: 500 }),
-    limitLinesIn({ language: ShellLanguage, limit: 200 }),
+    limitLinesOfCodeIn({ language: YamlLanguage, limit: 500 }),
+    limitLinesOfCodeIn({ language: ShellLanguage, limit: 200 }),
     requireRecentCommit({ days: 30 }),
     requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
     requireGlobAspect({ glob: "CHANGELOG.md" }),
     requireGlobAspect({ glob: "CONTRIBUTING.md" }),
 ];
-
-function requireRecentCommit(opts: { days: number }): RepositoryScorer {
-    return async repo => {
-        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType) as FP<GitRecencyData>;
-        if (!grt) {
-            return undefined;
-        }
-        const date = new Date(grt.data.lastCommitTime);
-        const days = daysSince(date);
-        return {
-            name: "recency",
-            score: adjustBy(-days / opts.days),
-            reason: `Last commit ${days} days ago`,
-        };
-    };
-}
-
-function limitLanguages(opts: { limit: number }): RepositoryScorer {
-    return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
-        if (!cm) {
-            return undefined;
-        }
-        return {
-            name: "multi-language",
-            score: adjustBy(opts.limit - cm.data.languages.length),
-            reason: `Found ${cm.data.languages.length} languages: ${cm.data.languages.map(l => l.language.name).join(",")}`,
-        };
-    };
-}
-
-function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
-    return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
-        if (!cm) {
-            return undefined;
-        }
-        return {
-            name: "total-loc",
-            score: adjustBy(-cm.data.lines / opts.limit),
-            reason: `Found ${cm.data.lines} total lines of code`,
-        };
-    };
-}
-
-export function limitLinesIn(opts: { limit: number, language: Language }): RepositoryScorer {
-    return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
-        if (!cm) {
-            return undefined;
-        }
-        const target = cm.data.languages.find(l => l.language.name === opts.language.name);
-        const targetLoc = target ? target.total : 0;
-        return {
-            name: `limit-${opts.language.name} (${opts.limit})`,
-            score: adjustBy(-targetLoc / opts.limit),
-            reason: `Found ${targetLoc} lines of ${opts.language.name}`,
-        };
-    };
-}
-
-export function requireAspectOfType(opts: { type: string, reason: string }): RepositoryScorer {
-    return async repo => {
-        const found = repo.analysis.fingerprints.find(fp => fp.type === opts.type);
-        return {
-            name: `${opts.type}-required`,
-            score: !!found ? 5 : 1,
-            reason: !found ? opts.reason : "Satisfactory",
-        };
-    };
-}
-
-/**
- * Must exactly match the glob pattern
- * @param {{glob: string}} opts
- * @return {RepositoryScorer}
- */
-export function requireGlobAspect(opts: { glob: string }): RepositoryScorer {
-    return async repo => {
-        const globs = repo.analysis.fingerprints.filter(isGlobMatchFingerprint);
-        const found = globs.filter(gf => gf.data.glob === opts.glob);
-        return {
-            name: `${opts.glob}-required`,
-            score: !!found ? 5 : 1,
-            reason: !found ? `Should have file for ${opts.glob}` : "Satisfactory",
-        };
-    };
-}
