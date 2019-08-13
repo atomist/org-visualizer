@@ -19,12 +19,14 @@ import {
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import {
-    AspectRegistry, CombinationTagger,
+    AspectRegistry,
+    CombinationTagger,
     ManagedAspect,
     RepositoryScorer,
     ScoredRepo,
     Tag,
-    TaggedRepo, Tagger,
+    TaggedRepo,
+    Tagger,
 } from "./AspectRegistry";
 
 import { RemoteRepoRef } from "@atomist/automation-client";
