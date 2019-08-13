@@ -20,7 +20,10 @@ import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
-import { CombinationTagger, Tagger } from "../aspect/DefaultAspectRegistry";
+import {
+    CombinationTagger,
+    Tagger,
+} from "../aspect/DefaultAspectRegistry";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
