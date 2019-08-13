@@ -29,6 +29,10 @@ import {
 } from "../aspect/git/gitActivity";
 import { adjustBy } from "./scoring";
 
+/**
+ * Use to anchor scores to penalize repositories about which we know little.
+ * Typically weighted > default x1
+ */
 export function anchorScoreAt(score: FiveStar): RepositoryScorer {
     return async () => {
         return {
@@ -39,6 +43,11 @@ export function anchorScoreAt(score: FiveStar): RepositoryScorer {
     };
 }
 
+/**
+ * Penalize repositories for not having a recent commit.
+ * days is the number of days since the latest commit to the default branch
+ * that will cost 1 star.
+ */
 export function requireRecentCommit(opts: { days: number }): RepositoryScorer {
     return async repo => {
         const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType) as FP<GitRecencyData>;
@@ -72,6 +81,12 @@ export function limitLanguages(opts: { limit: number }): RepositoryScorer {
     };
 }
 
+/**
+ * Penalize repositories for having too many lines of code.
+ * The limit is the number of lines of code required to drop one star.
+ * The chosen limit will depend on team preferences: For example,
+ * are we trying to do microservices?
+ */
 export function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
     return async repo => {
         const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
