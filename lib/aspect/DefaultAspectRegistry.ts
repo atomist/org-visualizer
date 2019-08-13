@@ -41,13 +41,21 @@ import {
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";
+import { RemoteRepoRef } from "@atomist/automation-client";
 
 /**
  * Determine zero or one tag in this fingerprint
  */
 export interface Tagger extends Tag {
 
-    test(fp: FP, tagContext: TagContext): boolean;
+    /**
+     * Test for the relevance of this tag
+     * @param {FP} fp fingerprint to test
+     * @param {RemoteRepoRef} id id of repo to text
+     * @param {TagContext} tagContext context of this cohort of repos
+     * @return {boolean}
+     */
+    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean;
 }
 
 /**
@@ -55,7 +63,14 @@ export interface Tagger extends Tag {
  */
 export interface CombinationTagger extends Tag {
 
-    test(fp: FP[], tagContext: TagContext): boolean;
+    /**
+     * Test for the relevance of this tag given all fingerprints on this repository
+     * @param {FP} fp fingerprint to test
+     * @param {RemoteRepoRef} id id of repo to text
+     * @param {TagContext} tagContext context of this cohort of repos
+     * @return {boolean}
+     */
+    test(fp: FP[], id: RemoteRepoRef, tagContext: TagContext): boolean;
 }
 
 /**
@@ -81,16 +96,16 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this;
     }
 
-    public tagsFor(fp: FP, tagContext: TagContext): Tag[] {
+    private tagsFor(fp: FP, id: RemoteRepoRef, tagContext: TagContext): Tag[] {
         return _.uniqBy(this.taggers
-                .map(tagger => ({ ...tagger, tag: tagger.test(fp, tagContext) }))
+                .map(tagger => ({ ...tagger, tag: tagger.test(fp, id, tagContext) }))
                 .filter(t => !!t.tag),
             tag => tag.name);
     }
 
-    public combinationTagsFor(fps: FP[], tagContext: TagContext): Tag[] {
+    private combinationTagsFor(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Tag[] {
         return _.uniqBy(this.combinationTaggers
-                .map(tagger => ({ ...tagger, tag: tagger.test(fps, tagContext) }))
+                .map(tagger => ({ ...tagger, tag: tagger.test(fps, id, tagContext) }))
                 .filter(t => !!t.tag),
             tag => tag.name);
     }
@@ -149,13 +164,13 @@ export class DefaultAspectRegistry implements AspectRegistry {
         repo: ProjectAnalysisResult): TaggedRepo {
         return {
             ...repo,
-            tags: this.tagsIn(repo.analysis.fingerprints, tagContext)
-                .concat(this.combinationTagsFor(repo.analysis.fingerprints, tagContext)),
+            tags: this.tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext)
+                .concat(this.combinationTagsFor(repo.analysis.fingerprints,repo.repoRef, tagContext)),
         };
     }
 
-    private tagsIn(fps: FP[], tagContext: TagContext): Tag[] {
-        return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, tagContext))), tag => tag.name)
+    private tagsIn(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Tag[] {
+        return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, id, tagContext))), tag => tag.name)
             .sort();
     }
 

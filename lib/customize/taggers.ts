@@ -216,7 +216,7 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
             name: "not understood",
             description: "You may want to write aspects for these outlier projects",
             severity: "warn",
-            test: (fps, tagContext) => {
+            test: (fps, id, tagContext) => {
                 const aspectCount = _.uniq(fps.map(f => f.type)).length;
                 // There are quite a few aspects that are found on everything, e.g. git
                 // We need to set the threshold count probably
@@ -227,7 +227,7 @@ export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Com
             name: "not understood",
             description: "You may want to write aspects for these outlier projects",
             severity: "warn",
-            test: (fps, tagContext) => {
+            test: (fps, id, tagContext) => {
                 const aspectCount = _.uniq(fps.map(f => f.type)).length;
                 // There are quite a few aspects that are found on everything, e.g. git
                 // We need to set the threshold count probably
