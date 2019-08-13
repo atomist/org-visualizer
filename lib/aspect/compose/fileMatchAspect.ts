@@ -55,35 +55,42 @@ export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
     }): Aspect<FP<FileMatchData>> {
     return {
         toDisplayableFingerprintName: name => `File match '${config.glob}'`,
-        toDisplayableFingerprint: fp => JSON.stringify(fp.data),
+        toDisplayableFingerprint: fp =>
+            fp.data.matches.length === 0 ?
+                "None" :
+                fp.data.matches
+                    .map(m => m.matchValue)
+                    .join(),
         ...config,
-        extract: async p => {
-            const matches: FileMatch[] = [];
-            const it = fileHitIterator(p, {
-                parseWith: config.parseWith,
-                pathExpression: config.pathExpression,
-                globPatterns: config.glob,
-            });
-            for await (const match of it) {
-                matches.push({
-                    filePath: match.file.path,
+        extract:
+            async p => {
+                const matches: FileMatch[] = [];
+                const it = fileHitIterator(p, {
+                    parseWith: config.parseWith,
                     pathExpression: config.pathExpression,
-                    matchValue: match.matches[0].$value,
+                    globPatterns: config.glob,
                 });
-            }
-            const data = {
-                kind: FileMatchType as any,
-                matches,
-                glob: config.glob,
-            };
-            return {
-                type: config.name,
-                name: config.name,
-                data,
-                sha: sha256(JSON.stringify(data)),
-            };
-        },
-    };
+                for await (const match of it) {
+                    matches.push({
+                        filePath: match.file.path,
+                        pathExpression: config.pathExpression,
+                        matchValue: match.matches[0].$value,
+                    });
+                }
+                const data = {
+                    kind: FileMatchType as any,
+                    matches,
+                    glob: config.glob,
+                };
+                return {
+                    type: config.name,
+                    name: config.name,
+                    data,
+                    sha: sha256(JSON.stringify(data)),
+                };
+            },
+    }
+        ;
 }
 
 export function microgrammarMatchAspect<T>(config: Omit<BaseAspect, "stats" | "apply"> &

@@ -124,8 +124,8 @@ export async function buildFingerprintTree(
         pt.tree = groupSiblings(pt.tree,
             {
                 parentSelector: parent => parent.children.some(c => (c as any).sha),
-                childClassifier: kid => (kid as any).sha ? "Yes" : "No",
-                collapseUnderName: name => name === "No",
+                childClassifier: kid => (kid as any).sha && (kid as any).name !== "None" ? "Present" : "None",
+                collapseUnderName: name => name === "None",
             });
     } else if (showProgress) {
         const ideal = await aspectRegistry.idealStore.loadIdeal(workspaceId, fingerprintType, fingerprintName);
@@ -222,7 +222,12 @@ function decorateToShowProgressToIdeal(aspectRegistry: AspectRegistry, pt: Plant
  * @param {PlantedTree} pt
  */
 export function putRepoPathInNameOfRepoLeaves(pt: PlantedTree): void {
-    interface EndNode { name: string; size: number; path?: string; url?: string; }
+    interface EndNode {
+        name: string;
+        size: number;
+        path?: string;
+        url?: string;
+    }
 
     visit(pt.tree, l => {
         const en = l as EndNode;
