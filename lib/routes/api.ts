@@ -49,6 +49,7 @@ import {
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
 import {
+    isSunburstTree,
     PlantedTree,
     SunburstTree,
     TagUsage,
@@ -376,6 +377,9 @@ function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): 
 function removeAspectsWithoutMeaningfulEntropy(aspectRegistry: AspectRegistry, driftTree: PlantedTree): PlantedTree {
     // Remove anything where entropy isn't meaningful
     driftTree.tree = killChildren(driftTree.tree, child => {
+        if (isSunburstTree(child)) {
+            return false;
+        }
         const t = child as any;
         if (t.type) {
             const aspect = aspectRegistry.aspectOf(t.type);

@@ -57,9 +57,6 @@ export function killChildren(tr: SunburstTree,
     visit(t, (l, depth) => {
         if (isSunburstTree(l)) {
             l.children = l.children.filter(c => {
-                if (isSunburstTree(c)) {
-                    return true;
-                }
                 const kill = shouldEliminate(c, depth + 1);
                 // logger.debug("Kill = %s for %s of depth %d", kill, c.name, depth);
                 return !kill;
@@ -230,6 +227,9 @@ export function introduceClassificationLayer<T = {}>(pt: PlantedTree,
                     const prunedSubTree = killChildren(
                         subTree,
                         tt => {
+                            if (isSunburstTree(tt)) {
+                                return false;
+                            }
                             const classification = opts.descendantClassifier(tt as any);
                             return !!classification && classification !== name;
                         });
