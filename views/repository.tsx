@@ -1,8 +1,9 @@
-import { WeightedScores } from "@atomist/sdm-pack-analysis";
+import { WeightedScore, WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
 import { ScoredRepo } from "../lib/aspect/AspectRegistry";
 import { TagUsage } from "../lib/tree/sunburst";
 import { collapsible } from "./utils";
+import { isCodeMetricsFingerprint } from "../lib/aspect/common/codeMetrics";
 
 type DisplayName = string;
 
@@ -25,19 +26,18 @@ export interface RepoExplorerProps {
 
 export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
     return <div>
-        <h1>{props.repo.repoRef.owner} / {props.repo.repoRef.repo}</h1>
+        <h1>{props.repo.repoRef.owner} / <a href={props.repo.repoRef.url}>{props.repo.repoRef.repo}</a></h1>
 
-        <h2>Scoring</h2>
-
-        <div className="score">{props.repo.weightedScore.weightedScore.toFixed(2)}</div>
-        <br/>
-        {displayWeightedScores(props.repo.weightedScore.weightedScores)}
-
-        {displayResources(props)}
+        {displayWeightedScores(props.repo.weightedScore)}
 
         {displayTags(props)}
 
+        {displayCodeMetrics(props)}
+
         {displayAspects(props)}
+
+        {displayResources(props)}
+
     </div>;
 }
 
@@ -50,11 +50,12 @@ function displayResources(props: RepoExplorerProps): React.ReactElement {
         </ul>, true);
 }
 
-function displayWeightedScores(weightedScores: WeightedScores): React.ReactElement {
-    return collapsible("weightedScores", "Score components",
+function displayWeightedScores(weightedScore: WeightedScore): React.ReactElement {
+    return collapsible("weightedScores",
+        `Score: ${weightedScore.weightedScore.toFixed(2)} / 5`,
         <ul>
-            {Object.getOwnPropertyNames(weightedScores).map(name => {
-                const score = weightedScores[name];
+            {Object.getOwnPropertyNames(weightedScore.weightedScores).map(name => {
+                const score = weightedScore.weightedScores[name];
                 return <li><b>{score.name}</b>: {score.score.toFixed(2)} (x{score.weighting}) - {score.reason}</li>;
             })
             }
@@ -71,16 +72,18 @@ function displayAspects(props: RepoExplorerProps): React.ReactElement {
 }
 
 function displayAspect(feature: ProjectAspectForDisplay): React.ReactElement {
-    return <div>
-        <h3>{feature.aspect.displayName}</h3>
-        <ul>
-            {feature.fingerprints.map(displayFingerprint)}
-        </ul>
-    </div>;
+    return <li>
+        {collapsible("aspects",
+            feature.aspect.displayName,
+            <ul>
+                {feature.fingerprints.map(displayFingerprint)}
+            </ul>,
+            true)}
+    </li>;
 }
 
 function displayTags(props: RepoExplorerProps): React.ReactElement {
-    return collapsible("tags", "Tags Found",
+    return collapsible("tags", "Tags",
         <ul>
             {props.repo.tags.map(displayTag)}
         </ul>,
@@ -88,9 +91,7 @@ function displayTags(props: RepoExplorerProps): React.ReactElement {
 }
 
 function displayTag(tag: TagUsage): React.ReactElement {
-    return <ul>
-        <li><b>{tag.name}</b> - {tag.description}</li>
-    </ul>;
+    return <li><b>{tag.name}</b> - {tag.description}</li>;
 }
 
 function displayFingerprint(fingerprint: ProjectFingerprintForDisplay): React.ReactElement {
@@ -98,4 +99,19 @@ function displayFingerprint(fingerprint: ProjectFingerprintForDisplay): React.Re
         <i>{fingerprint.displayName}</i>: {fingerprint.displayValue}
         {" "} {fingerprint.idealDisplayString && `(Ideal: ${fingerprint.idealDisplayString})`}
     </li>;
+}
+
+function displayCodeMetrics(props: RepoExplorerProps): React.ReactElement {
+    const cmf = props.repo.analysis.fingerprints.find(isCodeMetricsFingerprint);
+    if (!cmf) {
+        return <div/>;
+    }
+
+    return collapsible("languages", "Languages",
+        <ul>
+            {cmf.data.languages.map(lang => {
+                return <li key={"lang_" + lang}><b>{lang.language.name}</b>: {lang.total}</li>
+            })}
+        </ul>,
+        true);
 }
