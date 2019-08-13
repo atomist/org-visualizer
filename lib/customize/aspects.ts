@@ -30,7 +30,6 @@ import {
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
-import { fileCount } from "../aspect/common/fileCount";
 import {
     CiAspect,
     JavaBuild,
@@ -85,7 +84,6 @@ export const Aspects: ManagedAspect[] = [
         displayName: undefined,
     },
     TravisScriptsAspect,
-    fileCount,
     branchCount,
     GitRecency,
     // This is expensive as it requires deeper cloning
