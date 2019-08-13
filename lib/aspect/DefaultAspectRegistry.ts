@@ -27,6 +27,7 @@ import {
     TaggedRepo,
 } from "./AspectRegistry";
 
+import { RemoteRepoRef } from "@atomist/automation-client";
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
@@ -41,7 +42,6 @@ import {
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";
-import { RemoteRepoRef } from "@atomist/automation-client";
 
 /**
  * Determine zero or one tag in this fingerprint
@@ -165,7 +165,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return {
             ...repo,
             tags: this.tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext)
-                .concat(this.combinationTagsFor(repo.analysis.fingerprints,repo.repoRef, tagContext)),
+                .concat(this.combinationTagsFor(repo.analysis.fingerprints, repo.repoRef, tagContext)),
         };
     }
 
