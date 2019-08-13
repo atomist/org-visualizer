@@ -31,7 +31,8 @@ import {
 } from "../tree/sunburst";
 import {
     groupSiblings,
-    introduceClassificationLayer, killChildren,
+    introduceClassificationLayer,
+    killChildren,
     trimOuterRim,
     visit,
     visitAsync,
