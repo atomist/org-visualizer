@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { FiveStar } from "@atomist/sdm-pack-analysis";
+import { FP } from "@atomist/sdm-pack-fingerprints";
+import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
+import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
+import { daysSince } from "../aspect/git/dateUtils";
 import { GitRecencyData, GitRecencyType } from "../aspect/git/gitActivity";
 import { adjustBy } from "./scoring";
-import { daysSince } from "../aspect/git/dateUtils";
-import { FP } from "@atomist/sdm-pack-fingerprints";
-import { CodeMetricsData, CodeMetricsType } from "../aspect/common/codeMetrics";
-import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
-import { FiveStar } from "@atomist/sdm-pack-analysis";
 
 export function anchorScoreAt(score: FiveStar): RepositoryScorer {
     return async () => {

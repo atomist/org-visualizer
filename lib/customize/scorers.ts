@@ -18,11 +18,11 @@ import { BranchCountType } from "../aspect/git/branchCount";
 import { adjustBy } from "../scorer/scoring";
 
 import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
-import { ShellLanguage, YamlLanguage, } from "@atomist/sdm-pack-sloc/lib/languages";
+import { ShellLanguage, YamlLanguage } from "@atomist/sdm-pack-sloc/lib/languages";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { CodeOfConductType, } from "../aspect/community/codeOfConduct";
-import { hasNoLicense, LicenseType, } from "../aspect/community/license";
+import { CodeOfConductType } from "../aspect/community/codeOfConduct";
+import { hasNoLicense, LicenseType } from "../aspect/community/license";
 import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 import {
@@ -30,7 +30,7 @@ import {
     limitLanguages,
     limitLinesOfCode,
     limitLinesOfCodeIn,
-    requireRecentCommit
+    requireRecentCommit,
 } from "../scorer/commonScorers";
 import { requireAspectOfType, requireGlobAspect } from "../scorer/scorerUtils";
 
