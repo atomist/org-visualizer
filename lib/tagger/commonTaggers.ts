@@ -58,6 +58,18 @@ export const HasCodeOfConduct: Tagger = {
     test: fp => fp.type === CodeOfConductType,
 };
 
+export const HasChangeLog: Tagger = globRequired({
+        name: "changelog",
+        description: "Repositories should have a changelog",
+        glob: "CHANGELOG.md",
+    });
+
+export const HasContributingFile: Tagger = globRequired({
+    name: "contributing",
+    description: "Repositories should have a contributing",
+    glob: "CONTRIBUTING.md",
+});
+
 /**
  * Tag projects as dead if they haven't been committed to recently
  * @param {{days: number}} opts number of days at which to conclude a project is dead

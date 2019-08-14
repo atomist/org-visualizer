@@ -55,6 +55,7 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
+import { ChangelogAspect, ContributingAspect } from "../aspect/community/oss";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",
@@ -113,8 +114,8 @@ export const Aspects: ManagedAspect[] = [
     // Don't show these
     globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
     globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
-    globAspect({ name: "changelog", displayName: undefined, glob: "CHANGELOG.md" }),
-    globAspect({ name: "contributing", displayName: undefined, glob: "CONTRIBUTING.md" }),
+    ChangelogAspect,
+    ContributingAspect,
     globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
     globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
 

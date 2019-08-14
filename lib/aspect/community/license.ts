@@ -77,6 +77,11 @@ export const License: Aspect<FP<LicenseData>> = {
             "None" :
             `${fp.data.path}:${fp.data.classification}`;
     },
+    stats: {
+        defaultStatStatus: {
+            entropy: false,
+        },
+    }
 };
 
 async function firstFileFound(p: Project, ...paths: string[]): Promise<ProjectFile | undefined> {

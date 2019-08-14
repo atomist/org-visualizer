@@ -61,6 +61,11 @@ export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
                 fp.data.matches
                     .map(m => m.matchValue)
                     .join(),
+        stats: {
+            defaultStatStatus: {
+                entropy: false,
+            },
+        },
         ...config,
         extract:
             async p => {

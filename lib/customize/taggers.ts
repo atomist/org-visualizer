@@ -119,16 +119,8 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         commonTaggers.lineCountTest({ name: "big (3-10k)", lineCountTest: count => count >= 3000 && count <= 10000 }),
         commonTaggers.lineCountTest({ name: "tiny (<200)", lineCountTest: count => count < 200 }),
         commonTaggers.HasCodeOfConduct,
-        commonTaggers.globRequired({
-            name: "changelog",
-            description: "Repositories should have a changelog",
-            glob: "CHANGELOG.md",
-        }),
-        commonTaggers.globRequired({
-            name: "contributing",
-            description: "Repositories should have a contributing",
-            glob: "CONTRIBUTING.md",
-        }),
+        commonTaggers.HasChangeLog,
+        commonTaggers.HasContributingFile,
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
     ];
