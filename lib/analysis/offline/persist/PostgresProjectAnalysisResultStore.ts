@@ -512,10 +512,12 @@ async function fingerprintsInWorkspace(clientFactory: ClientFactory,
                                        workspaceId: string,
                                        type?: string,
                                        name?: string): Promise<Array<FP & { id: string }>> {
-    const sql = `SELECT f.name as fingerprintName, f.id, f.feature_name, f.sha, f.data, rf.path
-FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
-WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
-AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}`;
+    const sql = `SELECT DISTINCT f.name, f.id, f.feature_name as type, f.sha, f.data
+FROM repo_snapshots rs
+    RIGHT JOIN repo_fingerprints rf ON rf.repo_snapshot_id = rs.id
+    INNER JOIN fingerprints f ON rf.fingerprint_id = f.id 
+WHERE rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+AND ${type ? "type = $2" : "true"} AND ${name ? "f.name = $3" : "true"}`;
     return doWithClient(sql, clientFactory, async client => {
         const params = [workspaceId];
         if (!!type) {
@@ -526,16 +528,7 @@ AND ${type ? "feature_name = $2" : "true"} AND ${name ? "f.name = $3" : "true"}`
         }
 
         const rows = await client.query(sql, params);
-        const fps = rows.rows.map(row => {
-            return {
-                id: row.id,
-                name: row.fingerprintname,
-                type: row.feature_name,
-                sha: row.sha,
-                data: row.data,
-                path: row.path,
-            };
-        });
+        const fps = rows.rows;
         logger.debug("%d fingerprints in workspace '%s'", fps.length, workspaceId);
         return fps;
     }, []);
