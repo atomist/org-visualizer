@@ -15,7 +15,9 @@
  */
 
 import {
-    FiveStar, Score, Scores,
+    FiveStar,
+    Score,
+    Scores,
     ScoreWeightings,
     weightedCompositeScore,
 } from "@atomist/sdm-pack-analysis";
