@@ -52,8 +52,8 @@ export async function scoreRepo(scorers: RepositoryScorer[],
  * @return {Promise<Scores>}
  */
 async function scoresFor<T, CONTEXT>(scoreFunctions: Array<(t: T, c: CONTEXT) => Promise<Score | undefined>>,
-                                            toScore: T,
-                                            context: CONTEXT): Promise<Scores> {
+                                     toScore: T,
+                                     context: CONTEXT): Promise<Scores> {
     const scores: Scores = {};
     const runFunctions = scoreFunctions.map(scorer => {
         scorer(toScore, context).then(score => {

@@ -37,6 +37,7 @@ import { TagContext } from "../routes/api";
 import {
     scoreRepos,
 } from "../scorer/scoring";
+import { showTiming } from "../util/showTiming";
 import { IdealStore } from "./IdealStore";
 import {
     chainUndesirableUsageCheckers,
@@ -44,7 +45,6 @@ import {
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";
-import { showTiming } from "../util/showTiming";
 
 export class DefaultAspectRegistry implements AspectRegistry {
 
@@ -128,7 +128,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
     }
 
     private async tagRepos(tagContext: TagContext,
-                     repos: ProjectAnalysisResult[]): Promise<TaggedRepo[]> {
+                           repos: ProjectAnalysisResult[]): Promise<TaggedRepo[]> {
         return Promise.all(repos.map(repo => this.tagRepo(tagContext, repo)));
     }
 
