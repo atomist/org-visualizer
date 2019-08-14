@@ -76,7 +76,7 @@ WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1) as repos`;
     }
 
     public virtualProjectCount(workspaceId: string): Promise<number> {
-        const sql = `SELECT COUNT(1) FROM (SELECT DISTINCT url, path
+        const sql = `SELECT COUNT(1) FROM (SELECT DISTINCT repo_snapshot_id, path
 FROM repo_snapshots, repo_fingerprints
 WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
   AND repo_fingerprints.repo_snapshot_id = repo_snapshots.id) as virtual_repos`;
@@ -121,8 +121,7 @@ AND ${additionalWhereClause}`;
   repo_snapshots.commit_sha, repo_snapshots.timestamp, repo_snapshots.workspace_id,
   json_agg(json_build_object('path', path, 'id', fingerprint_id)) as fingerprint_refs
 FROM repo_snapshots
-    LEFT OUTER JOIN repo_fingerprints ON repo_snapshots.id = repo_fingerprints.repo_snapshot_id
-    LEFT OUTER JOIN fingerprints f ON repo_fingerprints.fingerprint_id = f.id
+    LEFT JOIN repo_fingerprints ON repo_snapshots.id = repo_fingerprints.repo_snapshot_id
 WHERE workspace_id ${workspaceId !== "*" ? "=" : "<>"} $1
 AND ${additionalWhereClause}
 GROUP BY repo_snapshots.id`;
