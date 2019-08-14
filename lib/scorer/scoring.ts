@@ -15,8 +15,7 @@
  */
 
 import {
-    FiveStar,
-    scoresFor,
+    FiveStar, Score, Scores,
     ScoreWeightings,
     weightedCompositeScore,
 } from "@atomist/sdm-pack-analysis";
@@ -43,6 +42,28 @@ export async function scoreRepo(scorers: RepositoryScorer[],
         ...repo,
         weightedScore: weightedCompositeScore({ scores }, weightings),
     };
+}
+
+/**
+ * Score the given object in the given context
+ * @param scoreFunctions scoring functions. Undefined returns will be ignored
+ * @param {T} toScore what to score
+ * @param {CONTEXT} context
+ * @return {Promise<Scores>}
+ */
+async function scoresFor<T, CONTEXT>(scoreFunctions: Array<(t: T, c: CONTEXT) => Promise<Score | undefined>>,
+                                            toScore: T,
+                                            context: CONTEXT): Promise<Scores> {
+    const scores: Scores = {};
+    const runFunctions = scoreFunctions.map(scorer => {
+        scorer(toScore, context).then(score => {
+            if (score) {
+                scores[score.name] = score;
+            }
+        });
+    });
+    await Promise.all(runFunctions);
+    return scores;
 }
 
 /**

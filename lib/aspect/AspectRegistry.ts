@@ -80,7 +80,7 @@ export interface Tagger extends Tag {
      * @param {TagContext} tagContext context of this cohort of repos
      * @return {boolean}
      */
-    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean | Promise<boolean>;
+    test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean;
 }
 
 /**

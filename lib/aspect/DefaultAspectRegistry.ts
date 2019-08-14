@@ -44,10 +44,8 @@ import {
     problemStoreBackedUndesirableUsageCheckerFor,
     UndesirableUsageChecker,
 } from "./ProblemStore";
+import { showTiming } from "../util/showTiming";
 
-/**
- * Aspects must have unique names
- */
 export class DefaultAspectRegistry implements AspectRegistry {
 
     private readonly taggers: Tagger[] = [];
@@ -55,8 +53,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
     private readonly combinationTaggers: CombinationTagger[] = [];
 
     /**
-     * Create an index on this aspect. Must return a unique string. It's associated with a usage
-     * not an aspect.
+     * Add a tagger.
      */
     public withTaggers(...taggers: Tagger[]): this {
         this.taggers.push(...taggers);
@@ -83,16 +80,18 @@ export class DefaultAspectRegistry implements AspectRegistry {
     }
 
     public async tagAndScoreRepos(workspaceId: string, repos: ProjectAnalysisResult[]): Promise<ScoredRepo[]> {
-        return scoreRepos(
-            this.scorers,
-            this.tagRepos({
-                repoCount: repos.length,
-                // TODO fix this
-                averageFingerprintCount: -1,
-                workspaceId,
-                aspectRegistry: this,
-            }, repos),
-            this.opts.scoreWeightings);
+        const scored = await showTiming(`Tag and score ${repos.length} repos`,
+            async () => scoreRepos(
+                this.scorers,
+                await this.tagRepos({
+                    repoCount: repos.length,
+                    // TODO fix this
+                    averageFingerprintCount: -1,
+                    workspaceId,
+                    aspectRegistry: this,
+                }, repos),
+                this.opts.scoreWeightings));
+        return scored;
     }
 
     get availableTags(): Tag[] {
@@ -128,22 +127,22 @@ export class DefaultAspectRegistry implements AspectRegistry {
         return this.opts.scorers || [];
     }
 
-    private tagRepos(tagContext: TagContext,
-                     repos: ProjectAnalysisResult[]): TaggedRepo[] {
-        return repos.map(repo => this.tagRepo(tagContext, repo));
+    private async tagRepos(tagContext: TagContext,
+                     repos: ProjectAnalysisResult[]): Promise<TaggedRepo[]> {
+        return Promise.all(repos.map(repo => this.tagRepo(tagContext, repo)));
     }
 
-    private tagRepo(
+    private async tagRepo(
         tagContext: TagContext,
-        repo: ProjectAnalysisResult): TaggedRepo {
+        repo: ProjectAnalysisResult): Promise<TaggedRepo> {
         return {
             ...repo,
-            tags: this.tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext)
+            tags: (await this.tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext))
                 .concat(this.combinationTagsFor(repo.analysis.fingerprints, repo.repoRef, tagContext)),
         };
     }
 
-    private tagsIn(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Tag[] {
+    private async tagsIn(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Promise<Tag[]> {
         return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, id, tagContext))), tag => tag.name)
             .sort();
     }
