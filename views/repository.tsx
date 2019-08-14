@@ -46,7 +46,7 @@ export function RepoExplorer(props: RepoExplorerProps): React.ReactElement {
 function displayRawFingerprints(props: RepoExplorerProps): React.ReactElement {
     return collapsible("raw-fp", "Raw Fingerprints",
         <pre>
-        {JSON.stringify(props.repo.analysis.fingerprints, null, 2)}
+        {JSON.stringify(props.repo.analysis.fingerprints, undefined, 2)}
         </pre>,
         false);
 

@@ -57,13 +57,11 @@ async function scoresFor<T, CONTEXT>(scoreFunctions: Array<(t: T, c: CONTEXT) =>
                                      toScore: T,
                                      context: CONTEXT): Promise<Scores> {
     const scores: Scores = {};
-    const runFunctions = scoreFunctions.map(scorer => {
-        scorer(toScore, context).then(score => {
-            if (score) {
-                scores[score.name] = score;
-            }
-        });
-    });
+    const runFunctions = scoreFunctions.map(scorer => scorer(toScore, context).then(score => {
+        if (score) {
+            scores[score.name] = score;
+        }
+    }));
     await Promise.all(runFunctions);
     return scores;
 }
