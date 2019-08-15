@@ -147,6 +147,7 @@ function exposeExplorePage(express: Express,
         const readable = describeSelectedTagsToAnimals(tags.split(","));
         return renderDataUrl(workspaceId, {
             dataUrl,
+            heading: "Explore repositories by tag",
             title: `Repositories matching ${readable}`,
         },
             aspectRegistry, httpClientFactory, req, res);
@@ -177,6 +178,9 @@ function exposeFingerprintReportPage(express: Express,
     express.get("/fingerprint/:type/:name", ...handlers, async (req, res) => {
         const type = req.params.type;
         const name = req.params.name;
+        const aspect = aspectRegistry.aspectOf(type);
+        const fingerprintDisplayName = defaultedToDisplayableFingerprintName(aspect)(name);
+
         const workspaceId = req.query.workspaceId || "*";
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
             encodeURIComponent(type)}/${
@@ -186,9 +190,9 @@ function exposeFingerprintReportPage(express: Express,
             req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
-            heading: `Drift for aspect ${type}/${name}`,
-            title: `Atomist aspect ${type}/${name}`,
-            subheading: "Outer ring is individual repositories",
+            heading: `${aspect.displayName}/${fingerprintDisplayName}`,
+            title: `Atomist aspect drift`,
+            //   subheading: "Outer ring is individual repositories",
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -208,6 +212,7 @@ function exposeCustomReportPage(express: Express,
         }
         return renderDataUrl(workspaceId, {
             dataUrl,
+            heading: name,
             title: reporter.summary,
         }, aspectRegistry, httpClientFactory, req, res);
     });
@@ -217,7 +222,7 @@ function exposeCustomReportPage(express: Express,
 async function renderDataUrl(workspaceId: string,
                              page: {
         title: string,
-        heading?: string,
+        heading: string,
         subheading?: string,
         dataUrl: string,
     },
@@ -226,7 +231,6 @@ async function renderDataUrl(workspaceId: string,
                              req: any,
                              res: any): Promise<void> {
     let tree: TagTree;
-    let currentIdealForDisplay: CurrentIdealForDisplay;
     const possibleIdealsForDisplay: PossibleIdealForDisplay[] = [];
 
     const fullUrl = `http://${req.get("host")}${page.dataUrl}`;
@@ -238,25 +242,8 @@ async function renderDataUrl(workspaceId: string,
         tree = result.body;
         logger.info("From %s, got %s", fullUrl, tree.circles.map(c => c.meaning));
     } catch (e) {
-        logger.error(`Failure fetching sunburst data from ${fullUrl}: ` + e.message);
+        throw new Error(`Failure fetching sunburst data from ${fullUrl}: ` + e.message);
     }
-
-    // tslint:disable-next-line
-    const aspect = aspectRegistry.aspectOf(req.query.type);
-    const fingerprintDisplayName = defaultedToDisplayableFingerprintName(aspect)(req.query.name);
-
-    function idealDisplayValue(ideal: Ideal | undefined): CurrentIdealForDisplay | undefined {
-        if (!ideal) {
-            return undefined;
-        }
-        if (!isConcreteIdeal(ideal)) {
-            return { displayValue: "eliminate" };
-        }
-        return { displayValue: defaultedToDisplayableFingerprint(aspect)(ideal.ideal) };
-    }
-
-    currentIdealForDisplay = idealDisplayValue(await aspectRegistry.idealStore
-        .loadIdeal("local", req.query.type, req.query.name));
 
     logger.info("Data url=%s", page.dataUrl);
 
@@ -265,9 +252,9 @@ async function renderDataUrl(workspaceId: string,
     res.send(renderStaticReactNode(
         SunburstPage({
             workspaceId,
-            heading: page.heading || fingerprintDisplayName,
+            heading: page.heading,
             subheading: page.subheading,
-            currentIdeal: currentIdealForDisplay,
+            currentIdeal: await lookForIdealDisplay(aspectRegistry, req.query.type, req.query.name),
             possibleIdeals: possibleIdealsForDisplay,
             query: req.params.query,
             dataUrl: fullUrl,
@@ -295,6 +282,30 @@ function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: Manag
         return "eliminate";
     }
     return "";
+}
+
+async function lookForIdealDisplay(aspectRegistry: AspectRegistry,
+                                   aspectType: string,
+                                   fingerprintName: string): Promise<{ displayValue: string } | undefined> {
+    if (!aspectType) {
+        return undefined;
+    }
+
+    const aspect = aspectRegistry.aspectOf(aspectType);
+    if (!aspect) {
+        return undefined;
+    }
+
+    const ideal = await aspectRegistry.idealStore
+        .loadIdeal("local", aspectType, fingerprintName);
+    if (!ideal) {
+        return undefined;
+    }
+    if (!isConcreteIdeal(ideal)) {
+        return { displayValue: "eliminate" };
+    }
+
+    return { displayValue: defaultedToDisplayableFingerprint(aspect)(ideal.ideal) };
 }
 
 function idealIsElimination(fingerprint: AugmentedFingerprintForDisplay): boolean {
