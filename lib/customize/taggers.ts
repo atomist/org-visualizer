@@ -23,7 +23,6 @@ import {
 } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";

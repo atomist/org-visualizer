@@ -15,14 +15,9 @@
  */
 
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import {
-    DockerfilePath,
-    DockerFrom,
-    DockerPorts,
-} from "@atomist/sdm-pack-docker";
+import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
 import {
     fileNamesVirtualProjectFinder,
-    filesAspect,
     makeVirtualProjectAware,
     NpmDeps,
     VirtualProjectFinder,
@@ -30,24 +25,16 @@ import {
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
-import {
-    CiAspect,
-    JavaBuild,
-    StackAspect,
-} from "../aspect/common/stackAspect";
+import { CiAspect, JavaBuild, StackAspect } from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
-import { conditionalize } from "../aspect/compose/conditionalize";
+import { ChangelogAspect, ContributingAspect } from "../aspect/community/oss";
 import { globAspect } from "../aspect/compose/globAspect";
 import { branchCount } from "../aspect/git/branchCount";
-import {
-    gitActiveCommitters,
-    GitRecency,
-} from "../aspect/git/gitActivity";
+import { GitRecency } from "../aspect/git/gitActivity";
 import { K8sSpecs } from "../aspect/k8s/spec";
 import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import { TsLintPropertyAspect } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
@@ -55,7 +42,6 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import { ChangelogAspect, ContributingAspect } from "../aspect/community/oss";
 
 const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
     "package.json", "pom.xml", "build.gradle", "requirements.txt",
@@ -79,12 +65,6 @@ export const Aspects: ManagedAspect[] = [
     },
     CodeOfConduct,
     ExposedSecrets,
-    {
-        ...new TsLintPropertyAspect(),
-        // Deliberately suppress display until we figure out how to make this aspect more useful.
-        // There is a useful tag from it
-        displayName: undefined,
-    },
     TravisScriptsAspect,
     branchCount,
     GitRecency,
@@ -95,22 +75,6 @@ export const Aspects: ManagedAspect[] = [
     StackAspect,
     CiAspect,
     JavaBuild,
-    conditionalize(filesAspect({
-            name: "node-gitignore",
-            displayName: "Node git ignore",
-            type: "node-gitignore",
-            toDisplayableFingerprint: fp => fp.sha,
-            canonicalize: c => c,
-        }, ".gitignore",
-    ), async p => p.hasFile("package.json")),
-    conditionalize(filesAspect({
-            name: "spring-gitignore",
-            displayName: "git ignore",
-            type: "spring-gitignore",
-            toDisplayableFingerprint: fp => fp.sha,
-            canonicalize: c => c,
-        }, ".gitignore",
-    ), async p => p.hasFile("pom.xml")),
     // Don't show these
     globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
     globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
@@ -118,7 +82,6 @@ export const Aspects: ManagedAspect[] = [
     ContributingAspect,
     globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
     globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
-
     CsProjectTargetFrameworks,
     SpringBootVersion,
     // allMavenDependenciesAspect,    // This is expensive

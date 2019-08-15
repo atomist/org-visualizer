@@ -1,5 +1,5 @@
-import { globAspect } from "../compose/globAspect";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import { globAspect } from "../compose/globAspect";
 
 export const ChangelogAspect: Aspect =
     globAspect({

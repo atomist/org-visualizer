@@ -81,7 +81,7 @@ export const License: Aspect<FP<LicenseData>> = {
         defaultStatStatus: {
             entropy: false,
         },
-    }
+    },
 };
 
 async function firstFileFound(p: Project, ...paths: string[]): Promise<ProjectFile | undefined> {
