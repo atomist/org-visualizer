@@ -190,9 +190,9 @@ function exposeFingerprintReportPage(express: Express,
             req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
-            heading: `${aspect.displayName}/${fingerprintDisplayName}`,
             title: `Atomist aspect drift`,
-            //   subheading: "Outer ring is individual repositories",
+            heading: aspect.displayName,
+            subheading: fingerprintDisplayName,
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
