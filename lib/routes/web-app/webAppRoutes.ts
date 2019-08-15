@@ -39,8 +39,6 @@ import {
     RepoExplorer,
 } from "../../../views/repository";
 import {
-    CurrentIdealForDisplay,
-    FieldToDisplay,
     PossibleIdealForDisplay,
     SunburstPage,
 } from "../../../views/sunburstPage";
@@ -55,6 +53,7 @@ import {
     defaultedToDisplayableFingerprintName,
 } from "../../aspect/DefaultAspectRegistry";
 import { CustomReporters } from "../../customize/customReporters";
+import { PlantedTree } from "../../tree/sunburst";
 import {
     describeSelectedTagsToAnimals,
     TagTree,
@@ -236,14 +235,14 @@ async function renderDataUrl(workspaceId: string,
     const fullUrl = `http://${req.get("host")}${page.dataUrl}`;
     try {
         const result = await httpClientFactory.create().exchange<TagTree>(fullUrl,
-            {
-                retry: { retries: 0 },
-            });
+            { retry: { retries: 0 } });
         tree = result.body;
         logger.info("From %s, got %s", fullUrl, tree.circles.map(c => c.meaning));
     } catch (e) {
         throw new Error(`Failure fetching sunburst data from ${fullUrl}: ` + e.message);
     }
+
+    populateLocalURLs(tree);
 
     logger.info("Data url=%s", page.dataUrl);
 
@@ -266,6 +265,10 @@ async function renderDataUrl(workspaceId: string,
         [
             "/sunburstScript-bundle.js",
         ]));
+}
+
+function populateLocalURLs(tree: PlantedTree) {
+    // TODO: populate 'url' on nodes that represent fingerprints, aspects, and repositories. We have pages for those
 }
 
 export function jsonToQueryString(json: object): string {
