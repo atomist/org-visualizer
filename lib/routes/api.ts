@@ -418,7 +418,6 @@ function fillInDriftTreeAspectNames(aspectRegistry: AspectRegistry, driftTree: S
     visit(driftTree, (n, depth) => {
         if (depth === 2) {
             const aspect = aspectRegistry.aspectOf(n.name);
-            console.log(n.name);
             if (aspect && aspect.displayName) {
                 n.name = aspect.displayName;
             }

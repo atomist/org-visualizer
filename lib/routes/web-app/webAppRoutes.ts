@@ -69,9 +69,9 @@ export function addWebAppRoutes(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const topLevelRoute = "/overview";
     return {
         routesToSuggestOnStartup: [{ title: "Atomist Visualizations", route: topLevelRoute }],
@@ -145,9 +145,9 @@ function exposeExplorePage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/explore?tags=${tags}`;
         const readable = describeSelectedTagsToAnimals(tags.split(","));
         return renderDataUrl(workspaceId, {
-            dataUrl,
-            title: `Repositories matching ${readable}`,
-        },
+                dataUrl,
+                title: `Repositories matching ${readable}`,
+            },
             aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -158,10 +158,13 @@ function exposeDriftPage(express: Express,
                          aspectRegistry: AspectRegistry): void {
     express.get("/drift", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
-        const dataUrl = `/api/v1/${workspaceId}/drift` + (req.query.type ? `?type=${req.query.type}` : "");
+        const type = req.query.type;
+        const dataUrl = `/api/v1/${workspaceId}/drift` + (type ? `?type=${type}` : "");
         return renderDataUrl(workspaceId, {
             dataUrl,
             title: "Drift by aspect",
+            heading: type ? `Drift across aspect ${type}` : "Drift across all aspects",
+            subheading: "Sizing shows degree of entropy",
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -177,12 +180,14 @@ function exposeFingerprintReportPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
             encodeURIComponent(type)}/${
             encodeURIComponent(name)}?byOrg=${
-            req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-            req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
-            req.query.trim === "true"}`;
+        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+        req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
+            heading: `Drift for aspect ${type}/${name}`,
             title: `Atomist aspect ${type}/${name}`,
+            subheading: "Outer ring is individual repositories",
         }, aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -210,9 +215,11 @@ function exposeCustomReportPage(express: Express,
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
                              page: {
-        title: string,
-        dataUrl: string,
-    },
+                                 title: string,
+                                 heading?: string,
+                                 subheading?: string,
+                                 dataUrl: string,
+                             },
                              aspectRegistry: AspectRegistry,
                              httpClientFactory: HttpClientFactory,
                              req: any,
@@ -255,7 +262,8 @@ async function renderDataUrl(workspaceId: string,
     res.send(renderStaticReactNode(
         SunburstPage({
             workspaceId,
-            fingerprintDisplayName,
+            heading: page.heading || fingerprintDisplayName,
+            subheading: page.subheading,
             currentIdeal: currentIdealForDisplay,
             possibleIdeals: possibleIdealsForDisplay,
             query: req.params.query,
@@ -316,8 +324,8 @@ function displayStyleAccordingToIdeal(fingerprint: AugmentedFingerprintForDispla
 export type AugmentedFingerprintForDisplay =
     FP &
     Pick<ProjectFingerprintForDisplay, "displayValue" | "displayName"> & {
-        ideal?: Ideal;
-    };
+    ideal?: Ideal;
+};
 
 export interface AugmentedAspectForDisplay {
     aspect: ManagedAspect;
