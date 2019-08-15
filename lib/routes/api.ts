@@ -82,9 +82,9 @@ import {
 export function api(clientFactory: ClientFactory,
                     projectAnalysisResultStore: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
-        customizer: ExpressCustomizer,
-        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-    } {
+    customizer: ExpressCustomizer,
+    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+} {
     const serveSwagger = isInLocalMode();
     const docRoute = "/api-docs";
     const routesToSuggestOnStartup = serveSwagger ? [{ title: "Swagger", route: docRoute }] : [];
@@ -243,23 +243,24 @@ function exposeFingerprintByTypeAndName(express: Express,
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
-        try {
-            const type = req.query.type;
-            let driftTree = type ?
-                await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
-                await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
-            fillInAspectNames(aspectRegistry, driftTree.tree);
-            if (!type) {
-                driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+            try {
+                const type = req.query.type;
+                let driftTree = type ?
+                    await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
+                    await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
+                fillInAspectNames(aspectRegistry, driftTree.tree);
+                if (!type) {
+                    driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+                }
+                driftTree.tree = flattenSoleFingerprints(driftTree.tree);
+                fillInDriftTreeAspectNames(aspectRegistry, driftTree.tree);
+                return res.json(driftTree);
+            } catch
+                (err) {
+                logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
+                res.sendStatus(500);
             }
-            driftTree.tree = flattenSoleFingerprints(driftTree.tree);
-            return res.json(driftTree);
-        } catch
-        (err) {
-            logger.warn("Error occurred getting drift report: %s %s", err.message, err.stack);
-            res.sendStatus(500);
-        }
-    },
+        },
     );
 }
 
@@ -365,8 +366,12 @@ function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): 
         if (t.name && t.type) {
             if (t.name && t.type) {
                 const aspect = aspectRegistry.aspectOf(t.type);
-                if (aspect && aspect.toDisplayableFingerprintName) {
-                    n.name = aspect.toDisplayableFingerprintName(n.name);
+                if (aspect) {
+                    if (aspect.toDisplayableFingerprintName) {
+                        n.name = aspect.toDisplayableFingerprintName(n.name);
+                    } else if (aspect.displayName) {
+                        n.name = aspect.displayName;
+                    }
                 }
             }
         }
@@ -406,6 +411,19 @@ function fillInAspectNamesInList(aspectRegistry: AspectRegistry, fingerprints: F
         }
         // This is going to be needed for the invocation of the command handlers to set targets
         (fp as any).fingerprint = `${fp.type}::${fp.name}`;
+    });
+}
+
+function fillInDriftTreeAspectNames(aspectRegistry: AspectRegistry, driftTree: SunburstTree): void {
+    visit(driftTree, (n, depth) => {
+        if (depth === 2) {
+            const aspect = aspectRegistry.aspectOf(n.name);
+            console.log(n.name);
+            if (aspect && aspect.displayName) {
+                n.name = aspect.displayName;
+            }
+        }
+        return true;
     });
 }
 
