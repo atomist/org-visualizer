@@ -42,7 +42,15 @@ type SunburstTreeNode = d3.HierarchyNode<SunburstTree | SunburstLeaf>;
 
 // tslint:disable
 
-export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataElementIds: string[]) {
+export function sunburst(workspaceId,
+    data: any,
+    pWidth,
+    pHeight,
+    options: {
+        perLevelDataElementIds: string[],
+        fieldsToDisplay: FieldToDisplay[]
+    }) {
+    const { perLevelDataElementIds, fieldsToDisplay } = options;
     const minDiameterInPixels = 100;
 
     const width = Math.max(pWidth || window.innerWidth, minDiameterInPixels),
@@ -124,7 +132,7 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
         })
         .on("mouseover", (d: SunburstTreeNode) => {
             populatePerLevelData(perLevelDataElements, d);
-            populateAdditionalData(additionalDataElement, d);
+            populateAdditionalData(additionalDataElement, fieldsToDisplay, d);
         });
 
     // This is the hover text
@@ -197,7 +205,12 @@ export function sunburst(workspaceId, data: any, pWidth, pHeight, perLevelDataEl
 function hasTags(data: SunburstTree | SunburstLeaf): data is (SunburstTree | SunburstLeaf) & { tags: Array<{ name: string }> } {
     return !!(data as any).tags
 }
-function populateAdditionalData(additionalDataElement: d3.Selection<any, any, any, any> | undefined, d: SunburstTreeNode) {
+
+type FieldToDisplay = string;
+function populateAdditionalData(
+    additionalDataElement: d3.Selection<any, any, any, any> | undefined,
+    usefulFields: FieldToDisplay[],
+    d: SunburstTreeNode) {
     if (!additionalDataElement) {
         return;
     }
@@ -207,7 +220,6 @@ function populateAdditionalData(additionalDataElement: d3.Selection<any, any, an
     if (hasTags(data)) {
         content = "Tags: <ul>" + data.tags.map(t => `<li>${t.name}</li>`).join("") + "</ul>";
     }
-    const usefulFields = ["entropy"];
     usefulFields.forEach(fieldname => {
         if (data[fieldname] !== undefined) {
             content += `<br />${fieldname}: ${data[fieldname]}`

@@ -40,6 +40,7 @@ import {
 } from "../../../views/repository";
 import {
     CurrentIdealForDisplay,
+    FieldToDisplay,
     PossibleIdealForDisplay,
     SunburstPage,
 } from "../../../views/sunburstPage";
@@ -69,9 +70,9 @@ export function addWebAppRoutes(
     aspectRegistry: AspectRegistry,
     store: ProjectAnalysisResultStore,
     httpClientFactory: HttpClientFactory): {
-    customizer: ExpressCustomizer,
-    routesToSuggestOnStartup: Array<{ title: string, route: string }>,
-} {
+        customizer: ExpressCustomizer,
+        routesToSuggestOnStartup: Array<{ title: string, route: string }>,
+    } {
     const topLevelRoute = "/overview";
     return {
         routesToSuggestOnStartup: [{ title: "Atomist Visualizations", route: topLevelRoute }],
@@ -145,9 +146,9 @@ function exposeExplorePage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/explore?tags=${tags}`;
         const readable = describeSelectedTagsToAnimals(tags.split(","));
         return renderDataUrl(workspaceId, {
-                dataUrl,
-                title: `Repositories matching ${readable}`,
-            },
+            dataUrl,
+            title: `Repositories matching ${readable}`,
+        },
             aspectRegistry, httpClientFactory, req, res);
     });
 }
@@ -180,9 +181,9 @@ function exposeFingerprintReportPage(express: Express,
         const dataUrl = `/api/v1/${workspaceId}/fingerprint/${
             encodeURIComponent(type)}/${
             encodeURIComponent(name)}?byOrg=${
-        req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
-        req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
-        req.query.trim === "true"}`;
+            req.query.byOrg === "true"}&presence=${req.query.presence === "true"}&progress=${
+            req.query.progress === "true"}&otherLabel=${req.query.otherLabel === "true"}&trim=${
+            req.query.trim === "true"}`;
         return renderDataUrl(workspaceId, {
             dataUrl,
             heading: `Drift for aspect ${type}/${name}`,
@@ -215,11 +216,11 @@ function exposeCustomReportPage(express: Express,
 // TODO fix any
 async function renderDataUrl(workspaceId: string,
                              page: {
-                                 title: string,
-                                 heading?: string,
-                                 subheading?: string,
-                                 dataUrl: string,
-                             },
+        title: string,
+        heading?: string,
+        subheading?: string,
+        dataUrl: string,
+    },
                              aspectRegistry: AspectRegistry,
                              httpClientFactory: HttpClientFactory,
                              req: any,
@@ -259,6 +260,8 @@ async function renderDataUrl(workspaceId: string,
 
     logger.info("Data url=%s", page.dataUrl);
 
+    const fieldsToDisplay = ["entropy"];
+
     res.send(renderStaticReactNode(
         SunburstPage({
             workspaceId,
@@ -270,6 +273,7 @@ async function renderDataUrl(workspaceId: string,
             dataUrl: fullUrl,
             tree,
             selectedTags: req.query.tags ? req.query.tags.split(",") : [],
+            fieldsToDisplay,
         }),
         page.title,
         [
@@ -324,8 +328,8 @@ function displayStyleAccordingToIdeal(fingerprint: AugmentedFingerprintForDispla
 export type AugmentedFingerprintForDisplay =
     FP &
     Pick<ProjectFingerprintForDisplay, "displayValue" | "displayName"> & {
-    ideal?: Ideal;
-};
+        ideal?: Ideal;
+    };
 
 export interface AugmentedAspectForDisplay {
     aspect: ManagedAspect;

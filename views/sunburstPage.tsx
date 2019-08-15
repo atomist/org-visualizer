@@ -16,6 +16,8 @@ export interface PossibleIdealForDisplay {
     stringified: string;
 }
 
+export type FieldToDisplay = string;
+
 export interface SunburstPageProps {
     readonly workspaceId: string;
     readonly heading: string;
@@ -30,6 +32,11 @@ export interface SunburstPageProps {
      * Tags selected
      */
     readonly selectedTags: string[];
+
+    /**
+     * If these fields exist on a node, display them on hover
+     */
+    fieldsToDisplay: FieldToDisplay[];
 
 }
 
@@ -57,8 +64,8 @@ function displayTagGroup(tagGroup: TagGroup): React.ReactElement {
         {tagGroup.tagSelection.length > 0 && <div className="tagGroup">
             clear:
             <form method="GET" action="/explore">
-                <input type="hidden" name="explore" value="true"/>
-                <input className="resetTagSelection" type="submit" value="CLEAR"/>
+                <input type="hidden" name="explore" value="true" />
+                <input className="resetTagSelection" type="submit" value="CLEAR" />
             </form></div>}
         {tagGroup.allTagNames().map(n => displayTagButtons(tagGroup, n))}
     </div>;
@@ -74,24 +81,24 @@ function displayTagButtons(tagGroup: TagGroup, tagName: string): React.ReactElem
     const description = tagGroup.getDescription(tagName) + (tagGroup.isWarning(tagName) ? " - WARN" : "")
         + (tagGroup.isError(tagName) ? " - ERROR" : "");
     return <div className={"tagGroup " +
-    (tagGroup.isWarning(tagName) ? "warnTagGroup " : "") +
-    (tagGroup.isError(tagName) ? "errorTagGroup " : "") +
-    (tagGroup.isRequired(tagName) ? "requiredTag " : "") +
-    (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
+        (tagGroup.isWarning(tagName) ? "warnTagGroup " : "") +
+        (tagGroup.isError(tagName) ? "errorTagGroup " : "") +
+        (tagGroup.isRequired(tagName) ? "requiredTag " : "") +
+        (tagGroup.isExcluded(tagName) ? "excludedTag" : "")}>
         {percentageBar}
         <img className="taggydoober" src="/taggydoober.png" title={description}></img>
         <span className="tagDescription" title={description}>{tagName}</span>
         <form method="GET" action="/explore">
-            <input type="hidden" name="explore" value="true"/>
-            <input type="hidden" name="tags" value={tagGroup.tagSelectionForRequire(tagName).join(",")}/>
+            <input type="hidden" name="explore" value="true" />
+            <input type="hidden" name="tags" value={tagGroup.tagSelectionForRequire(tagName).join(",")} />
             <input className="requireButton" type="submit" value="Yes please"
-                   title={tagGroup.describeRequire(tagName)}></input>
+                title={tagGroup.describeRequire(tagName)}></input>
         </form>
         <form method="GET" action="/explore">
-            <input type="hidden" name="explore" value="true"/>
-            <input type="hidden" name="tags" value={tagGroup.tagSelectionForExclude(tagName).join(",")}/>
+            <input type="hidden" name="explore" value="true" />
+            <input type="hidden" name="tags" value={tagGroup.tagSelectionForExclude(tagName).join(",")} />
             <input className="excludeButton" type="submit" value="Please no" alt="alt text"
-                   title={tagGroup.describeExclude(tagName)}/>
+                title={tagGroup.describeExclude(tagName)} />
         </form>
     </div>;
 }
@@ -214,7 +221,9 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
         data,
         window.innerWidth - 250,
         window.innerHeight - 100,
-        [${perLevelDataItems.map(p => `"` + p.textAreaId + `"`).join(",")}]);
+        { perLevelDataElementIds: [${perLevelDataItems.map(p => `"` + p.textAreaId + `"`).join(",")}],
+          fieldsToDisplay: ${JSON.stringify(props.fieldsToDisplay)}
+    });
     </script>`;
 
     const thingies: string | React.ReactElement = !props.tree ? "Hover over a slice to see its details" :
@@ -243,7 +252,7 @@ export function SunburstPage(props: SunburstPageProps): React.ReactElement {
                 <div id="additionalDataAboutWhatYouClicked"></div>
             </div>
         </div>
-        <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }}/>
+        <div dangerouslySetInnerHTML={{ __html: d3ScriptCall }} />
         <a href={props.dataUrl} type="application/json">Raw data</a>
     </div>;
 
