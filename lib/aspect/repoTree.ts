@@ -140,9 +140,9 @@ ORDER BY entropy desc) as aspects
 WHERE aspects.type = f0.type
 GROUP by f0.type) as data`;
     const circles = [
-        { meaning: "type" },
+        { meaning: "report" },
+        { meaning: "aspect name" },
         { meaning: "fingerprint name" },
-        { meaning: "fingerprint entropy" },
     ];
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
@@ -157,7 +157,7 @@ GROUP by f0.type) as data`;
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { includeNumber: true, casing: BandCasing.NoChange}),
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { includeNumber: true, casing: BandCasing.NoChange }),
         });
         return tree;
     }, err => {
