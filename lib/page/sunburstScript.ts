@@ -202,10 +202,17 @@ function populateAdditionalData(additionalDataElement: d3.Selection<any, any, an
         return;
     }
     let content = "";
-    const data = d.data;
+    const data = d.data as any;
+    console.log("Properties on data: " + Object.getOwnPropertyNames(data).join(","))
     if (hasTags(data)) {
         content = "Tags: <ul>" + data.tags.map(t => `<li>${t.name}</li>`).join("") + "</ul>";
     }
+    const usefulFields = ["entropy"];
+    usefulFields.forEach(fieldname => {
+        if (data[fieldname] !== undefined) {
+            content += `<br />${fieldname}: ${data[fieldname]}`
+        }
+    })
     additionalDataElement.html(content);
 }
 
