@@ -15,7 +15,11 @@
  */
 
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
 import {
     fileNamesVirtualProjectFinder,
     makeVirtualProjectAware,
@@ -25,10 +29,17 @@ import {
 import { ManagedAspect } from "../aspect/AspectRegistry";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
-import { CiAspect, JavaBuild, StackAspect } from "../aspect/common/stackAspect";
+import {
+    CiAspect,
+    JavaBuild,
+    StackAspect,
+} from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import { License } from "../aspect/community/license";
-import { ChangelogAspect, ContributingAspect } from "../aspect/community/oss";
+import {
+    ChangelogAspect,
+    ContributingAspect,
+} from "../aspect/community/oss";
 import { globAspect } from "../aspect/compose/globAspect";
 import { branchCount } from "../aspect/git/branchCount";
 import { GitRecency } from "../aspect/git/gitActivity";

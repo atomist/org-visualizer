@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Aspect, filesAspect } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    filesAspect,
+} from "@atomist/sdm-pack-fingerprints";
 import { conditionalize } from "../compose/conditionalize";
 
 export const NodeGitIgnore: Aspect =
