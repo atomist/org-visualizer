@@ -131,14 +131,7 @@ export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTre
 }
 
 export async function driftTreeForAllAspects(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
-    const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
-(SELECT distinct feature_name as type from fingerprint_analytics) f0, (
-SELECT name, feature_name as type, variants, count, entropy, variants as size
-from fingerprint_analytics f1
-WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND ENTROPY > 0
-ORDER BY entropy desc) as aspects
-WHERE aspects.type = f0.type
-GROUP by f0.type) as data`;
+    const sql = driftTreeSql(workspaceId);
     const circles = [
         { meaning: "report" },
         { meaning: "aspect name" },
@@ -157,7 +150,10 @@ GROUP by f0.type) as data`;
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { includeNumber: true, casing: BandCasing.NoChange }),
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
+                includeNumber: true,
+                casing: BandCasing.NoChange
+            }),
         });
         return tree;
     }, err => {
@@ -172,14 +168,7 @@ GROUP by f0.type) as data`;
 export async function driftTreeForSingleAspect(workspaceId: string,
                                                type: string,
                                                clientFactory: ClientFactory): Promise<PlantedTree> {
-    const sql = `SELECT row_to_json(data) as children FROM (SELECT f0.type as name, json_agg(aspects) as children FROM
-(SELECT distinct feature_name as type from fingerprint_analytics) f0, (
-SELECT name, feature_name as type, variants, count, entropy, variants as size
-from fingerprint_analytics f1
-WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
-ORDER BY entropy desc) as aspects
-WHERE aspects.type = f0.type AND aspects.type = $2
-GROUP by f0.type) as data`;
+    const sql = driftTreeSql(workspaceId, type);
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId, type]);
@@ -196,8 +185,23 @@ GROUP by f0.type) as data`;
         tree = introduceClassificationLayer(tree, {
             newLayerMeaning: "entropy band",
             newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, { casing: BandCasing.Sentence, includeNumber: false }),
+            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
+                casing: BandCasing.Sentence,
+                includeNumber: false
+            }),
         });
         return tree;
     });
+}
+
+function driftTreeSql(workspaceId: string, type?: string): string {
+    return `SELECT row_to_json(data) as children 
+    FROM (SELECT f0.type as name, json_agg(aspects) as children 
+        FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
+            SELECT name, feature_name as type, variants, count, entropy, variants as size
+                FROM fingerprint_analytics f1
+                WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+                ORDER BY entropy desc) as aspects
+    WHERE aspects.type = f0.type ${type? `AND aspects.type = $2` : ""}
+    GROUP by f0.type) as data`;
 }

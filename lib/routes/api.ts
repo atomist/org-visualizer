@@ -240,6 +240,9 @@ function exposeFingerprintByTypeAndName(express: Express,
     });
 }
 
+/**
+ * Drift report, sizing aspects and fingerprints by entropy
+ */
 function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
@@ -252,7 +255,7 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
                 if (!type) {
                     driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
                 }
-                driftTree.tree = flattenSoleFingerprints(driftTree.tree);
+                // driftTree.tree = flattenSoleFingerprints(driftTree.tree);
                 fillInDriftTreeAspectNames(aspectRegistry, driftTree.tree);
                 return res.json(driftTree);
             } catch
@@ -282,6 +285,9 @@ function exposeIdealAndProblemSetting(express: Express, aspectRegistry: AspectRe
     });
 }
 
+/**
+ * Explore by tags
+ */
 function exposeExplore(express: Express, aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/explore", corsHandler());
     express.get("/api/v1/:workspace_id/explore", [corsHandler(), ...authHandlers()], async (req, res) => {
