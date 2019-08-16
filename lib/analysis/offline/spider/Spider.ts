@@ -86,6 +86,9 @@ export interface Timing {
  */
 export type TimeRecorder = Record<string, Timing>;
 
+/**
+ * Interface for types that can extract fingerprints from projects
+ */
 export interface Analyzer {
 
     analyze(p: Project): Promise<Analyzed>;

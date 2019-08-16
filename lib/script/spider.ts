@@ -40,7 +40,7 @@ import {
     createAnalyzer,
     sdmConfigClientFactory,
 } from "../machine/machine";
-import { Aspects } from "../customize/aspects";
+import { Aspects, virtualProjectFinder } from "../customize/aspects";
 import { GitCommandGitProjectCloner } from "../analysis/offline/spider/github/GitCommandGitProjectCloner";
 import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
 import { StableDirectoryManager } from "@atomist/automation-client/lib/spi/clone/StableDirectoryManager";
@@ -90,7 +90,7 @@ interface SpiderAppOptions {
  * Spider a GitHub.com org
  */
 async function spider(params: SpiderAppOptions) {
-    const analyzer = createAnalyzer(Aspects);
+    const analyzer = createAnalyzer(Aspects, virtualProjectFinder);
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 

@@ -24,7 +24,7 @@ import {
     Aspect,
     AtomicAspect,
     FP,
-    isAtomicAspect,
+    isAtomicAspect, VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     Analyzed,
@@ -46,10 +46,11 @@ export class SpiderAnalyzer implements Analyzer {
         const regularAspects: Aspect[] = this.aspects.filter(a => !isAtomicAspect(a)) as any;
         const atomicAspects = this.aspects.filter(isAtomicAspect);
 
-        // We do this in 2 to ensure that caching of VirtualProjectFinder will be effective
-        await extractRegularAspects(p, [regularAspects[0]],
-            fingerprints, this.timings);
-        await extractRegularAspects(p, regularAspects.slice(1),
+        if (this.virtualProjectFinder) {
+            // Seed the virtual project finder if we have one
+            await this.virtualProjectFinder.findVirtualProjectInfo(p);
+        }
+        await extractRegularAspects(p, regularAspects,
             fingerprints, this.timings);
 
         await extractAtomicAspects(p, atomicAspects, fingerprints);
@@ -60,7 +61,8 @@ export class SpiderAnalyzer implements Analyzer {
         };
     }
 
-    constructor(private readonly aspects: ManagedAspect[]) {
+    constructor(private readonly aspects: ManagedAspect[],
+                private readonly virtualProjectFinder?: VirtualProjectFinder) {
 
     }
 }
@@ -68,9 +70,9 @@ export class SpiderAnalyzer implements Analyzer {
 async function extractRegularAspects(p: Project,
                                      aspects: Aspect[],
                                      fingerprints: FP[],
-                                     timings: TimeRecorder) {
+                                     timings: TimeRecorder): Promise<void> {
     await Promise.all(aspects
-        // TODO why is this cast needed?
+    // TODO why is this cast needed?
         .map(aspect => extractify(aspect as any, p, timings)
             .then(fps =>
                 fingerprints.push(...fps),
@@ -79,7 +81,7 @@ async function extractRegularAspects(p: Project,
 
 async function extractAtomicAspects(p: Project,
                                     aspects: AtomicAspect[],
-                                    fingerprints: FP[]) {
+                                    fingerprints: FP[]): Promise<void> {
     await Promise.all(aspects
         .map(aspect => extractAtomic(aspect, fingerprints)
             .then(fps =>
