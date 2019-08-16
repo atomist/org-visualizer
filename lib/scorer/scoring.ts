@@ -30,7 +30,7 @@ import {
 export async function scoreRepos(scorers: RepositoryScorer[],
                                  repos: TaggedRepo[],
                                  weightings: ScoreWeightings): Promise<ScoredRepo[]> {
-    return Promise.all(repos.map(repo => scoreRepo(scorers, repo, weightings)));
+    return Promise.all(repos.map(repo => scoreRepo(scorers, repo, repos, weightings)));
 }
 
 /**
@@ -38,8 +38,9 @@ export async function scoreRepos(scorers: RepositoryScorer[],
  */
 export async function scoreRepo(scorers: RepositoryScorer[],
                                 repo: TaggedRepo,
+                                allRepos: TaggedRepo[],
                                 weightings: ScoreWeightings): Promise<ScoredRepo> {
-    const scores = await scoresFor(scorers, repo, weightings);
+    const scores = await scoresFor(scorers, repo, allRepos);
     return {
         ...repo,
         weightedScore: weightedCompositeScore({ scores }, weightings),

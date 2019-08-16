@@ -1,22 +1,34 @@
 # Developer Guide
 
-This is an extensible platform. You can write your own code to comprehend aspects unique to your projects, and also contribute code that will be useful to other users.
+The greatest value of `org-visualizer` is the potential to extend it for your team to help you understand and take control of important aspects of code, configuration and process.
 
 In keeping with the Atomist philosophy of *do it in code*, extensibility is in TypeScript code.
 
+You can write your own code to comprehend aspects unique to your projects, and also contribute code that will be useful to other users.
+
 The following are the key extension points:
 
-- **Aspects**, which extract *fingerprint* data from projects allowing visualization and (optionally) rolling out updates and on-change workflows.
-- **Taggers**, which provide insights based on aspects.
+- **Aspects**, which extract *fingerprint* data from repositories allowing visualization and (optionally) rolling out updates and on-change workflows.
+- **Taggers**, which provide insights based on fingerprint data extracted by aspects.
+- **Scorers**, which help to rank repositories based on fingerprint data. Scorers enable you to gamify development at scale and reward or penalize good or bad usages.
 - **Custom reporters**, which can use data captured by aspects for wholly custom reports.
 
-The key underlying concept is that of a **fingerprint**: a snapshot of a concern within a project--for example, the version of a particular library. However, fingerprints can encompass much more than merely dependencies. User examples include:
+The key underlying concept is that of a **fingerprint**: a snapshot of a concern within a project--for example, the version of a particular library. However, fingerprints can encompass much more than merely dependencies. Out of the box examples include:
 
--  The state of particular security files
+- Docker base images and ports
+- Spring Boot version
+- .NET target framework
+- CI pipeline files
+- Exposed secrets
+- Git branching and recency of commit activity
+
+User examples include:
+
+-  The presence and state of particular security files
 -  Logging configuration
 -  The configuration of metrics export
 -  Canonicalized representation of sensitive code that, when changed, should trigger stringent review
--  Library usage
+-  Library usage idioms in code
 -  Language usage
 -  SQL statements and database usage
  
@@ -25,7 +37,7 @@ Fingerprints are persisted and are the basis for querying and visualization. Tag
 ## Aspects
 
 ### Aspect interface
-The following are the basic methods on all aspects:
+The following are the methods share by all aspects. Many are optional:
 
 ```typescript
 export interface BaseAspect<FPI extends FP = FP> {
@@ -118,11 +130,19 @@ export interface Aspect<FPI extends FP = FP> extends BaseAspect<FPI> {
 ```
 
 ### Core aspect methods
-The following methods are required for any aspect:
+The following methods are usually the most important:
 
-- `name`: Must be unique in your workspace.
+- `name`: An aspect's name be unique in your workspace.
 - `displayName`: Human readable name.
 - `extract` (regular aspects): Extract zero or more fingeprints from the current project.
+
+### The extract method
+tbc
+
+Fingerprint interface - 
+
+
+Example
 
 ### Enabling updates
 Convergence to ideal
@@ -200,6 +220,40 @@ export const Aspects: ManagedAspect[] = [
 
 Add your simple or combination taggers to the array in the `taggers.ts` file in the same directory.
 
+## Scorers
+Implement a `RepositoryScorer` function:
+
+```typescript
+/**
+ * Function that knows how to score a repository.
+ * @param repo repo we are scoring
+ * @param allRepos context of this scoring activity
+ * @return undefined if this scorer doesn't know how to score this repository.
+ */
+export type RepositoryScorer = (repo: TaggedRepo, allRepos: TaggedRepo[]) => Promise<Score | undefined>;
+
+```
+Normally only the first argument is used.
+
+> Scorers work with data extracted by aspects.
+
+An example:
+
+```typescript
+export const TypeScriptProjectsMustUseTsLint: RepositoryScorer = async repo => {
+    const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
+    if (!isTs) {
+        return undefined;
+    }
+    const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
+    return {
+        name: "has-tslint",
+        score: hasTsLint ? 5 : 1,
+        reason: hasTsLint ? "TypeScript projects should use tslint" : "TypeScript project using tslint",
+    };
+};
+````
+
 ## Advanced Concepts
 
 ### Custom Reports
@@ -215,11 +269,12 @@ tbc
 ### Fingerprints
 
 Fingerprints may need to be canonicalized.
+tbc
 
 ### Stats
 stats path
 
-tbd
+tbc
 
 ### Efficiency
 

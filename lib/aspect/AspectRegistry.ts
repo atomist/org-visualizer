@@ -102,7 +102,13 @@ export type TaggedRepo = ProjectAnalysisResult & { tags: Tag[] };
 
 export type ScoredRepo = TaggedRepo & { weightedScore: WeightedScore };
 
-export type RepositoryScorer = (r: TaggedRepo, ctx: any) => Promise<Score | undefined>;
+/**
+ * Function that knows how to score a repository.
+ * @param repo repo we are scoring
+ * @param allRepos context of this scoring activity
+ * @return undefined if this scorer doesn't know how to score this repository.
+ */
+export type RepositoryScorer = (repo: TaggedRepo, allRepos: TaggedRepo[]) => Promise<Score | undefined>;
 
 /**
  * Manage a number of aspects.
