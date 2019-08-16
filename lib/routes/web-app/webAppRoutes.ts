@@ -54,6 +54,7 @@ import {
 } from "../../aspect/DefaultAspectRegistry";
 import { CustomReporters } from "../../customize/customReporters";
 import { PlantedTree } from "../../tree/sunburst";
+import { visit } from "../../tree/treeUtils";
 import {
     describeSelectedTagsToAnimals,
     TagTree,
@@ -267,7 +268,21 @@ async function renderDataUrl(workspaceId: string,
         ]));
 }
 
-function populateLocalURLs(tree: PlantedTree) {
+export function populateLocalURLs(plantedTree: PlantedTree) {
+
+    visit(plantedTree.tree, (n, level) => {
+        const circle = plantedTree.circles[level];
+        if (!circle) {
+            return true;
+        }
+        const d = n as any;
+        if (circle && circle.meaning === "aspect name") {
+            if (d.type) {
+                d.url = `/fingerprint/${encodeURIComponent(d.type)}`;
+            }
+        }
+        return true;
+    });
     // TODO: populate 'url' on nodes that represent fingerprints, aspects, and repositories. We have pages for those
 }
 
