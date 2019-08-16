@@ -198,7 +198,7 @@ function driftTreeSql(workspaceId: string, type?: string): string {
     return `SELECT row_to_json(data) as children
     FROM (SELECT f0.type as name, f0.type as type, json_agg(aspects) as children
         FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
-            SELECT name, feature_name as type, variants, count, entropy, variants as size
+            SELECT name, name as fingerprint_name, feature_name as type, variants, count, entropy, variants as size
                 FROM fingerprint_analytics f1
                 WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
                 ORDER BY entropy desc) as aspects
