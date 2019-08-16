@@ -130,7 +130,9 @@ export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTre
     return result;
 }
 
-export async function driftTreeForAllAspects(workspaceId: string, clientFactory: ClientFactory): Promise<PlantedTree> {
+export async function driftTreeForAllAspects(workspaceId: string,
+                                             threshold: number,
+                                             clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = driftTreeSql(workspaceId);
     const circles = [
         { meaning: "report" },
@@ -139,7 +141,7 @@ export async function driftTreeForAllAspects(workspaceId: string, clientFactory:
     ];
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
-            [workspaceId]);
+            [workspaceId, threshold]);
         let tree: PlantedTree = {
             circles,
             tree: {
@@ -167,11 +169,12 @@ export async function driftTreeForAllAspects(workspaceId: string, clientFactory:
 
 export async function driftTreeForSingleAspect(workspaceId: string,
                                                type: string,
+                                               threshold: number,
                                                clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = driftTreeSql(workspaceId, type);
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
-            [workspaceId, type]);
+            [workspaceId, threshold, type]);
         let tree: PlantedTree = {
             circles: [
                 { meaning: "type" },
@@ -200,8 +203,8 @@ function driftTreeSql(workspaceId: string, type?: string): string {
         FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
             SELECT name, name as fingerprint_name, feature_name as type, variants, count, entropy, variants as size
                 FROM fingerprint_analytics f1
-                WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+                WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND entropy > $2
                 ORDER BY entropy desc) as aspects
-    WHERE aspects.type = f0.type ${type ? `AND aspects.type = $2` : ""}
+    WHERE aspects.type = f0.type ${type ? `AND aspects.type = $3` : ""}
     GROUP by f0.type) as data`;
 }

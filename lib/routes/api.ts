@@ -248,9 +248,11 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const type = req.query.type;
+                logger.info("Entropy query: threshold=%s, type=%s", req.query.threshold, type);
+                const threshold: number = req.query.threshold ? parseInt(req.query.threshold, 10) : 0;
                 let driftTree = type ?
-                    await driftTreeForSingleAspect(req.params.workspace_id, type, clientFactory) :
-                    await driftTreeForAllAspects(req.params.workspace_id, clientFactory);
+                    await driftTreeForSingleAspect(req.params.workspace_id, type, threshold, clientFactory) :
+                    await driftTreeForAllAspects(req.params.workspace_id, threshold, clientFactory);
                 fillInAspectNames(aspectRegistry, driftTree.tree);
                 if (!type) {
                     driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);

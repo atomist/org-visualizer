@@ -160,12 +160,15 @@ function exposeDriftPage(express: Express,
                          aspectRegistry: AspectRegistry): void {
     express.get("/drift", ...handlers, async (req, res) => {
         const workspaceId = req.query.workspaceId || "*";
+        const threshold = req.query.threshold || 0;
         const type = req.query.type;
-        const dataUrl = `/api/v1/${workspaceId}/drift` + (type ? `?type=${type}` : "");
+        const dataUrl = `/api/v1/${workspaceId}/drift` +
+            `?threshold=${threshold}` +
+            (!!type ? `&type=${type}` : "");
         return renderDataUrl(workspaceId, {
             dataUrl,
             title: "Drift by aspect",
-            heading: type ? `Drift across aspect ${type}` : "Drift across all aspects",
+            heading: type ? `Drift across aspect ${type}` : `Drift across all aspects: entropy over ${threshold}`,
             subheading: "Sizing shows degree of entropy",
         }, aspectRegistry, httpClientFactory, req, res);
     });

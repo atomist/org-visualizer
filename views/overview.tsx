@@ -152,7 +152,7 @@ function displayDashboards(props: OverviewProps): React.ReactElement {
             {collapsible("explore", "Explore",
                 <ul>
                     <li><a href="./explore">Interactive explorer</a> - Explore your {props.repos.length} repositories by tag</li>
-                    <li key="code-1"><a href="./drift?byOrg=true">Drift by aspect</a> - See which aspects have the
+                    <li key="code-1"><a href="./drift?threshold=0.3">Drift by aspect</a> - See which aspects have the
                         greatest entropy
                     </li>
                 </ul>,
