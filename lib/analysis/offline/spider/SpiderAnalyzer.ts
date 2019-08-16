@@ -78,8 +78,8 @@ async function extractRegularAspects(p: Project,
 }
 
 async function extractAtomicAspects(p: Project,
-                                     aspects: AtomicAspect[],
-                                     fingerprints: FP[]) {
+                                    aspects: AtomicAspect[],
+                                    fingerprints: FP[]) {
     await Promise.all(aspects
         .map(aspect => extractAtomic(aspect, fingerprints)
             .then(fps =>
