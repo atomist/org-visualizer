@@ -152,7 +152,7 @@ export async function driftTreeForAllAspects(workspaceId: string, clientFactory:
             newLayerDepth: 1,
             descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
                 includeNumber: true,
-                casing: BandCasing.NoChange
+                casing: BandCasing.NoChange,
             }),
         });
         return tree;
@@ -187,7 +187,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
             newLayerDepth: 1,
             descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
                 casing: BandCasing.Sentence,
-                includeNumber: false
+                includeNumber: false,
             }),
         });
         return tree;
@@ -195,13 +195,13 @@ export async function driftTreeForSingleAspect(workspaceId: string,
 }
 
 function driftTreeSql(workspaceId: string, type?: string): string {
-    return `SELECT row_to_json(data) as children 
-    FROM (SELECT f0.type as name, json_agg(aspects) as children 
+    return `SELECT row_to_json(data) as children
+    FROM (SELECT f0.type as name, json_agg(aspects) as children
         FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
             SELECT name, feature_name as type, variants, count, entropy, variants as size
                 FROM fingerprint_analytics f1
                 WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
                 ORDER BY entropy desc) as aspects
-    WHERE aspects.type = f0.type ${type? `AND aspects.type = $2` : ""}
+    WHERE aspects.type = f0.type ${type ? `AND aspects.type = $2` : ""}
     GROUP by f0.type) as data`;
 }
