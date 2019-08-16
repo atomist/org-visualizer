@@ -128,7 +128,14 @@ spider --l /Users/rodjohnson/atomist/projects/spring-team/
 
 #### General
 
->Run `spider` with the `--u` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
+>Run `spider` with the `-u` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
+
+Use the `-c` flag to supply a stable directory under which all cloning should be performed.
+Otherwise, temporary files will be used.
+
+>If using a stable directory, make sure the directory exists and is writable
+by the `org-visualizer` process. And keep an eye on disk usage, as these directories
+are not transient and will not be deleted automatically.
 
 ### Run the web app
 

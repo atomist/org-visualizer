@@ -18,6 +18,7 @@ import {
     InMemoryProject,
     RepoRef,
 } from "@atomist/automation-client";
+import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
 import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
@@ -27,6 +28,7 @@ import {
     PersistResult,
     ProjectAnalysisResultStore,
 } from "../../../lib/analysis/offline/persist/ProjectAnalysisResultStore";
+import { GitCommandGitProjectCloner } from "../../../lib/analysis/offline/spider/github/GitCommandGitProjectCloner";
 import { ScmSearchCriteria } from "../../../lib/analysis/offline/spider/ScmSearchCriteria";
 import {
     Analyzer,
@@ -156,7 +158,8 @@ function opts(): SpiderOptions {
 describe("GithubSpider", () => {
 
     it("gives empty results when query returns empty", async () => {
-        const subject = new GitHubSpider(async function* (t, q) {
+        const subject = new GitHubSpider(new GitCommandGitProjectCloner(TmpDirectoryManager),
+            async function* (t, q) {
             },
         );
 
@@ -167,13 +170,14 @@ describe("GithubSpider", () => {
     });
 
     it("reveals failure when one fails to clone", async () => {
-        const subject = new GitHubSpider(async function* (t, q) {
-                yield oneSearchResult;
-            },
+        const subject = new GitHubSpider(
             {
                 clone: async () => {
                     throw new Error("cannot clone");
                 }
+            },
+            async function* (t, q) {
+                yield oneSearchResult;
             });
 
         const result = await subject.spider(criteria, analyzer, opts());
@@ -189,11 +193,12 @@ describe("GithubSpider", () => {
 
     // TODO this is currently hanging, possible because monorepo support doesn't like in memory project
     it.skip("can make and persist an analysis", async () => {
-        const subject = new GitHubSpider(async function* (t, q) {
+        const subject = new GitHubSpider(
+            { clone: async () => InMemoryProject.of({ path: "README.md", content: "hi there" }) },
+            async function* (t, q) {
                 yield oneSearchResult;
             },
-            { clone: async () => InMemoryProject.of({ path: "README.md", content: "hi there" }) }
-            );
+        );
 
         const myOpts = opts();
         const result = await subject.spider(criteria, analyzer, myOpts);

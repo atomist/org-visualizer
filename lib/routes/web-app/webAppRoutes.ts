@@ -275,8 +275,7 @@ async function renderDataUrl(workspaceId: string,
         ]));
 }
 
-export function populateLocalURLs(plantedTree: PlantedTree) {
-
+export function populateLocalURLs(plantedTree: PlantedTree): void {
     visit(plantedTree.tree, (n, level) => {
         const circle = plantedTree.circles[level];
         if (!circle) {

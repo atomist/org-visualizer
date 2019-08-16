@@ -41,6 +41,9 @@ import {
     sdmConfigClientFactory,
 } from "../machine/machine";
 import { Aspects } from "../customize/aspects";
+import { GitCommandGitProjectCloner } from "../analysis/offline/spider/github/GitCommandGitProjectCloner";
+import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
+import { StableDirectoryManager } from "@atomist/automation-client/lib/spi/clone/StableDirectoryManager";
 
 // Ensure we see console logging, and send info to the console
 configureLogging(PlainLogging);
@@ -58,6 +61,11 @@ interface SpiderAppOptions {
     localDirectory?: string;
 
     owner?: string;
+
+    /**
+     * If this is set, clone under this directory on the local drive
+     */
+    cloneUnder?: string;
 
     /**
      * Refine name in GitHub search if searching for repos
@@ -87,7 +95,14 @@ async function spider(params: SpiderAppOptions) {
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
     const spider: Spider = params.source === "GitHub" ?
-        new GitHubSpider() :
+        new GitHubSpider(params.cloneUnder ?
+            new GitCommandGitProjectCloner(new StableDirectoryManager({
+                baseDir: params.cloneUnder,
+                cleanOnExit: false,
+                // Use previous clones if possible
+                reuseDirectories: true,
+            })) :
+            new GitCommandGitProjectCloner(TmpDirectoryManager)) :
         new LocalSpider(params.localDirectory);
     const persister = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
     const query = params.query || `org:${org}` + searchInRepoName;
@@ -152,6 +167,13 @@ yargs
             description: "GitHub query"
         }
     )
+    .option("cloneUnder", {
+            required: false,
+            requiresArg: true,
+            alias: 'c',
+            description: "Full local directory path to clone under. Will keep clones around"
+        }
+    )
     .option("workspace", {
             required: false,
             requiresArg: true,
@@ -179,6 +201,7 @@ const commandLineParameters = yargs.argv as any;
 const owner = commandLineParameters.owner;
 const search = commandLineParameters.search;
 const query = commandLineParameters.query;
+const cloneUnder = commandLineParameters.cloneUnder;
 const workspaceId = commandLineParameters.workspace || "local";
 const source: "local" | "GitHub" = commandLineParameters.localDirectory ? "local" : "GitHub";
 const localDirectory = commandLineParameters.localDirectory ? path.resolve(commandLineParameters.localDirectory) : "";
@@ -202,6 +225,7 @@ if (localDirectory) {
 
 const params: SpiderAppOptions = {
     owner, search, query, workspaceId, source,
+    cloneUnder,
     localDirectory, update: commandLineParameters.update
 };
 

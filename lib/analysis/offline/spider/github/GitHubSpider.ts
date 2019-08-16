@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-import {
-    GitCommandGitProject,
-    LocalProject,
-    logger,
-    Project,
-} from "@atomist/automation-client";
-import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
+import { LocalProject, logger, Project } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
 import { PersistResult } from "../../persist/ProjectAnalysisResultStore";
 import { computeAnalytics } from "../analytics";
-import {
-    analyze,
-    AnalyzeResults,
-    existingRecordShouldBeKept,
-    persistRepoInfo,
-} from "../common";
+import { analyze, AnalyzeResults, existingRecordShouldBeKept, persistRepoInfo } from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
     Analyzer,
@@ -43,11 +31,13 @@ import {
     SpiderFailure,
     SpiderOptions,
     SpiderResult,
-    TimeRecorder,
 } from "../Spider";
-import { GitCommandGitProjectCloner } from "./GitCommandGitProjectCloner";
 
+/**
+ * Implementating this allows control over cloning
+ */
 export interface Cloner {
+
     clone(sourceData: GitHubSearchResult): Promise<Project>;
 }
 
@@ -136,10 +126,10 @@ export class GitHubSpider implements Spider {
     }
 
     public constructor(
+        private readonly cloner: Cloner,
         private readonly queryFunction: (token: string, criteria: ScmSearchCriteria)
             => AsyncIterable<GitHubSearchResult>
-            = queryByCriteria,
-        private readonly cloner: Cloner = new GitCommandGitProjectCloner()) {
+            = queryByCriteria) {
     }
 
 }

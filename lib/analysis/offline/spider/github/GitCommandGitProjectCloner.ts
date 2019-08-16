@@ -1,6 +1,7 @@
-import { Cloner, GitHubSearchResult } from "./GitHubSpider";
 import { GitCommandGitProject, Project } from "@atomist/automation-client";
 import { GitHubRepoRef } from "@atomist/automation-client/lib/operations/common/GitHubRepoRef";
+import { DirectoryManager } from "@atomist/automation-client/lib/spi/clone/DirectoryManager";
+import { Cloner, GitHubSearchResult } from "./GitHubSpider";
 
 /**
  * Cloner implementation using GitCommandGitProject directly
@@ -18,6 +19,9 @@ export class GitCommandGitProjectCloner implements Cloner {
                 alwaysDeep: false,
                 noSingleBranch: true,
                 depth: 1,
-            });
+            },
+            this.directoryManager);
     }
+
+    public constructor(private readonly directoryManager: DirectoryManager) {}
 }
