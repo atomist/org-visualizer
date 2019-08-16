@@ -21,6 +21,7 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
+    cachingVirtualProjectFinder,
     fileNamesVirtualProjectFinder,
     makeVirtualProjectAware,
     NpmDeps,
@@ -54,9 +55,14 @@ import { SpringBootStarter } from "../aspect/spring/springBootStarter";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 
-const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
-    "package.json", "pom.xml", "build.gradle", "requirements.txt",
-);
+/**
+ * This will identify directories containing any of the following files as virtual projects
+ * if the repository root didn't look like a virtual project.
+ */
+const virtualProjectFinder: VirtualProjectFinder = cachingVirtualProjectFinder(
+    fileNamesVirtualProjectFinder(
+        "package.json", "pom.xml", "build.gradle", "requirements.txt",
+    ));
 
 /**
  * The aspects managed by this SDM.

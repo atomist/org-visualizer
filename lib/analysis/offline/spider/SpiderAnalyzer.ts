@@ -42,14 +42,17 @@ export class SpiderAnalyzer implements Analyzer {
 
     public async analyze(p: Project): Promise<Analyzed> {
         const fingerprints: FP[] = [];
-        await extractThese(p, this.aspects, fingerprints, this.timings);
 
-        await Promise.all(this.aspects
-            .filter(isAtomicAspect)
-            .map(aspect => extractAtomic(aspect, fingerprints)
-                .then(fps =>
-                    fingerprints.push(...fps),
-                )));
+        const regularAspects: Aspect[] = this.aspects.filter(a => !isAtomicAspect(a)) as any;
+        const atomicAspects = this.aspects.filter(isAtomicAspect);
+
+        // We do this in 2 to ensure that caching of VirtualProjectFinder will be effective
+        await extractRegularAspects(p, [regularAspects[0]],
+            fingerprints, this.timings);
+        await extractRegularAspects(p, regularAspects.slice(1),
+            fingerprints, this.timings);
+
+        await extractAtomicAspects(p, atomicAspects, fingerprints);
 
         return {
             id: p.id as RemoteRepoRef,
@@ -62,12 +65,23 @@ export class SpiderAnalyzer implements Analyzer {
     }
 }
 
-async function extractThese(p: Project, aspects: ManagedAspect[], fingerprints: FP[],
-                            timings: TimeRecorder) {
+async function extractRegularAspects(p: Project,
+                                     aspects: Aspect[],
+                                     fingerprints: FP[],
+                                     timings: TimeRecorder) {
     await Promise.all(aspects
-        .filter(f => !isAtomicAspect(f))
         // TODO why is this cast needed?
         .map(aspect => extractify(aspect as any, p, timings)
+            .then(fps =>
+                fingerprints.push(...fps),
+            )));
+}
+
+async function extractAtomicAspects(p: Project,
+                                     aspects: AtomicAspect[],
+                                     fingerprints: FP[]) {
+    await Promise.all(aspects
+        .map(aspect => extractAtomic(aspect, fingerprints)
             .then(fps =>
                 fingerprints.push(...fps),
             )));
