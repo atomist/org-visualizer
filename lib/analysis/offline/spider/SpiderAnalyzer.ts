@@ -24,7 +24,8 @@ import {
     Aspect,
     AtomicAspect,
     FP,
-    isAtomicAspect, VirtualProjectFinder,
+    isAtomicAspect,
+    VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     Analyzed,

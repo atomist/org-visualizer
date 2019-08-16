@@ -40,7 +40,10 @@ import {
     createAnalyzer,
     sdmConfigClientFactory,
 } from "../machine/machine";
-import { Aspects, virtualProjectFinder } from "../customize/aspects";
+import {
+    Aspects,
+    virtualProjectFinder,
+} from "../customize/aspects";
 import { GitCommandGitProjectCloner } from "../analysis/offline/spider/github/GitCommandGitProjectCloner";
 import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
 import { StableDirectoryManager } from "@atomist/automation-client/lib/spi/clone/StableDirectoryManager";
