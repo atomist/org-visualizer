@@ -287,4 +287,38 @@ Avoid retrieving more data than necessary. Some tips:
 - When iterating over files and looking at content, exclude binary files using `file.isBinary()`
 - Perform file iteration via generator utility methods in the `Project` API, terminating iteration once you've found what you want.
 
+### VirtualProjectFinder
+
+Some repositories contain multiple *virtual* projects: projects one or more level down from the root. For example, there may be a Java backend service in one directory and a React web app in another.
+
+The `VirtualRepoFinder` interface enables `org-visualizer` to comprehend such virtual projects.
+
+This is configured in `aspects.ts` as follows:
+
+```typescript
+const virtualProjectFinder: VirtualProjectFinder = fileNamesVirtualProjectFinder(
+    "package.json", "pom.xml", "build.gradle", "requirements.txt",
+);
+```
+
+This identifies Node projects, Maven and Gradle projects and Python projects.
+
+You can add more files to this list, or even implement your own `VirtualProject` finder by implementing the following interface:
+
+
+```typescript
+export interface VirtualProjectFinder {
+    readonly name: string;
+    /**
+     * Determine virtual project information for this project
+     * @param {Project} project
+     * @return {Promise<VirtualProjectInfo>}
+     */
+    findVirtualProjectInfo: (project: Project) => Promise<VirtualProjectInfo>;
+}
+```
+
+
+
+
 

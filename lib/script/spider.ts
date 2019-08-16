@@ -86,7 +86,9 @@ async function spider(params: SpiderAppOptions) {
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 
-    const spider: Spider = params.source === "GitHub" ? new GitHubSpider() : new LocalSpider(params.localDirectory);
+    const spider: Spider = params.source === "GitHub" ?
+        new GitHubSpider() :
+        new LocalSpider(params.localDirectory);
     const persister = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
     const query = params.query || `org:${org}` + searchInRepoName;
 
@@ -137,25 +139,25 @@ yargs
         description: "GitHub user or organization",
     })
     .option("search", {
-        required: false,
-        alias: 's',
-        requiresArg: true,
-        description: "Search within repository names"
-    }
+            required: false,
+            alias: 's',
+            requiresArg: true,
+            description: "Search within repository names"
+        }
     )
     .option("query", {
-        required: false,
-        alias: 'q',
-        requiresArg: true,
-        description: "GitHub query"
-    }
+            required: false,
+            alias: 'q',
+            requiresArg: true,
+            description: "GitHub query"
+        }
     )
     .option("workspace", {
-        required: false,
-        requiresArg: true,
-        alias: 'w',
-        description: "Name of Atomist workspace to store results under"
-    }
+            required: false,
+            requiresArg: true,
+            alias: 'w',
+            description: "Name of Atomist workspace to store results under"
+        }
     )
     .option("localDirectory", {
         required: false,
