@@ -50,9 +50,7 @@ const oneSearchResult: GitHubSearchResult = {
     url: "https://home",
 } as GitHubSearchResult;
 
-const oneResult: ProjectAnalysisResult = {
-
-} as ProjectAnalysisResult;
+const oneResult: ProjectAnalysisResult = {} as ProjectAnalysisResult;
 
 const criteria: ScmSearchCriteria = {
     githubQueries: [],
@@ -73,6 +71,7 @@ const hardCodedPlace = "place.json";
 class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
     public persisted: ProjectAnalysisResult[] = [];
+
     public distinctRepoCount(): Promise<number> {
         throw new Error("Method not implemented.");
     }
@@ -88,12 +87,15 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
     public loadInWorkspace(): Promise<ProjectAnalysisResult[]> {
         throw new Error("Method not implemented.");
     }
+
     public async loadByRepoRef(repo: RepoRef): Promise<ProjectAnalysisResult> {
         return oneResult;
     }
+
     public loadById(id: string): Promise<ProjectAnalysisResult | undefined> {
         throw new Error("Method not implemented.");
     }
+
     public async persist(repoOrRepos: ProjectAnalysisResult
         | ProjectAnalysisResult[] | AsyncIterable<ProjectAnalysisResult>): Promise<PersistResult> {
         const repos = isProjectAnalysisResult(repoOrRepos) ? [repoOrRepos] : repoOrRepos;
@@ -154,7 +156,8 @@ function opts(): SpiderOptions {
 describe("GithubSpider", () => {
 
     it("gives empty results when query returns empty", async () => {
-        const subject = new GitHubSpider(async function* (t, q) { },
+        const subject = new GitHubSpider(async function* (t, q) {
+            },
         );
 
         const result = await subject.spider(undefined, analyzer,
@@ -164,8 +167,14 @@ describe("GithubSpider", () => {
     });
 
     it("reveals failure when one fails to clone", async () => {
-        const subject = new GitHubSpider(async function* (t, q) { yield oneSearchResult; },
-            async () => { throw new Error("cannot clone"); });
+        const subject = new GitHubSpider(async function* (t, q) {
+                yield oneSearchResult;
+            },
+            {
+                clone: async () => {
+                    throw new Error("cannot clone");
+                }
+            });
 
         const result = await subject.spider(criteria, analyzer, opts());
         const expected: SpiderResult = {
@@ -180,8 +189,11 @@ describe("GithubSpider", () => {
 
     // TODO this is currently hanging, possible because monorepo support doesn't like in memory project
     it.skip("can make and persist an analysis", async () => {
-        const subject = new GitHubSpider(async function* (t, q) { yield oneSearchResult; },
-            async () => InMemoryProject.of({ path: "README.md", content: "hi there" }));
+        const subject = new GitHubSpider(async function* (t, q) {
+                yield oneSearchResult;
+            },
+            { clone: async () => InMemoryProject.of({ path: "README.md", content: "hi there" }) }
+            );
 
         const myOpts = opts();
         const result = await subject.spider(criteria, analyzer, myOpts);

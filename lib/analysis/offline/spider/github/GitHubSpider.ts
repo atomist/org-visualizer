@@ -45,8 +45,11 @@ import {
     SpiderResult,
     TimeRecorder,
 } from "../Spider";
+import { GitCommandGitProjectCloner } from "./GitCommandGitProjectCloner";
 
-type CloneFunction = (sourceData: GitHubSearchResult) => Promise<Project>;
+export interface Cloner {
+    clone(sourceData: GitHubSearchResult): Promise<Project>;
+}
 
 /**
  * Spider GitHub. Ensure that GITHUB_TOKEN environment variable is set.
@@ -94,7 +97,7 @@ export class GitHubSpider implements Spider {
                     logger.debug("Performing fresh analysis of " + JSON.stringify(repo));
                     try {
                         bucket.push(
-                            runAnalysis(this.cloneFunction,
+                            runAnalysis(this.cloner,
                                 dropIrrelevantFields(sourceData),
                                 criteria,
                                 analyzer));
@@ -125,8 +128,8 @@ export class GitHubSpider implements Spider {
             projectsDetected: analyzeResults.projectCount,
             failed:
                 [...errors,
-                ...analyzeResults.failedToPersist,
-                ...analyzeResults.failedToCloneOrAnalyze],
+                    ...analyzeResults.failedToPersist,
+                    ...analyzeResults.failedToCloneOrAnalyze],
             keptExisting: keepExisting,
             persistedAnalyses: analyzeResults.persisted,
         };
@@ -136,7 +139,7 @@ export class GitHubSpider implements Spider {
         private readonly queryFunction: (token: string, criteria: ScmSearchCriteria)
             => AsyncIterable<GitHubSearchResult>
             = queryByCriteria,
-        private readonly cloneFunction: CloneFunction = cloneWithCredentialsFromEnv) {
+        private readonly cloner: Cloner = new GitCommandGitProjectCloner()) {
     }
 
 }
@@ -150,20 +153,6 @@ function dropIrrelevantFields(sourceData: GitHubSearchResult): GitHubSearchResul
         timestamp: sourceData.timestamp,
         query: sourceData.query,
     };
-}
-
-function cloneWithCredentialsFromEnv(sourceData: GitHubSearchResult): Promise<Project> {
-    return GitCommandGitProject.cloned(
-        process.env.GITHUB_TOKEN ? { token: process.env.GITHUB_TOKEN } : undefined,
-        GitHubRepoRef.from({
-            owner: sourceData.owner.login,
-            repo: sourceData.name,
-            rawApiBase: "https://api.github.com", // for GitHub Enterprise, make this something like github.yourcompany.com/api/v3
-        }), {
-            alwaysDeep: false,
-            noSingleBranch: true,
-            depth: 1,
-        });
 }
 
 export interface AnalyzeResult {
@@ -202,7 +191,7 @@ function combineAnalyzeAndPersistResult(one: AnalyzeAndPersistResult, two: Analy
  * Future for doing the work
  * @return {Promise<void>}
  */
-async function runAnalysis(cloneFunction: CloneFunction,
+async function runAnalysis(cloner: Cloner,
                            sourceData: GitHubSearchResult,
                            criteria: ScmSearchCriteria,
                            analyzer: Analyzer): Promise<AnalyzeResult & { analyzeResults?: AnalyzeResults, sourceData: GitHubSearchResult }> {
@@ -210,7 +199,7 @@ async function runAnalysis(cloneFunction: CloneFunction,
     let project;
     let clonedIn: number;
     try {
-        project = await cloneFunction(sourceData);
+        project = await cloner.clone(sourceData);
         clonedIn = new Date().getTime() - startTime;
         logger.debug("Successfully cloned %s in %d milliseconds", sourceData.url, clonedIn);
         if (!project.id.sha) {
