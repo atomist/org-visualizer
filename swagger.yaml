@@ -191,6 +191,19 @@ paths:
             description: Workspace id. * for all.
             required: true
             type: string
+        parameters:
+          - name: threshold
+            in: query
+            description: Entropy threshold. Only show aspects with entropy above this.
+            required: false
+            type: integer
+            format: int32
+        parameters:
+          - name: type
+            in: query
+            description: Aspect name (fingerprint type) to show drift for
+            required: false
+            type: string
         responses:
           "200":
             description: successful operation
@@ -362,7 +375,7 @@ definitions:
         type: integer
         format: int32
       entropy:
-        type: number
+        type: integer
         format: float
         description: Entropy across the organization for this fingerprint.
   Tree:
