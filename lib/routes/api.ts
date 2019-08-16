@@ -385,8 +385,10 @@ function fillInAspectNames(aspectRegistry: AspectRegistry, tree: SunburstTree): 
     });
 }
 
+/**
+ * If the aspect says entropy isn't significant, reduce it.
+ */
 function removeAspectsWithoutMeaningfulEntropy(aspectRegistry: AspectRegistry, driftTree: PlantedTree): PlantedTree {
-    // Remove anything where entropy isn't meaningful
     driftTree.tree = killChildren(driftTree.tree, child => {
         if (isSunburstTree(child)) {
             return false;

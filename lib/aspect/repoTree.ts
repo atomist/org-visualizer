@@ -196,7 +196,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
 
 function driftTreeSql(workspaceId: string, type?: string): string {
     return `SELECT row_to_json(data) as children
-    FROM (SELECT f0.type as name, json_agg(aspects) as children
+    FROM (SELECT f0.type as name, f0.type as type, json_agg(aspects) as children
         FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
             SELECT name, feature_name as type, variants, count, entropy, variants as size
                 FROM fingerprint_analytics f1
