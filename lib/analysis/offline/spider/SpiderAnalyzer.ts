@@ -42,13 +42,7 @@ export class SpiderAnalyzer implements Analyzer {
 
     public async analyze(p: Project): Promise<Analyzed> {
         const fingerprints: FP[] = [];
-        await Promise.all(this.aspects
-            .filter(f => !isAtomicAspect(f))
-            // TODO why is this needed?
-            .map(aspect => extractify(aspect as any, p, this.timings)
-                .then(fps =>
-                    fingerprints.push(...fps),
-                )));
+        await extractThese(p, this.aspects, fingerprints, this.timings);
 
         await Promise.all(this.aspects
             .filter(isAtomicAspect)
@@ -66,6 +60,17 @@ export class SpiderAnalyzer implements Analyzer {
     constructor(private readonly aspects: ManagedAspect[]) {
 
     }
+}
+
+async function extractThese(p: Project, aspects: ManagedAspect[], fingerprints: FP[],
+                            timings: TimeRecorder) {
+    await Promise.all(aspects
+        .filter(f => !isAtomicAspect(f))
+        // TODO why is this cast needed?
+        .map(aspect => extractify(aspect as any, p, timings)
+            .then(fps =>
+                fingerprints.push(...fps),
+            )));
 }
 
 async function extractify(aspect: Aspect, p: Project, timeRecorder: TimeRecorder): Promise<FP[]> {
