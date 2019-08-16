@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import { LocalProject, logger, Project } from "@atomist/automation-client";
+import {
+    LocalProject,
+    logger,
+    Project,
+} from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import * as Octokit from "@octokit/rest";
 import * as _ from "lodash";
 import { PersistResult } from "../../persist/ProjectAnalysisResultStore";
 import { computeAnalytics } from "../analytics";
-import { analyze, AnalyzeResults, existingRecordShouldBeKept, persistRepoInfo } from "../common";
+import {
+    analyze,
+    AnalyzeResults,
+    existingRecordShouldBeKept,
+    persistRepoInfo,
+} from "../common";
 import { ScmSearchCriteria } from "../ScmSearchCriteria";
 import {
     Analyzer,
