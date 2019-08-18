@@ -62,7 +62,7 @@ export interface CohortAnalysis {
 /**
  * Analyze a cohort of the same kind of fingerprints
  */
-function analyzeCohort(fps: FP[]): CohortAnalysis {
+export function analyzeCohort(fps: FP[]): CohortAnalysis {
     const groups: Record<string, FP[]> = _.groupBy(fps, fp => fp.sha);
     const total: number = fps.length;
     const entropy = -1 * Object.values(groups).reduce(
@@ -72,5 +72,10 @@ function analyzeCohort(fps: FP[]): CohortAnalysis {
         },
         0,
     );
-    return { entropy, variants: Object.values(groups).length, count: fps.length, compliance: undefined };
+    return {
+        entropy,
+        variants: Object.values(groups).length,
+        count: fps.length,
+        compliance: undefined
+    };
 }

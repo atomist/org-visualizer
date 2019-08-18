@@ -254,7 +254,7 @@ async function renderDataUrl(workspaceId: string,
 
     logger.info("Data url=%s", page.dataUrl);
 
-    const fieldsToDisplay = ["entropy"];
+    const fieldsToDisplay = ["entropy", "variants", "count"];
 
     res.send(renderStaticReactNode(
         SunburstPage({
