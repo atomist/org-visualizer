@@ -40,6 +40,7 @@ import {
     isProjectAnalysisResult,
     ProjectAnalysisResult,
 } from "../../../lib/analysis/ProjectAnalysisResult";
+import { PlantedTree } from "../../../lib/tree/sunburst";
 import {
     GitHubSearchResult,
     GitHubSpider,
@@ -73,6 +74,14 @@ const hardCodedPlace = "place.json";
 class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
 
     public persisted: ProjectAnalysisResult[] = [];
+
+    public fingerprintsToReposTree(): Promise<PlantedTree> {
+        throw new Error("Method not implemented");
+    }
+
+    public aspectDriftTree(workspaceId: string, threshold: number, type?: string): Promise<PlantedTree> {
+        throw new Error("Method not implemented");
+    }
 
     public distinctRepoCount(): Promise<number> {
         throw new Error("Method not implemented.");

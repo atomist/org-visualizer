@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    BaseAspect,
-    ConcreteIdeal,
-    FP,
-    Ideal,
-} from "@atomist/sdm-pack-fingerprints";
+import { BaseAspect, ConcreteIdeal, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
-import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { fingerprintsToReposTree } from "../aspect/repoTree";
-import {
-    isSunburstTree,
-    PlantedTree,
-    SunburstTree,
-} from "../tree/sunburst";
+import { isSunburstTree, PlantedTree, SunburstTree } from "../tree/sunburst";
 import {
     groupSiblings,
     introduceClassificationLayer,
@@ -39,10 +28,8 @@ import {
 } from "../tree/treeUtils";
 
 import * as _ from "lodash";
-import {
-    addRepositoryViewUrl,
-    splitByOrg,
-} from "./support/treeMunging";
+import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
+import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
 
 /**
  * Return a tree from fingerprint name -> instances -> repos
@@ -51,7 +38,7 @@ import {
 export async function buildFingerprintTree(
     world: {
         aspectRegistry: AspectRegistry,
-        clientFactory: ClientFactory,
+        store: ProjectAnalysisResultStore,
     },
     params: {
         workspaceId: string,
@@ -66,12 +53,11 @@ export async function buildFingerprintTree(
     }): Promise<PlantedTree> {
 
     const { workspaceId, byName, fingerprintName, fingerprintType, otherLabel, showPresence, byOrg, trim, showProgress } = params;
-    const { clientFactory, aspectRegistry } = world;
+    const { store, aspectRegistry } = world;
 
     // Get the tree and then perform post processing on it
-    let pt = await fingerprintsToReposTree({
+    let pt = await store.fingerprintsToReposTree({
         workspaceId,
-        clientFactory,
         byName,
         includeWithout: otherLabel,
         rootName: fingerprintName,

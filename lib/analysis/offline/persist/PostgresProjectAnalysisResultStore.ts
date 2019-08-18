@@ -36,6 +36,7 @@ import {
 import { IdealStore } from "../../../aspect/IdealStore";
 import { ProblemUsage } from "../../../aspect/ProblemStore";
 import { getCategories } from "../../../customize/categories";
+import { PlantedTree } from "../../../tree/sunburst";
 import {
     BandCasing,
     bandFor,
@@ -57,12 +58,25 @@ import {
     FingerprintKind,
     FingerprintUsage,
     PersistResult,
-    ProjectAnalysisResultStore,
+    ProjectAnalysisResultStore, TreeQuery,
 } from "./ProjectAnalysisResultStore";
+import { driftTreeForAllAspects, driftTreeForSingleAspect, fingerprintsToReposTreeQuery } from "./repoTree";
 
 // tslint:disable:max-file-line-count
 
 export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResultStore, IdealStore {
+
+    public fingerprintsToReposTree(treeQuery: TreeQuery): Promise<PlantedTree> {
+        return fingerprintsToReposTreeQuery(treeQuery, this.clientFactory);
+    }
+
+    public aspectDriftTree(workspaceId: string,
+                           threshold: number,
+                           type?: string): Promise<PlantedTree> {
+        return type ?
+            driftTreeForSingleAspect(workspaceId, type, threshold, this.clientFactory) :
+            driftTreeForAllAspects(workspaceId, threshold, this.clientFactory);
+    }
 
     public distinctRepoCount(workspaceId: string): Promise<number> {
         const sql = `SELECT COUNT(1) FROM (SELECT DISTINCT url
@@ -210,7 +224,7 @@ GROUP BY repo_snapshots.id`;
                 const fid = await this.ensureFingerprintStored(ideal.ideal, client);
                 await client.query(`INSERT INTO ideal_fingerprints (workspace_id, fingerprint_id, authority)
 values ($1, $2, 'local-user')`, [
-                        workspaceId, fid]);
+                    workspaceId, fid]);
             });
         } else {
             throw new Error("Elimination ideals not yet supported");
@@ -338,7 +352,7 @@ GROUP by repo_snapshots.id) stats;`;
         values ($1, $2, $3, $4, $5, $6)
         ON CONFLICT ON CONSTRAINT fingerprint_analytics_pkey DO UPDATE SET entropy = $4, variants = $5, count = $6`;
                 await client.query(sql, [kind.type, kind.name, workspaceId,
-                cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
+                    cohortAnalysis.entropy, cohortAnalysis.variants, cohortAnalysis.count]);
             }
             return true;
         });

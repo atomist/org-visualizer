@@ -15,27 +15,10 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { ClientFactory, doWithClient, } from "../analysis/offline/persist/pgUtils";
-import { PlantedTree } from "../tree/sunburst";
-import { validatePlantedTree, } from "../tree/treeUtils";
-
-export interface TreeQuery {
-
-    workspaceId: string;
-
-    clientFactory: ClientFactory;
-
-    aspectName: string;
-
-    rootName: string;
-
-    /**
-     * Look for one particular fingerprint?
-     */
-    byName: boolean;
-
-    includeWithout: boolean;
-}
+import { PlantedTree } from "../../../tree/sunburst";
+import { validatePlantedTree } from "../../../tree/treeUtils";
+import { ClientFactory, doWithClient } from "./pgUtils";
+import { TreeQuery } from "./ProjectAnalysisResultStore";
 
 /**
  * Return results for non-matching fingerprints
@@ -86,12 +69,10 @@ SELECT row_to_json(fingerprint_groups) FROM (
 
 /**
  * Tree where children is one of a range of values, leaves individual repos with one of those values
- * @param {TreeQuery} tq
- * @return {Promise<SunburstTree>}
  */
-export async function fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTree> {
+export async function fingerprintsToReposTreeQuery(tq: TreeQuery, clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = fingerprintsToReposQuery(tq);
-    const children = await doWithClient(sql, tq.clientFactory, async client => {
+    const children = await doWithClient(sql, clientFactory, async client => {
         try {
             const results = await client.query(sql,
                 [tq.workspaceId, tq.aspectName, tq.rootName]);
@@ -129,7 +110,7 @@ export async function driftTreeForAllAspects(workspaceId: string,
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId, threshold]);
-        let tree: PlantedTree = {
+        const tree: PlantedTree = {
             circles,
             tree: {
                 name: "drift",
@@ -154,7 +135,7 @@ export async function driftTreeForSingleAspect(workspaceId: string,
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
             [workspaceId, threshold, type]);
-        let tree: PlantedTree = {
+        const tree: PlantedTree = {
             circles: [
                 { meaning: "type" },
                 { meaning: "fingerprint entropy" },

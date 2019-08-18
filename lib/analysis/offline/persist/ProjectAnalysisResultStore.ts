@@ -16,12 +16,14 @@
 
 import { RepoRef } from "@atomist/automation-client";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { PlantedTree } from "../../../tree/sunburst";
 import { ProjectAnalysisResult } from "../../ProjectAnalysisResult";
 import { CohortAnalysis } from "../spider/analytics";
 import {
     PersistenceResult,
     SpiderFailure,
 } from "../spider/Spider";
+import { ClientFactory } from "./pgUtils";
 
 export interface PersistResult {
     attemptedCount: number;
@@ -54,6 +56,22 @@ export interface FingerprintUsage extends CohortAnalysis {
     categories: string[];
 }
 
+export interface TreeQuery {
+
+    workspaceId: string;
+
+    aspectName: string;
+
+    rootName: string;
+
+    /**
+     * Look for one particular fingerprint?
+     */
+    byName: boolean;
+
+    includeWithout: boolean;
+}
+
 /**
  * Interface for basic persistence operations.
  * Implementations can provide additional querying options,
@@ -62,6 +80,20 @@ export interface FingerprintUsage extends CohortAnalysis {
  * data for all workspaces.
  */
 export interface ProjectAnalysisResultStore {
+
+    fingerprintsToReposTree(tq: TreeQuery): Promise<PlantedTree>;
+
+    /**
+     * Drift tree
+     * @param {string} workspaceId
+     * @param {number} threshold show drift for entropy above this
+     * @param {string} type if provided, show drift only for the particular aspect. Otherwise
+     * show drift for all aspects.
+     * @return {Promise<PlantedTree>}
+     */
+    aspectDriftTree(workspaceId: string,
+                    threshold: number,
+                    type?: string): Promise<PlantedTree>;
 
     /**
      * How many repos we've analyzed
@@ -113,7 +145,7 @@ export interface ProjectAnalysisResultStore {
      */
     fingerprintsInWorkspace(workspaceId: string,
                             type?: string,
-                            name?: string): Promise<Array<FP & {id: string}>>;
+                            name?: string): Promise<Array<FP & { id: string }>>;
 
     fingerprintsForProject(id: string): Promise<FP[]>;
 

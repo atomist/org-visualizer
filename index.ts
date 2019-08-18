@@ -285,7 +285,7 @@ function orgVisualizationEndpoints(dbClientFactory: ClientFactory, httpClientFac
         .withTaggers(...taggers({}))
         .withCombinationTaggers(...combinationTaggers({}));
 
-    const aboutTheApi = api(dbClientFactory, resultStore, aspectRegistry);
+    const aboutTheApi = api(resultStore, aspectRegistry);
 
     if (!isInLocalMode()) {
         return {

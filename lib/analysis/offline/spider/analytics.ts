@@ -76,6 +76,6 @@ export function analyzeCohort(fps: FP[]): CohortAnalysis {
         entropy,
         variants: Object.values(groups).length,
         count: fps.length,
-        compliance: undefined
+        compliance: undefined,
     };
 }

@@ -31,7 +31,6 @@ import * as _ from "lodash";
 import * as path from "path";
 import * as swaggerUi from "swagger-ui-express";
 import * as yaml from "yamljs";
-import { ClientFactory } from "../analysis/offline/persist/pgUtils";
 import {
     FingerprintUsage,
     ProjectAnalysisResultStore,
@@ -42,10 +41,6 @@ import {
     AspectRegistry,
     Tag,
 } from "../aspect/AspectRegistry";
-import {
-    driftTreeForAllAspects,
-    driftTreeForSingleAspect,
-} from "../aspect/repoTree";
 import { getAspectReports } from "../customize/categories";
 import { CustomReporters } from "../customize/customReporters";
 import {
@@ -60,6 +55,8 @@ import {
     trimOuterRim,
     visit,
 } from "../tree/treeUtils";
+import { BandCasing, bandFor } from "../util/bands";
+import { EntropySizeBands } from "../util/commonBands";
 import {
     authHandlers,
     configureAuth,
@@ -75,15 +72,12 @@ import {
     addRepositoryViewUrl,
     splitByOrg,
 } from "./support/treeMunging";
-import { BandCasing, bandFor } from "../util/bands";
-import { EntropySizeBands } from "../util/commonBands";
 
 /**
  * Expose the public API routes, returning JSON.
  * Also expose Swagger API documentation.
  */
-export function api(clientFactory: ClientFactory,
-                    projectAnalysisResultStore: ProjectAnalysisResultStore,
+export function api(projectAnalysisResultStore: ProjectAnalysisResultStore,
                     aspectRegistry: AspectRegistry): {
     customizer: ExpressCustomizer,
     routesToSuggestOnStartup: Array<{ title: string, route: string }>,
@@ -110,8 +104,8 @@ export function api(clientFactory: ClientFactory,
             exposeListFingerprints(express, projectAnalysisResultStore);
             exposeFingerprintByType(express, aspectRegistry, projectAnalysisResultStore);
             exposeExplore(express, aspectRegistry, projectAnalysisResultStore);
-            exposeFingerprintByTypeAndName(express, aspectRegistry, clientFactory, projectAnalysisResultStore);
-            exposeDrift(express, aspectRegistry, clientFactory);
+            exposeFingerprintByTypeAndName(express, aspectRegistry, projectAnalysisResultStore);
+            exposeDrift(express, aspectRegistry, projectAnalysisResultStore);
             exposeCustomReports(express, projectAnalysisResultStore);
             exposePersistEntropy(express, projectAnalysisResultStore, handlers);
         },
@@ -193,7 +187,6 @@ function exposeFingerprintByType(express: Express,
 
 function exposeFingerprintByTypeAndName(express: Express,
                                         aspectRegistry: AspectRegistry,
-                                        clientFactory: ClientFactory,
                                         store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/fingerprint/:type/:name", corsHandler());
     express.get("/api/v1/:workspace_id/fingerprint/:type/:name", [corsHandler(), ...authHandlers()], async (req: Request, res: Response) => {
@@ -208,7 +201,7 @@ function exposeFingerprintByTypeAndName(express: Express,
         const otherLabel = req.query.otherLabel === "true";
 
         try {
-            const pt = await buildFingerprintTree({ aspectRegistry, clientFactory }, {
+            const pt = await buildFingerprintTree({ aspectRegistry, store }, {
                 showPresence,
                 otherLabel,
                 showProgress,
@@ -246,7 +239,7 @@ function exposeFingerprintByTypeAndName(express: Express,
 /**
  * Drift report, sizing aspects and fingerprints by entropy
  */
-function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFactory: ClientFactory): void {
+function exposeDrift(express: Express, aspectRegistry: AspectRegistry, store: ProjectAnalysisResultStore): void {
     express.options("/api/v1/:workspace_id/drift", corsHandler());
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
@@ -254,9 +247,7 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
                 const band = req.query.band === "true";
                 logger.info("Entropy query: threshold=%s, type=%s", req.query.threshold, type);
                 const threshold: number = req.query.threshold ? parseInt(req.query.threshold, 10) : 0;
-                let driftTree = type ?
-                    await driftTreeForSingleAspect(req.params.workspace_id, type, threshold, clientFactory) :
-                    await driftTreeForAllAspects(req.params.workspace_id, threshold, clientFactory);
+                let driftTree = await store.aspectDriftTree(req.params.workspace_id, threshold, type);
                 fillInAspectNames(aspectRegistry, driftTree.tree);
                 if (!type) {
                     driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);

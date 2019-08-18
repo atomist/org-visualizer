@@ -152,7 +152,7 @@ export function gitHot(opts: { name?: string, hotDays: number, hotContributors: 
 
 export function inadequateReadme(opts: { minLength: number}): Tagger {
     return {
-        name: "readme-ok",
+        name: "poor-readme",
         description: "README is adequate",
         severity: "warn",
         test: fp => isGlobMatchFingerprint(fp) &&
