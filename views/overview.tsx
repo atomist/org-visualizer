@@ -151,10 +151,13 @@ function displayDashboards(props: OverviewProps): React.ReactElement {
         <ul>
             {collapsible("explore", "Explore",
                 <ul>
+                    <li>Drift Report</li>
+                    <ul>
+                        <li key="code-1"><a href="./drift?threshold=1.9">Aspects with the
+                            greatest entropy</a></li>
+                        <li key="code-1"><a href="./drift?threshold=0">Entropy for all aspects</a></li>
+                    </ul>
                     <li><a href="./explore">Interactive explorer</a> - Explore your {props.repos.length} repositories by tag</li>
-                    <li key="code-1"><a href="./drift?threshold=0.3">Drift by aspect</a> - See which aspects have the
-                        greatest entropy
-                    </li>
                 </ul>,
                 true)}
             {collapsible("repo-nav", "Repository List",
