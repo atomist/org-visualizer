@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
-import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * TypeScript projects must use tslint
