@@ -17,7 +17,10 @@
 import { logger } from "@atomist/automation-client";
 import { PlantedTree } from "../../../tree/sunburst";
 import { validatePlantedTree } from "../../../tree/treeUtils";
-import { ClientFactory, doWithClient } from "./pgUtils";
+import {
+    ClientFactory,
+    doWithClient,
+} from "./pgUtils";
 import { TreeQuery } from "./ProjectAnalysisResultStore";
 
 /**

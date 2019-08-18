@@ -58,9 +58,14 @@ import {
     FingerprintKind,
     FingerprintUsage,
     PersistResult,
-    ProjectAnalysisResultStore, TreeQuery,
+    ProjectAnalysisResultStore,
+    TreeQuery,
 } from "./ProjectAnalysisResultStore";
-import { driftTreeForAllAspects, driftTreeForSingleAspect, fingerprintsToReposTreeQuery } from "./repoTree";
+import {
+    driftTreeForAllAspects,
+    driftTreeForSingleAspect,
+    fingerprintsToReposTreeQuery,
+} from "./repoTree";
 
 // tslint:disable:max-file-line-count
 

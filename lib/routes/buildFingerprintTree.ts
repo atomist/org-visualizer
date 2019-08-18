@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { BaseAspect, ConcreteIdeal, FP, Ideal } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    ConcreteIdeal,
+    FP,
+    Ideal,
+} from "@atomist/sdm-pack-fingerprints";
 import { isConcreteIdeal } from "@atomist/sdm-pack-fingerprints/lib/machine/Ideal";
 import { AspectRegistry } from "../aspect/AspectRegistry";
-import { isSunburstTree, PlantedTree, SunburstTree } from "../tree/sunburst";
+import {
+    isSunburstTree,
+    PlantedTree,
+    SunburstTree,
+} from "../tree/sunburst";
 import {
     groupSiblings,
     introduceClassificationLayer,
@@ -29,7 +38,10 @@ import {
 
 import * as _ from "lodash";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
-import { addRepositoryViewUrl, splitByOrg } from "./support/treeMunging";
+import {
+    addRepositoryViewUrl,
+    splitByOrg,
+} from "./support/treeMunging";
 
 /**
  * Return a tree from fingerprint name -> instances -> repos

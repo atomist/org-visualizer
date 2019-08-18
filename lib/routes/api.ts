@@ -55,7 +55,10 @@ import {
     trimOuterRim,
     visit,
 } from "../tree/treeUtils";
-import { BandCasing, bandFor } from "../util/bands";
+import {
+    BandCasing,
+    bandFor,
+} from "../util/bands";
 import { EntropySizeBands } from "../util/commonBands";
 import {
     authHandlers,
