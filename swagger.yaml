@@ -192,12 +192,13 @@ paths:
             required: true
             type: string
         parameters:
-          - name: threshold
+          - name: percentile
             in: query
-            description: Entropy threshold. Only show aspects with entropy above this.
+            description: Entropy percentile (e.g. 80). Only show aspects with entropy above this.
             required: false
             type: integer
             format: int32
+            default: 0
           - name: band
             in: query
             description: Introduce a ring for size band

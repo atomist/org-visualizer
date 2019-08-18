@@ -86,13 +86,13 @@ export interface ProjectAnalysisResultStore {
     /**
      * Drift tree
      * @param {string} workspaceId
-     * @param {number} threshold show drift for entropy above this
+     * @param {number} percentile (0-100). Show fingerprints only with entropy above this
      * @param {string} type if provided, show drift only for the particular aspect. Otherwise
      * show drift for all aspects.
      * @return {Promise<PlantedTree>}
      */
     aspectDriftTree(workspaceId: string,
-                    threshold: number,
+                    percentile: number,
                     type?: string): Promise<PlantedTree>;
 
     /**
@@ -105,6 +105,11 @@ export interface ProjectAnalysisResultStore {
      */
     virtualProjectCount(workspaceId: string): Promise<number>;
 
+    /**
+     * What's the most recent snapshot timestamp we've seen in this workspace?
+     * @param {string} workspaceId
+     * @return {Promise<Date>}
+     */
     latestTimestamp(workspaceId: string): Promise<Date>;
 
     /**

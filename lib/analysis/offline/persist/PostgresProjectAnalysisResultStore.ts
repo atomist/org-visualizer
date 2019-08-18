@@ -76,11 +76,11 @@ export class PostgresProjectAnalysisResultStore implements ProjectAnalysisResult
     }
 
     public aspectDriftTree(workspaceId: string,
-                           threshold: number,
+                           percentile: number,
                            type?: string): Promise<PlantedTree> {
         return type ?
-            driftTreeForSingleAspect(workspaceId, type, threshold, this.clientFactory) :
-            driftTreeForAllAspects(workspaceId, threshold, this.clientFactory);
+            driftTreeForSingleAspect(workspaceId, type, percentile, this.clientFactory) :
+            driftTreeForAllAspects(workspaceId, percentile, this.clientFactory);
     }
 
     public distinctRepoCount(workspaceId: string): Promise<number> {

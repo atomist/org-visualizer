@@ -153,9 +153,9 @@ function displayDashboards(props: OverviewProps): React.ReactElement {
                 <ul>
                     <li>Drift Report</li>
                     <ul>
-                        <li key="code-1"><a href="./drift?threshold=1.9">Aspects with the
+                        <li key="code-1"><a href="./drift?percentile=95">Aspects with the
                             greatest entropy</a></li>
-                        <li key="code-1"><a href="./drift?threshold=0">Entropy for all aspects</a></li>
+                        <li key="code-1"><a href="./drift">Entropy for all aspects</a></li>
                     </ul>
                     <li><a href="./explore">Interactive explorer</a> - Explore your {props.repos.length} repositories by tag</li>
                 </ul>,

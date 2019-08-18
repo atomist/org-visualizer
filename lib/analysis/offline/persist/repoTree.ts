@@ -102,7 +102,7 @@ export async function fingerprintsToReposTreeQuery(tq: TreeQuery, clientFactory:
 }
 
 export async function driftTreeForAllAspects(workspaceId: string,
-                                             threshold: number,
+                                             percentile: number,
                                              clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = driftTreeSql(workspaceId);
     const circles = [
@@ -112,7 +112,7 @@ export async function driftTreeForAllAspects(workspaceId: string,
     ];
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
-            [workspaceId, threshold]);
+            [workspaceId, percentile / 100]);
         const tree: PlantedTree = {
             circles,
             tree: {
@@ -132,12 +132,12 @@ export async function driftTreeForAllAspects(workspaceId: string,
 
 export async function driftTreeForSingleAspect(workspaceId: string,
                                                type: string,
-                                               threshold: number,
+                                               percentile: number,
                                                clientFactory: ClientFactory): Promise<PlantedTree> {
     const sql = driftTreeSql(workspaceId, type);
     return doWithClient(sql, clientFactory, async client => {
         const result = await client.query(sql,
-            [workspaceId, threshold, type]);
+            [workspaceId, percentile / 100, type]);
         const tree: PlantedTree = {
             circles: [
                 { meaning: "type" },
@@ -158,7 +158,11 @@ function driftTreeSql(workspaceId: string, type?: string): string {
         FROM (SELECT distinct feature_name as type from fingerprint_analytics) f0, (
             SELECT name, name as fingerprint_name, feature_name as type, variants, count, entropy, variants as size
                 FROM fingerprint_analytics f1
-                WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1 AND entropy > $2
+                WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1
+                    AND entropy >
+                        (SELECT percentile_disc($2) within group (order by entropy)
+                            FROM fingerprint_analytics
+                            WHERE workspace_id ${workspaceId === "*" ? "<>" : "="} $1)
                 ORDER BY entropy desc) as aspects
     WHERE aspects.type = f0.type ${type ? `AND aspects.type = $3` : ""}
     GROUP by f0.type) as data`;
