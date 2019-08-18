@@ -64,10 +64,10 @@ export interface CohortAnalysis {
  */
 export function analyzeCohort(fps: FP[]): CohortAnalysis {
     const groups: Record<string, FP[]> = _.groupBy(fps, fp => fp.sha);
-    const total: number = fps.length;
+    const count: number = fps.length;
     const entropy = -1 * Object.values(groups).reduce(
         (agg, fp: FP[]) => {
-            const p: number = fp.length / total;
+            const p: number = fp.length / count;
             return agg + p * Math.log(p);
         },
         0,
@@ -75,7 +75,7 @@ export function analyzeCohort(fps: FP[]): CohortAnalysis {
     return {
         entropy,
         variants: Object.values(groups).length,
-        count: fps.length,
+        count,
         compliance: undefined,
     };
 }
