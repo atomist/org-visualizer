@@ -39,9 +39,10 @@ To visualize your org:
 
 1. Clone and build this project
 2. Set up the required PostreSQL database
-2. Run analysis on your repositories
-3. Run the `org-visualizer` and hit its web interface at [http://localhost:2866](http://localhost:2866)
-4. If you have more ideas, add code to study more aspects of your projects
+3. Run the `org-visualizer`
+4. Run analysis on your repositories
+5. Hit the web interface at [http://localhost:2866](http://localhost:2866)
+6. If you have more ideas, add code to study more aspects of your projects
 
 ### Building
 
@@ -50,8 +51,6 @@ Please use Node 10+.
 First, install with `npm ci`.
 
 Next, build with `npm run build`
-
-Next, `npm link` to out the `spider` command in your path. 
 
 ### Database setup
 
@@ -101,36 +100,44 @@ You will need the following installed on your machine for the out of the box asp
 - Node
 - npm
 
- All artifacts referenced in Maven or Node projects must be accessible when the spider runs. Check by manually running `mvn` or `npm i` on the relevant projects.
+ All artifacts referenced in Maven or Node projects must be accessible when the analysis runs.
+ You can check this by manually running `mvn` or `npm i` on the relevant projects.
 
 ### Analyze your repositories
 
 >You can start quickly by loading data from four open source organizations by running the script `load-demo-data.sh`.
 
-The `spider` command is part of this org-visualizer project.
-Add it to your path by running `npm link` in your clone of this repository.
+The `analyze` command is part of this org-visualizer project.
+It works as at Atomist command, which runs through the `atomist` CLI.
+
+* install the CLI: `npm i -g @atomist/cli`
+* start the org_visualizer (in the org_visualizer project): `atomist start --local`
 
 #### GitHub
 
 To analyze a GitHub organization, run the following command:
 
-`spider --owner <github organization>` e.g. `spider --owner atomist` (not the full org URL).
+`atomist analyze github repositories`
+
+Enter the GitHub owner name (e.g., 'atomist') at the prompt.
+
+When prompted for a query, hit enter to skip.
 
 _To access private repositories, ensure that your GitHub token is available to 
 Node processes via a `GITHUB_TOKEN` environment variable._
 
 #### Local directories
-To analyze local directories, wherever they were cloned from, use the `--l` flag and specify the full path of the parent directory of the repositories, as follows: 
+To analyze local directories, wherever they were cloned from, specify the full path of the parent directory of the repositories, as follows: 
 
 ```
-spider --l /Users/rodjohnson/atomist/projects/spring-team/
+atomist analyze local --l /Users/rodjohnson/atomist/projects/spring-team/
 ```
 
 #### General
 
->Run `spider` with the `-u` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
+>Run `atomist analyze [local|github]` with `--update true` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
 
-Use the `-c` flag to supply a stable directory under which all cloning should be performed.
+Use the `--cloneUnder [dir]` option to supply a stable directory under which all cloning should be performed.
 Otherwise, temporary files will be used.
 
 >If using a stable directory, make sure the directory exists and is writable
@@ -139,7 +146,7 @@ are not transient and will not be deleted automatically.
 
 ### Run the web app
 
-Now start the server with `atomist start --local` to expose the visualizations.
+When the server is running with `atomist start --local`, you can see the visualizations.
 
 Go to [http://localhost:2866](http://localhost:2866).
 
@@ -147,7 +154,7 @@ Go to [http://localhost:2866](http://localhost:2866).
 
 There are four architectural layers:
 
-1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by spidering or, in regular use, by an [Atomist SDM](https://github.com/atomist/sdm).
+1. **Analysis**. This is enabled by implementing [Aspects](lib/customize/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by `atomist analyze` or, in regular use, by an [Atomist SDM](https://github.com/atomist/sdm).
 2. **Query** functionality.
 3. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866/api-docs](http://localhost:2866/api-docs)
 4. Simple **UI** using static React and d3 exposing sunburst charts based on the API.
@@ -165,7 +172,7 @@ export const Aspects: ManagedAspect[] = [
     //... add your aspects here
 ```
 
->After updating your code you will need to rerun existing analyses. Run the spider again with the `--u` flag to force updates on existing data.
+>After updating your code you will need to rerun existing analyses. Run `atomist analyze [local|github] --update true` again to force updates on existing data.
 
 See the [developer guide](./docs/developer.md) for more information.
 

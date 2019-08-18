@@ -50,6 +50,10 @@ import {
 import * as _ from "lodash";
 import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
 import {
+    AnalyzeGitHubCommandRegistration,
+    AnalyzeLocalCommandRegistration,
+} from "./lib/analysis/offline/spider/analyzeCommand";
+import {
     CiAspect,
     JavaBuild,
     StackAspect,
@@ -115,6 +119,9 @@ export const configuration: Configuration = configure(async sdm => {
         ...optionalAspects,
     ];
     const handlers = [];
+
+    sdm.addCommand(AnalyzeGitHubCommandRegistration);
+    sdm.addCommand(AnalyzeLocalCommandRegistration);
 
     // TODO cd merge into one call
     registerCategories(TypeScriptVersion, "Node.js");

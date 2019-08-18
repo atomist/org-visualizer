@@ -12,9 +12,6 @@
   "bugs": {
     "url": "https://github.com/atomist-blogs/org-visualizer/issues"
   },
-  "bin": {
-    "spider": "./lib/script/spider.js"
-  },
   "keywords": [
     "atomist",
     "automation",
