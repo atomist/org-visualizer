@@ -15,8 +15,8 @@
  */
 
 import { RepositoryScorer } from "../aspect/AspectRegistry";
-import { TsLintType } from "../aspect/node/TsLintAspect";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
+import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * TypeScript projects must use tslint
@@ -25,11 +25,11 @@ import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
  * @constructor
  */
 export const TypeScriptProjectsMustUseTsLint: RepositoryScorer = async repo => {
-    const isTs = repo.analysis.fingerprints.find(fp => fp.type === TypeScriptVersionType);
+    const isTs = repo.analysis.fingerprints.some(fp => fp.type === TypeScriptVersionType);
     if (!isTs) {
         return undefined;
     }
-    const hasTsLint = repo.analysis.fingerprints.find(fp => fp.type === TsLintType);
+    const hasTsLint = repo.analysis.fingerprints.some(fp => fp.type === NpmDeps.name && fp.data[0] === "tslint");
     return {
         name: "has-tslint",
         score: hasTsLint ? 5 : 1,
