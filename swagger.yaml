@@ -198,6 +198,15 @@ paths:
             required: false
             type: integer
             format: int32
+          - name: band
+            in: query
+            description: Introduce a ring for size band
+            type: string
+            enum:
+              - true
+              - false
+            required: false
+            default: false
         parameters:
           - name: type
             in: query

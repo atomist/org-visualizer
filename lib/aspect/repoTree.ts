@@ -15,21 +15,9 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { Client } from "pg";
-import {
-    ClientFactory,
-    doWithClient,
-} from "../analysis/offline/persist/pgUtils";
+import { ClientFactory, doWithClient, } from "../analysis/offline/persist/pgUtils";
 import { PlantedTree } from "../tree/sunburst";
-import {
-    introduceClassificationLayer,
-    validatePlantedTree,
-} from "../tree/treeUtils";
-import {
-    BandCasing,
-    bandFor,
-} from "../util/bands";
-import { EntropySizeBands } from "../util/commonBands";
+import { validatePlantedTree, } from "../tree/treeUtils";
 
 export interface TreeQuery {
 
@@ -96,7 +84,6 @@ SELECT row_to_json(fingerprint_groups) FROM (
     return sql;
 }
 
-// Question for Rod: why does this use a DB connection and not some abstraction like a Store?
 /**
  * Tree where children is one of a range of values, leaves individual repos with one of those values
  * @param {TreeQuery} tq
@@ -149,14 +136,6 @@ export async function driftTreeForAllAspects(workspaceId: string,
                 children: result.rows.map(r => r.children),
             },
         };
-        tree = introduceClassificationLayer(tree, {
-            newLayerMeaning: "entropy band",
-            newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
-                includeNumber: true,
-                casing: BandCasing.NoChange,
-            }),
-        });
         return tree;
     }, err => {
         return {
@@ -185,14 +164,6 @@ export async function driftTreeForSingleAspect(workspaceId: string,
                 children: result.rows[0].children.children,
             },
         };
-        tree = introduceClassificationLayer(tree, {
-            newLayerMeaning: "entropy band",
-            newLayerDepth: 1,
-            descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
-                casing: BandCasing.Sentence,
-                includeNumber: false,
-            }),
-        });
         return tree;
     });
 }

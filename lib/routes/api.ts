@@ -55,6 +55,7 @@ import {
     TagUsage,
 } from "../tree/sunburst";
 import {
+    introduceClassificationLayer,
     killChildren,
     trimOuterRim,
     visit,
@@ -74,6 +75,8 @@ import {
     addRepositoryViewUrl,
     splitByOrg,
 } from "./support/treeMunging";
+import { BandCasing, bandFor } from "../util/bands";
+import { EntropySizeBands } from "../util/commonBands";
 
 /**
  * Expose the public API routes, returning JSON.
@@ -248,6 +251,7 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
     express.get("/api/v1/:workspace_id/drift", [corsHandler(), ...authHandlers()], async (req, res) => {
             try {
                 const type = req.query.type;
+                const band = req.query.band === "true";
                 logger.info("Entropy query: threshold=%s, type=%s", req.query.threshold, type);
                 const threshold: number = req.query.threshold ? parseInt(req.query.threshold, 10) : 0;
                 let driftTree = type ?
@@ -256,6 +260,16 @@ function exposeDrift(express: Express, aspectRegistry: AspectRegistry, clientFac
                 fillInAspectNames(aspectRegistry, driftTree.tree);
                 if (!type) {
                     driftTree = removeAspectsWithoutMeaningfulEntropy(aspectRegistry, driftTree);
+                }
+                if (band) {
+                    driftTree = introduceClassificationLayer(driftTree, {
+                        newLayerMeaning: "entropy band",
+                        newLayerDepth: 1,
+                        descendantClassifier: fp => bandFor(EntropySizeBands, (fp as any).entropy, {
+                            casing: BandCasing.Sentence,
+                            includeNumber: false,
+                        }),
+                    });
                 }
                 // driftTree.tree = flattenSoleFingerprints(driftTree.tree);
                 fillInDriftTreeAspectNames(aspectRegistry, driftTree.tree);
