@@ -22,7 +22,8 @@ import {
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import {
     Aspect,
-    AtomicAspect, BaseAspect,
+    AtomicAspect,
+    BaseAspect,
     FP,
     isAtomicAspect,
     VirtualProjectFinder,

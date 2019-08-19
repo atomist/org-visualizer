@@ -19,7 +19,10 @@ import {
     logger,
 } from "@atomist/automation-client";
 import { PushImpactListener } from "@atomist/sdm";
-import { BaseAspect, VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
+import {
+    BaseAspect,
+    VirtualProjectFinder,
+} from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
