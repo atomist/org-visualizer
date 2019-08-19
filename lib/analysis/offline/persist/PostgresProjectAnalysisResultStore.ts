@@ -208,7 +208,7 @@ GROUP BY repo_snapshots.id`;
     public async distinctFingerprintKinds(workspaceId: string): Promise<FingerprintKind[]> {
         const sql = `SELECT DISTINCT f.name, feature_name as type
   FROM repo_fingerprints rf, repo_snapshots rs, fingerprints f
-  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id 
+  WHERE rf.repo_snapshot_id = rs.id AND rf.fingerprint_id = f.id
     AND rs.workspace_id ${workspaceId === "*" ? "<>" : "="} $1`;
         return doWithClient(sql, this.clientFactory, async client => {
             const result = await client.query(sql, [workspaceId]);
