@@ -20,6 +20,7 @@ import {
 } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
+    BaseAspect,
     ConcreteIdeal,
     FP,
     Ideal,
@@ -46,7 +47,6 @@ import { renderStaticReactNode } from "../../../views/topLevelPage";
 import { ProjectAnalysisResultStore } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
-    ManagedAspect,
 } from "../../aspect/AspectRegistry";
 import {
     defaultedToDisplayableFingerprint,
@@ -302,7 +302,7 @@ export function jsonToQueryString(json: object): string {
     ).join("&");
 }
 
-function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: ManagedAspect): string {
+function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: BaseAspect): string {
     if (idealIsDifferentFromActual(fingerprint)) {
         return defaultedToDisplayableFingerprint(aspect)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
@@ -371,7 +371,7 @@ export type AugmentedFingerprintForDisplay =
 };
 
 export interface AugmentedAspectForDisplay {
-    aspect: ManagedAspect;
+    aspect: BaseAspect;
     fingerprints: AugmentedFingerprintForDisplay[];
 }
 

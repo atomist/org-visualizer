@@ -23,8 +23,7 @@ import {
     WeightedScore,
 } from "@atomist/sdm-pack-analysis";
 import {
-    Aspect,
-    AtomicAspect,
+    BaseAspect,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
@@ -47,11 +46,6 @@ export interface HasFingerprints {
  * Result of an analysis. We must always have at least fingerprints and repo identification
  */
 export type Analyzed = HasFingerprints & { id: RemoteRepoRef };
-
-/**
- * Type of Aspect we can manage
- */
-export type ManagedAspect<FPI extends FP = FP> = Aspect<FPI> | AtomicAspect<FPI>;
 
 /**
  * Tag based on fingerprint data.
@@ -122,12 +116,12 @@ export interface AspectRegistry {
     /**
      * All the aspects we are managing
      */
-    readonly aspects: ManagedAspect[];
+    readonly aspects: BaseAspect[];
 
     /**
      * Find the aspect that manages fingerprints of this type
      */
-    aspectOf(type: string): ManagedAspect | undefined;
+    aspectOf(type: string): BaseAspect | undefined;
 
     /**
      * Function that can resolve ideal status for this aspect

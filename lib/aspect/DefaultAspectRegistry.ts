@@ -21,7 +21,6 @@ import {
 import {
     AspectRegistry,
     CombinationTagger,
-    ManagedAspect,
     RepositoryScorer,
     ScoredRepo,
     Tag,
@@ -100,11 +99,11 @@ export class DefaultAspectRegistry implements AspectRegistry {
             tag => tag.name);
     }
 
-    get aspects(): ManagedAspect[] {
+    get aspects(): BaseAspect[] {
         return this.opts.aspects;
     }
 
-    public aspectOf(type: string): ManagedAspect | undefined {
+    public aspectOf(type: string): BaseAspect | undefined {
         return type ? this.aspects.find(f => f.name === type) : undefined;
     }
 
@@ -150,7 +149,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
     constructor(private readonly opts: {
         idealStore: IdealStore,
         problemStore: ProblemStore,
-        aspects: ManagedAspect[],
+        aspects: BaseAspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
         scorers?: RepositoryScorer[],
         scoreWeightings?: ScoreWeightings,

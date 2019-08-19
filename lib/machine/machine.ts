@@ -19,7 +19,7 @@ import {
     logger,
 } from "@atomist/automation-client";
 import { PushImpactListener } from "@atomist/sdm";
-import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
+import { BaseAspect, VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -27,7 +27,6 @@ import { PostgresProjectAnalysisResultStore } from "../analysis/offline/persist/
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import { Analyzer } from "../analysis/offline/spider/Spider";
 import { SpiderAnalyzer } from "../analysis/offline/spider/SpiderAnalyzer";
-import { ManagedAspect } from "../aspect/AspectRegistry";
 import { IdealStore } from "../aspect/IdealStore";
 import { ProblemStore } from "../aspect/ProblemStore";
 
@@ -35,7 +34,7 @@ import { ProblemStore } from "../aspect/ProblemStore";
  * Add scanners to the analyzer to extract data
  * @return {ProjectAnalyzer}
  */
-export function createAnalyzer(aspects: ManagedAspect[], virtualProjectFinder: VirtualProjectFinder): Analyzer {
+export function createAnalyzer(aspects: BaseAspect[], virtualProjectFinder: VirtualProjectFinder): Analyzer {
     return new SpiderAnalyzer(aspects, virtualProjectFinder);
 }
 

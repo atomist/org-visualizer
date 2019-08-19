@@ -39,7 +39,6 @@ import {
 } from "../../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
     AspectRegistry,
-    ManagedAspect,
 } from "../../aspect/AspectRegistry";
 import { defaultedToDisplayableFingerprintName } from "../../aspect/DefaultAspectRegistry";
 
@@ -98,7 +97,7 @@ function idealMatchesFingerprint(id: Ideal, fp: FingerprintUsage): boolean {
     return c.type === fp.type && c.name === fp.name;
 }
 
-function formatFingerprintUsageForDisplay(aspect: ManagedAspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
+function formatFingerprintUsageForDisplay(aspect: BaseAspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
     const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
     const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
         { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }

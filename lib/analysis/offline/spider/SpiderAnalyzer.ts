@@ -22,14 +22,13 @@ import {
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import {
     Aspect,
-    AtomicAspect,
+    AtomicAspect, BaseAspect,
     FP,
     isAtomicAspect,
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     Analyzed,
-    ManagedAspect,
 } from "../../../aspect/AspectRegistry";
 import { time } from "../../../util/showTiming";
 import {
@@ -62,7 +61,7 @@ export class SpiderAnalyzer implements Analyzer {
         };
     }
 
-    constructor(private readonly aspects: ManagedAspect[],
+    constructor(private readonly aspects: BaseAspect[],
                 private readonly virtualProjectFinder?: VirtualProjectFinder) {
 
     }
