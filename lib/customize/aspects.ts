@@ -89,9 +89,9 @@ export const Aspects: ManagedAspect[] = [
     // gitActiveCommitters(30),
     // This is also expensive
     CodeMetricsAspect,
-    StackAspect,
-    CiAspect,
-    JavaBuild,
+    //StackAspect,
+    //CiAspect,
+    //JavaBuild,
     // Don't show these
     globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
     globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
