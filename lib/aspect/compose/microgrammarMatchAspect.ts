@@ -16,9 +16,16 @@
 
 import { MicrogrammarBasedFileParser } from "@atomist/automation-client";
 import { Grammar } from "@atomist/microgrammar";
-import { Aspect, BaseAspect, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    BaseAspect,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
-import { fileMatchAspect, FileMatchData } from "./fileMatchAspect";
+import {
+    fileMatchAspect,
+    FileMatchData,
+} from "./fileMatchAspect";
 
 export interface MicrogrammarMatchParams<T> {
 
