@@ -25,7 +25,7 @@ import {
  * Retrieve all fingerprints, then compute and store fingerprint_analytics for the whole workspace
  */
 export async function computeAnalytics(persister: ProjectAnalysisResultStore, workspaceId: string): Promise<void> {
-    const allFingerprints = await persister.fingerprintsInWorkspace(workspaceId);
+    const allFingerprints = await persister.fingerprintsInWorkspace(workspaceId, false);
     const fingerprintKinds = await persister.distinctFingerprintKinds(workspaceId);
 
     const persistThese = fingerprintKinds.map((kind: FingerprintKind) => {
@@ -44,7 +44,7 @@ export async function computeAnalyticsForFingerprintKind(persister: ProjectAnaly
                                                          workspaceId: string,
                                                          type: string,
                                                          name: string): Promise<void> {
-    const fingerprints = await persister.fingerprintsInWorkspace(workspaceId, type, name);
+    const fingerprints = await persister.fingerprintsInWorkspace(workspaceId, false, type, name);
     const cohortAnalysis = analyzeCohort(fingerprints);
     await persister.persistAnalytics([{ workspaceId, kind: { type, name }, cohortAnalysis }]);
 }

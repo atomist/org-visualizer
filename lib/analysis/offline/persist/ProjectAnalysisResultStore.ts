@@ -145,10 +145,12 @@ export interface ProjectAnalysisResultStore {
     /**
      * Return all the fingerprints in this workspace, optionally narrowed by type and name
      * @param workspaceId workspaceId. Use * for all workspaces
+     * @param distinct whether to remove duplicates
      * @param type fingerprint type (optional)
      * @param name fingerprint name (optional)
      */
     fingerprintsInWorkspace(workspaceId: string,
+                            distinct: boolean,
                             type?: string,
                             name?: string): Promise<Array<FP & { id: string }>>;
 

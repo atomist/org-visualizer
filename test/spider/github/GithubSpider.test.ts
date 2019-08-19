@@ -136,7 +136,7 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return [];
     }
 
-    public fingerprintsInWorkspace(workspaceId: string, type?: string, name?: string): Promise<any> {
+    public fingerprintsInWorkspace(): Promise<any> {
         return undefined;
     }
 
@@ -144,7 +144,7 @@ class FakeProjectAnalysisResultStore implements ProjectAnalysisResultStore {
         return true;
     }
 
-    public fingerprintsInWorkspaceRecord(workspaceId: string, type?: string, name?: string): Promise<Record<string, FP & { id: string }>> {
+    public fingerprintsInWorkspaceRecord(): Promise<Record<string, FP & { id: string }>> {
         throw new Error("Method not implemented.");
     }
 
