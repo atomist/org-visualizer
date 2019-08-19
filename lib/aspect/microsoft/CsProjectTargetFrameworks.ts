@@ -21,8 +21,8 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import {
     FileMatchData,
-    microgrammarMatchAspect,
 } from "../compose/fileMatchAspect";
+import { microgrammarMatchAspect } from "../compose/microgrammarMatchAspect";
 
 const targetFrameworksGrammar = microgrammar({
     _open: /<TargetFrameworks?>/,

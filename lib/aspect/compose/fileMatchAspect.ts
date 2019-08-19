@@ -16,10 +16,8 @@
 
 import {
     FileParser,
-    MicrogrammarBasedFileParser,
 } from "@atomist/automation-client";
 import { fileHitIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
-import { Grammar } from "@atomist/microgrammar";
 import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
 
@@ -43,16 +41,24 @@ export function isFileMatchFingerprint(fp: FP): fp is FP<FileMatchData> {
     return !!maybe && maybe.kind === FileMatchType && maybe.kind === "file-match" && !!maybe.glob;
 }
 
+export interface FileMatchParams {
+
+    /**
+     * Glob to look for
+     */
+    glob: string;
+
+    parseWith: FileParser;
+
+    pathExpression: string;
+}
+
 /**
  * Check for presence of a match within the AST of files matching the glob.
  * Always return something, but may have an empty path.
  */
 export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
-    {
-        glob: string,
-        parseWith: FileParser,
-        pathExpression: string,
-    }): Aspect<FP<FileMatchData>> {
+    FileMatchParams): Aspect<FP<FileMatchData>> {
     return {
         toDisplayableFingerprintName: name => `File match '${config.glob}'`,
         toDisplayableFingerprint: fp =>
@@ -94,20 +100,5 @@ export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
                     sha: sha256(JSON.stringify(data)),
                 };
             },
-    }
-        ;
-}
-
-export function microgrammarMatchAspect<T>(config: Omit<BaseAspect, "stats" | "apply"> &
-    {
-        glob: string,
-        grammar: Grammar<T>,
-        path: keyof T,
-    }): Aspect<FP<FileMatchData>> {
-    return fileMatchAspect({
-        ...config,
-        parseWith: new MicrogrammarBasedFileParser("root", "matchName",
-            config.grammar),
-        pathExpression: `//matchName//${config.path}`,
-    });
+    };
 }

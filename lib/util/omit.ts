@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * Type T with the given properties removed
+ */
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

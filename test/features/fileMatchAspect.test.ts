@@ -17,13 +17,13 @@
 import { InMemoryProject } from "@atomist/automation-client";
 import {
     FileMatchData,
-    microgrammarMatchAspect,
 } from "../../lib/aspect/compose/fileMatchAspect";
 
 import * as assert from "assert";
 
 import { microgrammar } from "@atomist/microgrammar";
 import { FP } from "@atomist/sdm-pack-fingerprints";
+import { microgrammarMatchAspect } from "../../lib/aspect/compose/microgrammarMatchAspect";
 
 describe("fileMatchAspect", () => {
 
