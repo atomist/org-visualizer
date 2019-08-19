@@ -44,7 +44,7 @@ export class SpiderAnalyzer implements Analyzer {
     public async analyze(p: Project): Promise<Analyzed> {
         const fingerprints: FP[] = [];
 
-        const regularAspects: Aspect[] = this.aspects.filter(a => !isAtomicAspect(a)) as any;
+        const regularAspects: Aspect[] = this.aspects.filter(a => !!(a as any).extract) as any;
         const atomicAspects = this.aspects.filter(isAtomicAspect);
 
         if (this.virtualProjectFinder) {
