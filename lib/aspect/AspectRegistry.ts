@@ -25,7 +25,10 @@ import {
 import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
-import { Score, WeightedScore } from "../scorer/Score";
+import {
+    Score,
+    WeightedScore,
+} from "../scorer/Score";
 import { IdealStore } from "./IdealStore";
 import {
     ProblemStore,
