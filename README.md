@@ -38,7 +38,7 @@ An example visualization, showing Docker images used across two GitHub organizat
 To visualize your org:
 
 1. Clone and build this project
-2. Set up the required PostreSQL database
+2. Set up the required PostgreSQL database
 3. Run the `org-visualizer`
 4. Run analysis on your repositories
 5. Hit the web interface at [http://localhost:2866](http://localhost:2866)
