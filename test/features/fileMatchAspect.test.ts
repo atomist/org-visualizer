@@ -25,6 +25,8 @@ import { microgrammar } from "@atomist/microgrammar";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { microgrammarMatchAspect } from "../../lib/aspect/compose/microgrammarMatchAspect";
 
+// tslint:disable
+
 describe("fileMatchAspect", () => {
 
     describe("microgrammarMatchAspect", () => {
@@ -40,7 +42,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "name",
             });
-            const r = await aspect.extract(p);
+            const r = await aspect.extract(p) as FP<FileMatchData>;
             assert(r !== undefined);
             assert.strictEqual(r.data.matches.length, 0, JSON.stringify(r));
         });
@@ -61,7 +63,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "age",
             });
-            const r = await aspect.extract(p);
+            const r = await aspect.extract(p) as FP<FileMatchData>;
             assert(r !== undefined);
             assert.strictEqual(r.data.matches.length, 0, JSON.stringify(r));
         });
@@ -82,7 +84,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "age",
             });
-            const r = await aspect.extract(p);
+            const r = await aspect.extract(p) as FP<FileMatchData>;
             assert.strictEqual(r.data.matches.length, 1);
             assert.strictEqual(r.data.matches[0].matchValue, "25");
         });
@@ -117,7 +119,7 @@ describe("fileMatchAspect", () => {
                 grammar,
                 path: "targetFramework",
             });
-            const r = await aspect.extract(p);
+            const r = await aspect.extract(p) as FP<FileMatchData>;
             assert.strictEqual(r.data.matches.length, 1);
             assert.strictEqual(r.data.matches[0].matchValue, "netcoreapp2.2");
         });
