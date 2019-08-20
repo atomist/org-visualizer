@@ -57,7 +57,7 @@ export interface FileMatchParams {
  * Check for presence of a match within the AST of files matching the glob.
  * Always return something, but may have an empty path.
  */
-export function fileMatchAspect(config: Omit<Aspect, "stats" | "apply"> &
+export function fileMatchAspect(config: Omit<Aspect, "stats" | "extract" | "apply"> &
     FileMatchParams): Aspect<FP<FileMatchData>> {
     return {
         toDisplayableFingerprintName: name => `File match '${config.glob}'`,
