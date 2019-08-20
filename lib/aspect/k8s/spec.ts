@@ -29,9 +29,9 @@ import {
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import { bold } from "@atomist/slack-messages";
+import * as yaml from "js-yaml";
 import * as stringify from "json-stable-stringify";
 import * as _ from "lodash";
-import * as yaml from "yamljs";
 
 const K8sSpecsType = "k8s-specs";
 
@@ -95,12 +95,12 @@ export function k8sSpecsFingerprintDisplayName(fingerprintName: string): string 
 export async function parseK8sSpecFile(f: ProjectFile): Promise<K8sObject | undefined> {
     const specString = await f.getContent();
     try {
-        const spec = yaml.parse(specString);
+        const spec = yaml.safeLoad(specString);
         if (isK8sSpec(spec)) {
             return spec;
         }
     } catch (e) {
-        logger.warn(`Failed to parse ${f.name}, skipping: ${e.message}`);
+        logger.warn(`Failed to parse '${f.name}', skipping: ${e.message}`);
     }
     return undefined;
 }
@@ -130,7 +130,7 @@ export const applyK8sSpecsFingerprint: ApplyFingerprint<FP<K8sObject>> = async (
     for (const specFile of specFiles) {
         const spec = await parseK8sSpecFile(specFile);
         if (spec && k8sSpecsFingerprintName(spec) === fp.name) {
-            const specString = (/\.ya?ml$/.test(specFile.name)) ? yaml.stringify(fp.data) : stringify(fp.data);
+            const specString = (/\.ya?ml$/.test(specFile.name)) ? yaml.safeDump(fp.data) : stringify(fp.data);
             await specFile.setContent(specString);
             return true;
         }

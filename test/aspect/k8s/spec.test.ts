@@ -18,6 +18,7 @@ import {
     InMemoryProject,
     InMemoryProjectFile,
 } from "@atomist/automation-client";
+import { NodeFsLocalFile } from "@atomist/automation-client/lib/project/local/NodeFsLocalFile";
 import * as assert from "power-assert";
 import {
     applyK8sSpecsFingerprint,
@@ -356,6 +357,12 @@ metadata:
 
         it("should return undefined for a non-spec", async () => {
             const f = new InMemoryProjectFile("providence.json", `{}`);
+            const s = await parseK8sSpecFile(f);
+            assert(s === undefined);
+        });
+
+        it("should successfully not fingerprint the package-lock.json", async () => {
+            const f = new NodeFsLocalFile(".", "package-lock.json");
             const s = await parseK8sSpecFile(f);
             assert(s === undefined);
         });
