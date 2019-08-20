@@ -47,7 +47,7 @@ export interface MicrogrammarMatchParams<T> {
 /**
  * Check for matches of the given microgrammar with the
  */
-export function microgrammarMatchAspect<T>(config: Omit<Aspect, "stats" | "apply"> &
+export function microgrammarMatchAspect<T>(config: Omit<Aspect, "stats" | "extract" | "apply"> &
     MicrogrammarMatchParams<T>): Aspect<FP<FileMatchData>> {
     return fileMatchAspect({
         ...config,
