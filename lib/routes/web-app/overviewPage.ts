@@ -16,7 +16,7 @@
 
 import { logger } from "@atomist/automation-client";
 import {
-    BaseAspect,
+    Aspect,
     Ideal,
     idealCoordinates,
     isConcreteIdeal,
@@ -67,7 +67,7 @@ export function exposeOverviewPage(express: Express,
                     };
                 });
 
-            const unfoundAspects: BaseAspect[] = aspectRegistry.aspects
+            const unfoundAspects: Aspect[] = aspectRegistry.aspects
                 .filter(f => !!f.displayName)
                 .filter(f => !fingerprintUsage.some(fu => fu.type === f.name));
             const virtualProjectCount = await store.virtualProjectCount(workspaceId);
@@ -97,7 +97,7 @@ function idealMatchesFingerprint(id: Ideal, fp: FingerprintUsage): boolean {
     return c.type === fp.type && c.name === fp.name;
 }
 
-function formatFingerprintUsageForDisplay(aspect: BaseAspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
+function formatFingerprintUsageForDisplay(aspect: Aspect, ideals: Ideal[], fp: FingerprintUsage): FingerprintForDisplay {
     const foundIdeal = ideals.find(ide => idealMatchesFingerprint(ide, fp));
     const ideal = foundIdeal && isConcreteIdeal(foundIdeal) && aspect.toDisplayableFingerprint ?
         { displayValue: aspect.toDisplayableFingerprint(foundIdeal.ideal) }

@@ -19,15 +19,13 @@ import {
     Severity,
 } from "@atomist/automation-client";
 import {
-    Score,
-    WeightedScore,
-} from "@atomist/sdm-pack-analysis";
-import {
     BaseAspect,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
+import { Score, WeightedScore } from "../scorer/Score";
 import { IdealStore } from "./IdealStore";
 import {
     ProblemStore,
@@ -116,12 +114,12 @@ export interface AspectRegistry {
     /**
      * All the aspects we are managing
      */
-    readonly aspects: BaseAspect[];
+    readonly aspects: Aspect[];
 
     /**
      * Find the aspect that manages fingerprints of this type
      */
-    aspectOf(type: string): BaseAspect | undefined;
+    aspectOf(type: string): Aspect | undefined;
 
     /**
      * Function that can resolve ideal status for this aspect

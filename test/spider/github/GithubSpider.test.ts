@@ -19,7 +19,6 @@ import {
     RepoRef,
 } from "@atomist/automation-client";
 import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
-import { ProjectAnalysis } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import * as assert from "assert";
 import {
@@ -60,7 +59,7 @@ const criteria: ScmSearchCriteria = {
     maxRetrieved: 10,
     maxReturned: 10,
 };
-const oneProjectAnalysis: ProjectAnalysis = {
+const oneProjectAnalysis: any = {
     jessitronSays: "I am this project analysis object",
 } as any;
 // tslint:disable-next-line:no-object-literal-type-assertion

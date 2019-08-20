@@ -18,7 +18,6 @@ import { MicrogrammarBasedFileParser } from "@atomist/automation-client";
 import { Grammar } from "@atomist/microgrammar";
 import {
     Aspect,
-    BaseAspect,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
@@ -48,7 +47,7 @@ export interface MicrogrammarMatchParams<T> {
 /**
  * Check for matches of the given microgrammar with the
  */
-export function microgrammarMatchAspect<T>(config: Omit<BaseAspect, "stats" | "apply"> &
+export function microgrammarMatchAspect<T>(config: Omit<Aspect, "stats" | "apply"> &
     MicrogrammarMatchParams<T>): Aspect<FP<FileMatchData>> {
     return fileMatchAspect({
         ...config,

@@ -15,17 +15,17 @@
  */
 
 import {
+    RepositoryScorer,
+    ScoredRepo,
+    TaggedRepo,
+} from "../aspect/AspectRegistry";
+import {
     FiveStar,
     Score,
     Scores,
     ScoreWeightings,
     weightedCompositeScore,
-} from "@atomist/sdm-pack-analysis";
-import {
-    RepositoryScorer,
-    ScoredRepo,
-    TaggedRepo,
-} from "../aspect/AspectRegistry";
+} from "./Score";
 
 export async function scoreRepos(scorers: RepositoryScorer[],
                                  repos: TaggedRepo[],

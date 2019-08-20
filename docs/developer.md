@@ -40,7 +40,7 @@ Fingerprints are persisted and are the basis for querying and visualization. Tag
 The following are the methods share by all aspects. Many are optional:
 
 ```typescript
-export interface BaseAspect<FPI extends FP = FP> {
+export interface Aspect<FPI extends FP = FP> {
 
     /**
      * Displayable name of this aspect. Used only for reporting.
@@ -62,6 +62,11 @@ export interface BaseAspect<FPI extends FP = FP> {
      * people can do about their results.
      */
     readonly documentationUrl?: string;
+    
+    /**
+     * Function to extract fingerprint(s) from this project
+     */
+    extract: ExtractFingerprint<FPI>;
 
     /**
      * Function to apply the given fingerprint instance to a project
@@ -69,12 +74,6 @@ export interface BaseAspect<FPI extends FP = FP> {
     apply?: ApplyFingerprint<FPI>;
 
     summary?: DiffSummaryFingerprint;
-
-    /**
-     * Functions that can be used to compare fingerprint instances managed by this
-     * aspect.
-     */
-    comparators?: Array<FingerprintComparator<FPI>>;
 
     /**
      * Convert a fingerprint value to a human readable string
@@ -89,12 +88,6 @@ export interface BaseAspect<FPI extends FP = FP> {
      * @return {string}
      */
     toDisplayableFingerprintName?(fingerprintName: string): string;
-
-    /**
-     * Validate the aspect. Return undefined or the empty array if there are no problems.
-     * @return {Promise<ReviewComment[]>}
-     */
-    validate?(fpi: FPI): Promise<ReviewComment[]>;
 
     /**
      * Based on the given fingerprint type and name, suggest ideals
@@ -116,18 +109,7 @@ export interface BaseAspect<FPI extends FP = FP> {
     stats?: AspectStats;
 }
 ```
-The `Aspect` interface is most commonly used:
 
-```typescript
-export interface Aspect<FPI extends FP = FP> extends BaseAspect<FPI> {
-
-    /**
-     * Function to extract fingerprint(s) from this project
-     */
-    extract: ExtractFingerprint<FPI>;
-
-}
-```
 
 ### Core aspect methods
 The following methods are usually the most important:

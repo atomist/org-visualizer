@@ -15,7 +15,6 @@
  */
 
 import {
-    BaseAspect,
     ConcreteIdeal,
     FP,
     Ideal,
@@ -36,6 +35,7 @@ import {
     visitAsync,
 } from "../tree/treeUtils";
 
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as _ from "lodash";
 import { ProjectAnalysisResultStore } from "../analysis/offline/persist/ProjectAnalysisResultStore";
 import {
@@ -89,7 +89,7 @@ export async function buildFingerprintTree(
                     if (!(l as any).sha) {
                         return undefined;
                     }
-                    const aspect2: BaseAspect = aspectRegistry.aspectOf(l.type);
+                    const aspect2: Aspect = aspectRegistry.aspectOf(l.type);
                     return !aspect2 || !aspect2.toDisplayableFingerprintName ?
                         l.name :
                         aspect2.toDisplayableFingerprintName(l.name);
@@ -170,7 +170,7 @@ function resolveAspectNames(aspectRegistry: AspectRegistry, t: SunburstTree): vo
 /**
  * Size terminal nodes by aspect stat if available
  */
-function applyTerminalSizing(aspect: BaseAspect, t: SunburstTree): void {
+function applyTerminalSizing(aspect: Aspect, t: SunburstTree): void {
     if (aspect && aspect.stats && aspect.stats.basicStatsPath) {
         visit(t, l => {
             if (isSunburstTree(l) && l.children.every(c => !isSunburstTree(c) && (c as any).owner)) {

@@ -40,7 +40,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "name",
             });
-            const r = await aspect.extract(p) as FP<FileMatchData>;
+            const r = await aspect.extract(p);
             assert(r !== undefined);
             assert.strictEqual(r.data.matches.length, 0, JSON.stringify(r));
         });
@@ -61,7 +61,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "age",
             });
-            const r = await aspect.extract(p) as FP<FileMatchData>;
+            const r = await aspect.extract(p);
             assert(r !== undefined);
             assert.strictEqual(r.data.matches.length, 0, JSON.stringify(r));
         });
@@ -82,7 +82,7 @@ describe("fileMatchAspect", () => {
                 }),
                 path: "age",
             });
-            const r = await aspect.extract(p) as FP<FileMatchData>;
+            const r = await aspect.extract(p);
             assert.strictEqual(r.data.matches.length, 1);
             assert.strictEqual(r.data.matches[0].matchValue, "25");
         });
@@ -117,7 +117,7 @@ describe("fileMatchAspect", () => {
                 grammar,
                 path: "targetFramework",
             });
-            const r = await aspect.extract(p) as FP<FileMatchData>;
+            const r = await aspect.extract(p);
             assert.strictEqual(r.data.matches.length, 1);
             assert.strictEqual(r.data.matches[0].matchValue, "netcoreapp2.2");
         });

@@ -18,7 +18,6 @@ import {
     logger,
     toStringArray,
 } from "@atomist/automation-client";
-import { Services } from "@atomist/sdm-pack-analysis";
 import {
     Aspect,
     sha256,
@@ -102,7 +101,7 @@ export const travisScanner = async p => {
             return undefined;
         }
 
-        const services: Services = {};
+        const services: Record<string, any> = {};
         // Services can be a single value or list
         if (typeof nativeObject.services === "string") {
             services[nativeObject.services] = {};

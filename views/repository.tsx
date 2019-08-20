@@ -1,7 +1,7 @@
-import { WeightedScore, WeightedScores } from "@atomist/sdm-pack-analysis";
 import * as React from "react";
 import { ScoredRepo } from "../lib/aspect/AspectRegistry";
 import { isCodeMetricsFingerprint } from "../lib/aspect/common/codeMetrics";
+import { WeightedScore } from "../lib/scorer/Score";
 import { TagUsage } from "../lib/tree/sunburst";
 import { collapsible } from "./utils";
 

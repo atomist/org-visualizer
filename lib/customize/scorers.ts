@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import {
     PowerShellLanguage,
     ShellLanguage,
@@ -34,6 +33,7 @@ import {
     requireRecentCommit,
 } from "../scorer/commonScorers";
 import { TypeScriptProjectsMustUseTsLint } from "../scorer/nodeScorers";
+import { ScoreWeightings } from "../scorer/Score";
 import {
     requireAspectOfType,
     requireGlobAspect,

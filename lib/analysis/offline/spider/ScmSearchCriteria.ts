@@ -15,7 +15,6 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { Interpretation } from "@atomist/sdm-pack-analysis";
 
 /**
  * Used to query GitHub

@@ -21,7 +21,6 @@ import {
     RepoRef,
 } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
-import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import * as fs from "fs-extra";
 import * as path from "path";
 import {

@@ -18,7 +18,7 @@ import {
     FileParser,
 } from "@atomist/automation-client";
 import { fileHitIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
-import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
 
 export interface FileMatch {
@@ -57,7 +57,7 @@ export interface FileMatchParams {
  * Check for presence of a match within the AST of files matching the glob.
  * Always return something, but may have an empty path.
  */
-export function fileMatchAspect(config: Omit<BaseAspect, "stats" | "apply"> &
+export function fileMatchAspect(config: Omit<Aspect, "stats" | "apply"> &
     FileMatchParams): Aspect<FP<FileMatchData>> {
     return {
         toDisplayableFingerprintName: name => `File match '${config.glob}'`,

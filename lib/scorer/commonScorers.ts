@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { FiveStar } from "@atomist/sdm-pack-analysis";
 import { FP } from "@atomist/sdm-pack-fingerprints";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
@@ -33,6 +32,7 @@ import {
     GitRecencyData,
     GitRecencyType,
 } from "../aspect/git/gitActivity";
+import { FiveStar } from "./Score";
 import { adjustBy } from "./scoring";
 
 /**
@@ -56,7 +56,7 @@ export function anchorScoreAt(score: FiveStar): RepositoryScorer {
  */
 export function requireRecentCommit(opts: { days: number }): RepositoryScorer {
     return async repo => {
-        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType) as FP<GitRecencyData>;
+        const grt = repo.analysis.fingerprints.find(fp => fp.type === GitRecencyType);
         if (!grt) {
             return undefined;
         }
@@ -75,7 +75,7 @@ export function requireRecentCommit(opts: { days: number }): RepositoryScorer {
  */
 export function limitLanguages(opts: { limit: number }): RepositoryScorer {
     return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType);
         if (!cm) {
             return undefined;
         }
@@ -95,7 +95,7 @@ export function limitLanguages(opts: { limit: number }): RepositoryScorer {
  */
 export function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
     return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType);
         if (!cm) {
             return undefined;
         }
@@ -109,7 +109,7 @@ export function limitLinesOfCode(opts: { limit: number }): RepositoryScorer {
 
 export function limitLinesOfCodeIn(opts: { limit: number, language: Language, freeAmount?: number }): RepositoryScorer {
     return async repo => {
-        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType) as FP<CodeMetricsData>;
+        const cm = repo.analysis.fingerprints.find(fp => fp.type === CodeMetricsType);
         if (!cm) {
             return undefined;
         }

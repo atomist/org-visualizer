@@ -29,10 +29,11 @@ import {
 } from "./AspectRegistry";
 
 import { RemoteRepoRef } from "@atomist/automation-client";
-import { ScoreWeightings } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
+import { Error } from "tslint/lib/error";
 import { ProjectAnalysisResult } from "../analysis/ProjectAnalysisResult";
 import { TagContext } from "../routes/api";
+import { ScoreWeightings } from "../scorer/Score";
 import {
     scoreRepos,
 } from "../scorer/scoring";

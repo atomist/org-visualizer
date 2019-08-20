@@ -1,9 +1,9 @@
-import { BaseAspect } from "@atomist/sdm-pack-fingerprints";
+import { Aspect } from "@atomist/sdm-pack-fingerprints";
 import * as React from "react";
 import { FingerprintUsage } from "../lib/analysis/offline/persist/ProjectAnalysisResultStore";
 import { CohortAnalysis } from "../lib/analysis/offline/spider/analytics";
 import { CustomReporters } from "../lib/customize/customReporters";
-import { RepoForDisplay, RepoList } from "./repoList";
+import { RepoForDisplay } from "./repoList";
 import { collapsible } from "./utils";
 
 export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "name">, Pick<CohortAnalysis, "count" | "variants">, MaybeAnIdeal {
@@ -11,7 +11,7 @@ export interface FingerprintForDisplay extends Pick<FingerprintUsage, "type" | "
     entropy?: number;
 }
 
-type AspectForDisplay = Pick<BaseAspect, "documentationUrl" | "name" | "displayName">;
+type AspectForDisplay = Partial<Pick<Aspect, "documentationUrl" | "name" | "displayName">>;
 
 export interface AspectFingerprintsForDisplay {
     aspect: AspectForDisplay;
