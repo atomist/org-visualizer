@@ -25,6 +25,7 @@ import {
     Ideal,
     isConcreteIdeal,
 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as bodyParser from "body-parser";
 import {
     Express,
@@ -60,7 +61,6 @@ import {
 } from "../api";
 import { exposeOverviewPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
-import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 /**
  * Add the org page route to Atomist SDM Express server.

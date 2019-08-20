@@ -22,6 +22,7 @@ import { PushImpactListener } from "@atomist/sdm";
 import {
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 import * as _ from "lodash";
 import { Pool } from "pg";
 import { ClientFactory } from "../analysis/offline/persist/pgUtils";
@@ -31,7 +32,6 @@ import { Analyzer } from "../analysis/offline/spider/Spider";
 import { SpiderAnalyzer } from "../analysis/offline/spider/SpiderAnalyzer";
 import { IdealStore } from "../aspect/IdealStore";
 import { ProblemStore } from "../aspect/ProblemStore";
-import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 /**
  * Add scanners to the analyzer to extract data
