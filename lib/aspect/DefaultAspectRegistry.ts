@@ -15,7 +15,7 @@
  */
 
 import {
-    BaseAspect,
+    Aspect,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -100,11 +100,11 @@ export class DefaultAspectRegistry implements AspectRegistry {
             tag => tag.name);
     }
 
-    get aspects(): BaseAspect[] {
+    get aspects(): Aspect[] {
         return this.opts.aspects;
     }
 
-    public aspectOf(type: string): BaseAspect | undefined {
+    public aspectOf(type: string): Aspect | undefined {
         return type ? this.aspects.find(f => f.name === type) : undefined;
     }
 
@@ -150,7 +150,7 @@ export class DefaultAspectRegistry implements AspectRegistry {
     constructor(private readonly opts: {
         idealStore: IdealStore,
         problemStore: ProblemStore,
-        aspects: BaseAspect[],
+        aspects: Aspect[],
         undesirableUsageChecker: UndesirableUsageChecker,
         scorers?: RepositoryScorer[],
         scoreWeightings?: ScoreWeightings,
@@ -163,10 +163,10 @@ export class DefaultAspectRegistry implements AspectRegistry {
     }
 }
 
-export function defaultedToDisplayableFingerprintName(aspect?: BaseAspect): (fingerprintName: string) => string {
+export function defaultedToDisplayableFingerprintName(aspect?: Aspect): (fingerprintName: string) => string {
     return (aspect && aspect.toDisplayableFingerprintName) || (name => name);
 }
 
-export function defaultedToDisplayableFingerprint(aspect?: BaseAspect): (fpi: FP) => string {
+export function defaultedToDisplayableFingerprint(aspect?: Aspect): (fpi: FP) => string {
     return (aspect && aspect.toDisplayableFingerprint) || (fp => fp && fp.data);
 }

@@ -21,7 +21,7 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
-    BaseAspect,
+    Aspect,
     cachingVirtualProjectFinder,
     fileNamesVirtualProjectFinder,
     makeVirtualProjectAware,
@@ -68,7 +68,7 @@ export const virtualProjectFinder: VirtualProjectFinder = cachingVirtualProjectF
  * The aspects managed by this SDM.
  * Modify this list to customize with your own aspects.
  */
-export const Aspects: BaseAspect[] = [
+export const Aspects: Aspect[] = [
     DockerFrom,
     DockerfilePath,
     DockerPorts,

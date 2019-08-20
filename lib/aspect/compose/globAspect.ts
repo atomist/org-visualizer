@@ -15,7 +15,7 @@
  */
 
 import { gatherFromFiles } from "@atomist/automation-client/lib/project/util/projectUtils";
-import { Aspect, BaseAspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { Omit } from "../../util/omit";
 
 export interface GlobMatch {
@@ -40,7 +40,7 @@ export function isGlobMatchFingerprint(fp: FP): fp is FP<GlobAspectData> {
  * Always return something, but may have an empty path.
  * Entropy is disabled by default, but callers can override this
  */
-export function globAspect(config: Omit<BaseAspect, "apply"> &
+export function globAspect(config: Omit<Aspect, "apply"> &
     { glob: string }): Aspect<FP<GlobAspectData>> {
     if (!config.glob) {
         throw new Error("Glob pattern must be supplied");

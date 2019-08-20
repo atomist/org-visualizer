@@ -20,7 +20,6 @@ import {
 } from "@atomist/automation-client";
 import { PushImpactListener } from "@atomist/sdm";
 import {
-    BaseAspect,
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
@@ -32,12 +31,13 @@ import { Analyzer } from "../analysis/offline/spider/Spider";
 import { SpiderAnalyzer } from "../analysis/offline/spider/SpiderAnalyzer";
 import { IdealStore } from "../aspect/IdealStore";
 import { ProblemStore } from "../aspect/ProblemStore";
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 /**
  * Add scanners to the analyzer to extract data
  * @return {ProjectAnalyzer}
  */
-export function createAnalyzer(aspects: BaseAspect[], virtualProjectFinder: VirtualProjectFinder): Analyzer {
+export function createAnalyzer(aspects: Aspect[], virtualProjectFinder: VirtualProjectFinder): Analyzer {
     return new SpiderAnalyzer(aspects, virtualProjectFinder);
 }
 

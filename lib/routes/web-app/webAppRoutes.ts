@@ -20,7 +20,6 @@ import {
 } from "@atomist/automation-client";
 import { ExpressCustomizer } from "@atomist/automation-client/lib/configuration";
 import {
-    BaseAspect,
     ConcreteIdeal,
     FP,
     Ideal,
@@ -61,6 +60,7 @@ import {
 } from "../api";
 import { exposeOverviewPage } from "./overviewPage";
 import { exposeRepositoryListPage } from "./repositoryListPage";
+import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";
 
 /**
  * Add the org page route to Atomist SDM Express server.
@@ -302,7 +302,7 @@ export function jsonToQueryString(json: object): string {
     ).join("&");
 }
 
-function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: BaseAspect): string {
+function displayIdeal(fingerprint: AugmentedFingerprintForDisplay, aspect: Aspect): string {
     if (idealIsDifferentFromActual(fingerprint)) {
         return defaultedToDisplayableFingerprint(aspect)((fingerprint.ideal as ConcreteIdeal).ideal);
     }
@@ -371,7 +371,7 @@ export type AugmentedFingerprintForDisplay =
 };
 
 export interface AugmentedAspectForDisplay {
-    aspect: BaseAspect;
+    aspect: Aspect;
     fingerprints: AugmentedFingerprintForDisplay[];
 }
 

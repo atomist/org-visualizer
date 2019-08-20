@@ -19,7 +19,6 @@ import {
     Severity,
 } from "@atomist/automation-client";
 import {
-    BaseAspect,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import { Aspect } from "@atomist/sdm-pack-fingerprints/lib/machine/Aspect";

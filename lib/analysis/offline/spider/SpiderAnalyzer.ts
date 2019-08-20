@@ -22,10 +22,7 @@ import {
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import {
     Aspect,
-    AtomicAspect,
-    BaseAspect,
     FP,
-    isAtomicAspect,
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -45,7 +42,7 @@ export class SpiderAnalyzer implements Analyzer {
         const fingerprints: FP[] = [];
 
         const regularAspects: Aspect[] = this.aspects.filter(a => !!(a as any).extract) as any;
-        const atomicAspects = this.aspects.filter(isAtomicAspect);
+        const atomicAspects = this.aspects.filter(aspect => !!aspect.consolidate);
 
         if (this.virtualProjectFinder) {
             // Seed the virtual project finder if we have one
@@ -62,7 +59,7 @@ export class SpiderAnalyzer implements Analyzer {
         };
     }
 
-    constructor(private readonly aspects: BaseAspect[],
+    constructor(private readonly aspects: Aspect[],
                 private readonly virtualProjectFinder?: VirtualProjectFinder) {
 
     }
@@ -81,7 +78,7 @@ async function extractRegularAspects(p: Project,
 }
 
 async function extractAtomicAspects(p: Project,
-                                    aspects: AtomicAspect[],
+                                    aspects: Aspect[],
                                     fingerprints: FP[]): Promise<void> {
     await Promise.all(aspects
         .map(aspect => extractAtomic(aspect, fingerprints)
@@ -117,7 +114,7 @@ function addTiming(type: string, millis: number, timeRecorder: TimeRecorder): vo
     found.totalMillis += millis;
 }
 
-async function extractAtomic(aspect: AtomicAspect, existingFingerprints: FP[]): Promise<FP[]> {
+async function extractAtomic(aspect: Aspect, existingFingerprints: FP[]): Promise<FP[]> {
     try {
         const extracted = await aspect.consolidate(existingFingerprints);
         return !!extracted ? toArray(extracted) : [];

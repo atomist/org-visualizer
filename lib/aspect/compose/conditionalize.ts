@@ -21,7 +21,6 @@ import {
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import {
     Aspect,
-    BaseAspect,
 } from "@atomist/sdm-pack-fingerprints";
 
 /**
@@ -29,7 +28,7 @@ import {
  */
 export function conditionalize(aspect: Aspect,
                                test: (p: Project) => Promise<boolean>,
-                               details: Partial<BaseAspect> = {}): Aspect {
+                               details: Partial<Aspect> = {}): Aspect {
     return {
         ...aspect,
         name: details.name || aspect.name,
