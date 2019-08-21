@@ -28,7 +28,7 @@
     "@atomist/sdm": "1.6.2-master.20190821200521",
     "@atomist/sdm-core": "1.6.2-master.20190821061442",
     "@atomist/sdm-pack-build": "^1.0.5",
-    "@atomist/sdm-pack-clojure": "2.0.0-master.20190821115251",
+    "@atomist/sdm-pack-clojure": "^2.0.0",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190821110014",
     "@atomist/sdm-pack-fingerprints": "5.0.0-master.20190821201638",
     "@atomist/sdm-pack-node": "^1.1.1",
