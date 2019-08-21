@@ -53,6 +53,7 @@ export const CodeOwnershipExtractor: ExtractFingerprint<CodeOwnershipData> =
                 content,
             };
             return {
+                type: codeOwnershipFingerprintName,
                 name: codeOwnershipFingerprintName,
                 abbreviation: "owners",
                 data,

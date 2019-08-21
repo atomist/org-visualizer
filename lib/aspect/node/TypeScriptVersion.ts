@@ -18,12 +18,18 @@ import {
     LocalProject,
     logger,
 } from "@atomist/automation-client";
-import { execPromise } from "@atomist/sdm";
+import {
+    execPromise,
+    LoggingProgressLog,
+    spawnLog,
+    StringCapturingProgressLog,
+} from "@atomist/sdm";
 import {
     Aspect,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import { PackageJson } from "@atomist/sdm-pack-node";
+import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
 
 export const TypeScriptVersionType = "typescript-version";
@@ -73,23 +79,33 @@ export const TypeScriptVersion: Aspect = {
             return undefined;
         }
     },
-    apply: async (p, fp) => {
+    apply: async (p, papi) => {
+        const fp = papi.parameters.fp;
         if (fp.data.length !== 1) {
-            return false;
+            return p;
         }
         if (!(await p.hasFile(PackageJsonName))) {
-            return false;
+            return p;
         }
         if (!(p as LocalProject).baseDir) {
-            return false;
+            return p;
         }
+        const log = new StringCapturingProgressLog();
+        log.stripAnsi = true;
+        const result = await spawnLog(
+                "npm",
+                ["install", `typescript@${fp.data[0]}`, "--save-dev", "--safe-exact"],
+                { cwd: (p as LocalProject).baseDir, log });
 
-        await execPromise(
-            "npm",
-            ["install", `typescript@${fp.data[0]}`, "--save-dev", "--safe-exact"],
-            { cwd: (p as LocalProject).baseDir });
-
-        return true;
+        if (result.code !== 0) {
+            return {
+                edited: false,
+                success: false,
+                target: p,
+                error: new Error(`npm install typescript@${fp.data[0]} failed:\n\n${log.log}`),
+            };
+        }
+        return p;
     },
     toDisplayableFingerprintName: () => "TypeScript version",
     toDisplayableFingerprint: fp => fp.data.join(","),

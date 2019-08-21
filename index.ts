@@ -37,7 +37,6 @@ import {
     configure,
     isInLocalMode,
 } from "@atomist/sdm-core";
-import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import {
     DockerfilePath,
     DockerFrom,
@@ -45,7 +44,6 @@ import {
 } from "@atomist/sdm-pack-docker";
 import {
     fingerprintSupport,
-    NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
@@ -60,6 +58,7 @@ import {
 } from "./lib/aspect/common/stackAspect";
 import { DefaultAspectRegistry } from "./lib/aspect/DefaultAspectRegistry";
 import { K8sSpecs } from "./lib/aspect/k8s/spec";
+import { NpmDependencies } from "./lib/aspect/node/npmDependencies";
 import { TypeScriptVersion } from "./lib/aspect/node/TypeScriptVersion";
 import { DirectMavenDependencies } from "./lib/aspect/spring/directMavenDependencies";
 import { SpringBootStarter } from "./lib/aspect/spring/springBootStarter";
@@ -102,7 +101,7 @@ export const configuration: Configuration = configure(async sdm => {
 
         const isStaging = sdm.configuration.endpoints.api.includes("staging");
 
-        const optionalAspects = isStaging ? [LeinDeps] : [];
+        const optionalAspects = isStaging ? [] : [];
 
         const jobAspects = [
             DockerFrom,
@@ -110,7 +109,7 @@ export const configuration: Configuration = configure(async sdm => {
             DockerPorts,
             SpringBootStarter,
             TypeScriptVersion,
-            NpmDeps,
+            NpmDependencies,
             TravisScriptsAspect,
             StackAspect,
             CiAspect,
@@ -132,8 +131,8 @@ export const configuration: Configuration = configure(async sdm => {
             description: "TypeScript versions in use across all repositories in your workspace, " +
                 "broken out by version and repositories that use each version.",
         });
-        registerCategories(NpmDeps, "Node.js");
-        registerReportDetails(NpmDeps, {
+        registerCategories(NpmDependencies, "Node.js");
+        registerReportDetails(NpmDependencies, {
             shortName: "dependency",
             unit: "version",
             url: "drift?type=npm-project-deps",
@@ -151,7 +150,7 @@ export const configuration: Configuration = configure(async sdm => {
             description: "Maven direct dependencies in use across all repositories in your workspace, " +
                 "grouped by Drift Level.",
         });
-        if (isStaging) {
+        /*if (isStaging) {
             registerCategories(LeinDeps, "Java");
             registerReportDetails(LeinDeps, {
                 shortName: "dependency",
@@ -160,7 +159,7 @@ export const configuration: Configuration = configure(async sdm => {
                 description: "Leiningen direct dependencies in use across all repositories in your workspace, " +
                     "grouped by Drift Level.",
             });
-        }
+        }*/
         registerCategories(DockerFrom, "Docker");
         registerReportDetails(DockerFrom, {
             name: "Docker base images",

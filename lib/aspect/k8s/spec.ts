@@ -31,7 +31,6 @@ import {
 import { bold } from "@atomist/slack-messages";
 import * as yaml from "js-yaml";
 import * as stringify from "json-stable-stringify";
-import * as _ from "lodash";
 
 const K8sSpecsType = "k8s-specs";
 
@@ -125,17 +124,17 @@ export const createK8sSpecsFingerprints: ExtractFingerprint<K8sObject> = async p
     return fingerprints;
 };
 
-export const applyK8sSpecsFingerprint: ApplyFingerprint<K8sObject> = async (p, fp) => {
+export const applyK8sSpecsFingerprint: ApplyFingerprint<K8sObject> = async (p, papi) => {
+    const fp = papi.parameters.fp;
     const specFiles = await projectUtils.toPromise(p.streamFiles(k8sSpecGlob));
     for (const specFile of specFiles) {
         const spec = await parseK8sSpecFile(specFile);
         if (spec && k8sSpecsFingerprintName(spec) === fp.name) {
             const specString = (/\.ya?ml$/.test(specFile.name)) ? yaml.safeDump(fp.data) : stringify(fp.data);
             await specFile.setContent(specString);
-            return true;
         }
     }
-    return false;
+    return p;
 };
 
 export const diffK8sSpecsFingerprints: DiffSummaryFingerprint = (diff, target) => {

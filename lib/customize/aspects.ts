@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import {
     DockerfilePath,
     DockerFrom,
@@ -25,7 +24,6 @@ import {
     cachingVirtualProjectFinder,
     fileNamesVirtualProjectFinder,
     makeVirtualProjectAware,
-    NpmDeps,
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
@@ -45,6 +43,7 @@ import { GitRecency } from "../aspect/git/gitActivity";
 import { K8sSpecs } from "../aspect/k8s/spec";
 import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
 import { idealsFromNpm } from "../aspect/node/idealFromNpm";
+import { NpmDependencies } from "../aspect/node/npmDependencies";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
@@ -77,10 +76,7 @@ export function aspects(): Aspect[] {
         SpringBootStarter,
         TypeScriptVersion,
         new CodeOwnership(),
-        {
-            ...NpmDeps,
-            suggestedIdeals: (type, name) => idealsFromNpm(name),
-        },
+        NpmDependencies,
         CodeOfConduct,
         ExposedSecrets,
         TravisScriptsAspect,
@@ -106,6 +102,5 @@ export function aspects(): Aspect[] {
         DirectMavenDependencies,
         PythonDependencies,
         K8sSpecs,
-        LeinDeps,
     ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
 }

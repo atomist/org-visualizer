@@ -43,12 +43,13 @@ export const SpringBootVersion: Aspect = {
             sha: sha256(JSON.stringify(versions)),
         };
     },
-    apply: async (p, fp) => {
+    apply: async (p, papi) => {
+        const fp = papi.parameters.fp;
         if (fp.data.length !== 1) {
-            return false;
+            return p;
         }
         await setSpringBootVersionTransform(fp.data[0])(p, undefined, undefined);
-        return true;
+        return p;
     },
     toDisplayableFingerprintName: () => "Spring Boot version",
     toDisplayableFingerprint: fp => fp.data.versions.map(v => v.version).join(","),

@@ -448,8 +448,8 @@ metadata:
                 },
                 sha: "df9e9f62024d15c7823c6eb688cf3489f3c640f2f9af892880108b385a9fa37d",
             };
-            assert(!await applyK8sSpecsFingerprint(p, fp));
-
+            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp }} as any ));
+            assert.strictEqual(p.fileCount, 3);
         });
 
         it("should update the matching spec", async () => {
@@ -477,7 +477,7 @@ metadata:
                 },
                 sha: "df9e9f62024d15c7823c6eb688cf3489f3c640f2f9af892880108b385a9fa37d",
             };
-            assert(await applyK8sSpecsFingerprint(p, fp));
+            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp }} as any ));
             const c = await (await p.getFile("dep.json")).getContent();
             assert(c === `{"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"providence","namespace":"sonic-youth"}}`);
         });

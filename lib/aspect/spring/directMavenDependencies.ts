@@ -34,9 +34,8 @@ export const DirectMavenDependencies: Aspect = {
         const deps = await findDeclaredDependencies(p);
         return deps.dependencies.map(gavToFingerprint);
     },
-    apply: async (p, fp) => {
-        // TODO implement this
-        return false;
+    apply: async (p, papi) => {
+        return p;
     },
     toDisplayableFingerprintName: name => name,
     toDisplayableFingerprint: fp => {

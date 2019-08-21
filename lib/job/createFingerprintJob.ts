@@ -106,6 +106,7 @@ async function fingerprintGitHubAppInstallation(event: OnGitHubAppInstallation.S
                     parameters: repos.tasks,
                     name: `OrganizationAnalysis/${provider.providerId}/${org.owner}`,
                     description: `Analyzing repositories in ${bold(org.owner)}`,
+                    concurrentTasks: 1,
                 },
                 ctx);
             await prefs.put<boolean>(preferenceKey(org.owner), true, { scope: PreferenceScope.Sdm });
