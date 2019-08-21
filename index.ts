@@ -178,6 +178,7 @@ export const configuration: Configuration = configure(async sdm => {
         url: "fingerprint/docker-ports/*?byOrg=true&presence=false&progress=false&otherLabel=false&trim=false",
         description: "Ports exposed in Docker configuration in use  across all repositories in your workspace, " +
             "broken out by port number and repositories where used.",
+        manage: false,
     });
 
     if (mode === "online") {
