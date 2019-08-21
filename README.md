@@ -163,13 +163,14 @@ There are four architectural layers:
 
 This project includes some well known aspects but it is intended for you to add your own.
 
-Do this by updating the `aspects` constant defined in the [`aspects.ts`](lib/customize/aspects.ts) file. Simply add aspects to this array:
+Do this by updating the `aspects` function defined in the [`aspects.ts`](lib/customize/aspects.ts) file. Simply add aspects to this array:
 
 ```typescript
-export const Aspects: ManagedAspect[] = [
-    DockerFrom,
-    TypeScriptVersion,
-    //... add your aspects here
+export function aspects(): Aspect[] {
+    return [
+        DockerFrom,
+        TypeScriptVersion,
+        //... add your aspects here
 ```
 
 >After updating your code you will need to rerun existing analyses. Run `atomist analyze [local|github] --update true` again to force updates on existing data.
