@@ -36,7 +36,10 @@ import {
     StackAspect,
 } from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
-import { License, LicensePresence } from "../aspect/community/license";
+import {
+    License,
+    LicensePresence,
+} from "../aspect/community/license";
 import {
     ChangelogAspect,
     ContributingAspect,
