@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    Project,
-    ProjectFile,
-} from "@atomist/automation-client";
-import {
-    Aspect, FP,
-    sha256,
-} from "@atomist/sdm-pack-fingerprints";
+import { Aspect, FP, sha256, } from "@atomist/sdm-pack-fingerprints";
+import { firstFileFound } from "../../util/fileUtils";
 
 export const NoLicense = "None";
 
@@ -84,12 +78,3 @@ export const License: Aspect<LicenseData> = {
     },
 };
 
-async function firstFileFound(p: Project, ...paths: string[]): Promise<ProjectFile | undefined> {
-    for (const path of paths) {
-        const f = await p.getFile(path);
-        if (f) {
-            return f;
-        }
-    }
-    return undefined;
-}
