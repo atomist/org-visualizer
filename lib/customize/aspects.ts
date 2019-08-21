@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import {
     DockerfilePath,
     DockerFrom,
@@ -102,5 +103,6 @@ export function aspects(): Aspect[] {
         DirectMavenDependencies,
         PythonDependencies,
         K8sSpecs,
+        LeinDeps,
     ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
 }

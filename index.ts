@@ -37,6 +37,7 @@ import {
     configure,
     isInLocalMode,
 } from "@atomist/sdm-core";
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import {
     DockerfilePath,
     DockerFrom,
@@ -101,7 +102,7 @@ export const configuration: Configuration = configure(async sdm => {
 
         const isStaging = sdm.configuration.endpoints.api.includes("staging");
 
-        const optionalAspects = isStaging ? [] : [];
+        const optionalAspects = isStaging ? [LeinDeps] : [];
 
         const jobAspects = [
             DockerFrom,
@@ -150,7 +151,7 @@ export const configuration: Configuration = configure(async sdm => {
             description: "Maven direct dependencies in use across all repositories in your workspace, " +
                 "grouped by Drift Level.",
         });
-        /*if (isStaging) {
+        if (isStaging) {
             registerCategories(LeinDeps, "Java");
             registerReportDetails(LeinDeps, {
                 shortName: "dependency",
@@ -159,7 +160,7 @@ export const configuration: Configuration = configure(async sdm => {
                 description: "Leiningen direct dependencies in use across all repositories in your workspace, " +
                     "grouped by Drift Level.",
             });
-        }*/
+        }
         registerCategories(DockerFrom, "Docker");
         registerReportDetails(DockerFrom, {
             name: "Docker base images",

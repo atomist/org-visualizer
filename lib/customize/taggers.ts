@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import * as _ from "lodash";
 import {
@@ -69,7 +70,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         },
         nodeTaggers.TypeScript,
         nodeTaggers.TsLint,
-        // { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
+        { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
         { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
         { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
         { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
