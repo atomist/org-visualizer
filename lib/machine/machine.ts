@@ -16,9 +16,7 @@
 
 import {
     Configuration,
-    logger,
 } from "@atomist/automation-client";
-import { PushImpactListener } from "@atomist/sdm";
 import {
     VirtualProjectFinder,
 } from "@atomist/sdm-pack-fingerprints";
@@ -33,10 +31,6 @@ import { SpiderAnalyzer } from "../analysis/offline/spider/SpiderAnalyzer";
 import { IdealStore } from "../aspect/IdealStore";
 import { ProblemStore } from "../aspect/ProblemStore";
 
-/**
- * Add scanners to the analyzer to extract data
- * @return {ProjectAnalyzer}
- */
 export function createAnalyzer(aspects: Aspect[], virtualProjectFinder: VirtualProjectFinder): Analyzer {
     return new SpiderAnalyzer(aspects, virtualProjectFinder);
 }
@@ -57,31 +51,3 @@ export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResu
     return new PostgresProjectAnalysisResultStore(factory);
 }
 
-export function updatedStoredAnalysisIfNecessary(opts: {
-    analyzedRepoStore: ProjectAnalysisResultStore,
-    analyzer: Analyzer,
-    maxAgeHours: number,
-}): PushImpactListener<any> {
-    const maxAgeMillis = 60 * 60 * 1000;
-    return async pu => {
-        try {
-            const found = await opts.analyzedRepoStore.loadByRepoRef(pu.id, false);
-            const now = new Date();
-            if (!found || !found.timestamp || now.getTime() - found.timestamp.getTime() > maxAgeMillis) {
-                const analysis = await opts.analyzer.analyze(pu.project);
-                logger.debug("Performing fresh analysis of project at %s", pu.id.url);
-                await opts.analyzedRepoStore.persist({
-                    repoRef: analysis.id,
-                    analysis,
-                    timestamp: now,
-                    workspaceId: pu.context.workspaceId,
-                });
-            } else {
-                logger.info("Stored analysis of project at %s is up to date", pu.id.url);
-            }
-        } catch (err) {
-            // Never fail
-            logger.warn(err);
-        }
-    };
-}
