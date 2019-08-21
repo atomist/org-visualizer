@@ -39,7 +39,7 @@ export interface CodeOfConductData {
  * Find a code of conduct in a repository if possible
  * @constructor
  */
-export const CodeOfConduct: Aspect<FP<CodeOfConductData>> = {
+export const CodeOfConduct: Aspect<CodeOfConductData> = {
     name: CodeOfConductType,
     displayName: "Code of conduct",
     baseOnly: true,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
 import {
     ExposedSecret,
     sniffProject,
@@ -25,7 +25,7 @@ const ExposedSecretsType = "exposed-secret";
 
 export type ExposedSecretsData = Pick<ExposedSecret, "secret" | "path" | "description">;
 
-export const ExposedSecrets: Aspect<FP<ExposedSecretsData>> = {
+export const ExposedSecrets: Aspect<ExposedSecretsData> = {
     name: ExposedSecretsType,
     displayName: "Exposed secrets",
     baseOnly: true,

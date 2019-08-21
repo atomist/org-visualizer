@@ -16,11 +16,10 @@
 
 import {
     LocalProject,
-    logger,
 } from "@atomist/automation-client";
 import {
     Aspect,
-    ExtractFingerprint, FP,
+    ExtractFingerprint,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import * as child_process from "child_process";
@@ -46,7 +45,7 @@ export interface GitRecencyData {
     lastCommitTime: number;
 }
 
-const gitRecencyExtractor: ExtractFingerprint<FP<GitRecencyData>> =
+const gitRecencyExtractor: ExtractFingerprint<GitRecencyData> =
     async p => {
         const r = await exec(gitLastCommitCommand, { cwd: (p as LocalProject).baseDir });
         if (!r.stdout) {
@@ -65,7 +64,7 @@ const gitRecencyExtractor: ExtractFingerprint<FP<GitRecencyData>> =
 /**
  * Classify since last commit
  */
-export const GitRecency: Aspect<FP<GitRecencyData>> = {
+export const GitRecency: Aspect<GitRecencyData> = {
     name: GitRecencyType,
     displayName: "Recency of git activity",
     baseOnly: true,
@@ -95,7 +94,7 @@ export interface ActiveCommittersData {
 
 export const GitActivesType = "git-actives";
 
-function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<ActiveCommittersData>> {
+function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<ActiveCommittersData> {
     return async p => {
         const cwd = (p as LocalProject).baseDir;
         const cmds = committersCommands(commitDepth);
@@ -122,7 +121,7 @@ function activeCommittersExtractor(commitDepth: number): ExtractFingerprint<FP<A
  * Active committers. This is expensive as it requires cloning the
  * last commitDepth commits
  */
-export function gitActiveCommitters(commitDepth: number): Aspect<FP<ActiveCommittersData>> {
+export function gitActiveCommitters(commitDepth: number): Aspect<ActiveCommittersData> {
     return {
         name: GitActivesType,
         displayName: "Active git committers",

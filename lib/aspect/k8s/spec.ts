@@ -114,7 +114,7 @@ export function isK8sSpec(o: any): o is K8sObject {
 
 const k8sSpecGlob = "*.@(json|yaml|yml)";
 
-export const createK8sSpecsFingerprints: ExtractFingerprint<FP<K8sObject>> = async p => {
+export const createK8sSpecsFingerprints: ExtractFingerprint<K8sObject> = async p => {
     const fingerprints: Array<FP<K8sObject>> = [];
     await projectUtils.doWithFiles(p, k8sSpecGlob, async f => {
         const spec = await parseK8sSpecFile(f);
@@ -125,7 +125,7 @@ export const createK8sSpecsFingerprints: ExtractFingerprint<FP<K8sObject>> = asy
     return fingerprints;
 };
 
-export const applyK8sSpecsFingerprint: ApplyFingerprint<FP<K8sObject>> = async (p, fp) => {
+export const applyK8sSpecsFingerprint: ApplyFingerprint<K8sObject> = async (p, fp) => {
     const specFiles = await projectUtils.toPromise(p.streamFiles(k8sSpecGlob));
     for (const specFile of specFiles) {
         const spec = await parseK8sSpecFile(specFile);
@@ -156,7 +156,7 @@ export const diffK8sSpecsFingerprints: DiffSummaryFingerprint = (diff, target) =
  * JSON or YAML files in the root of the project that look like
  * Kubernetes resource specs, no fingerprints are emitted.
  */
-export const K8sSpecs: Aspect<FP<K8sObject>> = {
+export const K8sSpecs: Aspect<K8sObject> = {
     displayName: "Kubernetes specs",
     name: K8sSpecsType,
     extract: createK8sSpecsFingerprints,

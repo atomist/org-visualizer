@@ -24,8 +24,6 @@ import { findDeclaredDependencies } from "@atomist/sdm-pack-spring/lib/maven/par
 
 const SpringBootStarterType = "spring-boot-starter";
 
-export type SpringBootStarterFingerprint = FP<VersionedArtifact>;
-
 /**
  * Detect which Spring Boot starter dependencies are included in your projects,
  * and which versions.
@@ -37,7 +35,7 @@ export type SpringBootStarterFingerprint = FP<VersionedArtifact>;
  *
  * Only the version is displayed (or "inherited" if the version is empty).
  */
-export const SpringBootStarter: Aspect<SpringBootStarterFingerprint> = {
+export const SpringBootStarter: Aspect<VersionedArtifact> = {
     name: SpringBootStarterType,
     displayName: "Spring Boot Starter",
     extract: async p => {
@@ -56,7 +54,7 @@ export const SpringBootStarter: Aspect<SpringBootStarterFingerprint> = {
         "https://atomist-blogs.github.io/org-visualizer/modules/_lib_feature_spring_springbootstarterfeature_.html#springbootstarterfeature",
 };
 
-function createSpringBootStarterFingerprint(data: VersionedArtifact): SpringBootStarterFingerprint {
+function createSpringBootStarterFingerprint(data: VersionedArtifact): FP<VersionedArtifact> {
     return {
         type: SpringBootStarterType,
         name: `starter:${data.group}:${data.artifact}`,

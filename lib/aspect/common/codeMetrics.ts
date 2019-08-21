@@ -47,7 +47,7 @@ export function isCodeMetricsFingerprint(fp: FP): fp is FP<CodeMetricsData> {
     return !!maybe && maybe.type === CodeMetricsType && maybe.data.languages !== undefined;
 }
 
-export const CodeMetricsAspect: Aspect<FP<CodeMetricsData>> = {
+export const CodeMetricsAspect: Aspect<CodeMetricsData> = {
     name: CodeMetricsType,
     // Suppress display
     displayName: undefined,

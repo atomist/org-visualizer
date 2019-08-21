@@ -58,7 +58,7 @@ export interface FileMatchParams {
  * Always return something, but may have an empty path.
  */
 export function fileMatchAspect(config: Omit<Aspect, "stats" | "extract" | "apply"> &
-    FileMatchParams): Aspect<FP<FileMatchData>> {
+    FileMatchParams): Aspect<FileMatchData> {
     return {
         toDisplayableFingerprintName: name => `File match '${config.glob}'`,
         toDisplayableFingerprint: fp =>

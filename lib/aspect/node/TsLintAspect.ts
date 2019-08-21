@@ -15,7 +15,7 @@
  */
 
 import { AbstractFingerprint } from "@atomist/sdm";
-import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, sha256 } from "@atomist/sdm-pack-fingerprints";
 import {
     ApplyFingerprint,
     ExtractFingerprint,
@@ -25,14 +25,10 @@ import { Error } from "tslint/lib/error";
 
 export const TsLintType = "tslint";
 
-export class TsLintProperty extends AbstractFingerprint {
-
-    public readonly type: string = TsLintType;
-
-    constructor(public readonly path: string, public readonly property: string, data: any) {
-        super(`${path}:${property}`, "tsp", "1.0.0", JSON.stringify(data));
-    }
-
+export interface TsLintProperty {
+    path: string;
+    property: string;
+    value: string;
 }
 
 export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
@@ -57,10 +53,13 @@ export class TsLintPropertyAspect implements Aspect<TsLintProperty> {
         const pathObj = _.get(json, this.path, {});
         return Object.getOwnPropertyNames(pathObj)
             .map(property => {
-                return new TsLintProperty(
-                    this.path,
-                    property,
-                    pathObj[property] || "");
+                const data: TsLintProperty = { path: this.path, property, value: pathObj[property] || "" };
+                return {
+                    type: TsLintType,
+                    name: `${this.path}:${property}`,
+                    data,
+                    sha: sha256(JSON.stringify(data)),
+                };
             });
     }
 

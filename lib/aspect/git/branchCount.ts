@@ -20,7 +20,7 @@ import {
 } from "@atomist/automation-client";
 import { execPromise } from "@atomist/sdm";
 import {
-    Aspect, FP,
+    Aspect,
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import {
@@ -35,7 +35,7 @@ export interface BranchCountData {
     count: number;
 }
 
-export const branchCount: Aspect<FP<BranchCountData>> = {
+export const branchCount: Aspect<BranchCountData> = {
     name: BranchCountType,
     displayName: "Branch count",
     baseOnly: true,
@@ -47,8 +47,8 @@ export const branchCount: Aspect<FP<BranchCountData>> = {
                 cwd: lp.baseDir,
             });
         const count = commandResult.stdout
-                .split("\n")
-                .filter(l => !l.includes("origin/HEAD")).length - 1;
+            .split("\n")
+            .filter(l => !l.includes("origin/HEAD")).length - 1;
         const data = { count };
         logger.debug("Branch count for %s is %d", p.id.url, count);
         return {

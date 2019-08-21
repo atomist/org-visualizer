@@ -51,7 +51,7 @@ export interface LicenseData {
  * License aspect. Every repository gets a license fingerprint, which may have unknown
  * as a license.
  */
-export const License: Aspect<FP<LicenseData>> = {
+export const License: Aspect<LicenseData> = {
     name: LicenseType,
     displayName: "License",
     baseOnly: true,

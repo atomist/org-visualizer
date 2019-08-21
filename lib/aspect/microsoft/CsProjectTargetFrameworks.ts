@@ -17,7 +17,6 @@
 import { microgrammar } from "@atomist/microgrammar";
 import {
     Aspect,
-    FP,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     FileMatchData,
@@ -34,7 +33,7 @@ const targetFrameworksGrammar = microgrammar({
  * TargetFramework
  * @type {Aspect<FP<FileMatchData>>}
  */
-export const CsProjectTargetFrameworks: Aspect<FP<FileMatchData>> =
+export const CsProjectTargetFrameworks: Aspect<FileMatchData> =
     microgrammarMatchAspect({
         name: "csproject-targetframeworks",
         displayName: "CSProject TargetFrameworks",
