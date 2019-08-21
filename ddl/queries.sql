@@ -114,3 +114,7 @@ SELECT rs.id, owner, rs.name, url, commit_sha, timestamp, workspace_id,
 SELECT COUNT(1) FROM (SELECT DISTINCT url, path
   FROM repo_snapshots, repo_fingerprints
   WHERE repo_fingerprints.repo_snapshot_id = repo_snapshots.id) as virtual_repos;
+
+-- Delete fingerprint references that aren't in a desired organization
+DELETE FROM repo_fingerprints
+  WHERE repo_snapshot_id in (SELECT id from repo_snapshots WHERE owner <> 'Azure-Samples');
