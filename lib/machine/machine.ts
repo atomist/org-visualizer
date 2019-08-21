@@ -50,4 +50,3 @@ export function sdmConfigClientFactory(config: Configuration): ClientFactory {
 export function analysisResultStore(factory: ClientFactory): ProjectAnalysisResultStore & IdealStore & ProblemStore {
     return new PostgresProjectAnalysisResultStore(factory);
 }
-
