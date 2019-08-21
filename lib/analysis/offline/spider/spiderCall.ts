@@ -18,21 +18,15 @@ import { logger } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import { StableDirectoryManager } from "@atomist/automation-client/lib/spi/clone/StableDirectoryManager";
 import { TmpDirectoryManager } from "@atomist/automation-client/lib/spi/clone/tmpDirectoryManager";
-import _ = require("lodash");
-import {
-    Aspects,
-    virtualProjectFinder,
-} from "../../../customize/aspects";
-import {
-    createAnalyzer,
-    sdmConfigClientFactory,
-} from "../../../machine/machine";
+import * as _ from "lodash";
+import { sdmConfigClientFactory } from "../../../machine/machine";
 import { PostgresProjectAnalysisResultStore } from "../persist/PostgresProjectAnalysisResultStore";
 import { GitCommandGitProjectCloner } from "./github/GitCommandGitProjectCloner";
 import { GitHubSpider } from "./github/GitHubSpider";
 import { LocalSpider } from "./local/LocalSpider";
 import { ScmSearchCriteria } from "./ScmSearchCriteria";
 import {
+    Analyzer,
     Spider,
     SpiderResult,
 } from "./Spider";
@@ -72,9 +66,9 @@ export interface SpiderAppOptions {
 /**
  * Spider a GitHub.com org
  */
-export async function spider(params: SpiderAppOptions): Promise<SpiderResult> {
+export async function spider(params: SpiderAppOptions,
+                             analyzer: Analyzer): Promise<SpiderResult> {
     const { search, workspaceId } = params;
-    const analyzer = createAnalyzer(Aspects, virtualProjectFinder);
     const org = params.owner;
     const searchInRepoName = search ? ` ${search} in:name` : "";
 

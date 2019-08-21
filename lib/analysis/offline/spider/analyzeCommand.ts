@@ -17,9 +17,10 @@
 import { logger } from "@atomist/automation-client";
 import {
     CommandHandlerRegistration,
-    CommandListenerInvocation,
+    CommandListener,
     ParametersObject,
 } from "@atomist/sdm";
+import { Analyzer } from "./Spider";
 import {
     spider,
     SpiderAppOptions,
@@ -79,6 +80,7 @@ const AnalyzeGitHubCommandParametersDefinition: ParametersObject<AnalyzeGitHubCo
         required: false,
     },
 };
+
 export interface AnalyzeLocalCommandParameters extends AnalyzeCommandParameters {
     update: boolean;
     source: "local";
@@ -101,8 +103,8 @@ const AnalyzeLocalCommandParametersDefinition: ParametersObject<AnalyzeLocalComm
     },
 };
 
-const analyzeFromGitHub =
-    async (d: CommandListenerInvocation<AnalyzeGitHubCommandParameters>) => {
+function analyzeFromGitHub(analyzer: Analyzer): CommandListener<AnalyzeGitHubCommandParameters> {
+    return async d => {
         const { owner, query } = d.parameters;
         if (!owner && !query) {
             await d.addressChannels("Please provide either 'owner' or 'query'");
@@ -111,35 +113,41 @@ const analyzeFromGitHub =
         const spiderAppOptions: SpiderAppOptions = d.parameters;
         logger.info("analyze github invoked with " + JSON.stringify(spiderAppOptions));
 
-        const result = await spider(spiderAppOptions);
+        const result = await spider(spiderAppOptions, analyzer);
         await d.addressChannels(`Analysis result: `
             + JSON.stringify(result, undefined, 2));
         return { code: 0 };
     };
+}
 
-export const AnalyzeGitHubCommandRegistration: CommandHandlerRegistration<AnalyzeGitHubCommandParameters> = {
-    name: "analyzeRepositoriesFromGitHub",
-    intent: ["analyze github repositories"],
-    description: "choose repositories to analyze, by owner or query",
-    parameters: AnalyzeGitHubCommandParametersDefinition,
-    listener: analyzeFromGitHub,
-};
+export function analyzeGitHubCommandRegistration(analyzer: Analyzer): CommandHandlerRegistration<AnalyzeGitHubCommandParameters> {
+    return {
+        name: "analyzeRepositoriesFromGitHub",
+        intent: ["analyze github repositories"],
+        description: "choose repositories to analyze, by owner or query",
+        parameters: AnalyzeGitHubCommandParametersDefinition,
+        listener: analyzeFromGitHub(analyzer),
+    };
+}
 
-const analyzeFromLocal =
-    async (d: CommandListenerInvocation<AnalyzeLocalCommandParameters>) => {
+function analyzeFromLocal(analyzer: Analyzer): CommandListener<AnalyzeLocalCommandParameters> {
+    return async d => {
         const spiderAppOptions: SpiderAppOptions = d.parameters;
         logger.info("analyze local invoked with " + JSON.stringify(spiderAppOptions));
 
-        const result = await spider(spiderAppOptions);
+        const result = await spider(spiderAppOptions, analyzer);
         await d.addressChannels(`Analysis result: `
             + JSON.stringify(result, undefined, 2));
         return { code: 0 };
     };
+}
 
-export const AnalyzeLocalCommandRegistration: CommandHandlerRegistration<AnalyzeLocalCommandParameters> = {
-    name: "analyzeRepositoriesFromLocalFilesystem",
-    intent: ["analyze local repositories"],
-    description: "choose repositories to analyze, by parent directory",
-    parameters: AnalyzeLocalCommandParametersDefinition,
-    listener: analyzeFromLocal,
-};
+export function analyzeLocalCommandRegistration(analyzer: Analyzer): CommandHandlerRegistration<AnalyzeLocalCommandParameters> {
+    return {
+        name: "analyzeRepositoriesFromLocalFilesystem",
+        intent: ["analyze local repositories"],
+        description: "choose repositories to analyze, by parent directory",
+        parameters: AnalyzeLocalCommandParametersDefinition,
+        listener: analyzeFromLocal(analyzer),
+    };
+}

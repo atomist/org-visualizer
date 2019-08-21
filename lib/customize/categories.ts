@@ -25,6 +25,7 @@ export interface ReportDetails {
     description?: string;
     unit?: string;
     url?: string;
+    manage?: boolean;
 }
 
 const AspectCategories: Record<string, string[]> = {};
@@ -48,6 +49,7 @@ export function registerReportDetails(aspect: Aspect<any>,
         type: aspect.name,
         description: `Details about the ${aspect.displayName} aspect`,
         url: `filter/aspectReport?type=${aspect.name}`,
+        manage: true,
         ...details,
     });
 }

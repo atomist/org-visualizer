@@ -30,11 +30,6 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
 import { CodeOwnership } from "../aspect/common/codeOwnership";
-import {
-    CiAspect,
-    JavaBuild,
-    StackAspect,
-} from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
 import {
     License,
@@ -71,44 +66,46 @@ export const virtualProjectFinder: VirtualProjectFinder = cachingVirtualProjectF
  * The aspects managed by this SDM.
  * Modify this list to customize with your own aspects.
  */
-export const Aspects: Aspect[] = [
-    DockerFrom,
-    DockerfilePath,
-    DockerPorts,
-    License,
-    // Based on license, decide the presence of a license: Not spread
-    LicensePresence,
-    SpringBootStarter,
-    TypeScriptVersion,
-    new CodeOwnership(),
-    {
-        ...NpmDeps,
-        suggestedIdeals: (type, name) => idealsFromNpm(name),
-    },
-    CodeOfConduct,
-    ExposedSecrets,
-    TravisScriptsAspect,
-    branchCount,
-    GitRecency,
-    // This is expensive as it requires deeper cloning
-    // gitActiveCommitters(30),
-    // This is also expensive
-    CodeMetricsAspect,
-    // StackAspect,
-    // CiAspect,
-    // JavaBuild,
-    // Don't show these
-    globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
-    globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
-    ChangelogAspect,
-    ContributingAspect,
-    globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
-    globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
-    CsProjectTargetFrameworks,
-    SpringBootVersion,
-    // allMavenDependenciesAspect,    // This is expensive
-    DirectMavenDependencies,
-    PythonDependencies,
-    K8sSpecs,
-    LeinDeps,
-].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
+export function aspects(): Aspect[] {
+    return [
+        DockerFrom,
+        DockerfilePath,
+        DockerPorts,
+        License,
+        // Based on license, decide the presence of a license: Not spread
+        LicensePresence,
+        SpringBootStarter,
+        TypeScriptVersion,
+        new CodeOwnership(),
+        {
+            ...NpmDeps,
+            suggestedIdeals: (type, name) => idealsFromNpm(name),
+        },
+        CodeOfConduct,
+        ExposedSecrets,
+        TravisScriptsAspect,
+        branchCount,
+        GitRecency,
+        // This is expensive as it requires deeper cloning
+        // gitActiveCommitters(30),
+        // This is also expensive
+        CodeMetricsAspect,
+        // StackAspect,
+        // CiAspect,
+        // JavaBuild,
+        // Don't show these
+        globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
+        globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
+        ChangelogAspect,
+        ContributingAspect,
+        globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
+        globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
+        CsProjectTargetFrameworks,
+        SpringBootVersion,
+        // allMavenDependenciesAspect,    // This is expensive
+        DirectMavenDependencies,
+        PythonDependencies,
+        K8sSpecs,
+        LeinDeps,
+    ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
+}
