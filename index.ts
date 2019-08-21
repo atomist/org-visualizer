@@ -43,9 +43,7 @@ import {
     DockerFrom,
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
-import {
-    fingerprintSupport,
-} from "@atomist/sdm-pack-fingerprints";
+import { fingerprintSupport } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
 import { ClientFactory } from "./lib/analysis/offline/persist/pgUtils";
 import {
@@ -248,7 +246,7 @@ export const configuration: Configuration = configure(async sdm => {
                         sdmConfigClientFactory(cfg),
                         cfg.http.client.factory,
                     );
-                cfg.http.customizers = customizers;
+                cfg.http.customizers.push(...customizers);
                 routesToSuggestOnStartup.forEach(rtsos => {
                     cfg.logging.banner.contributors.push(suggestRoute(rtsos));
                 });
