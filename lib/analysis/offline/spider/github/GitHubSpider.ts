@@ -304,7 +304,7 @@ export interface GitHubSearchResult {
 
 async function* queryByCriteria(token: string, criteria: ScmSearchCriteria): AsyncIterable<GitHubSearchResult> {
     const octokit = new Octokit({
-        auth: "token " + token,
+        auth: token ? "token " + token : undefined,
         baseUrl: "https://api.github.com",
     });
     let results: any[] = [];
