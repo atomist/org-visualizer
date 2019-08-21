@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Aspect, FP, sha256, } from "@atomist/sdm-pack-fingerprints";
+import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprints";
 import { firstFileFound } from "../../util/fileUtils";
 
 export const NoLicense = "None";
@@ -78,3 +78,26 @@ export const License: Aspect<LicenseData> = {
     },
 };
 
+export const LicensePresenceType: string = "license-presence";
+
+/**
+ * Does this repository have a license?
+ * Works with data from the license aspect.
+ */
+export const LicensePresence: Aspect<{ present: boolean }> = {
+    name: LicensePresenceType,
+    displayName: "License presence",
+    extract: async () => [],
+    consolidate: async fps => {
+        const lfp = fps.find(isLicenseFingerprint);
+        const present = !!lfp && !hasNoLicense(lfp.data);
+        const data = { present };
+        return {
+            name: LicensePresenceType,
+            type: LicensePresenceType,
+            data,
+            sha: sha256(JSON.stringify(data)),
+        };
+    },
+    toDisplayableFingerprint: fp => fp.data.present ? "Yes" : "No",
+};

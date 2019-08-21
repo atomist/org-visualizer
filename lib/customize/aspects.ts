@@ -36,7 +36,7 @@ import {
     StackAspect,
 } from "../aspect/common/stackAspect";
 import { CodeOfConduct } from "../aspect/community/codeOfConduct";
-import { License } from "../aspect/community/license";
+import { License, LicensePresence } from "../aspect/community/license";
 import {
     ChangelogAspect,
     ContributingAspect,
@@ -73,6 +73,8 @@ export const Aspects: Aspect[] = [
     DockerfilePath,
     DockerPorts,
     License,
+    // Based on license, decide the presence of a license: Not spread
+    LicensePresence,
     SpringBootStarter,
     TypeScriptVersion,
     new CodeOwnership(),
