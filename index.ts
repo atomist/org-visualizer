@@ -225,6 +225,7 @@ export const configuration: Configuration = configure(async sdm => {
             cfg.sdm.goalSigning = {
                 ...cfg.sdm.goalSigning,
                 scope: GoalSigningScope.All,
+                enabled: false,
             };
 
             if (mode === "job") {
