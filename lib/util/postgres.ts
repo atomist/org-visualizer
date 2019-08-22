@@ -18,6 +18,7 @@ import { logger } from "@atomist/automation-client";
 import { writeUserConfig } from "@atomist/automation-client/lib/configuration";
 import { execPromise } from "@atomist/automation-client/lib/util/child_process";
 import { ConfigurationPreProcessor } from "@atomist/sdm-core/lib/machine/configure";
+import * as _ from "lodash";
 
 export const startEmbeddedPostgres: ConfigurationPreProcessor = async cfg => {
     // start up embedded postgres if needed
