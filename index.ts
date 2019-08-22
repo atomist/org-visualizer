@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// Org Visualizer should be used in local mode. This is to enforce that!
+process.env.ATOMIST_MODE = "local";
+
 import { Configuration } from "@atomist/automation-client";
 import { configure } from "@atomist/sdm-core";
 import { driftSupport } from "@atomist/sdm-pack-drift";
