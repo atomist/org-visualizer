@@ -27,6 +27,7 @@ import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
 import { taggers } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
+import { startEmbeddedPostgres } from "./lib/util/postgres";
 
 export const configuration: Configuration = configure(async sdm => {
 
@@ -45,4 +46,5 @@ export const configuration: Configuration = configure(async sdm => {
     },
     {
         name: "Org Visualizer",
+        preProcessors: [startEmbeddedPostgres],
     });
