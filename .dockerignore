@@ -10,7 +10,7 @@
 .nyc_output/
 assets/kubectl/
 node_modules/
-!node_modules/@atomist/sdm-pack-drift/ddl
+!node_modules/@atomist/sdm-pack-aspect/ddl
 build/
 coverage/
 doc/
