@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { RepositoryScorer } from "@atomist/sdm-pack-drift";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
-import { RepositoryScorer } from "../aspect/AspectRegistry";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 /**

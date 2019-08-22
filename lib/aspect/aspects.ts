@@ -21,46 +21,34 @@ import {
     DockerPorts,
 } from "@atomist/sdm-pack-docker";
 import {
-    Aspect,
-    cachingVirtualProjectFinder,
-    fileNamesVirtualProjectFinder,
-    makeVirtualProjectAware,
-    VirtualProjectFinder,
-} from "@atomist/sdm-pack-fingerprints";
-import { CodeMetricsAspect } from "../aspect/common/codeMetrics";
-import { CodeOwnership } from "../aspect/common/codeOwnership";
-import { CodeOfConduct } from "../aspect/community/codeOfConduct";
+    branchCount,
+    ChangelogAspect,
+    CodeMetricsAspect,
+    CodeOfConduct,
+    CodeOwnership,
+    ContributingAspect,
+    DefaultVirtualProjectFinder,
+    ExposedSecrets,
+    GitRecency,
+} from "@atomist/sdm-pack-drift";
 import {
     License,
     LicensePresence,
-} from "../aspect/community/license";
+} from "@atomist/sdm-pack-drift/lib/aspect/community/license";
+import { globAspect } from "@atomist/sdm-pack-drift/lib/aspect/compose/globAspect";
 import {
-    ChangelogAspect,
-    ContributingAspect,
-} from "../aspect/community/oss";
-import { globAspect } from "../aspect/compose/globAspect";
-import { branchCount } from "../aspect/git/branchCount";
-import { GitRecency } from "../aspect/git/gitActivity";
-import { K8sSpecs } from "../aspect/k8s/spec";
-import { CsProjectTargetFrameworks } from "../aspect/microsoft/CsProjectTargetFrameworks";
-import { idealsFromNpm } from "../aspect/node/idealFromNpm";
-import { NpmDependencies } from "../aspect/node/npmDependencies";
-import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
-import { PythonDependencies } from "../aspect/python/pythonDependencies";
-import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
-import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
-import { SpringBootStarter } from "../aspect/spring/springBootStarter";
-import { SpringBootVersion } from "../aspect/spring/springBootVersion";
-import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-
-/**
- * This will identify directories containing any of the following files as virtual projects
- * if the repository root didn't look like a virtual project.
- */
-export const virtualProjectFinder: VirtualProjectFinder = cachingVirtualProjectFinder(
-    fileNamesVirtualProjectFinder(
-        "package.json", "pom.xml", "build.gradle", "requirements.txt",
-    ));
+    Aspect,
+    makeVirtualProjectAware,
+} from "@atomist/sdm-pack-fingerprints";
+import { K8sSpecs } from "./k8s/spec";
+import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
+import { NpmDependencies } from "./node/npmDependencies";
+import { TypeScriptVersion } from "./node/TypeScriptVersion";
+import { PythonDependencies } from "./python/pythonDependencies";
+import { DirectMavenDependencies } from "./spring/directMavenDependencies";
+import { SpringBootStarter } from "./spring/springBootStarter";
+import { SpringBootVersion } from "./spring/springBootVersion";
+import { TravisScriptsAspect } from "./travis/travisAspects";
 
 /**
  * The aspects managed by this SDM.
@@ -104,5 +92,5 @@ export function aspects(): Aspect[] {
         PythonDependencies,
         K8sSpecs,
         LeinDeps,
-    ].map(aspect => makeVirtualProjectAware(aspect, virtualProjectFinder));
+    ].map(aspect => makeVirtualProjectAware(aspect, DefaultVirtualProjectFinder));
 }

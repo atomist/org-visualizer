@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
-import * as _ from "lodash";
-import { RepositoryScorer } from "../aspect/AspectRegistry";
 import {
+    BranchCountType,
     CodeMetricsType,
-} from "../aspect/common/codeMetrics";
+    GitRecencyType,
+    RepositoryScorer,
+} from "@atomist/sdm-pack-drift";
 import {
     hasNoLicense,
     LicenseType,
-} from "../aspect/community/license";
-import { BranchCountType } from "../aspect/git/branchCount";
-import { daysSince } from "../aspect/git/dateUtils";
-import {
-    GitRecencyType,
-} from "../aspect/git/gitActivity";
-import { FiveStar } from "./Score";
-import { adjustBy } from "./scoring";
+} from "@atomist/sdm-pack-drift/lib/aspect/community/license";
+import { daysSince } from "@atomist/sdm-pack-drift/lib/aspect/git/dateUtils";
+import { FiveStar } from "@atomist/sdm-pack-drift/lib/scorer/Score";
+import { adjustBy } from "@atomist/sdm-pack-drift/lib/scorer/scoring";
+import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
+import * as _ from "lodash";
 
 /**
  * Use to anchor scores to penalize repositories about which we know little.

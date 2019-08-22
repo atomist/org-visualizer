@@ -1,7 +1,0 @@
-query GitHubAppInstallationByOwner($name: String!) {
-    GitHubAppInstallation(owner: $name) {
-        token {
-            secret
-        }
-    }
-}

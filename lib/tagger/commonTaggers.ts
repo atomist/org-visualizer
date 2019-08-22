@@ -16,25 +16,25 @@
 
 import { logger } from "@atomist/automation-client";
 import {
-    AspectRegistry,
+    BranchCountType,
+    CodeOfConductType,
     CombinationTagger,
+    ExposedSecrets,
+    GitActivesType,
+    GitRecencyType,
+    isCodeMetricsFingerprint,
     Tagger,
+} from "@atomist/sdm-pack-drift";
+import {
+    AspectRegistry,
     WorkspaceSpecificTagger,
-} from "../aspect/AspectRegistry";
-import { isCodeMetricsFingerprint } from "../aspect/common/codeMetrics";
-import { CodeOfConductType } from "../aspect/community/codeOfConduct";
+} from "@atomist/sdm-pack-drift/lib/aspect/AspectRegistry";
 import {
     hasNoLicense,
     isLicenseFingerprint,
-} from "../aspect/community/license";
-import { isGlobMatchFingerprint } from "../aspect/compose/globAspect";
-import { BranchCountType } from "../aspect/git/branchCount";
-import { daysSince } from "../aspect/git/dateUtils";
-import {
-    GitActivesType,
-    GitRecencyType,
-} from "../aspect/git/gitActivity";
-import { ExposedSecrets } from "../aspect/secret/exposedSecrets";
+} from "@atomist/sdm-pack-drift/lib/aspect/community/license";
+import { isGlobMatchFingerprint } from "@atomist/sdm-pack-drift/lib/aspect/compose/globAspect";
+import { daysSince } from "@atomist/sdm-pack-drift/lib/aspect/git/dateUtils";
 
 export const Monorepo: Tagger = {
     name: "monorepo",

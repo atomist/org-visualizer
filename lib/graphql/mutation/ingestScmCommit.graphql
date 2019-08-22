@@ -1,5 +1,0 @@
-mutation IngestScmCommit($providerId: String!, $commit: SCMCommitInput!) {
-    ingestSCMCommit(scmProviderId: $providerId, scmCommitInput: $commit) {
-        id
-    }
-}

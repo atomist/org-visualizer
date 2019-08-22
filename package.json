@@ -1,16 +1,16 @@
 {
   "name": "@atomist/org-visualizer",
-  "version": "0.1.29",
+  "version": "0.2.0",
   "description": "Organization Visualizer using Atomist project scanning",
   "author": "Atomist Inc.",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/atomist-blogs/org-visualizer#readme",
+  "homepage": "https://github.com/atomist/org-visualizer#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atomist-blogs/org-visualizer.git"
+    "url": "https://github.com/atomist/org-visualizer.git"
   },
   "bugs": {
-    "url": "https://github.com/atomist-blogs/org-visualizer/issues"
+    "url": "https://github.com/atomist/org-visualizer/issues"
   },
   "keywords": [
     "atomist",
@@ -22,57 +22,22 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/automation-client": "1.6.3-master.20190821065818",
-    "@atomist/automation-client-ext-dashboard": "1.1.1-master.20190810154215",
-    "@atomist/automation-client-ext-humio": "^0.2.0",
     "@atomist/microgrammar": "^1.2.1",
     "@atomist/sdm": "1.6.2-master.20190821222758",
     "@atomist/sdm-core": "1.6.2-master.20190822002319",
     "@atomist/sdm-pack-build": "^1.0.5",
     "@atomist/sdm-pack-clojure": "^2.0.0",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190821110014",
+    "@atomist/sdm-pack-drift": "0.1.0-master.20190821065818",
     "@atomist/sdm-pack-fingerprints": "5.0.0-master.20190822065724",
     "@atomist/sdm-pack-node": "^1.1.1",
     "@atomist/sdm-pack-sloc": "1.0.3-master.20190502175705",
     "@atomist/sdm-pack-spring": "^2.0.0",
-    "@atomist/slack-messages": "^1.1.1",
-    "@octokit/rest": "^16.28.3",
-    "@types/js-yaml": "^3.12.1",
-    "@types/json-stable-stringify": "^1.0.32",
-    "@types/react": "^16.8.23",
-    "@types/react-dom": "^16.8.4",
-    "@types/yamljs": "^0.2.30",
-    "app-root-path": "^2.2.1",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.4",
-    "cors": "^2.8.5",
-    "d3": "^5.9.7",
-    "es6-promise-pool": "^2.5.0",
-    "express": "^4.17.1",
-    "express-auth-parser": "^0.1.2",
-    "express-handlebars": "^3.1.0",
-    "fs-extra": "^8.1.0",
-    "helmet": "^3.18.0",
-    "js-yaml": "^3.13.1",
-    "json-stable-stringify": "^1.0.1",
-    "lodash": "^4.17.15",
-    "node-fetch": "^2.6.0",
-    "pg": "^7.11.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "recursive-readdir": "^2.2.2",
-    "semver": "^6.3.0",
-    "serve-static": "^1.14.1",
-    "stringify-tree": "^1.0.2",
-    "swagger-ui-express": "^4.0.7",
-    "yamljs": "^0.3.0",
-    "yargs": "^13.2.4",
-    "zip-a-folder": "0.0.8"
+    "@atomist/slack-messages": "^1.1.1"
   },
   "devDependencies": {
     "@atomist/sdm-local": "^1.1.0",
-    "@types/d3": "^5.7.2",
     "@types/mocha": "^5.2.7",
-    "@types/pg": "^7.4.14",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^9.0.2",
     "mocha": "^6.1.4",
@@ -83,9 +48,7 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
-    "typescript": "^3.5.3",
-    "webpack": "^4.37.0",
-    "webpack-cli": "^3.3.6"
+    "typescript": "^3.5.3"
   },
   "directories": {
     "test": "test"
@@ -100,9 +63,8 @@
     "clean:npm": "rimraf node_modules",
     "clean:run": "rimraf *-v8.log profile.txt log",
     "clean:test": "rimraf .nyc_output coverage",
-    "compile": "run-s git:info gql:gen compile:ts compile:pack",
+    "compile": "run-s git:info gql:gen compile:ts",
     "compile:ts": "tsc --project .",
-    "compile:pack": "webpack",
     "doc": "typedoc --mode modules --excludeExternals --ignoreCompilerErrors --exclude \"**/*.d.ts\" --out doc index.ts lib",
     "git:info": "atm-git-info",
     "gql:gen": "atm-gql-gen",

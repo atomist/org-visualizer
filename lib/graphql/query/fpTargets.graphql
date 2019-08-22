@@ -1,7 +1,0 @@
-query GetFpTargets {
-    TeamConfiguration(namespace: "fptarget") {
-        name
-        value
-        namespace
-    }
-}

@@ -191,7 +191,7 @@ Taggers have an optional `severity` property for which the legal values are `inf
 
 ## Adding your aspects and taggers
 
-Do this by updating the `aspects` constant defined in the [`aspects.ts`](../lib/customize/aspects.ts) file. Add aspects to the `Aspects` array:
+Do this by updating the `aspects` constant defined in the [`aspects.ts`](../lib/aspect/aspects.ts) file. Add aspects to the `Aspects` array:
 
 ```typescript
 export const Aspects: ManagedAspect[] = [

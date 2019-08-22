@@ -15,13 +15,11 @@
  */
 
 import { microgrammar } from "@atomist/microgrammar";
+import { FileMatchData } from "@atomist/sdm-pack-drift/lib/aspect/compose/fileMatchAspect";
+import { microgrammarMatchAspect } from "@atomist/sdm-pack-drift/lib/aspect/compose/microgrammarMatchAspect";
 import {
     Aspect,
 } from "@atomist/sdm-pack-fingerprints";
-import {
-    FileMatchData,
-} from "../compose/fileMatchAspect";
-import { microgrammarMatchAspect } from "../compose/microgrammarMatchAspect";
 
 const targetFrameworksGrammar = microgrammar({
     _open: /<TargetFrameworks?>/,

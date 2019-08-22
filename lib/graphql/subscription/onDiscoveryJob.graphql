@@ -1,7 +1,0 @@
-subscription OnDiscoveryJob {
-    AtmJob(owner: "@atomist/lifecycle-automation", state: completed) {
-        name
-        data
-        state
-    }
-}
