@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { FP } from "@atomist/sdm-pack-fingerprints";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 import { RepositoryScorer } from "../aspect/AspectRegistry";
 import {
-    CodeMetricsData,
     CodeMetricsType,
 } from "../aspect/common/codeMetrics";
 import {
@@ -29,7 +27,6 @@ import {
 import { BranchCountType } from "../aspect/git/branchCount";
 import { daysSince } from "../aspect/git/dateUtils";
 import {
-    GitRecencyData,
     GitRecencyType,
 } from "../aspect/git/gitActivity";
 import { FiveStar } from "./Score";
