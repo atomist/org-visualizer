@@ -19,7 +19,7 @@ import { DockerFrom } from "@atomist/sdm-pack-docker";
 import * as _ from "lodash";
 import {
     CombinationTagger,
-    Tagger,
+    Tagger, TaggerDefinition,
 } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";
@@ -53,7 +53,7 @@ const DefaultTaggersParams: TaggersParams = {
  * @param {Partial<TaggersParams>} opts
  * @return {Tagger[]}
  */
-export function taggers(opts: Partial<TaggersParams>): Tagger[] {
+export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
     const optsToUse = {
         ...DefaultTaggersParams,
         ...opts,
@@ -122,6 +122,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         commonTaggers.HasContributingFile,
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
+        commonTaggers.isProblematic,
     ];
 }
 

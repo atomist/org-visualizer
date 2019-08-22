@@ -59,7 +59,7 @@ export interface ProblemStore {
  * Check to see if the given fingerprint is undesirable in the given workspace.
  * Enables code to be used along with fingerprints persisted in ProblemStore.
  */
-export type UndesirableUsageCheck = (workspaceId: string, fp: FP) => Promise<ProblemUsage | undefined>;
+export type UndesirableUsageCheck = (fp: FP, workspaceId: string) => ProblemUsage | undefined;
 
 /**
  * Type that can flag an issue with a fingerprint.
@@ -76,9 +76,9 @@ export interface UndesirableUsageChecker {
  */
 export function chainUndesirableUsageCheckers(...checkers: UndesirableUsageCheck[]): UndesirableUsageChecker {
     return {
-        check: async (workspaceId, fp) => {
+        check: (fp, workspaceId) => {
             for (const f of checkers) {
-                const flagged = await f(workspaceId, fp);
+                const flagged = f(fp, workspaceId);
                 if (flagged) {
                     return flagged;
                 }
@@ -98,7 +98,7 @@ export async function problemStoreBackedUndesirableUsageCheckerFor(problemStore:
                                                                    workspaceId: string): Promise<UndesirableUsageChecker> {
     const problems: ProblemUsage[] = await problemStore.loadProblems(workspaceId);
     return {
-        check: async (wsid, fp) => {
+        check: fp => {
             return problems.find(p => p.fingerprint.sha === fp.sha);
         },
     };

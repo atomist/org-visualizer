@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { logger } from "@atomist/automation-client";
 import {
+    AspectRegistry,
     CombinationTagger,
-    Tagger,
+    Tagger, WorkspaceSpecificTagger,
 } from "../aspect/AspectRegistry";
 import { isCodeMetricsFingerprint } from "../aspect/common/codeMetrics";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";
@@ -120,17 +122,25 @@ export function globRequired(opts: { name: string, description: string, glob: st
     };
 }
 
-// TODO queries database excessively
-// export function isProblematic(): Tagger {
-//     return {
-//         name: "problem",
-//         description: "Undesirable usage",
-//         test: async (fp, id, tagContext) => {
-//             const uuc = await tagContext.aspectRegistry.undesirableUsageCheckerFor(tagContext.workspaceId);
-//             return !!(await uuc.check(tagContext.workspaceId, fp));
-//         }
-//     }
-// }
+/**
+ * Flag repos with known undesirable usages
+ */
+export const isProblematic: WorkspaceSpecificTagger = {
+    name: "problems",
+    create: async (workspaceId: string, aspectRegistry: AspectRegistry) => {
+        logger.info("Creating problem tagger for workspace %s", workspaceId);
+        const checker = await aspectRegistry.undesirableUsageCheckerFor(workspaceId);
+        return {
+            name: "problems",
+            description: "Undesirable usage",
+            severity: "error",
+            test: fp => {
+               const problem = checker.check(fp, workspaceId);
+               return !!problem;
+            },
+        };
+    },
+};
 
 export function gitHot(opts: { name?: string, hotDays: number, hotContributors: number }): CombinationTagger {
     return {

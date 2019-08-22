@@ -23,7 +23,7 @@ import { chainUndesirableUsageCheckers } from "../aspect/ProblemStore";
  * @type {UndesirableUsageChecker}
  */
 export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
-    async (wsid, fingerprint) => fingerprint.type === TypeScriptVersionType && fingerprint.name === TypeScriptVersionType
+    fingerprint => fingerprint.type === TypeScriptVersionType && fingerprint.name === TypeScriptVersionType
         && fingerprint.data.some(v => v.startsWith("2")) ?
         {
             severity: "warn",
@@ -32,7 +32,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
             fingerprint,
         } :
         undefined,
-    async (wsid, fingerprint) => fingerprint.type === NpmDeps.name && fingerprint.name === "axios" ?
+    fingerprint => fingerprint.type === NpmDeps.name && fingerprint.name === "axios" ?
         {
             severity: "warn",
             authority: "Christian",
@@ -40,7 +40,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
             fingerprint,
         } :
         undefined,
-    async (wsid, fingerprint) => fingerprint.type === NpmDeps.name &&
+    fingerprint => fingerprint.type === NpmDeps.name &&
         fingerprint.data[1].length > "15" ?
         {
             severity: "warn",
@@ -49,7 +49,7 @@ export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
             fingerprint,
         } :
         undefined,
-    async (wsid, fingerprint) => {
+    fingerprint => {
         if (fingerprint.type === "tslintproperty" && fingerprint.name === "rules:max-file-line-count") {
             try {
                 const obj = JSON.parse(fingerprint.data);

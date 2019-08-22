@@ -20,12 +20,12 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    CombinationTagger,
+    CombinationTagger, isTagger,
     RepositoryScorer,
     ScoredRepo,
     Tag,
     TaggedRepo,
-    Tagger,
+    Tagger, TaggerDefinition, WorkspaceSpecificTagger,
 } from "./AspectRegistry";
 
 import { RemoteRepoRef } from "@atomist/automation-client";
@@ -48,14 +48,14 @@ import {
 
 export class DefaultAspectRegistry implements AspectRegistry {
 
-    private readonly taggers: Tagger[] = [];
+    private readonly taggers: TaggerDefinition[] = [];
 
     private readonly combinationTaggers: CombinationTagger[] = [];
 
     /**
-     * Add a tagger.
+     * Add a tagger that will work on all repositories.
      */
-    public withTaggers(...taggers: Tagger[]): this {
+    public withTaggers(...taggers: TaggerDefinition[]): this {
         this.taggers.push(...taggers);
         return this;
     }
@@ -63,13 +63,6 @@ export class DefaultAspectRegistry implements AspectRegistry {
     public withCombinationTaggers(...taggers: CombinationTagger[]): this {
         this.combinationTaggers.push(...taggers);
         return this;
-    }
-
-    private tagsFor(fp: FP, id: RemoteRepoRef, tagContext: TagContext): Tag[] {
-        return _.uniqBy(this.taggers
-                .map(tagger => ({ ...tagger, tag: tagger.test(fp, id, tagContext) }))
-                .filter(t => !!t.tag),
-            tag => tag.name);
     }
 
     private combinationTagsFor(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Tag[] {
@@ -129,22 +122,24 @@ export class DefaultAspectRegistry implements AspectRegistry {
 
     private async tagRepos(tagContext: TagContext,
                            repos: ProjectAnalysisResult[]): Promise<TaggedRepo[]> {
-        return Promise.all(repos.map(repo => this.tagRepo(tagContext, repo)));
+        const simpleTaggers = this.taggers.filter(isTagger);
+        const workspaceSpecificTaggers = await Promise.all(this.taggers
+            .filter(td => !isTagger(td))
+            // TODO why is this cast needed?
+            .map(td => (td as WorkspaceSpecificTagger).create(tagContext.workspaceId, this)));
+        const taggersToUse = [...simpleTaggers, ...workspaceSpecificTaggers];
+        return Promise.all(repos.map(repo => this.tagRepo(tagContext, repo, taggersToUse)));
     }
 
     private async tagRepo(
         tagContext: TagContext,
-        repo: ProjectAnalysisResult): Promise<TaggedRepo> {
+        repo: ProjectAnalysisResult,
+        taggers: Tagger[]): Promise<TaggedRepo> {
         return {
             ...repo,
-            tags: (await this.tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext))
+            tags: (await tagsIn(repo.analysis.fingerprints, repo.repoRef, tagContext, taggers))
                 .concat(this.combinationTagsFor(repo.analysis.fingerprints, repo.repoRef, tagContext)),
         };
-    }
-
-    private async tagsIn(fps: FP[], id: RemoteRepoRef, tagContext: TagContext): Promise<Tag[]> {
-        return _.uniqBy(_.flatten(fps.map(fp => this.tagsFor(fp, id, tagContext))), tag => tag.name)
-            .sort();
     }
 
     constructor(private readonly opts: {
@@ -169,4 +164,16 @@ export function defaultedToDisplayableFingerprintName(aspect?: Aspect): (fingerp
 
 export function defaultedToDisplayableFingerprint(aspect?: Aspect): (fpi: FP) => string {
     return (aspect && aspect.toDisplayableFingerprint) || (fp => fp && fp.data);
+}
+
+function tagsFor(fp: FP, id: RemoteRepoRef, tagContext: TagContext, taggers: Tagger[]): Tag[] {
+    return _.uniqBy(taggers
+            .map(tagger => ({ ...tagger, tag: tagger.test(fp, id, tagContext) }))
+            .filter(t => !!t.tag),
+        tag => tag.name);
+}
+
+async function tagsIn(fps: FP[], id: RemoteRepoRef, tagContext: TagContext, taggersToUse: Tagger[]): Promise<Tag[]> {
+    return _.uniqBy(_.flatten(fps.map(fp => tagsFor(fp, id, tagContext, taggersToUse))), tag => tag.name)
+        .sort();
 }

@@ -77,6 +77,22 @@ export interface Tagger extends Tag {
     test(fp: FP, id: RemoteRepoRef, tagContext: TagContext): boolean;
 }
 
+export interface WorkspaceSpecificTagger {
+    readonly name: string;
+
+    create(workspaceId: string, ar: AspectRegistry): Promise<Tagger>;
+}
+
+/**
+ * Tagger that can apply to all workspaces or workspace-specific tagger
+ */
+export type TaggerDefinition = Tagger | WorkspaceSpecificTagger;
+
+export function isTagger(t: TaggerDefinition): t is Tagger {
+    const maybe = t as Tagger;
+    return !!maybe.test;
+}
+
 /**
  * Determine zero or one tag from this set of fingerprints
  */
