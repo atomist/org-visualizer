@@ -37,4 +37,4 @@ export const startEmbeddedPostgres: ConfigurationPreProcessor = async cfg => {
         });
     }
     return cfg;
-}
+};
