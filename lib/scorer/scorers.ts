@@ -17,11 +17,9 @@
 import {
     CodeOfConductType,
     RepositoryScorer,
-} from "@atomist/sdm-pack-drift";
-import {
     requireAspectOfType,
     requireGlobAspect,
-} from "@atomist/sdm-pack-drift/lib/scorer/scorerUtils";
+} from "@atomist/sdm-pack-drift";
 import {
     PowerShellLanguage,
     ShellLanguage,

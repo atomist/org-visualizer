@@ -15,18 +15,16 @@
  */
 
 import {
+    adjustBy,
     BranchCountType,
     CodeMetricsType,
+    daysSince,
+    FiveStar,
     GitRecencyType,
-    RepositoryScorer,
-} from "@atomist/sdm-pack-drift";
-import {
     hasNoLicense,
     LicenseType,
-} from "@atomist/sdm-pack-drift/lib/aspect/community/license";
-import { daysSince } from "@atomist/sdm-pack-drift/lib/aspect/git/dateUtils";
-import { FiveStar } from "@atomist/sdm-pack-drift/lib/scorer/Score";
-import { adjustBy } from "@atomist/sdm-pack-drift/lib/scorer/scoring";
+    RepositoryScorer,
+} from "@atomist/sdm-pack-drift";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 

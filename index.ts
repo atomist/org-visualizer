@@ -28,7 +28,7 @@ export const configuration: Configuration = configure(async sdm => {
         sdm.addExtensionPacks(
             driftSupport({
                 aspects: aspects(),
-                
+
                 scorers: scorers(),
 
                 taggers: taggers({}),

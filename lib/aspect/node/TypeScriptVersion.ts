@@ -19,8 +19,6 @@ import {
     logger,
 } from "@atomist/automation-client";
 import {
-    execPromise,
-    LoggingProgressLog,
     spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
@@ -29,7 +27,6 @@ import {
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import { PackageJson } from "@atomist/sdm-pack-node";
-import { codeLine } from "@atomist/slack-messages";
 import * as _ from "lodash";
 
 export const TypeScriptVersionType = "typescript-version";

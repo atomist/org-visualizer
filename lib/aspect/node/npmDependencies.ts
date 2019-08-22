@@ -16,7 +16,6 @@
 
 import { LocalProject } from "@atomist/automation-client";
 import {
-    LoggingProgressLog,
     spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";

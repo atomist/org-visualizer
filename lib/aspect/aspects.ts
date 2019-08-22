@@ -30,12 +30,10 @@ import {
     DefaultVirtualProjectFinder,
     ExposedSecrets,
     GitRecency,
-} from "@atomist/sdm-pack-drift";
-import {
+    globAspect,
     License,
     LicensePresence,
-} from "@atomist/sdm-pack-drift/lib/aspect/community/license";
-import { globAspect } from "@atomist/sdm-pack-drift/lib/aspect/compose/globAspect";
+} from "@atomist/sdm-pack-drift";
 import {
     Aspect,
     makeVirtualProjectAware,
