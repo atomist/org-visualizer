@@ -15,8 +15,8 @@
  */
 
 import {
-    commonTaggers,
     CiAspect,
+    commonTaggers,
     isFileMatchFingerprint,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";

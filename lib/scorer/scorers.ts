@@ -15,8 +15,8 @@
  */
 
 import {
-    commonScorers,
     CodeOfConductType,
+    commonScorers,
     RepositoryScorer,
     requireAspectOfType,
     requireGlobAspect,
