@@ -8,7 +8,7 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y postgresql postgresql-client postgresql-contrib
 
-COPY ./node_modules/@atomist/sdm-pack-drif/ddl/create.ddl ./ddl/create.ddl
+COPY ./node_modules/@atomist/sdm-pack-drift/ddl/create.ddl ./ddl/create.ddl
 
 USER postgres
 
