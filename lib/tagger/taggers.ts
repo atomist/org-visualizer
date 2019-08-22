@@ -15,6 +15,7 @@
  */
 
 import {
+    commonTaggers,
     CiAspect,
     isFileMatchFingerprint,
     TaggerDefinition,
@@ -25,7 +26,6 @@ import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
-import * as commonTaggers from "./commonTaggers";
 import * as nodeTaggers from "./nodeTaggers";
 
 export interface TaggersParams {
