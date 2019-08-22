@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { chainUndesirableUsageCheckers } from "@atomist/sdm-pack-drift";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
-import { chainUndesirableUsageCheckers } from "@atomist/sdm-pack-drift";
 
 /**
  * Demonstration of code-driven flagging of undesirable uses
