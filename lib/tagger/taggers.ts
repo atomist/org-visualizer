@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import { DockerFrom } from "@atomist/sdm-pack-docker";
 import {
     CiAspect,
     isFileMatchFingerprint,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
+import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";

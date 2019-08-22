@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
-import {
-    DockerfilePath,
-    DockerFrom,
-    DockerPorts,
-} from "@atomist/sdm-pack-docker";
 import {
     branchCount,
     ChangelogAspect,
@@ -34,6 +28,12 @@ import {
     License,
     LicensePresence,
 } from "@atomist/sdm-pack-aspect";
+import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
 import {
     Aspect,
     makeVirtualProjectAware,
