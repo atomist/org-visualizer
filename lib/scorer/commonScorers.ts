@@ -24,7 +24,7 @@ import {
     hasNoLicense,
     LicenseType,
     RepositoryScorer,
-} from "@atomist/sdm-pack-drift";
+} from "@atomist/sdm-pack-aspect";
 import { Language } from "@atomist/sdm-pack-sloc/lib/slocReport";
 import * as _ from "lodash";
 

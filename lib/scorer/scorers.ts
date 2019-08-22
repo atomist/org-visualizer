@@ -19,7 +19,7 @@ import {
     RepositoryScorer,
     requireAspectOfType,
     requireGlobAspect,
-} from "@atomist/sdm-pack-drift";
+} from "@atomist/sdm-pack-aspect";
 import {
     PowerShellLanguage,
     ShellLanguage,

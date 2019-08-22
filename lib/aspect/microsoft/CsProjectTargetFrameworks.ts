@@ -18,7 +18,7 @@ import { microgrammar } from "@atomist/microgrammar";
 import {
     FileMatchData,
     microgrammarMatchAspect,
-} from "@atomist/sdm-pack-drift";
+} from "@atomist/sdm-pack-aspect";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
 
 const targetFrameworksGrammar = microgrammar({

@@ -19,8 +19,10 @@ process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
 import { configure } from "@atomist/sdm-core";
-import { driftSupport } from "@atomist/sdm-pack-drift";
-import { combinationTaggers } from "@atomist/sdm-pack-drift/lib/customize/taggers";
+import {
+    aspectSupport,
+    combinationTaggers,
+} from "@atomist/sdm-pack-aspect";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
 import { taggers } from "./lib/tagger/taggers";
@@ -29,7 +31,7 @@ import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChe
 export const configuration: Configuration = configure(async sdm => {
 
         sdm.addExtensionPacks(
-            driftSupport({
+            aspectSupport({
                 aspects: aspects(),
 
                 scorers: scorers(),

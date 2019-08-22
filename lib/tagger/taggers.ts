@@ -20,7 +20,7 @@ import {
     CiAspect,
     isFileMatchFingerprint,
     TaggerDefinition,
-} from "@atomist/sdm-pack-drift";
+} from "@atomist/sdm-pack-aspect";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
 import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencies";
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";

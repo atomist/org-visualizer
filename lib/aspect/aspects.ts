@@ -33,7 +33,7 @@ import {
     globAspect,
     License,
     LicensePresence,
-} from "@atomist/sdm-pack-drift";
+} from "@atomist/sdm-pack-aspect";
 import {
     Aspect,
     makeVirtualProjectAware,

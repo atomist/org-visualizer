@@ -20,6 +20,7 @@ import {
     BranchCountType,
     CodeOfConductType,
     CombinationTagger,
+    daysSince,
     ExposedSecrets,
     GitActivesType,
     GitRecencyType,
@@ -29,8 +30,7 @@ import {
     isLicenseFingerprint,
     Tagger,
     WorkspaceSpecificTagger,
-} from "@atomist/sdm-pack-drift";
-import { daysSince } from "@atomist/sdm-pack-drift/lib/aspect/git/dateUtils";
+} from "@atomist/sdm-pack-aspect";
 
 export const Monorepo: Tagger = {
     name: "monorepo",

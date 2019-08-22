@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tagger } from "@atomist/sdm-pack-drift";
+import { Tagger } from "@atomist/sdm-pack-aspect";
 import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { TsLintType } from "../aspect/node/TsLint";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
