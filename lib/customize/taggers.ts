@@ -19,7 +19,8 @@ import { DockerFrom } from "@atomist/sdm-pack-docker";
 import * as _ from "lodash";
 import {
     CombinationTagger,
-    Tagger, TaggerDefinition,
+    Tagger,
+    TaggerDefinition,
 } from "../aspect/AspectRegistry";
 import { CiAspect } from "../aspect/common/stackAspect";
 import { isFileMatchFingerprint } from "../aspect/compose/fileMatchAspect";

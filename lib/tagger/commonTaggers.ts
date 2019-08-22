@@ -18,7 +18,8 @@ import { logger } from "@atomist/automation-client";
 import {
     AspectRegistry,
     CombinationTagger,
-    Tagger, WorkspaceSpecificTagger,
+    Tagger,
+    WorkspaceSpecificTagger,
 } from "../aspect/AspectRegistry";
 import { isCodeMetricsFingerprint } from "../aspect/common/codeMetrics";
 import { CodeOfConductType } from "../aspect/community/codeOfConduct";

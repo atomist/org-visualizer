@@ -20,12 +20,15 @@ import {
 } from "@atomist/sdm-pack-fingerprints";
 import {
     AspectRegistry,
-    CombinationTagger, isTagger,
+    CombinationTagger,
+    isTagger,
     RepositoryScorer,
     ScoredRepo,
     Tag,
     TaggedRepo,
-    Tagger, TaggerDefinition, WorkspaceSpecificTagger,
+    Tagger,
+    TaggerDefinition,
+    WorkspaceSpecificTagger,
 } from "./AspectRegistry";
 
 import { RemoteRepoRef } from "@atomist/automation-client";
