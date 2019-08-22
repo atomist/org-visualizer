@@ -1,0 +1,13 @@
+subscription OnPullRequest {
+    PullRequest {
+        id
+        body
+        state
+        action
+        head {
+            sha
+            message
+        }
+        branchName
+    }
+}

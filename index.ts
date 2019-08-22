@@ -80,6 +80,7 @@ import {
     combinationTaggers,
     taggers,
 } from "./lib/customize/taggers";
+import { CreatePolicyLogOnPullRequest } from "./lib/event/policyLog";
 import {
     CreateFingerprintJob,
     CreateFingerprintJobCommand,
@@ -201,6 +202,7 @@ export const configuration: Configuration = configure(async sdm => {
             };
         } else {
             sdm.addEvent(CreateFingerprintJob);
+            sdm.addEvent(CreatePolicyLogOnPullRequest);
             sdm.addCommand(CreateFingerprintJobCommand);
             sdm.addCommand(calculateFingerprintTask(jobAspects, handlers));
             return {};
@@ -223,7 +225,6 @@ export const configuration: Configuration = configure(async sdm => {
             cfg.sdm.goalSigning = {
                 ...cfg.sdm.goalSigning,
                 scope: GoalSigningScope.All,
-                enabled: false,
             };
 
             if (mode === "job") {
