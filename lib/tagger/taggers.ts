@@ -15,7 +15,8 @@
  */
 
 import {
-    CiAspect, CombinationTagger,
+    CiAspect,
+    CombinationTagger,
     commonTaggers,
     isFileMatchFingerprint,
     TaggerDefinition,

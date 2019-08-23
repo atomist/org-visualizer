@@ -24,7 +24,10 @@ import {
 } from "@atomist/sdm-pack-aspect";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
-import { combinationTaggers, taggers } from "./lib/tagger/taggers";
+import {
+    combinationTaggers,
+    taggers,
+} from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
 
