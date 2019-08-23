@@ -21,11 +21,10 @@ import { Configuration } from "@atomist/automation-client";
 import { configure } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    combinationTaggers,
 } from "@atomist/sdm-pack-aspect";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
-import { taggers } from "./lib/tagger/taggers";
+import { combinationTaggers, taggers } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
 

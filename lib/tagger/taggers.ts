@@ -15,7 +15,7 @@
  */
 
 import {
-    CiAspect,
+    CiAspect, CombinationTagger,
     commonTaggers,
     isFileMatchFingerprint,
     TaggerDefinition,
@@ -27,6 +27,8 @@ import { DirectMavenDependencies } from "../aspect/spring/directMavenDependencie
 import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as nodeTaggers from "./nodeTaggers";
+
+import * as _ from "lodash";
 
 export interface TaggersParams {
 
@@ -121,5 +123,50 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
         commonTaggers.isProblematic,
+    ];
+}
+
+export interface CombinationTaggersParams {
+
+    /**
+     * Mininum percentage of average aspect count (fraction) to expect to indicate adequate project understanding
+     */
+    minAverageAspectCountFractionToExpect: number;
+
+    /**
+     * Days since the last commit to indicate a hot repo
+     */
+    hotDays: number;
+
+    /**
+     * Number of committers needed to indicate a hot repo
+     */
+    hotContributors: number;
+}
+
+const DefaultCombinationTaggersParams: CombinationTaggersParams = {
+    minAverageAspectCountFractionToExpect: .75,
+    hotDays: 2,
+    hotContributors: 3,
+};
+
+export function combinationTaggers(opts: Partial<CombinationTaggersParams>): CombinationTagger[] {
+    const optsToUse = {
+        ...DefaultCombinationTaggersParams,
+        ...opts,
+    };
+    return [
+        {
+            name: "not understood",
+            description: "You may want to write aspects for these outlier projects",
+            severity: "warn",
+            test: (fps, id, tagContext) => {
+                const aspectCount = _.uniq(fps.map(f => f.type)).length;
+                // There are quite a few aspects that are found on everything, e.g. git
+                // We need to set the threshold count probably
+                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
+            },
+        },
+        commonTaggers.gitHot(optsToUse),
     ];
 }

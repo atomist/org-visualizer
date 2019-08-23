@@ -18,8 +18,6 @@ import {
     CodeOfConductType,
     commonScorers,
     RepositoryScorer,
-    requireAspectOfType,
-    requireGlobAspect,
 } from "@atomist/sdm-pack-aspect";
 import {
     PowerShellLanguage,
@@ -47,8 +45,8 @@ export function scorers(): RepositoryScorer[] {
         commonScorers.limitLinesOfCodeIn({ language: PowerShellLanguage, limit: 200, freeAmount: 100 }),
         commonScorers.limitLinesOfCodeIn({ language: ShellLanguage, limit: 200, freeAmount: 100 }),
         commonScorers.requireRecentCommit({ days: 30 }),
-        requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
-        requireGlobAspect({ glob: "CHANGELOG.md" }),
-        requireGlobAspect({ glob: "CONTRIBUTING.md" }),
+        commonScorers.requireAspectOfType({ type: CodeOfConductType, reason: "Repos should have a code of conduct" }),
+        commonScorers.requireGlobAspect({ glob: "CHANGELOG.md" }),
+        commonScorers.requireGlobAspect({ glob: "CONTRIBUTING.md" }),
     ];
 }
