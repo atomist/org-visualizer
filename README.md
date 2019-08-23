@@ -58,13 +58,17 @@ Next, build with `npm run build`
 
 Data about each repository is stored locally in a PostgreSQL database.
 
-Start Postgres, connect to it, and run the [create.ddl](ddl/create.ddl) script to set up the database.
-
-If you want to wipe out your data and start over, this will also accomplish that.
+Before starting to use org-visualizer, you need to create the required database by running the following command after
+starting your local PostgreSQL server:
 
 ```
-> psql
-psql> \i ddl/create.ddl
+$ npm run db:create
+```
+
+In order to clean up and remove the database, run:
+
+```
+$ npm run db:delete
 ```
 
 #### Connecting to the Database

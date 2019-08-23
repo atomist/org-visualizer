@@ -78,7 +78,8 @@
     "test": "mocha --require espower-typescript/guess \"test/**/*.test.ts\"",
     "test:one": "mocha --require espower-typescript/guess \"test/**/${TEST:-*.test.ts}\"",
     "typedoc": "npm run doc",
-    "spider": "npm run compile:ts && node ./lib/script/spider.js -o Azure-Samples -s cognitive"
+    "db:create": "psql --command \"CREATE USER org_viz WITH SUPERUSER PASSWORD 'atomist'\" && createdb -O org_viz org_viz && psql -f ./node_modules/@atomist/sdm-pack-aspect/ddl/create.ddl org_viz",
+    "db:delete": "psql --command \"DROP DATABASE org_viz\" --command \"DROP ROLE org_viz\""
   },
   "engines": {
     "node": ">=10.0.0",
