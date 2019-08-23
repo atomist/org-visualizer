@@ -373,7 +373,7 @@ metadata:
 
         it("should return fingerprints if no specs", async () => {
             const p = InMemoryProject.of();
-            const f = await createK8sSpecsFingerprints(p);
+            const f = await createK8sSpecsFingerprints(p, {} as any);
             assert.deepStrictEqual(f, []);
         });
 
@@ -387,7 +387,7 @@ metadata:
                 },
                 { path: "sa.json", content: "{}" },
             );
-            const f = await createK8sSpecsFingerprints(p);
+            const f = await createK8sSpecsFingerprints(p, {} as any);
             const e = [
                 {
                     type: "k8s-specs",
@@ -448,7 +448,7 @@ metadata:
                 },
                 sha: "df9e9f62024d15c7823c6eb688cf3489f3c640f2f9af892880108b385a9fa37d",
             };
-            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp }} as any ));
+            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp } } as any));
             assert.strictEqual(p.fileCount, 3);
         });
 
@@ -477,7 +477,7 @@ metadata:
                 },
                 sha: "df9e9f62024d15c7823c6eb688cf3489f3c640f2f9af892880108b385a9fa37d",
             };
-            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp }} as any ));
+            assert(await applyK8sSpecsFingerprint(p, { parameters: { fp } } as any));
             const c = await (await p.getFile("dep.json")).getContent();
             assert(c === `{"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"providence","namespace":"sonic-youth"}}`);
         });
