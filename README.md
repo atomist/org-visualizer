@@ -121,7 +121,7 @@ It works as at Atomist command, which runs through the `atomist` CLI.
 
 To analyze a GitHub organization, run the following command:
 
-`atomist analyze github repositories`
+`atomist analyze github organization`
 
 Enter the GitHub owner name (e.g., 'atomist') at the prompt.
 
@@ -134,7 +134,7 @@ Node processes via a `GITHUB_TOKEN` environment variable._
 To analyze local directories, wherever they were cloned from, specify the full path of the parent directory of the repositories, as follows: 
 
 ```
-atomist analyze local --l /Users/rodjohnson/atomist/projects/spring-team/
+atomist analyze local repositories --localDirectories /Users/rodjohnson/atomist/projects/spring-team/
 ```
 
 #### General
