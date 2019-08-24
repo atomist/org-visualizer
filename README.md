@@ -121,7 +121,7 @@ It works as at Atomist command, which runs through the `atomist` CLI.
 
 To analyze a GitHub organization, run the following command:
 
-`atomist analyze github organization`
+`atomist analyze github repositories`
 
 Enter the GitHub owner name (e.g., 'atomist') at the prompt.
 
