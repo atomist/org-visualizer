@@ -16,7 +16,7 @@
 
 import {
     Aspect,
-    sha256,
+    fingerprintOf,
 } from "@atomist/sdm-pack-fingerprints";
 import {
     setSpringBootVersionTransform,
@@ -34,14 +34,10 @@ export const SpringBootVersion: Aspect = {
         if (!versions || versions.versions.length === 0) {
             return undefined;
         }
-        return {
+        return fingerprintOf({
             type: SpringBootVersionType,
-            name: SpringBootVersionType,
-            abbreviation: "sbv",
-            version: "0.1.0",
             data: versions,
-            sha: sha256(JSON.stringify(versions)),
-        };
+        });
     },
     apply: async (p, papi) => {
         const fp = papi.parameters.fp;
