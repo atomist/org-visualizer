@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { buttonForCommand, GitProject } from "@atomist/automation-client";
-import { PushImpactListenerInvocation, slackQuestionMessage } from "@atomist/sdm";
-import { Aspect, fingerprintOf } from "@atomist/sdm-pack-fingerprints";
+import {
+    buttonForCommand,
+    GitProject,
+} from "@atomist/automation-client";
+import {
+    PushImpactListenerInvocation,
+    slackQuestionMessage,
+} from "@atomist/sdm";
+import {
+    Aspect,
+    fingerprintOf,
+} from "@atomist/sdm-pack-fingerprints";
 
 export interface SuggestTagData {
 
