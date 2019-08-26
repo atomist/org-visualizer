@@ -1,5 +1,5 @@
   <img src="./images/dockerImageSunburst.png"
-  width="130" hight="130" align="right" />
+  width="130" height="130" align="right" />
 
 # @atomist/org-visualizer
 
@@ -179,7 +179,7 @@ export function aspects(): Aspect[] {
 
 >After updating your code you will need to rerun existing analyses. Run `atomist analyze [local|github] --update true` again to force updates on existing data.
 
-See the [developer guide](./docs/developer.md) for more information.
+See the [developer guide](https://github.com/atomist/sdm-pack-aspect/blob/master/docs/developer.md) for more information.
 
 ## Next Steps
 The [Atomist](https://www.atomist.com) service keeps analyses up to date automatically across all your repositories. It can also help to achieve consistency and convergence in eligible aspects by updating projects, and enabling workflows on change.
