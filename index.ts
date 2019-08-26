@@ -34,6 +34,7 @@ import {
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
+import { IsMaven } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
 import {
@@ -42,7 +43,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { IsMaven } from "@atomist/sdm-pack-spring";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
