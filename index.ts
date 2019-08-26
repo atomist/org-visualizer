@@ -22,11 +22,15 @@ process.env.ATOMIST_MODE = "local";
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
-    anySatisfied, goals,
+    anySatisfied,
+    goals,
     metadata,
     PushImpact,
 } from "@atomist/sdm";
-import { AllGoals, configure } from "@atomist/sdm-core";
+import {
+    AllGoals,
+    configure,
+} from "@atomist/sdm-core";
 import {
     aspectSupport,
     DefaultVirtualProjectFinder,
