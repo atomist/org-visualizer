@@ -21,7 +21,10 @@ process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
-import { metadata, PushImpact } from "@atomist/sdm";
+import {
+    metadata,
+    PushImpact,
+} from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
     aspectSupport,
