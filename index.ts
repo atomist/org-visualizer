@@ -21,7 +21,7 @@ process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
-import { PushImpact } from "@atomist/sdm";
+import { metadata, PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
     aspectSupport,
@@ -42,6 +42,8 @@ import { startEmbeddedPostgres } from "./lib/util/postgres";
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
 const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
+
+const instanceMetadata = metadata();
 
 export const configuration: Configuration = configure(async sdm => {
 
@@ -64,6 +66,7 @@ export const configuration: Configuration = configure(async sdm => {
                 undesirableUsageChecker: demoUndesirableUsageChecker,
                 virtualProjectFinder,
                 publishFingerprints: storeFingerprints(store),
+                instanceMetadata,
             }),
         );
     },
