@@ -24,7 +24,8 @@ import { loadUserConfiguration } from "@atomist/automation-client/lib/configurat
 import { PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
-    aspectSupport, DefaultVirtualProjectFinder,
+    aspectSupport,
+    DefaultVirtualProjectFinder,
 } from "@atomist/sdm-pack-aspect";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
