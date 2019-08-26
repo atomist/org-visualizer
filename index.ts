@@ -20,10 +20,15 @@ import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
+import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
+import { PushImpact } from "@atomist/sdm";
 import { configure } from "@atomist/sdm-core";
 import {
     aspectSupport, DefaultVirtualProjectFinder,
 } from "@atomist/sdm-pack-aspect";
+import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
+import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
 import {
@@ -32,11 +37,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
-import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
-import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
-import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
-import { PushImpact } from "@atomist/sdm";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
