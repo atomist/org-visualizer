@@ -15,6 +15,7 @@
  */
 
 import {
+    adjustBy,
     branchCount,
     ChangelogAspect,
     CodeMetricsAspect,
@@ -45,6 +46,8 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { commitRisk } from "./push/commitRisk";
+import * as commonCommitRiskScorers  from "./push/commonCommitRiskScorers";
 
 /**
  * The aspects managed by this SDM.
@@ -88,5 +91,11 @@ export function aspects(): Aspect[] {
         PythonDependencies,
         K8sSpecs,
         LeinDeps,
+        commitRisk({
+            scorers: [
+                commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
+                commonCommitRiskScorers.pomChanged(),
+            ],
+        })
     ];
 }

@@ -22,10 +22,11 @@ process.env.ATOMIST_MODE = "local";
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
+    anySatisfied, goals,
     metadata,
     PushImpact,
 } from "@atomist/sdm";
-import { configure } from "@atomist/sdm-core";
+import { AllGoals, configure } from "@atomist/sdm-core";
 import {
     aspectSupport,
     DefaultVirtualProjectFinder,
@@ -41,6 +42,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { IsMaven } from "@atomist/sdm-pack-spring";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -48,7 +50,11 @@ const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(load
 
 const instanceMetadata = metadata();
 
-export const configuration: Configuration = configure(async sdm => {
+interface TestGoals extends AllGoals {
+    pushImpact: PushImpact;
+}
+
+export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
         const pushImpact = new PushImpact();
 
@@ -72,6 +78,11 @@ export const configuration: Configuration = configure(async sdm => {
                 instanceMetadata,
             }),
         );
+        return {
+            fingerprint: {
+                goals: pushImpact,
+            },
+        };
     },
     {
         name: "Org Visualizer",
