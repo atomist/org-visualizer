@@ -27,7 +27,7 @@ import {
     License,
     LicensePresence,
 } from "@atomist/sdm-pack-aspect";
-import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
+import { LeinDeps } from "@atomist/sdm-pack-clojure";
 import {
     DockerfilePath,
     DockerFrom,
