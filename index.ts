@@ -15,12 +15,14 @@
  */
 
 // Org Visualizer should be used in local mode. This is to enforce that!
+import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
+
 process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
 import { configure } from "@atomist/sdm-core";
 import {
-    aspectSupport,
+    aspectSupport, DefaultVirtualProjectFinder,
 } from "@atomist/sdm-pack-aspect";
 import { aspects } from "./lib/aspect/aspects";
 import { scorers } from "./lib/scorer/scorers";
@@ -30,8 +32,19 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
+import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
+import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
+import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
+import { PushImpact } from "@atomist/sdm";
+
+const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
+
+const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
 
 export const configuration: Configuration = configure(async sdm => {
+
+        const pushImpact = new PushImpact();
 
         sdm.addExtensionPacks(
             aspectSupport({
@@ -42,7 +55,14 @@ export const configuration: Configuration = configure(async sdm => {
                 taggers: taggers({}),
                 combinationTaggers: combinationTaggers({}),
 
+                goals: {
+                    // This enables fingerprints to be computed on push
+                    pushImpact,
+                },
+
                 undesirableUsageChecker: demoUndesirableUsageChecker,
+                virtualProjectFinder,
+                publishFingerprints: storeFingerprints(store),
             }),
         );
     },

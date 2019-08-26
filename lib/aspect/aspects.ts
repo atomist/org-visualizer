@@ -21,7 +21,6 @@ import {
     CodeOfConduct,
     CodeOwnership,
     ContributingAspect,
-    DefaultVirtualProjectFinder,
     ExposedSecrets,
     GitRecency,
     globAspect,
@@ -36,7 +35,6 @@ import {
 } from "@atomist/sdm-pack-docker";
 import {
     Aspect,
-    makeVirtualProjectAware,
 } from "@atomist/sdm-pack-fingerprints";
 import { K8sSpecs } from "./k8s/spec";
 import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
@@ -90,5 +88,5 @@ export function aspects(): Aspect[] {
         PythonDependencies,
         K8sSpecs,
         LeinDeps,
-    ].map(aspect => makeVirtualProjectAware(aspect, DefaultVirtualProjectFinder));
+    ];
 }
