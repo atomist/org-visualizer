@@ -27,17 +27,21 @@ import {
 } from "@atomist/sdm";
 import {
     AllGoals,
-    configure,
+    configure, isInLocalMode,
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
     DefaultVirtualProjectFinder,
 } from "@atomist/sdm-pack-aspect";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
-import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
+import {
+    storeFingerprints,
+    storeFingerprintsFor
+} from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
+import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
 import {
     combinationTaggers,
@@ -59,6 +63,10 @@ interface TestGoals extends AllGoals {
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
         const pushImpact = new PushImpact();
+
+        sdm.addCommand(addSuggestedFingerprintCommand(
+            isInLocalMode() ? storeFingerprintsFor(store) : undefined,
+        ));
 
         sdm.addExtensionPacks(
             aspectSupport({

@@ -48,6 +48,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { ConfirmedTags, suggestTag } from "./push/suggestTag";
 
 /**
  * The aspects managed by this SDM.
@@ -91,11 +92,19 @@ export function aspects(): Aspect[] {
         PythonDependencies,
         K8sSpecs,
         LeinDeps,
+
+        // Tags commit based
         commitRisk({
             scorers: [
                 commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
                 commonCommitRiskScorers.pomChanged(),
             ],
         }),
+
+        // Asks for human intervention to tag the commit
+        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async ()=> true }),
+
+        // Show confirmed tag information
+        ConfirmedTags,
     ];
 }
