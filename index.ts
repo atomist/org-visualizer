@@ -40,6 +40,7 @@ import { storeFingerprints } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
+import { addFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
 import {
     combinationTaggers,
@@ -47,7 +48,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { addFingerprintCommand } from "./lib/aspect/push/suggestTag";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 

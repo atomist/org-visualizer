@@ -43,12 +43,12 @@ import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
 import { commitRisk } from "./push/commitRisk";
 import * as commonCommitRiskScorers  from "./push/commonCommitRiskScorers";
+import { suggestTag } from "./push/suggestTag";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { suggestTag } from "./push/suggestTag";
 
 /**
  * The aspects managed by this SDM.
@@ -98,6 +98,6 @@ export function aspects(): Aspect[] {
                 commonCommitRiskScorers.pomChanged(),
             ],
         }),
-        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true })
+        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),
     ];
 }
