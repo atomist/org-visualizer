@@ -43,7 +43,10 @@ import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
 import { commitRisk } from "./push/commitRisk";
 import * as commonCommitRiskScorers from "./push/commonCommitRiskScorers";
-import { ConfirmedTags, suggestTag } from "./push/suggestTag";
+import {
+    ConfirmedTags,
+    suggestTag,
+} from "./push/suggestTag";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";

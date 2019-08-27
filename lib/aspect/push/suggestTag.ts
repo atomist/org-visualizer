@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { buttonForCommand, GitProject, logger } from "@atomist/automation-client";
-import { CommandHandlerRegistration, PushImpactListenerInvocation, slackQuestionMessage } from "@atomist/sdm";
+import {
+    buttonForCommand,
+    GitProject,
+    logger,
+} from "@atomist/automation-client";
+import {
+    CommandHandlerRegistration,
+    PushImpactListenerInvocation,
+    slackQuestionMessage,
+} from "@atomist/sdm";
 import {
     Aspect,
     fingerprintOf,

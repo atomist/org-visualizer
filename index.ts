@@ -26,7 +26,8 @@ import {
 } from "@atomist/sdm";
 import {
     AllGoals,
-    configure, isInLocalMode,
+    configure,
+    isInLocalMode,
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
@@ -39,7 +40,11 @@ import {
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { Build } from "@atomist/sdm-pack-build";
-import { IsMaven, mavenBuilder, MavenDefaultOptions } from "@atomist/sdm-pack-spring";
+import {
+    IsMaven,
+    mavenBuilder,
+    MavenDefaultOptions,
+} from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
