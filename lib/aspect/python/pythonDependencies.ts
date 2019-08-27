@@ -37,8 +37,10 @@ export interface PythonDependency {
  * The entire line becomes the data of the fingerprint.
  *
  * The displayed value is the whole line, minus the name.
+ *
+ * The data is the requirements line.
  */
-export const PythonDependencies: Aspect = {
+export const PythonDependencies: Aspect<string> = {
     name: PythonDirectDepType,
     displayName: "Python dependencies",
     extract: async p => {
