@@ -17,7 +17,7 @@
 // Org Visualizer should be used in local mode. This is to enforce that!
 import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 
-process.env.ATOMIST_MODE = "local";
+// process.env.ATOMIST_MODE = "local";
 
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
@@ -47,6 +47,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { addFingerprintCommand } from "./lib/aspect/push/suggestTag";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -61,6 +62,9 @@ interface TestGoals extends AllGoals {
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
         const pushImpact = new PushImpact();
+
+        // TODO will move into fingerprints pack
+        sdm.addCommand(addFingerprintCommand());
 
         sdm.addExtensionPacks(
             aspectSupport({
@@ -78,7 +82,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
                 undesirableUsageChecker: demoUndesirableUsageChecker,
                 virtualProjectFinder,
-                publishFingerprints: storeFingerprints(store),
+                // publishFingerprints: storeFingerprints(store),
                 instanceMetadata,
             }),
         );

@@ -48,6 +48,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { suggestTag } from "./push/suggestTag";
 
 /**
  * The aspects managed by this SDM.
@@ -97,5 +98,6 @@ export function aspects(): Aspect[] {
                 commonCommitRiskScorers.pomChanged(),
             ],
         }),
+        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true })
     ];
 }

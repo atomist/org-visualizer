@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
+import { buttonForCommand, GitProject, } from "@atomist/automation-client";
 import {
-    buttonForCommand,
-    GitProject,
-} from "@atomist/automation-client";
-import {
+    CommandHandlerRegistration,
     PushImpactListenerInvocation,
+    SdmContext,
     slackQuestionMessage,
 } from "@atomist/sdm";
-import {
-    Aspect,
-    fingerprintOf,
-} from "@atomist/sdm-pack-fingerprints";
+import { Aspect, fingerprintOf, FP, } from "@atomist/sdm-pack-fingerprints";
+import { AddFingerprints } from "@atomist/sdm-pack-fingerprints/lib/typings/types";
 
 export interface SuggestTagData {
 
-    /**
-     * Score out of five
-     */
-    tag: string;
+    readonly tag: string;
 
-    reason: string;
+    readonly reason: string;
 }
 
 export interface TagSuggester extends SuggestTagData {
@@ -79,7 +73,13 @@ export function suggestTag(suggester: TagSuggester): Aspect<SuggestTagData> {
                             {
                                 actions: [buttonForCommand({ text: `Tag with ${suggester.tag}` },
                                     "set-fingerprint",
-                                    { sha: pli.push.after.sha, tag: suggester.tag, reason: suggester.reason },
+                                    {
+                                        repoId: pli.push.repo[0].id,
+                                        branchId: pli.push.branch[0],
+                                        sha: pli.push.after.sha,
+                                        tag: suggester.tag,
+                                        reason: suggester.reason,
+                                    },
                                 )],
                             });
                         await pli.addressChannels(askAboutTagging);
@@ -90,3 +90,57 @@ export function suggestTag(suggester: TagSuggester): Aspect<SuggestTagData> {
         ],
     };
 }
+
+export interface IdRepo {
+    branchId: string,
+    repoId: string,
+    sha: string,
+}
+
+export type AddFingerprint = (ctx: SdmContext, repo: IdRepo, fp: FP) => Promise<void>;
+
+const addFingerprintToGraph: AddFingerprint = async (ctx, repo, fp) => {
+    await ctx.context.graphClient.mutate<AddFingerprints.Mutation, AddFingerprints.Variables>(
+        {
+            name: "AddFingerprints",
+            variables: {
+                additions: [fp],
+                isDefaultBranch: true,
+                type: fp.type,
+                ...repo,
+            },
+        },
+    );
+};
+
+/**
+ * Type of a confirmed tag fingerprint
+ * @type {string}
+ */
+export const ConfirmedTagType = "confirmed-tag";
+
+export function addFingerprintCommand(adder: AddFingerprint = addFingerprintToGraph): CommandHandlerRegistration<{
+    sha: string, tag: string, reason: string,
+} & IdRepo> {
+    return {
+        name: "set-fingerprint",
+        parameters: {
+            sha: {},
+            tag: {},
+            reason: {},
+            repoId: {},
+            branchId: {},
+        },
+        listener: async ci => {
+            const fp = fingerprintOf({
+                type: ConfirmedTagType,
+                name: ci.parameters.tag,
+                data: {
+                    reason: ci.parameters.reason,
+                }
+            });
+            await adder(ci, ci.parameters, fp);
+        },
+    }
+}
+
