@@ -21,7 +21,6 @@ import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
     anySatisfied,
-    goals,
     metadata,
     PushImpact,
 } from "@atomist/sdm";
@@ -36,10 +35,11 @@ import {
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
     storeFingerprints,
-    storeFingerprintsFor
+    storeFingerprintsFor,
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
-import { IsMaven } from "@atomist/sdm-pack-spring";
+import { Build } from "@atomist/sdm-pack-build";
+import { IsMaven, mavenBuilder, MavenDefaultOptions } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
@@ -57,12 +57,20 @@ const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(load
 const instanceMetadata = metadata();
 
 interface TestGoals extends AllGoals {
+    build: Build;
     pushImpact: PushImpact;
 }
 
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
+        // Create goals that compute fingeprints during delivery
         const pushImpact = new PushImpact();
+
+        const build: Build = new Build()
+            .with({
+                ...MavenDefaultOptions,
+                builder: mavenBuilder(),
+            });
 
         sdm.addCommand(addSuggestedFingerprintCommand(
             isInLocalMode() ? storeFingerprintsFor(store) : undefined,
@@ -80,6 +88,9 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 goals: {
                     // This enables fingerprints to be computed on push
                     pushImpact,
+
+                    // This demonstrates build
+                    build,
                 },
 
                 undesirableUsageChecker: demoUndesirableUsageChecker,
@@ -91,6 +102,11 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         return {
             fingerprint: {
                 goals: pushImpact,
+            },
+            // We know how to build Maven projects
+            build: {
+                test: anySatisfied(IsMaven),
+                goals: build,
             },
         };
     },

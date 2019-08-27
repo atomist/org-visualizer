@@ -15,7 +15,6 @@
  */
 
 import {
-    adjustBy,
     branchCount,
     ChangelogAspect,
     CodeMetricsAspect,
@@ -28,6 +27,7 @@ import {
     License,
     LicensePresence,
 } from "@atomist/sdm-pack-aspect";
+import { buildTimeAspect } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/BuildAspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure";
 import {
     DockerfilePath,
@@ -43,12 +43,12 @@ import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
 import { commitRisk } from "./push/commitRisk";
 import * as commonCommitRiskScorers from "./push/commonCommitRiskScorers";
+import { ConfirmedTags, suggestTag } from "./push/suggestTag";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { ConfirmedTags, suggestTag } from "./push/suggestTag";
 
 /**
  * The aspects managed by this SDM.
@@ -101,8 +101,11 @@ export function aspects(): Aspect[] {
             ],
         }),
 
+        // Time builds
+        buildTimeAspect(),
+
         // Asks for human intervention to tag the commit
-        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async ()=> true }),
+        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),
 
         // Show confirmed tag information
         ConfirmedTags,

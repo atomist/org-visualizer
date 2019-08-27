@@ -21,7 +21,7 @@ import {
     fingerprintOf,
     PublishFingerprintsFor,
     RepoIdentification,
-    sendFingerprintsToAtomistFor
+    sendFingerprintsToAtomistFor,
 } from "@atomist/sdm-pack-fingerprints";
 
 export interface SuggestTagData {
@@ -131,7 +131,8 @@ export const ConfirmedTags: Aspect<SuggestTagData> = {
  * @param {PublishFingerprintsFor} publisher
  * @return {CommandHandlerRegistration<RepoTaggingParams>}
  */
-export function addSuggestedFingerprintCommand(publisher: PublishFingerprintsFor = sendFingerprintsToAtomistFor): CommandHandlerRegistration<RepoTaggingParams> {
+export function addSuggestedFingerprintCommand(
+    publisher: PublishFingerprintsFor = sendFingerprintsToAtomistFor): CommandHandlerRegistration<RepoTaggingParams> {
     return {
         name: SetFingerprintCommandName,
         parameters: {
