@@ -5,13 +5,15 @@
 
 A tool for visualizing technology usage and drift across an organization. 
 
-The cloud native era has led to an explosion of repositories, which we lack tools to understand and manage at scale. See Rod Johnson's blog [This Will Surprise You](https://blog.atomist.com/this-will-surprise-you/) for further discussion.
+The cloud native era has led to an explosion of repositories, which we lack tools to understand and manage at scale. See Rod Johnson's blogs [This Will Surprise You](https://blog.atomist.com/this-will-surprise-you/) and [What's Lurking in Your Repositories](https://blog.atomist.com/whats-lurking/) for further discussion.
 
-An Atomist **aspect** captures a concern in your project, in anything available from git: repository content (code and configuration) and git data such as branch counts and committer activity. Aspects support the following use cases:
+An Atomist **aspect** captures a concern in code or process. Aspects can access anything held in git: code and configuration and git data such as branch counts and committer activity. With the Atomist event hub, aspects can also capture data from your process, such as the characteristics of a push, build time and outcome.
+
+Aspects support the following use cases:
 
 1. *Visualization* (all aspects): See usage and drift across your organization.
-2. *Convergence* (some aspects): Help drive code changes to achieve consistency on an "ideal" state of an aspect, such as a particularly version of a library.
-3. *Reaction to change* (some aspects): React to changes in aspect usage within a project: for example, to a library upgrade, removing the Spring Boot Security starter or exposing an additional port in a Docker container.
+2. *Convergence* (some aspects): Help drive code changes to achieve consistency on an ideal state of an aspect, such as a particularly version of a library.
+3. *Reaction to change* (some aspects): React to changes in aspect usage within a project: for example, to a library upgrade, removing a Spring Boot Security starter or exposing an additional port in a Docker container.
 
 This project focuses on the visualization use case. Visualizations are exposed via d3 sunburst charts and via a REST API returning JSON documents.
 
@@ -27,7 +29,9 @@ support for investigating the following aspects of your project:
 - Common CI tools
 - git activity and branch count
 
-Analysis is extensible using the Atomist `Project` API. Implementing and registering additional aspects will result in additional visualization links after re-analysis and restarting the application.
+This repository also serves as an incubator for aspects that may graduate into other Atomist open source projects.
+
+Analysis is extensible using the Atomist `Project` API. Implementing and registering additional aspect result in additional visualization links after re-analysis and restarting the application.
 
 An example visualization, showing Docker images used across two GitHub organizations:
 
@@ -35,12 +39,12 @@ An example visualization, showing Docker images used across two GitHub organizat
 
 ## Running
 
-To visualize your org:
+To visualize your GitHub or local repositories:
 
 1. Clone and build this project
 2. Set up the required PostgreSQL database
-3. Run the `org-visualizer`
-4. Run analysis on your repositories
+3. Start the `org-visualizer` software delivery machine
+4. Run analysis on your repositories via the Atomist CLI
 5. Hit the web interface at [http://localhost:2866](http://localhost:2866)
 6. If you have more ideas, add code to study more aspects of your projects
 
@@ -56,16 +60,16 @@ Next, build with `npm run build`
 
 #### Creating the Database
 
-Data about each repository is stored locally in a PostgreSQL database.
+Data about your repositories are stored locally in a PostgreSQL database.
 
-Before starting to use org-visualizer, you need to create the required database by running the following command after
+Before starting to use `org-visualizer`, you need to create the required database by running the following command after
 starting your local PostgreSQL server:
 
 ```
 $ npm run db:create
 ```
 
-In order to clean up and remove the database, run:
+To clean up and remove the database, run:
 
 ```
 $ npm run db:delete
@@ -73,9 +77,9 @@ $ npm run db:delete
 
 #### Connecting to the Database
 
-For anything other than the default Postgres [connection parameters](https://node-postgres.com/features/connecting) and db `org_viz`:
+For anything other than the default PostgreSQL [connection parameters](https://node-postgres.com/features/connecting) and db `org_viz`:
 
-Configure the Postgres database details in `client.config.json` in your `~/.atomist`:
+Configure the PostgreSQL database details in `client.config.json` in your `~/.atomist`:
 
 ```json
 {
@@ -97,15 +101,16 @@ If `~/.atomist/client.config.json` does not exist, create it with the above cont
 
 You will need the following installed on your machine for the out of the box aspects to work:
 
-- The `git` binary
+- The `git` binary.
 - Java
   - A JDK (*not* a JRE)
   - Maven - `mvn` must be on the path. 
 - Node
 - npm
 
- All artifacts referenced in Maven or Node projects must be accessible when the analysis runs.
- You can check this by manually running `mvn` or `npm i` on the relevant projects.
+`git` is always required. Java or Node binaries are required only if working with those technologies in the projects you are analyzed.
+
+All artifacts referenced in Maven or Node projects must be accessible when the analysis runs. You can check this by manually running `mvn` or `npm i` on the relevant projects.
 
 ### Analyze your repositories
 
