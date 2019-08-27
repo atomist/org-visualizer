@@ -10,7 +10,7 @@
     "sourceMap": true,
     "lib": [
       "dom",
-      "es2017",
+      "ES2017",
       "dom.iterable",
       "scripthost",
       "esnext.asynciterable"

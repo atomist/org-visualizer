@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AbstractFingerprint } from "@atomist/sdm";
 import {
     ApplyFingerprint,
     Aspect,
@@ -22,7 +21,6 @@ import {
     sha256,
 } from "@atomist/sdm-pack-fingerprints";
 import * as _ from "lodash";
-import { Error } from "tslint/lib/error";
 
 export const TsLintType = "tslint";
 
