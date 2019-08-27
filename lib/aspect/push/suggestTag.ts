@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { buttonForCommand, GitProject } from "@atomist/automation-client";
+import {
+    buttonForCommand,
+    GitProject,
+} from "@atomist/automation-client";
 import {
     CommandHandlerRegistration,
     PushImpactListenerInvocation,
     SdmContext,
     slackQuestionMessage,
 } from "@atomist/sdm";
-import { Aspect, fingerprintOf, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    fingerprintOf,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import { AddFingerprints } from "@atomist/sdm-pack-fingerprints/lib/typings/types";
 
 export interface SuggestTagData {
