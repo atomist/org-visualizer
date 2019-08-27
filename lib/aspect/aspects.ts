@@ -42,7 +42,7 @@ import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks
 import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
 import { commitRisk } from "./push/commitRisk";
-import * as commonCommitRiskScorers  from "./push/commonCommitRiskScorers";
+import * as commonCommitRiskScorers from "./push/commonCommitRiskScorers";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
