@@ -17,8 +17,6 @@
 // Org Visualizer should be used in local mode. This is to enforce that!
 import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 
-process.env.ATOMIST_MODE = "local";
-
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
