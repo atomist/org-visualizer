@@ -15,7 +15,7 @@
  */
 
 import {
-    branchCount,
+    BranchCount,
     ChangelogAspect,
     CodeMetricsAspect,
     CodeOfConduct,
@@ -24,7 +24,7 @@ import {
     ExposedSecrets,
     GitRecency,
     globAspect,
-    License,
+    license,
     LicensePresence,
 } from "@atomist/sdm-pack-aspect";
 import { buildTimeAspect } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/BuildAspect";
@@ -62,7 +62,7 @@ export function aspects(): Aspect[] {
         DockerFrom,
         DockerfilePath,
         DockerPorts,
-        License,
+        license(),
         // Based on license, decide the presence of a license: Not spread
         LicensePresence,
         SpringBootStarter,
@@ -72,7 +72,7 @@ export function aspects(): Aspect[] {
         CodeOfConduct,
         ExposedSecrets,
         TravisScriptsAspect,
-        branchCount,
+        BranchCount,
         GitRecency,
         // This is expensive as it requires deeper cloning
         // gitActiveCommitters(30),

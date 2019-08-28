@@ -15,7 +15,6 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
-import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
     anySatisfied,
     metadata,
@@ -32,12 +31,12 @@ import {
     DefaultVirtualProjectFinder,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
+import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
     storeFingerprints,
     storeFingerprintsFor,
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
-import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { Build } from "@atomist/sdm-pack-build";
 import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 import {
