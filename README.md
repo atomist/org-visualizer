@@ -114,9 +114,7 @@ All artifacts referenced in Maven or Node projects must be accessible when the a
 
 ### Analyze your repositories
 
->You can start quickly by loading data from four open source organizations by running the script `load-demo-data.sh`.
-
-The `analyze` command is part of this org-visualizer project.
+The `analyze` command is exposed by this org-visualizer project.
 It works as at Atomist command, which runs through the `atomist` CLI.
 
 * install the CLI: `npm i -g @atomist/cli`
@@ -126,11 +124,15 @@ It works as at Atomist command, which runs through the `atomist` CLI.
 
 To analyze a GitHub organization, run the following command:
 
-`atomist analyze github repositories`
+```
+atomist analyze github organization
+```
 
-Enter the GitHub owner name (e.g., 'atomist') at the prompt.
+Enter the GitHub owner name (e.g., `atomist`) at the prompt. Alternatively you can specify the owner parameter as a CLI argument to skip the prompt, as follows:
 
-When prompted for a query, hit enter to skip.
+```
+atomist analyze github organization --owner atomist
+```
 
 _To access private repositories, ensure that your GitHub token is available to 
 Node processes via a `GITHUB_TOKEN` environment variable._
@@ -139,14 +141,16 @@ Node processes via a `GITHUB_TOKEN` environment variable._
 To analyze local directories, wherever they were cloned from, specify the full path of the parent directory of the repositories, as follows: 
 
 ```
-atomist analyze local repositories --localDirectories /Users/rodjohnson/atomist/projects/spring-team/
+ atomist analyze local repositories --localDirectory /my/absolute/path/
+
 ```
+> The directories must be `git` projects.
 
 #### General
 
->Run `atomist analyze [local|github]` with `--update true` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See Extending below.) 
+>Run `atomist analyze [local|github]` with `--update true` flag to force updates to existing analyses. Do this if you have updated your analyzer code. (See *Extending* below.) 
 
-Use the `--cloneUnder [dir]` option to supply a stable directory under which all cloning should be performed.
+Use the `--cloneUnder [dir]` option to supply a stable directory under which all cloning should be performed. This will make subsequent analysis runs quicker.
 Otherwise, temporary files will be used.
 
 >If using a stable directory, make sure the directory exists and is writable
@@ -159,14 +163,34 @@ When the server is running with `atomist start --local`, you can see the visuali
 
 Go to [http://localhost:2866](http://localhost:2866).
 
+## Lifecycle
+Atomist aspect functionality isn't limited to analyzing repositories. It is intended to be built into your delivery process, via an [Atomist SDM](https://github.com/atomist/sdm). This will ensure that your analyzes are always up to date, and that fingerprints can be extracted by delivery events such as builds.
+
+### Fingerprinting on Push
+The `org-visualizer` open source server is an SDM, meaning it can react to delivery events in repositories it manages. Running locally, it works with directories under a given base directory (by default, `~/atomist/projects/`), in which Atomist git hooks have been introduced.
+
+Please refer to the `atomist clone` command for further information.
+
+This SDM reacts to any push to the default branch of any managed repositories, calculating fingerprints.
+
+### Delivery events
+Atomist is designed to work with a wide range of events, not merely pushes. 
+
+This SDM reacts to pushes of Maven projects and will attempt to build them, in order to trigger the [build time aspect](https://github.com/atomist/sdm-pack-aspect/blob/8457fd82fe8027e143f217dc62ded8ad50a622dc/lib/aspect/delivery/BuildAspect.ts#L71) that demonstrates the intersection of aspects with the delivery process. As your projects build, build time information will appear on the `org-visualizer` dashboard.
+
+The build goal is set in [index.ts](https://github.com/atomist/org-visualizer/blob/08d9fa27c5ccb2db0fc8a07d8dac34b905edf0b9/index.ts#L108).  
+
+> Atomist is a powerful delivery orchestration engine. An SDM can coordinate other tools, automatically fix code. See [Why You Need an SDM](https://the-composition.com/why-you-need-a-software-delivery-machine-85e8399cdfc0).
+
+When using the Atomist service, event handling is automatically handled for repositories on GitHub, BitBucket or GitLab.
+
 ## Architecture
 
-There are four architectural layers:
+There are three architectural layers:
 
-1. **Analysis**. This is enabled by implementing [Aspects](lib/aspect/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by `atomist analyze` or, in regular use, by an [Atomist SDM](https://github.com/atomist/sdm).
-2. **Query** functionality.
-3. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866/api-docs](http://localhost:2866/api-docs)
-4. Simple **UI** using static React and d3 exposing sunburst charts based on the API.
+1. **Fingerprint extraction**. This is enabled by implementing [Aspects](lib/aspect/aspects.ts). Aspects know how to take **fingerprints** (extractions of small relevant bits) of the code, compare them, and even update them. Analysis is triggered by `atomist analyze` or by an SDM in response to a push.
+2. **API** layer. Once your server is running, see the Swagger API documentation at [http://localhost:2866/api-docs](http://localhost:2866/api-docs)
+3. Simple **UI** using static React and d3 exposing sunburst charts based on the API.
 
 ## Extending
 
