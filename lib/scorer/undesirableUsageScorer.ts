@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { adjustBy, ProblemUsage, RepositoryScorer, UndesirableUsageChecker } from "@atomist/sdm-pack-aspect";
+import {
+    adjustBy,
+    ProblemUsage,
+    RepositoryScorer,
+    UndesirableUsageChecker,
+} from "@atomist/sdm-pack-aspect";
 
 import * as _ from "lodash";
 

@@ -32,7 +32,8 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder, UndesirableUsageChecker,
+    DefaultVirtualProjectFinder,
+    UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
