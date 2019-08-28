@@ -95,16 +95,24 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                     // This enables fingerprints to be computed on push
                     pushImpact,
 
-                    // This demonstrates build
+                    // This enables demonstrating a build aspect
                     build,
                 },
 
                 undesirableUsageChecker: demoUndesirableUsageChecker,
                 virtualProjectFinder,
-                publishFingerprints: storeFingerprints(store),
+
+                // In local mode, publish fingerprints to the local PostgreSQL
+                // instance, not the Atomist service
+                publishFingerprints:
+                    isInLocalMode() ? storeFingerprints(store) : undefined,
                 instanceMetadata,
             }),
         );
+
+        // Return the goals that this SDM will calculate in response to events
+        // Add your goals. See the Atomist samples organization at
+        // https://github.com/atomist/samples
         return {
             // Fingerprint every push to default branch
             fingerprint: {

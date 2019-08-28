@@ -195,7 +195,7 @@ return {
 };
 ```  
 
-> Atomist is a powerful delivery orchestration engine. An SDM can coordinate other tools, automatically fix code. See [Why You Need an SDM](https://the-composition.com/why-you-need-a-software-delivery-machine-85e8399cdfc0).
+> Atomist is a powerful delivery orchestration engine. An SDM can coordinate other tools, automatically fix code. See [Why You Need an SDM](https://the-composition.com/why-you-need-a-software-delivery-machine-85e8399cdfc0). See the [Atomist samples repository](https://github.com/atomist/samples) for examples of SDM configurations.
 
 When using the Atomist service, event handling is automatically handled for repositories on GitHub, BitBucket or GitLab.
 
