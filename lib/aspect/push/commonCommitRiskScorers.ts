@@ -15,16 +15,16 @@
  */
 
 import { adjustBy } from "@atomist/sdm-pack-aspect";
-import { CommitRiskScorer } from "./commitRisk";
+import { PushScorer } from "../score/scoredAspect";
 
-export function fileChangeCount(opts: { limitTo: number }): CommitRiskScorer {
+export function fileChangeCount(opts: { limitTo: number }): PushScorer {
     return async pili => ({
         name: "files-changed",
         score: adjustBy(pili.filesChanged ? pili.filesChanged.length / opts.limitTo : 0, 1),
     });
 }
 
-export function pomChanged(): CommitRiskScorer {
+export function pomChanged(): PushScorer {
     return async pili => ({
         name: "pom-changed",
         score: pili.filesChanged && pili.filesChanged.includes("pom.xml") ? 5 : 1,
