@@ -19,7 +19,7 @@ import {
     ChangelogAspect,
     CodeMetricsAspect,
     CodeOfConduct,
-    CodeOwnership,
+    codeOwnership,
     ContributingAspect,
     ExposedSecrets,
     GitRecency,
@@ -52,6 +52,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { CiAspect, JavaBuild, StackAspect } from "./common/stackAspect";
 
 /**
  * The aspects managed by this SDM.
@@ -67,7 +68,7 @@ export function aspects(): Aspect[] {
         LicensePresence,
         SpringBootStarter,
         TypeScriptVersion,
-        new CodeOwnership(),
+        codeOwnership(),
         NpmDependencies,
         CodeOfConduct,
         ExposedSecrets,
@@ -78,9 +79,9 @@ export function aspects(): Aspect[] {
         // gitActiveCommitters(30),
         // This is also expensive
         CodeMetricsAspect,
-        // StackAspect,
-        // CiAspect,
-        // JavaBuild,
+        StackAspect,
+        CiAspect,
+        JavaBuild,
         // Don't show these
         globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
         globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),

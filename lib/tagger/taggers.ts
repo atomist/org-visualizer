@@ -15,9 +15,8 @@
  */
 
 import {
-    CiAspect,
     CombinationTagger,
-    commonTaggers,
+    commonTaggers, isClassificationDataFingerprint,
     isFileMatchFingerprint,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";
@@ -30,6 +29,7 @@ import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as nodeTaggers from "./nodeTaggers";
 
 import * as _ from "lodash";
+import { CiAspect } from "../aspect/common/stackAspect";
 
 export interface TaggersParams {
 
@@ -60,6 +60,7 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         ...opts,
     };
     return [
+        ...commonTaggers.tagsFromClassificationFingerprints(CiAspect.name),
         commonTaggers.Vulnerable,
         // commonTaggers.isProblematic(),
         { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
@@ -87,12 +88,12 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         {
             name: "jenkins",
             description: "Jenkins",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("jenkins"),
+            test: fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("jenkins"),
         },
         {
             name: "circleci",
             description: "circleci",
-            test: fp => fp.type === CiAspect.name && fp.data.includes("circle"),
+            test: fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle"),
         },
         {
             name: "azure-pipelines",
