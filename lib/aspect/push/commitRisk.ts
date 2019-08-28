@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ScoreWeightings, } from "@atomist/sdm-pack-aspect";
+import { ScoreWeightings } from "@atomist/sdm-pack-aspect";
 import { PushScorer, scoredAspect, ScoredAspect } from "../score/scoredAspect";
 
 /**
