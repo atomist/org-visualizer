@@ -178,7 +178,22 @@ Atomist is designed to work with a wide range of events, not merely pushes.
 
 This SDM reacts to pushes of Maven projects and will attempt to build them, in order to trigger the [build time aspect](https://github.com/atomist/sdm-pack-aspect/blob/8457fd82fe8027e143f217dc62ded8ad50a622dc/lib/aspect/delivery/BuildAspect.ts#L71) that demonstrates the intersection of aspects with the delivery process. As your projects build, build time information will appear on the `org-visualizer` dashboard.
 
-The build goal is set in [index.ts](https://github.com/atomist/org-visualizer/blob/08d9fa27c5ccb2db0fc8a07d8dac34b905edf0b9/index.ts#L108).  
+The build goal is set in [index.ts](https://github.com/atomist/org-visualizer/blob/d99fdefd9d2331b14848dc8e666a05aef250f5f4/index.ts#L107) by the following code:
+
+```typescript
+return {
+    // Fingerprint every push to default branch
+    fingerprint: {
+        test: ToDefaultBranch,
+        goals: pushImpact,
+    },
+    // We know how to build Maven projects
+    build: {
+        test: IsMaven,
+        goals: build,
+    },
+};
+```  
 
 > Atomist is a powerful delivery orchestration engine. An SDM can coordinate other tools, automatically fix code. See [Why You Need an SDM](https://the-composition.com/why-you-need-a-software-delivery-machine-85e8399cdfc0).
 
