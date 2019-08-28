@@ -17,7 +17,7 @@
 import {
     CodeOfConductType,
     commonScorers,
-    RepositoryScorer,
+    RepositoryScorer, UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import {
     PowerShellLanguage,
@@ -26,12 +26,14 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/languages";
 
 import { TypeScriptProjectsMustUseTsLint } from "./nodeScorers";
+import { undesirableUsageScorer } from "./undesirableUsageScorer";
 
 /**
  * Scorers to rate projects
  */
-export function scorers(): RepositoryScorer[] {
+export function scorers(undesirableUsageChecker: UndesirableUsageChecker): RepositoryScorer[] {
     return [
+        undesirableUsageScorer(undesirableUsageChecker),
         commonScorers.anchorScoreAt(2),
         commonScorers.penalizeForExcessiveBranches({ branchLimit: 5 }),
         commonScorers.PenalizeWarningAndErrorTags,
