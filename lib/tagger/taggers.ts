@@ -16,7 +16,8 @@
 
 import {
     CombinationTagger,
-    commonTaggers, isClassificationDataFingerprint,
+    commonTaggers,
+    isClassificationDataFingerprint,
     isFileMatchFingerprint,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";
