@@ -22,7 +22,7 @@ import { loadUserConfiguration } from "@atomist/automation-client/lib/configurat
 import {
     anySatisfied,
     metadata,
-    PushImpact,
+    PushImpact, ToDefaultBranch,
 } from "@atomist/sdm";
 import {
     AllGoals,
@@ -105,7 +105,9 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
             }),
         );
         return {
+            // Fingerprint every push to default branch
             fingerprint: {
+                test: ToDefaultBranch,
                 goals: pushImpact,
             },
             // We know how to build Maven projects
