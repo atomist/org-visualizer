@@ -1,4 +1,4 @@
-FROM atomist/sdm-base:0.2.1
+FROM atomist/sdm-base:0.3.0
 
 # host ha.pool.sks-keyservers.net to obtain ip address
 RUN apt-key adv --keyserver hkp://51.38.91.189:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -30,7 +30,7 @@ RUN npm ci \
 
 COPY . .
 
-RUN npm link
+RUN npm install -g @atomist/cli
 
 ENV NODE_ENV production
 ENV ATOMIST_MODE local

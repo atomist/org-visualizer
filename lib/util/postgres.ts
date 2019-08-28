@@ -23,7 +23,7 @@ import * as _ from "lodash";
 export const startEmbeddedPostgres: ConfigurationPreProcessor = async cfg => {
     // start up embedded postgres if needed
     if (process.env.ATOMIST_POSTGRES === "start" && !_.get(cfg, "sdm.postgres")) {
-        logger.debug("Starting embedded Postgres");
+        logger.info("Starting embedded Postgres");
         await execPromise("/etc/init.d/postgresql", ["start"]);
 
         const postgresCfg = {

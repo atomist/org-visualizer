@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// Org Visualizer should be used in local mode. This is to enforce that!
-import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
-
 import { Configuration } from "@atomist/automation-client";
 import { loadUserConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
@@ -42,6 +39,7 @@ import {
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/machine/machine";
 import { Build } from "@atomist/sdm-pack-build";
+import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
 import {
     IsMaven,
     mavenBuilder,
@@ -59,10 +57,6 @@ import { startEmbeddedPostgres } from "./lib/util/postgres";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
-const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(loadUserConfiguration()));
-
-const instanceMetadata = metadata();
-
 interface TestGoals extends AllGoals {
     build: Build;
     pushImpact: PushImpact;
@@ -73,7 +67,7 @@ const undesirableUsageChecker: UndesirableUsageChecker = demoUndesirableUsageChe
 
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
-        // Create goals that compute fingeprints during delivery
+        // Create goals that compute fingerprints during delivery
         const pushImpact = new PushImpact();
 
         const build: Build = new Build()
@@ -82,6 +76,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 builder: mavenBuilder(),
             });
 
+        const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(sdm.configuration));
         sdm.addCommand(addSuggestedFingerprintCommand(
             isInLocalMode() ? storeFingerprintsFor(store) : undefined,
         ));
@@ -110,7 +105,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 // instance, not the Atomist service
                 publishFingerprints:
                     isInLocalMode() ? storeFingerprints(store) : undefined,
-                instanceMetadata,
+                instanceMetadata: metadata(),
             }),
         );
 
