@@ -19,8 +19,7 @@ import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
 
 /**
- * Demonstration of code-driven flagging of undesirable uses
- * @type {UndesirableUsageChecker}
+ * Demonstration code-driven flagging of undesirable uses
  */
 export const demoUndesirableUsageChecker = chainUndesirableUsageCheckers(
     fingerprint => fingerprint.type === TypeScriptVersionType && fingerprint.name === TypeScriptVersionType
