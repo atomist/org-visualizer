@@ -37,6 +37,7 @@ import {
 import {
     Aspect,
 } from "@atomist/sdm-pack-fingerprints";
+import { CiAspect, JavaBuild, StackAspect } from "./common/stackAspect";
 import { K8sSpecs } from "./k8s/spec";
 import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
 import { NpmDependencies } from "./node/npmDependencies";
@@ -52,7 +53,6 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { CiAspect, JavaBuild, StackAspect } from "./common/stackAspect";
 
 /**
  * The aspects managed by this SDM.
