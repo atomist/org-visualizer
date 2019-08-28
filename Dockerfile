@@ -1,7 +1,7 @@
 FROM atomist/sdm-base:0.3.0
 
 # host ha.pool.sks-keyservers.net to obtain ip address
-RUN apt-key adv --keyserver hkp://51.38.91.189:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+RUN apt-key adv --keyserver hkp://192.146.137.98 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
