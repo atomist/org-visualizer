@@ -15,9 +15,19 @@
  */
 
 import { PushImpactListenerInvocation } from "@atomist/sdm";
-import { Score, Scored, Scores, scoresFor, ScoreWeightings, weightedCompositeScore } from "@atomist/sdm-pack-aspect";
+import {
+    Score,
+    Scored,
+    Scores,
+    scoresFor,
+    ScoreWeightings,
+    weightedCompositeScore,
+} from "@atomist/sdm-pack-aspect";
 import { AspectMetadata } from "@atomist/sdm-pack-aspect/lib/aspect/compose/commonTypes";
-import { Aspect, fingerprintOf } from "@atomist/sdm-pack-fingerprints";
+import {
+    Aspect,
+    fingerprintOf,
+} from "@atomist/sdm-pack-fingerprints";
 
 export interface ScoreData {
 
