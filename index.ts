@@ -22,7 +22,8 @@ import { loadUserConfiguration } from "@atomist/automation-client/lib/configurat
 import {
     anySatisfied,
     metadata,
-    PushImpact, ToDefaultBranch,
+    PushImpact,
+    ToDefaultBranch,
 } from "@atomist/sdm";
 import {
     AllGoals,
