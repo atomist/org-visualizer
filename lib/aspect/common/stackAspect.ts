@@ -17,6 +17,7 @@
 import { projectUtils } from "@atomist/automation-client";
 import { classificationAspect } from "@atomist/sdm-pack-aspect";
 import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import { checkOutArtifact } from "@atomist/sdm";
 
 const StackName = "stack";
 
