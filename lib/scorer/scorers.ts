@@ -27,17 +27,15 @@ import {
 } from "@atomist/sdm-pack-sloc/lib/languages";
 
 import { TypeScriptProjectsMustUseTsLint } from "./nodeScorers";
-import { undesirableUsageScorer } from "./undesirableUsageScorer";
 
 /**
  * Scorers to rate projects
  */
 export function scorers(undesirableUsageChecker: UndesirableUsageChecker): RepositoryScorer[] {
     return [
-        undesirableUsageScorer(undesirableUsageChecker),
+        // undesirableUsageScorer(undesirableUsageChecker),
         commonScorers.anchorScoreAt(2),
         commonScorers.penalizeForExcessiveBranches({ branchLimit: 5 }),
-        commonScorers.PenalizeWarningAndErrorTags,
         commonScorers.PenalizeMonorepos,
         TypeScriptProjectsMustUseTsLint,
         commonScorers.PenalizeNoLicense,

@@ -28,7 +28,7 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder,
+    DefaultVirtualProjectFinder, RepositoryScorer,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
@@ -84,7 +84,11 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
             aspectSupport({
                 aspects: aspects(),
 
-                scorers: scorers(undesirableUsageChecker),
+                scorers: {
+                    all: scorers(undesirableUsageChecker),
+                },
+
+                inMemoryScorers: consolidatedScorer("all"),
 
                 taggers: taggers({}),
                 combinationTaggers: combinationTaggers({}),
@@ -128,3 +132,10 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
     });
+
+function consolidatedScorer(name: string): RepositoryScorer {
+    return async repo => {
+        const found = repo.analysis.fingerprints.find(fp => fp.type === name);
+        return !!found ? found.data : undefined;
+    };
+}

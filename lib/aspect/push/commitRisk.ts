@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { ScoreWeightings } from "@atomist/sdm-pack-aspect";
-import {
-    PushScorer,
-    scoredAspect,
-    ScoredAspect,
-} from "../score/scoredAspect";
+import { PushScorer, pushScoringAspect, ScoredAspect, ScoreWeightings } from "@atomist/sdm-pack-aspect";
 
 /**
  * Calculate the risk of this compute with the given scorers, which should return a
@@ -29,7 +24,7 @@ export function commitRisk(opts: {
     scorers: PushScorer[],
     scoreWeightings?: ScoreWeightings,
 }): ScoredAspect {
-    return scoredAspect({
+    return pushScoringAspect({
         ...opts,
         name: "commit-risk",
         displayName: "commit-risk",

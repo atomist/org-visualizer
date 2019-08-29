@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { adjustBy } from "@atomist/sdm-pack-aspect";
-import { PushScorer } from "../score/scoredAspect";
+import { adjustBy, PushScorer } from "@atomist/sdm-pack-aspect";
 
 export function fileChangeCount(opts: { limitTo: number }): PushScorer {
     return async pili => ({
