@@ -65,7 +65,7 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         {
             name: "docker",
             description: "Docker status",
-            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === DockerFrom.name)
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === DockerFrom.name),
         },
         nodeTaggers.Node,
         {
@@ -77,19 +77,19 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         nodeTaggers.TsLint,
         {
             name: "clojure", description: "Lein dependencies",
-            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === LeinDeps.name)
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === LeinDeps.name),
         },
         {
             name: "spring-boot", description: "Spring Boot version",
-            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === SpringBootVersion.name)
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === SpringBootVersion.name),
         },
         {
             name: "travis", description: "Travis CI script",
-            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === TravisScriptsAspect.name)
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === TravisScriptsAspect.name),
         },
         {
             name: "python", description: "Python dependencies",
-            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === PythonDependencies.name)
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === PythonDependencies.name),
         },
         commonTaggers.Monorepo,
         nodeTaggers.usesNodeLibraryWhen({
