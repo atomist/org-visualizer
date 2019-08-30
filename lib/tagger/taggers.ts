@@ -17,7 +17,8 @@
 import {
     commonTaggers,
     isClassificationDataFingerprint,
-    isFileMatchFingerprint, Tagger,
+    isFileMatchFingerprint,
+    Tagger,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";

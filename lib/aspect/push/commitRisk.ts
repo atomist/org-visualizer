@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { PushScorer, pushScoringAspect, ScoredAspect, ScoreWeightings } from "@atomist/sdm-pack-aspect";
+import {
+    PushScorer,
+    pushScoringAspect,
+    ScoredAspect,
+    ScoreWeightings,
+} from "@atomist/sdm-pack-aspect";
 
 /**
  * Calculate the risk of this compute with the given scorers, which should return a

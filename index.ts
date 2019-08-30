@@ -28,7 +28,8 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    commonScorers, DefaultVirtualProjectFinder,
+    commonScorers,
+    DefaultVirtualProjectFinder,
     RepositoryScorer,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
