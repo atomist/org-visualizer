@@ -47,7 +47,10 @@ import {
     MavenDefaultOptions,
 } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
-import { fileChangeCount, pomChanged } from "./lib/aspect/push/commonCommitRiskScorers";
+import {
+    fileChangeCount,
+    pomChanged,
+} from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
 import {
