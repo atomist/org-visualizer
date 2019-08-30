@@ -20,15 +20,19 @@ import {
 } from "@atomist/sdm-pack-aspect";
 
 export function fileChangeCount(opts: { limitTo: number }): PushScorer {
-    return async pili => ({
-        name: "files-changed",
-        score: adjustBy(pili.filesChanged ? pili.filesChanged.length / opts.limitTo : 0, 1),
-    });
+    return {
+        name: "file-change-count",
+        scorePush: async pili => ({
+            score: adjustBy(pili.filesChanged ? pili.filesChanged.length / opts.limitTo : 0, 1),
+        }),
+    };
 }
 
 export function pomChanged(): PushScorer {
-    return async pili => ({
+    return {
         name: "pom-changed",
-        score: pili.filesChanged && pili.filesChanged.includes("pom.xml") ? 5 : 1,
-    });
+        scorePush: async pili => ({
+            score: pili.filesChanged && pili.filesChanged.includes("pom.xml") ? 5 : 1,
+        }),
+    };
 }

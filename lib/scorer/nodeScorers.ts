@@ -24,15 +24,18 @@ import { TypeScriptVersionType } from "../aspect/node/TypeScriptVersion";
  * @return {Promise<any>}
  * @constructor
  */
-export const TypeScriptProjectsMustUseTsLint: RepositoryScorer = async repo => {
-    const isTs = repo.analysis.fingerprints.some(fp => fp.type === TypeScriptVersionType);
-    if (!isTs) {
-        return undefined;
-    }
-    const hasTsLint = repo.analysis.fingerprints.some(fp => fp.type === NpmDeps.name && fp.data[0] === "tslint");
-    return {
-        name: "has-tslint",
-        score: hasTsLint ? 5 : 1,
-        reason: hasTsLint ? "TypeScript projects should use tslint" : "TypeScript project using tslint",
-    };
+export const TypeScriptProjectsMustUseTsLint: RepositoryScorer = {
+    name: "has-tslint",
+    scoreFingerprints: async repo => {
+        const isTs = repo.analysis.fingerprints.some(fp => fp.type === TypeScriptVersionType);
+        if (!isTs) {
+            return undefined;
+        }
+        const hasTsLint = repo.analysis.fingerprints.some(fp => fp.type === NpmDeps.name && fp.data[0] === "tslint");
+        return {
+            score: hasTsLint ? 5 : 1,
+            reason: hasTsLint ? "TypeScript projects should use tslint" : "TypeScript project using tslint",
+        };
+    },
 };
+

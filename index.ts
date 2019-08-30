@@ -55,6 +55,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { fileChangeCount, pomChanged } from "./lib/aspect/push/commonCommitRiskScorers";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -88,6 +89,10 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
                 scorers: {
                     all: scorers(undesirableUsageChecker),
+                    commitRisk: [
+                        fileChangeCount({limitTo: 5}),
+                        pomChanged(),
+                    ]
                 },
 
                 inMemoryScorers: commonScorers.exposeFingerprintScore("all"),
@@ -134,9 +139,3 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         preProcessors: [startEmbeddedPostgres],
     });
 
-function consolidatedScorer(name: string): RepositoryScorer {
-    return async repo => {
-        const found = repo.analysis.fingerprints.find(fp => fp.type === name);
-        return !!found ? found.data : undefined;
-    };
-}
