@@ -47,6 +47,7 @@ import {
     MavenDefaultOptions,
 } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
+import { fileChangeCount, pomChanged } from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
 import {
@@ -55,7 +56,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { fileChangeCount, pomChanged } from "./lib/aspect/push/commonCommitRiskScorers";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -92,7 +92,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                     commitRisk: [
                         fileChangeCount({limitTo: 5}),
                         pomChanged(),
-                    ]
+                    ],
                 },
 
                 inMemoryScorers: commonScorers.exposeFingerprintScore("all"),
@@ -138,4 +138,3 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
     });
-
