@@ -15,10 +15,9 @@
  */
 
 import {
-    CombinationTagger,
     commonTaggers,
     isClassificationDataFingerprint,
-    isFileMatchFingerprint,
+    isFileMatchFingerprint, Tagger,
     TaggerDefinition,
 } from "@atomist/sdm-pack-aspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
@@ -29,7 +28,6 @@ import { SpringBootVersion } from "../aspect/spring/springBootVersion";
 import { TravisScriptsAspect } from "../aspect/travis/travisAspects";
 import * as nodeTaggers from "./nodeTaggers";
 
-import * as _ from "lodash";
 import { CiAspect } from "../aspect/common/stackAspect";
 
 export interface TaggersParams {
@@ -61,22 +59,38 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         ...opts,
     };
     return [
-        ...commonTaggers.tagsFromClassificationFingerprints(CiAspect.name),
+        // ...commonTaggers.tagsFromClassificationFingerprints(CiAspect.name),
         commonTaggers.Vulnerable,
         // commonTaggers.isProblematic(),
-        { name: "docker", description: "Docker status", test: fp => fp.type === DockerFrom.name },
+        {
+            name: "docker",
+            description: "Docker status",
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === DockerFrom.name)
+        },
         nodeTaggers.Node,
         {
             name: "maven",
             description: "Direct Maven dependencies",
-            test: fp => fp.type === DirectMavenDependencies.name,
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === DirectMavenDependencies.name),
         },
         nodeTaggers.TypeScript,
         nodeTaggers.TsLint,
-        { name: "clojure", description: "Lein dependencies", test: fp => fp.type === LeinDeps.name },
-        { name: "spring-boot", description: "Spring Boot version", test: fp => fp.type === SpringBootVersion.name },
-        { name: "travis", description: "Travis CI script", test: fp => fp.type === TravisScriptsAspect.name },
-        { name: "python", description: "Python dependencies", test: fp => fp.type === PythonDependencies.name },
+        {
+            name: "clojure", description: "Lein dependencies",
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === LeinDeps.name)
+        },
+        {
+            name: "spring-boot", description: "Spring Boot version",
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === SpringBootVersion.name)
+        },
+        {
+            name: "travis", description: "Travis CI script",
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === TravisScriptsAspect.name)
+        },
+        {
+            name: "python", description: "Python dependencies",
+            test: async repo => repo.analysis.fingerprints.some(fp => fp.type === PythonDependencies.name)
+        },
         commonTaggers.Monorepo,
         nodeTaggers.usesNodeLibraryWhen({
             name: "angular",
@@ -89,18 +103,20 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         {
             name: "jenkins",
             description: "Jenkins",
-            test: fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("jenkins"),
+            test: async repo => repo.analysis.fingerprints
+                .some(fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("jenkins")),
         },
         {
             name: "circleci",
             description: "circleci",
-            test: fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle"),
+            test: async repo => repo.analysis.fingerprints.some(
+                fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle")),
         },
         {
             name: "azure-pipelines",
             description: "Azure pipelines files",
-            test: fp => isFileMatchFingerprint(fp) &&
-                fp.name.includes("azure-pipeline") && fp.data.matches.length > 0,
+            test: async repo => repo.analysis.fingerprints.some(fp => isFileMatchFingerprint(fp) &&
+                fp.name.includes("azure-pipeline") && fp.data.matches.length > 0),
         },
         commonTaggers.globRequired({
             name: "snyk",
@@ -111,10 +127,10 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
             // TODO allow to use #
             name: "CSharp",
             description: "C# build",
-            test: fp => isFileMatchFingerprint(fp) &&
-                fp.name.includes("csproj") && fp.data.matches.length > 0,
+            test: async repo => repo.analysis.fingerprints.some(fp => isFileMatchFingerprint(fp) &&
+                fp.name.includes("csproj") && fp.data.matches.length > 0),
         },
-        commonTaggers.inadequateReadme({ minLength: 200}),
+        commonTaggers.inadequateReadme({ minLength: 200 }),
         commonTaggers.SoleCommitter,
         commonTaggers.excessiveBranchCount(optsToUse),
         commonTaggers.lineCountTest({ name: "huge (>10k)", lineCountTest: count => count > 10000 }),
@@ -153,23 +169,12 @@ const DefaultCombinationTaggersParams: CombinationTaggersParams = {
     hotContributors: 3,
 };
 
-export function combinationTaggers(opts: Partial<CombinationTaggersParams>): CombinationTagger[] {
+export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Tagger[] {
     const optsToUse = {
         ...DefaultCombinationTaggersParams,
         ...opts,
     };
     return [
-        {
-            name: "not understood",
-            description: "You may want to write aspects for these outlier projects",
-            severity: "warn",
-            test: (fps, id, tagContext) => {
-                const aspectCount = _.uniq(fps.map(f => f.type)).length;
-                // There are quite a few aspects that are found on everything, e.g. git
-                // We need to set the threshold count probably
-                return aspectCount < tagContext.averageFingerprintCount * optsToUse.minAverageAspectCountFractionToExpect;
-            },
-        },
         commonTaggers.gitHot(optsToUse),
     ];
 }

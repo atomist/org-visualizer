@@ -19,22 +19,22 @@ import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
 import { TsLintType } from "../aspect/node/TsLint";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 
-export const Node = {
+export const Node: Tagger = {
     name: "node",
     description: "Node",
-    test: fp => fp.type === NpmDeps.name,
+    test: async repo => repo.analysis.fingerprints.some(fp => fp.type === NpmDeps.name),
 };
 
-export const TypeScript = {
+export const TypeScript: Tagger = {
     name: "typescript",
     description: "TypeScript version",
-    test: fp => fp.type === TypeScriptVersion.name,
+    test: async repo => repo.analysis.fingerprints.some(fp => fp.type === TypeScriptVersion.name),
 };
 
 export const TsLint = {
     name: "tslint",
     description: "tslint (TypeScript)",
-    test: fp => fp.type === TsLintType,
+    test: async repo => repo.analysis.fingerprints.some(fp => fp.type === TsLintType),
 };
 
 export function usesNodeLibrary(opts: {
@@ -58,6 +58,6 @@ export function usesNodeLibraryWhen(opts: {
     return {
         name: opts.name,
         description: opts.description,
-        test: fp => fp.type === NpmDeps.name && opts.test(fp.data[0], fp.data[1]),
+        test: async repo => repo.analysis.fingerprints.some(fp => fp.type === NpmDeps.name && opts.test(fp.data[0], fp.data[1])),
     };
 }

@@ -28,7 +28,8 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder, RepositoryScorer,
+    commonScorers, DefaultVirtualProjectFinder,
+    RepositoryScorer,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
@@ -88,10 +89,9 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                     all: scorers(undesirableUsageChecker),
                 },
 
-                inMemoryScorers: consolidatedScorer("all"),
+                inMemoryScorers: commonScorers.exposeFingerprintScore("all"),
 
-                taggers: taggers({}),
-                combinationTaggers: combinationTaggers({}),
+                taggers: taggers({}).concat(combinationTaggers({})),
 
                 goals: {
                     // This enables fingerprints to be computed on push
