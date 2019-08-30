@@ -30,7 +30,6 @@ import {
     aspectSupport,
     commonScorers,
     DefaultVirtualProjectFinder,
-    RepositoryScorer,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
@@ -47,10 +46,6 @@ import {
     MavenDefaultOptions,
 } from "@atomist/sdm-pack-spring";
 import { aspects } from "./lib/aspect/aspects";
-import {
-    fileChangeCount,
-    pomChanged,
-} from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import { scorers } from "./lib/scorer/scorers";
 import {
@@ -59,6 +54,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScorers";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -93,8 +89,8 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 scorers: {
                     all: scorers(undesirableUsageChecker),
                     commitRisk: [
-                        fileChangeCount({limitTo: 5}),
-                        pomChanged(),
+                        commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
+                        commonCommitRiskScorers.pomChanged(),
                     ],
                 },
 

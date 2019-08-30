@@ -18,10 +18,10 @@ import {
     BranchCount,
     ChangelogAspect,
     CodeMetricsAspect,
-    CodeOfConduct,
+    codeOfConduct,
     codeOwnership,
     ContributingAspect,
-    ExposedSecrets,
+    ExposedSecrets, gitActiveCommitters,
     GitRecency,
     globAspect,
     license,
@@ -46,7 +46,6 @@ import { K8sSpecs } from "./k8s/spec";
 import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
 import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
-import { commitRisk } from "./push/commitRisk";
 import * as commonCommitRiskScorers from "./push/commonCommitRiskScorers";
 import {
     ConfirmedTags,
@@ -74,13 +73,13 @@ export function aspects(): Aspect[] {
         TypeScriptVersion,
         codeOwnership(),
         NpmDependencies,
-        CodeOfConduct,
+        codeOfConduct(),
         ExposedSecrets,
         TravisScriptsAspect,
         BranchCount,
         GitRecency,
         // This is expensive as it requires deeper cloning
-        // gitActiveCommitters(30),
+        gitActiveCommitters({ commitDepth: 30 }),
         // This is also expensive
         CodeMetricsAspect,
         StackAspect,
@@ -100,14 +99,6 @@ export function aspects(): Aspect[] {
         PythonDependencies,
         K8sSpecs,
         LeinDeps,
-
-        // Tags commit based
-        commitRisk({
-            scorers: [
-                commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
-                commonCommitRiskScorers.pomChanged(),
-            ],
-        }),
 
         // Time builds
         buildTimeAspect(),
