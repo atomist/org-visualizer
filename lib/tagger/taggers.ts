@@ -54,13 +54,12 @@ const DefaultTaggersParams: TaggersParams = {
  * @param {Partial<TaggersParams>} opts
  * @return {Tagger[]}
  */
-export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
+export function taggers(opts: Partial<TaggersParams>): Tagger[] {
     const optsToUse = {
         ...DefaultTaggersParams,
         ...opts,
     };
     return [
-        // ...commonTaggers.tagsFromClassificationFingerprints(CiAspect.name),
         commonTaggers.Vulnerable,
         // commonTaggers.isProblematic(),
         {
@@ -142,7 +141,7 @@ export function taggers(opts: Partial<TaggersParams>): TaggerDefinition[] {
         commonTaggers.HasContributingFile,
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
-        commonTaggers.isProblematic,
+        // commonTaggers.isProblematic,
     ];
 }
 

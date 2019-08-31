@@ -28,7 +28,6 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    commonScorers,
     DefaultVirtualProjectFinder,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
@@ -93,8 +92,6 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                         commonCommitRiskScorers.pomChanged(),
                     ],
                 },
-
-                inMemoryScorers: commonScorers.exposeFingerprintScore("all"),
 
                 taggers: taggers({}).concat(combinationTaggers({})),
 
