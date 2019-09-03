@@ -19,7 +19,7 @@ import {
     Aspect,
     ExtractFingerprint,
     sha256,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 import * as _ from "lodash";
 
 export const TsLintType = "tslint";

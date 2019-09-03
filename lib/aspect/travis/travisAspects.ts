@@ -21,7 +21,7 @@ import {
 import {
     Aspect,
     sha256,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 import * as yaml from "yamljs";
 
 const TravisScriptsType = "travis-scripts";

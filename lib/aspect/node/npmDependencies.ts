@@ -29,8 +29,8 @@ import {
     FP,
     sha256,
     Vote,
-} from "@atomist/sdm-pack-fingerprints";
-import { setNewTargetFingerprint } from "@atomist/sdm-pack-fingerprints/lib/handlers/commands/updateTarget";
+} from "@atomist/sdm-pack-fingerprint";
+import { setNewTargetFingerprint } from "@atomist/sdm-pack-fingerprint/lib/handlers/commands/updateTarget";
 import {
     bold,
     codeLine,

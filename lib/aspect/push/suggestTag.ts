@@ -30,7 +30,7 @@ import {
     PublishFingerprintsFor,
     RepoIdentification,
     sendFingerprintsToAtomistFor,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 
 export interface SuggestTagData {
 

@@ -15,7 +15,7 @@
  */
 
 import { Tagger } from "@atomist/sdm-pack-aspect";
-import { NpmDeps } from "@atomist/sdm-pack-fingerprints";
+import { NpmDeps } from "@atomist/sdm-pack-fingerprint";
 import { TsLintType } from "../aspect/node/TsLint";
 import { TypeScriptVersion } from "../aspect/node/TypeScriptVersion";
 

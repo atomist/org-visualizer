@@ -27,7 +27,7 @@ import {
     ExtractFingerprint,
     FP,
     sha256,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 import { bold } from "@atomist/slack-messages";
 import * as yaml from "js-yaml";
 import * as stringify from "json-stable-stringify";

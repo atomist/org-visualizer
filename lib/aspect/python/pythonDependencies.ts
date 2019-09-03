@@ -18,7 +18,7 @@ import {
     Aspect,
     FP,
     sha256,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 
 const PythonDirectDepType = "python-direct-dep";
 

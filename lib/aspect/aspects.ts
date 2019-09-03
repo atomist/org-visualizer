@@ -37,7 +37,7 @@ import {
 } from "@atomist/sdm-pack-docker";
 import {
     Aspect,
-} from "@atomist/sdm-pack-fingerprints";
+} from "@atomist/sdm-pack-fingerprint";
 import {
     CiAspect,
     JavaBuild,

@@ -19,7 +19,7 @@ import {
     FileMatchData,
     microgrammarMatchAspect,
 } from "@atomist/sdm-pack-aspect";
-import { Aspect } from "@atomist/sdm-pack-fingerprints";
+import { Aspect } from "@atomist/sdm-pack-fingerprint";
 
 const targetFrameworksGrammar = microgrammar({
     _open: /<TargetFrameworks?>/,

@@ -38,7 +38,7 @@ import {
     storeFingerprintsFor,
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { Build } from "@atomist/sdm-pack-build";
-import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprints";
+import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprint";
 import {
     IsMaven,
     mavenBuilder,
