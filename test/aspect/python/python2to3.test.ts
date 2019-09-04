@@ -70,4 +70,19 @@ print("In Python2 you would say: print ")
 print << sys.stderr, 'I hate you'
 # blah blah`, "python2");
     });
+
+    it("Notices old exception syntax", async () => {
+        await inspectPythonCode(`
+# blah blah
+raise ValueError, "dodgy value"
+# blah blah`, "python2");
+    });
+
+    it("Is OK with Python 3 exception syntax", async () => {
+        await inspectPythonCode(`
+# blah blah
+raise ValueError("dodgy value")
+# blah blah`, "python-version-unknown");
+    });
+
 });
