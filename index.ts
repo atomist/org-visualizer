@@ -18,7 +18,7 @@ import { Configuration } from "@atomist/automation-client";
 import {
     anySatisfied,
     metadata,
-    PushImpact,
+    PushImpact, SoftwareDeliveryMachine,
     ToDefaultBranch,
 } from "@atomist/sdm";
 import {
@@ -34,11 +34,10 @@ import {
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
 import {
-    storeFingerprints,
     storeFingerprintsFor,
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { Build } from "@atomist/sdm-pack-build";
-import { PublishFingerprints, VirtualProjectFinder } from "@atomist/sdm-pack-fingerprint";
+import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprint";
 import {
     IsMaven,
     mavenBuilder,
@@ -55,6 +54,12 @@ import {
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
 import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
+import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
+import { universalGenerator } from "@atomist/uhura/lib/generate/universal/universalGenerator";
+import { SpringBootMavenTransformRecipeContributor } from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
+import { dropDownSeedUrlParameterDefinition } from "@atomist/uhura/lib/generate/universal/seedParameter";
+import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -66,7 +71,29 @@ interface TestGoals extends AllGoals {
 // Use AcceptEverythingUndesirableUsageChecker to disable undesirable usage checking
 const undesirableUsageChecker: UndesirableUsageChecker = demoUndesirableUsageChecker;
 
+function addGenerators(sdm: SoftwareDeliveryMachine) {
+    const pa: ProjectAnalyzer = new DefaultProjectAnalyzerBuilder(sdm)
+        .withTransformRecipeContributor({
+            originator: "spring-boot-maven",
+            optional: false,
+            contributor: new SpringBootMavenTransformRecipeContributor(),
+        });
+    const um = universalGenerator(pa, {
+        name: "universal generator",
+        intent: "generate",
+        seedParameter: dropDownSeedUrlParameterDefinition({
+                url: "https://github.com/spring-team/spring-rest-seed",
+                description: "Spring Boot (Rest)",
+            },
+            ...DefaultNodeSeeds,
+        ),
+    });
+    sdm.addGeneratorCommand(um);
+}
+
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
+
+        addGenerators(sdm);
 
         // Create goals that compute fingerprints during delivery
         const pushImpact = new PushImpact();
