@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Project, projectUtils, RegexFileParser } from "@atomist/automation-client";
+import {
+    Project,
+    projectUtils,
+    RegexFileParser,
+} from "@atomist/automation-client";
 import { matchIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
 import { projectClassificationAspect } from "@atomist/sdm-pack-aspect";
 
