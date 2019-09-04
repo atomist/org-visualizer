@@ -26,6 +26,8 @@ import {
     configure,
     isInLocalMode,
 } from "@atomist/sdm-core";
+import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
+import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
 import {
     aspectSupport,
     DefaultVirtualProjectFinder,
@@ -43,9 +45,14 @@ import {
     mavenBuilder,
     MavenDefaultOptions,
 } from "@atomist/sdm-pack-spring";
+import { dropDownSeedUrlParameterDefinition } from "@atomist/uhura/lib/generate/universal/seedParameter";
+import { universalGenerator } from "@atomist/uhura/lib/generate/universal/universalGenerator";
+import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 import { aspects } from "./lib/aspect/aspects";
+import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
 import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
+import { SpringBootMavenTransformRecipeContributor } from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
 import { scorers } from "./lib/scorer/scorers";
 import {
     combinationTaggers,
@@ -53,13 +60,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
-import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
-import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
-import { universalGenerator } from "@atomist/uhura/lib/generate/universal/universalGenerator";
-import { SpringBootMavenTransformRecipeContributor } from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
-import { dropDownSeedUrlParameterDefinition } from "@atomist/uhura/lib/generate/universal/seedParameter";
-import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -164,4 +164,3 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
     });
-
