@@ -139,8 +139,8 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
                 // In local mode, publish fingerprints to the local PostgreSQL
                 // instance, not the Atomist service
-                publishFingerprints:
-                    isInLocalMode() ? sendFingerprintsEverywhere(store) : undefined,
+                publishFingerprints:                    // Send them locally and to the service
+                    sendFingerprintsEverywhere(store),
                 instanceMetadata: metadata(),
             }),
         );
