@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { projectUtils } from "@atomist/automation-client";
+import { Project, projectUtils, RegexFileParser } from "@atomist/automation-client";
+import { matchIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
 import { projectClassificationAspect } from "@atomist/sdm-pack-aspect";
-import { Aspect, FP, sha256 } from "@atomist/sdm-pack-fingerprint";
-interface PythonVersionData {
-    version: "2" | "3" | "indeterminate";
-}
 
 const PythonVersionAspectName = "PythonVersion";
 
@@ -33,5 +30,27 @@ export const PythonVersion = projectClassificationAspect({
         },
     },
     {
+        tags: "python2", reason: "Uses python2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s*"/m),
+
+    },
+    {
         tags: "python-version-unknown", reason: "We couldn't figure out which", test: async p => true,
     });
+
+async function containsRegex(project: Project, globPatterns: string[], regex: RegExp): Promise<boolean> {
+    const parser = new RegexFileParser({
+        rootName: "whatevers",
+        matchName: "whatever",
+        regex,
+        captureGroupNames: ["name"],
+    });
+    const it = matchIterator<{ name: string }>(project, {
+        parseWith: parser,
+        globPatterns,
+        pathExpression: "//whatevers/whatever",
+    });
+    for await (const anything of it) {
+        return true;
+    }
+    return false;
+}

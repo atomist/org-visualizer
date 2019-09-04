@@ -44,4 +44,15 @@ print "Hello world"
         assert.strictEqual(fingerprints.length, 1);
         assert.deepStrictEqual(fingerprints[0].data.tags, ["python2"]);
     });
+
+    it("Does not identify a string about the Python 2 print statement", async () => {
+        const project = InMemoryProject.of({
+            path: "something.py", content: `
+# blah blah
+print("In Python2 you would say: print ")
+# blah blah` });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1);
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python-version-unknown"]);
+    });
 });
