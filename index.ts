@@ -38,7 +38,7 @@ import {
     storeFingerprintsFor,
 } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/storeFingerprintsPublisher";
 import { Build } from "@atomist/sdm-pack-build";
-import { VirtualProjectFinder } from "@atomist/sdm-pack-fingerprint";
+import { PublishFingerprints, VirtualProjectFinder } from "@atomist/sdm-pack-fingerprint";
 import {
     IsMaven,
     mavenBuilder,
@@ -54,6 +54,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -83,6 +84,8 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
         sdm.addExtensionPacks(
             aspectSupport({
+                exposeWeb: true,
+
                 aspects: aspects(),
 
                 scorers: {
@@ -109,7 +112,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 // In local mode, publish fingerprints to the local PostgreSQL
                 // instance, not the Atomist service
                 publishFingerprints:
-                    isInLocalMode() ? storeFingerprints(store) : undefined,
+                    isInLocalMode() ? sendFingerprintsEverywhere(store) : undefined,
                 instanceMetadata: metadata(),
             }),
         );
@@ -134,3 +137,4 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
     });
+
