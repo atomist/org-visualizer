@@ -118,10 +118,10 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
                 scorers: {
                     all: scorers(undesirableUsageChecker),
-                    commitRisk: [
-                        commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
-                        commonCommitRiskScorers.pomChanged(),
-                    ],
+                    // commitRisk: [
+                    //     commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
+                    //     commonCommitRiskScorers.pomChanged(),
+                    // ],
                 },
 
                 taggers: taggers({}).concat(combinationTaggers({})),
@@ -155,10 +155,10 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 goals: pushImpact,
             },
             // We know how to build Maven projects
-            build: {
-                test: anySatisfied(IsMaven),
-                goals: build,
-            },
+            // build: {
+            //     test: anySatisfied(IsMaven),
+            //     goals: build,
+            // },
         };
     },
     {
