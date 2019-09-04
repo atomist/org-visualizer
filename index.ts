@@ -18,7 +18,8 @@ import { Configuration } from "@atomist/automation-client";
 import {
     anySatisfied,
     metadata,
-    PushImpact, SoftwareDeliveryMachine,
+    PushImpact,
+    SoftwareDeliveryMachine,
     ToDefaultBranch,
 } from "@atomist/sdm";
 import {
