@@ -85,4 +85,11 @@ raise ValueError("dodgy value")
 # blah blah`, "python-version-unknown");
     });
 
+    it("Recognizes Python3-only raise syntax", async () => {
+        await inspectPythonCode(`
+# blah blah
+raise ValueError("dodgy value").with_traceback()
+# blah blah`, "python3");
+    });
+
 });

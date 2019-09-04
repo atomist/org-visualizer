@@ -34,10 +34,13 @@ export const PythonVersion = projectClassificationAspect({
         },
     },
     {
-        tags: "python2", reason: "Uses python2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s+["'<]/m),
+        tags: "python2", reason: "Uses Python 2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s+["'<]/m),
     },
     {
-        tags: "python2", reason: "Uses python2 raise exception syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise\s+[A-Za-z]+\s*,/m),
+        tags: "python2", reason: "Uses Python 2 raise exception syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise\s+[A-Za-z]+\s*,/m),
+    },
+    {
+        tags: "python3", reason: "Uses Python 3 traceback syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise.*\.with_traceback\(\)/m),
     },
     {
         tags: "python-version-unknown", reason: "We couldn't figure out which", test: async p => true,
