@@ -22,15 +22,26 @@ import { PythonVersion } from "../../../lib/aspect/python/python2to3";
 describe("An aspect distinguishes between Python versions used", () => {
     it("Returns no fingerprint on a project with no python in it", async () => {
         const project = InMemoryProject.of({ path: "README.txt", content: "No Python here" });
-        const fingerprints = await PythonVersion.extract(project, undefined);
-        // empty array would also be fine
-        assert(!fingerprints, "Expected no fingerprints in a project without python");
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1);
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["pythonless"]);
     });
 
     it("Defaults to indeterminate", async () => {
         const project = InMemoryProject.of({ path: "something.py", content: "" });
         const fingerprints = toArray(await PythonVersion.extract(project, undefined));
         assert.strictEqual(fingerprints.length, 1);
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python-version-unknown"]);
+    });
 
+    it("Identifies the Python 2 print statement", async () => {
+        const project = InMemoryProject.of({
+            path: "something.py", content: `
+# blah blah
+print "Hello world"
+# blah blah` });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1);
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python2"]);
     });
 });
