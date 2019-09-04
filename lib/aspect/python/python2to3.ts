@@ -34,7 +34,7 @@ export const PythonVersion = projectClassificationAspect({
         },
     },
     {
-        tags: "python2", reason: "Uses python2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s*"/m),
+        tags: "python2", reason: "Uses python2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s*["'<]/m),
 
     },
     {
