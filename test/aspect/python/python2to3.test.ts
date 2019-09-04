@@ -92,4 +92,19 @@ raise ValueError("dodgy value").with_traceback()
 # blah blah`, "python3");
     });
 
+    it("Recognizes Python3-only raise-from syntax", async () => {
+        await inspectPythonCode(`
+# Python 3 only
+class FileDatabase:
+    def __init__(self, filename):
+        try:
+            self.file = open(filename)
+        except IOError as exc:
+            raise DatabaseError('failed to open') from exc
+# blah blah`, "python3");
+    });
+
+    // These tests come from: http://python-future.org/compatible_idioms.html
+    // there are more we could implement, they're not hard.
+
 });

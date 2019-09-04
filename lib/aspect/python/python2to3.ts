@@ -43,6 +43,9 @@ export const PythonVersion = projectClassificationAspect({
         tags: "python3", reason: "Uses Python 3 traceback syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise.*\.with_traceback\(\)/m),
     },
     {
+        tags: "python3", reason: "Uses Python 3 raise-from syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise.*\) from /m),
+    },
+    {
         tags: "python-version-unknown", reason: "We couldn't figure out which", test: async p => true,
     });
 
