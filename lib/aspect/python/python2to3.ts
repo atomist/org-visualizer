@@ -34,6 +34,12 @@ export const PythonVersion = projectClassificationAspect({
         },
     },
     {
+        tags: "python3", reason: "Declares Python 3 classifier", test: async p => containsRegex(p, ["setup.py"], /Programming Language :: Python :: 3/m),
+    },
+    {
+        tags: "python2", reason: "Declares only Python 2 classifier", test: async p => containsRegex(p, ["setup.py"], /Programming Language :: Python :: 2/m),
+    },
+    {
         tags: "python2", reason: "Uses Python 2 print syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*print\s+["'<]/m),
     },
     {

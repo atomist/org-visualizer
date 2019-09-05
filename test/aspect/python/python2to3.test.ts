@@ -34,6 +34,49 @@ describe("An aspect distinguishes between Python versions used", () => {
         assert.deepStrictEqual(fingerprints[0].data.tags, ["python-version-unknown"]);
     });
 
+    // note: we are looking for setup.py only in the root
+    // we could make a virtual project finder to find multiple ones in a repo
+    it("Recognizes a python 3 classifier in setup.py", async () => {
+        const project = InMemoryProject.of({
+            path: "setup.py", content: setupDotPy(["Programming Language :: Python :: 3"]),
+        });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1, "There should be one fingerprint");
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python3"], "Wrong tag");
+    });
+
+    it("Does not recognize a setup.py without a language number classifier", async () => {
+        const project = InMemoryProject.of({
+            path: "setup.py", content: setupDotPy([]),
+        });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1, "There should be one fingerprint");
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python-version-unknown"], "Wrong tag");
+    });
+
+    it("Given both Python 2 and 3 classifiers, calls it Python 3", async () => {
+        // we could choose to tag this with both.
+        // We could distinguish between Python 3 only, vs possibly both
+        const project = InMemoryProject.of({
+            path: "setup.py", content: setupDotPy(["Programming Language :: Python :: 3.6",
+                "Programming Language :: Python :: 2.7"]),
+        });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1, "There should be one fingerprint");
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python3"], "Wrong tag");
+    });
+
+    it("Given a Python 2 classifiers, calls it Python 2", async () => {
+        // we could choose to tag this with both.
+        // We could distinguish between Python 3 only, vs possibly both
+        const project = InMemoryProject.of({
+            path: "setup.py", content: setupDotPy(["Programming Language :: Python :: 2.7"]),
+        });
+        const fingerprints = toArray(await PythonVersion.extract(project, undefined));
+        assert.strictEqual(fingerprints.length, 1, "There should be one fingerprint");
+        assert.deepStrictEqual(fingerprints[0].data.tags, ["python2"], "Wrong tag");
+    });
+
     async function inspectPythonCode(code: string, expectedTag: string) {
         const project = InMemoryProject.of({
             path: "something.py", content: code,
@@ -108,3 +151,44 @@ class FileDatabase:
     // there are more we could implement, they're not hard.
 
 });
+
+function setupDotPy(classifiers: string[]): string {
+    return `from setuptools import setup, find_packages
+import io
+from os import path
+import re
+
+
+VERSION = re.search("VERSION = '([^']+)'", io.open(
+    path.join(path.dirname(__file__), 'webencodings', '__init__.py'),
+    encoding='utf-8'
+).read().strip()).group(1)
+
+LONG_DESCRIPTION = io.open(
+    path.join(path.dirname(__file__), 'README.rst'),
+    encoding='utf-8'
+).read()
+
+
+setup(
+    name='whatever',
+    version=VERSION,
+    url='https://github.com/some/example',
+    license='BSD',
+    author='Yes',
+    author_email='yo@exyr.org',
+    description='I love projects',
+    long_description=LONG_DESCRIPTION,
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python${classifiers.join(`',
+        '`)}',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Internet :: WWW/HTTP',
+    ],
+    packages=find_packages(),
+)`;
+}
