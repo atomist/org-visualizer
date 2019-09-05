@@ -22,7 +22,10 @@ import {
     RegexFileParser,
 } from "@atomist/automation-client";
 import { matchIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
-import { execPromise, ExecPromiseError } from "@atomist/sdm";
+import {
+    execPromise,
+    ExecPromiseError,
+} from "@atomist/sdm";
 import { projectClassificationAspect } from "@atomist/sdm-pack-aspect";
 
 const PythonVersionAspectName = "PythonVersion";
