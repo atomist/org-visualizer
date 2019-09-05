@@ -22,7 +22,8 @@ import {
     TransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
 import {
-    HasSpringBootPom, SpringBootProjectStructure,
+    HasSpringBootPom,
+    SpringBootProjectStructure,
     SpringProjectCreationParameterDefinitions,
     TransformMavenSpringBootSeedToCustomProject,
 } from "@atomist/sdm-pack-spring";
