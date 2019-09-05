@@ -60,7 +60,6 @@ import {
 } from "./lib/aspect/spring/springBootTransformRecipes";
 import { scorers } from "./lib/scorer/scorers";
 import {
-    combinationTaggers,
     taggers,
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
@@ -123,7 +122,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         sdm.addExtensionPacks(
             aspectSupport({
                 exposeWeb: true,
-                secureWeb: true,
+                secureWeb: false,
 
                 aspects: aspects(),
 
@@ -135,7 +134,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                     // ],
                 },
 
-                taggers: taggers({}).concat(combinationTaggers({})),
+                taggers: taggers({}),
 
                 goals: {
                     // This enables fingerprints to be computed on push

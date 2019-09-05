@@ -42,11 +42,23 @@ export interface TaggersParams {
      * Number of days at which to consider a repo dead
      */
     deadDays: number;
+
+    /**
+     * Days since the last commit to indicate a hot repo
+     */
+    hotDays: number;
+
+    /**
+     * Number of committers needed to indicate a hot repo
+     */
+    hotContributors: number;
 }
 
 const DefaultTaggersParams: TaggersParams = {
     maxBranches: 20,
     deadDays: 365,
+    hotDays: 2,
+    hotContributors: 3,
 };
 
 /**
@@ -141,40 +153,12 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         commonTaggers.HasContributingFile,
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
-        // commonTaggers.isProblematic,
+        ...combinationTaggers(optsToUse),
     ];
 }
 
-export interface CombinationTaggersParams {
-
-    /**
-     * Mininum percentage of average aspect count (fraction) to expect to indicate adequate project understanding
-     */
-    minAverageAspectCountFractionToExpect: number;
-
-    /**
-     * Days since the last commit to indicate a hot repo
-     */
-    hotDays: number;
-
-    /**
-     * Number of committers needed to indicate a hot repo
-     */
-    hotContributors: number;
-}
-
-const DefaultCombinationTaggersParams: CombinationTaggersParams = {
-    minAverageAspectCountFractionToExpect: .75,
-    hotDays: 2,
-    hotContributors: 3,
-};
-
-export function combinationTaggers(opts: Partial<CombinationTaggersParams>): Tagger[] {
-    const optsToUse = {
-        ...DefaultCombinationTaggersParams,
-        ...opts,
-    };
+function combinationTaggers(opts: TaggersParams): Tagger[] {
     return [
-        commonTaggers.gitHot(optsToUse),
+        commonTaggers.gitHot(opts),
     ];
 }
