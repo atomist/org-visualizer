@@ -15,8 +15,14 @@
  */
 
 import { logger } from "@atomist/automation-client";
-import { CountAspect, CountData } from "@atomist/sdm-pack-aspect/lib/aspect/compose/commonTypes";
-import { fingerprintOf, FP } from "@atomist/sdm-pack-fingerprints";
+import {
+    CountAspect,
+    CountData,
+} from "@atomist/sdm-pack-aspect/lib/aspect/compose/commonTypes";
+import {
+    fingerprintOf,
+    FP,
+} from "@atomist/sdm-pack-fingerprints";
 import * as Octokit from "@octokit/rest";
 
 export const GitHubType = "github";
