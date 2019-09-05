@@ -21,7 +21,10 @@ import {
     TransformRecipeContributionRegistration,
     TransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
-import { NodeProjectCreationParametersDefinition, UpdatePackageJsonIdentification } from "@atomist/sdm-pack-node";
+import {
+    NodeProjectCreationParametersDefinition,
+    UpdatePackageJsonIdentification,
+} from "@atomist/sdm-pack-node";
 
 /**
  * Add transform for package.json identification.
