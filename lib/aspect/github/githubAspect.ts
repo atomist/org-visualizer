@@ -32,6 +32,10 @@ import * as Octokit from "@octokit/rest";
 
 export const GitHubType = "github";
 
+export function isGitHubFingerprint(fp: FP): fp is FP<CountData> {
+    return fp.type === GitHubType;
+}
+
 export function githubAspect(token: string): CountAspect {
     const octokit = new Octokit({
         auth: token ? "token " + token : undefined,

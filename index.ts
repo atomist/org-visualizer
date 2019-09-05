@@ -62,6 +62,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { gitHubCares } from "./lib/aspect/github/githubCares";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -90,9 +91,9 @@ function addGenerators(sdm: SoftwareDeliveryMachine): void {
         name: "universal generator",
         intent: "generate",
         seedParameter: dropDownSeedUrlParameterDefinition({
-            url: "https://github.com/spring-team/spring-rest-seed",
-            description: "Spring Boot (Rest)",
-        },
+                url: "https://github.com/spring-team/spring-rest-seed",
+                description: "Spring Boot (Rest)",
+            },
             ...DefaultNodeSeeds,
         ),
     });
@@ -101,74 +102,78 @@ function addGenerators(sdm: SoftwareDeliveryMachine): void {
 
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
-    addGenerators(sdm);
+        addGenerators(sdm);
 
-    // Create goals that compute fingerprints during delivery
-    const pushImpact = new PushImpact();
+        // Create goals that compute fingerprints during delivery
+        const pushImpact = new PushImpact();
 
-    const build: Build = new Build()
-        .with({
-            ...MavenDefaultOptions,
-            builder: mavenBuilder(),
-        });
+        const build: Build = new Build()
+            .with({
+                ...MavenDefaultOptions,
+                builder: mavenBuilder(),
+            });
 
-    const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(sdm.configuration));
-    sdm.addCommand(addSuggestedFingerprintCommand(
-        isInLocalMode() ? storeFingerprintsFor(store) : undefined,
-    ));
+        const store = new PostgresProjectAnalysisResultStore(sdmConfigClientFactory(sdm.configuration));
+        sdm.addCommand(addSuggestedFingerprintCommand(
+            isInLocalMode() ? storeFingerprintsFor(store) : undefined,
+        ));
 
-    sdm.addExtensionPacks(
-        aspectSupport({
-            exposeWeb: true,
-            secureWeb: false,
+        sdm.addExtensionPacks(
+            aspectSupport({
+                exposeWeb: true,
+                secureWeb: false,
 
-            aspects: aspects(),
+                aspects: aspects(),
 
-            scorers: {
-                all: scorers(undesirableUsageChecker),
-                // commitRisk: [
-                //     commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
-                //     commonCommitRiskScorers.pomChanged(),
-                // ],
+                scorers: {
+                    all: scorers(undesirableUsageChecker),
+                    // commitRisk: [
+                    //     commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
+                    //     commonCommitRiskScorers.pomChanged(),
+                    // ],
+                },
+
+                taggers: taggers({}),
+
+                inMemoryTaggers: [
+                    gitHubCares({ minStars: 500 }),
+                ],
+
+                goals: {
+                    // This enables fingerprints to be computed on push
+                    pushImpact,
+
+                    // This enables demonstrating a build aspect
+                    build,
+                },
+
+                undesirableUsageChecker,
+                virtualProjectFinder,
+
+                // In local mode, publish fingerprints to the local PostgreSQL
+                // instance, not the Atomist service
+                publishFingerprints:                    // Send them locally and to the service
+                    sendFingerprintsEverywhere(store),
+                instanceMetadata: metadata(),
+            }),
+        );
+
+        // Return the goals that this SDM will calculate in response to events
+        // Add your goals. See the Atomist samples organization at
+        // https://github.com/atomist/samples
+        return {
+            // Fingerprint every push to default branch
+            fingerprint: {
+                test: ToDefaultBranch,
+                goals: pushImpact,
             },
-
-            taggers: taggers({}),
-
-            goals: {
-                // This enables fingerprints to be computed on push
-                pushImpact,
-
-                // This enables demonstrating a build aspect
-                build,
-            },
-
-            undesirableUsageChecker,
-            virtualProjectFinder,
-
-            // In local mode, publish fingerprints to the local PostgreSQL
-            // instance, not the Atomist service
-            publishFingerprints:                    // Send them locally and to the service
-                sendFingerprintsEverywhere(store),
-            instanceMetadata: metadata(),
-        }),
-    );
-
-    // Return the goals that this SDM will calculate in response to events
-    // Add your goals. See the Atomist samples organization at
-    // https://github.com/atomist/samples
-    return {
-        // Fingerprint every push to default branch
-        fingerprint: {
-            test: ToDefaultBranch,
-            goals: pushImpact,
-        },
-        // We know how to build Maven projects
-        // build: {
-        //     test: anySatisfied(IsMaven),
-        //     goals: build,
-        // },
-    };
-},
+            // We know how to build Maven projects
+            // build: {
+            //     test: anySatisfied(IsMaven),
+            //     goals: build,
+            // },
+        };
+    },
     {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
