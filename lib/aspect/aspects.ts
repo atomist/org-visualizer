@@ -58,6 +58,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { githubAspect } from "./github/githubAspect";
 
 /**
  * The aspects managed by this SDM.
@@ -83,6 +84,7 @@ export function aspects(): Aspect[] {
         GitRecency,
         // This is expensive as it requires deeper cloning
         gitActiveCommitters({ commitDepth: 30 }),
+        githubAspect(process.env.GITHUB_TOKEN),
         // This is also expensive
         CodeMetricsAspect,
         StackAspect,
@@ -107,7 +109,7 @@ export function aspects(): Aspect[] {
         buildTimeAspect(),
 
         // Asks for human intervention to tag the commit
-        suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),
+        // suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),
 
         // Show confirmed tag information
         ConfirmedTags,
