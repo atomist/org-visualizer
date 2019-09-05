@@ -17,7 +17,7 @@
 import { InMemoryProject } from "@atomist/automation-client";
 import { toArray } from "@atomist/sdm-core/lib/util/misc/array";
 import * as assert from "assert";
-import { PythonVersion } from "../../../lib/aspect/python/python2to3";
+import { hasPython2Dependencies, PythonVersion } from "../../../lib/aspect/python/python2to3";
 
 describe("An aspect distinguishes between Python versions used", () => {
     it("Returns no fingerprint on a project with no python in it", async () => {
@@ -192,3 +192,14 @@ setup(
     packages=find_packages(),
 )`;
 }
+
+describe("determining python version from a utility", () => {
+    it("does not fail miserably when caniusepython3 is not there", async () => {
+        const p = InMemoryProject.of({
+            path: "requirements.txt", content: `flake8
+pytest-docker-pexpect
+twine` });
+        const result = await hasPython2Dependencies(p, "thisdoesnotexist");
+        assert(!result, "go with no when we can't run it");
+    });
+});

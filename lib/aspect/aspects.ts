@@ -57,6 +57,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { PythonVersion } from "./python/python2to3";
 
 /**
  * The aspects managed by this SDM.
@@ -64,6 +65,7 @@ import { TravisScriptsAspect } from "./travis/travisAspects";
  */
 export function aspects(): Aspect[] {
     return [
+        PythonVersion,
         DockerFrom,
         DockerfilePath,
         DockerPorts,

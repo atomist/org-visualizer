@@ -15,11 +15,14 @@
  */
 
 import {
+    GitProject,
+    logger,
     Project,
     projectUtils,
     RegexFileParser,
 } from "@atomist/automation-client";
 import { matchIterator } from "@atomist/automation-client/lib/tree/ast/astUtils";
+import { execPromise, ExecPromiseError } from "@atomist/sdm";
 import { projectClassificationAspect } from "@atomist/sdm-pack-aspect";
 
 const PythonVersionAspectName = "PythonVersion";
@@ -52,6 +55,10 @@ export const PythonVersion = projectClassificationAspect({
         tags: "python3", reason: "Uses Python 3 raise-from syntax", test: async p => containsRegex(p, ["**/*.py"], /^\s*raise.*\) from /m),
     },
     {
+        // tslint:disable-next-line:no-unnecessary-callback-wrapper
+        tags: "python2", reason: "Python 2 dependencies found", test: p => hasPython2Dependencies(p),
+    },
+    {
         tags: "python-version-unknown", reason: "We couldn't figure out which", test: async p => true,
     });
 
@@ -71,4 +78,22 @@ async function containsRegex(project: Project, globPatterns: string[], regex: Re
         return true;
     }
     return false;
+}
+
+export async function hasPython2Dependencies(p: Project, programToRun: string = "caniusepython3"): Promise<boolean> {
+    const hasRequirementsFile = await p.hasFile("requirements.txt");
+    if (!hasRequirementsFile) {
+        return false;
+    }
+    try {
+        await execPromise(programToRun, ["-r", "requirements.txt"], { cwd: (p as GitProject).baseDir });
+        return false;
+    } catch (e) {
+        const epe: ExecPromiseError = e;
+        if (epe.stdout.includes("You need")) {
+            logger.debug("Python 2 deps recognized: " + epe.stdout);
+            return true;
+        }
+        logger.debug(`Warning: other failure running ${programToRun}: ` + epe.stderr);
+    }
 }
