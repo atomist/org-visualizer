@@ -52,12 +52,12 @@ import {
     ConfirmedTags,
     suggestTag,
 } from "./push/suggestTag";
+import { PythonVersion } from "./python/python2to3";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { PythonVersion } from "./python/python2to3";
 
 /**
  * The aspects managed by this SDM.
