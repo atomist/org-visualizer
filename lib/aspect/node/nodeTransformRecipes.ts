@@ -15,13 +15,13 @@
  */
 
 import { Project } from "@atomist/automation-client";
-import { NamedParameter, } from "@atomist/sdm";
+import { NamedParameter } from "@atomist/sdm";
 import {
     TransformRecipe,
     TransformRecipeContributionRegistration,
     TransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
-import { NodeProjectCreationParametersDefinition, UpdatePackageJsonIdentification, } from "@atomist/sdm-pack-node";
+import { NodeProjectCreationParametersDefinition, UpdatePackageJsonIdentification } from "@atomist/sdm-pack-node";
 
 /**
  * Add transform for package.json identification.
@@ -43,7 +43,7 @@ const contributor: TransformRecipeContributor = {
                 UpdatePackageJsonIdentification,
             ],
         };
-    }
+    },
 
 };
 

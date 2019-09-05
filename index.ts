@@ -51,11 +51,12 @@ import { universalGenerator } from "@atomist/uhura/lib/generate/universal/univer
 import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 import { aspects } from "./lib/aspect/aspects";
 import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
+import { PackageJsonTransformRecipe } from "./lib/aspect/node/nodeTransformRecipes";
 import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import {
     DockerTransformRecipeContributor,
-    SpringBootTransformRecipes
+    SpringBootTransformRecipes,
 } from "./lib/aspect/spring/springBootTransformRecipes";
 import { scorers } from "./lib/scorer/scorers";
 import {
@@ -64,7 +65,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { PackageJsonTransformRecipe } from "./lib/aspect/node/nodeTransformRecipes";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
