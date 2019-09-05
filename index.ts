@@ -55,8 +55,8 @@ import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScor
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import {
     DockerTransformRecipeContributor,
-    SpringBootMavenTransformRecipeContributor,
-} from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
+    SpringBootTransformRecipes
+} from "./lib/aspect/spring/springBootTransformRecipes";
 import { scorers } from "./lib/scorer/scorers";
 import {
     combinationTaggers,
@@ -80,7 +80,7 @@ function addGenerators(sdm: SoftwareDeliveryMachine) {
         .withTransformRecipeContributor({
             originator: "spring-boot-maven",
             optional: false,
-            contributor: SpringBootMavenTransformRecipeContributor,
+            contributor: SpringBootTransformRecipes,
         })
         .withTransformRecipeContributor({
             originator: "spring-docker",

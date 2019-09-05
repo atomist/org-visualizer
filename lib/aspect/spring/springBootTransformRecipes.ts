@@ -27,14 +27,12 @@ import {
     SpringProjectCreationParameterDefinitions,
     TransformMavenSpringBootSeedToCustomProject,
 } from "@atomist/sdm-pack-spring";
-import { inferSpringStructureAndDo } from "@atomist/sdm-pack-spring/lib/spring/generate/springBootUtils";
 
 /**
- * Add transform for pom.xml identification
+ * Add transform for pom.xml identification. Requires Spring parameters.
  */
-export const SpringBootMavenTransformRecipeContributor: TransformRecipeContributor = {
+export const SpringBootTransformRecipes: TransformRecipeContributor = {
 
-    // Add POM
     analyze: async (p: Project) => {
         const isBoot = await HasSpringBootPom.predicate(p);
         if (!isBoot) {
@@ -58,7 +56,8 @@ function requiredSpringParameters(): NamedParameter[] {
 
 /**
  * Transform a Spring Boot docker file to new Spring Boot Structure.
- * Requires no parameters. Does nothing if not Docker or Spring Boot.
+ * Requires no parameters as it can see old and new Spring Boot structure.
+ * Does nothing if not Docker or Spring Boot.
  */
 export const DockerTransformRecipeContributor: TransformRecipeContributor = {
 
