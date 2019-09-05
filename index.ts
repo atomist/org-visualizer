@@ -123,6 +123,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         sdm.addExtensionPacks(
             aspectSupport({
                 exposeWeb: true,
+                secureWeb: true,
 
                 aspects: aspects(),
 
