@@ -51,7 +51,7 @@ export const SpringBootMavenTransformRecipeContributor: TransformRecipeContribut
 
 function requiredSpringParameters(): NamedParameter[] {
     return Object.getOwnPropertyNames(SpringProjectCreationParameterDefinitions).map(name =>
-        ({ name, ...(SpringProjectCreationParameterDefinitions as any)[name] })
+        ({ name, ...(SpringProjectCreationParameterDefinitions as any)[name] }),
     );
 }
 
@@ -85,4 +85,3 @@ export const DockerTransformRecipeContributor: TransformRecipeContributor = {
     },
 
 };
-

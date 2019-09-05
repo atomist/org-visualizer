@@ -55,7 +55,7 @@ import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScor
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import {
     DockerTransformRecipeContributor,
-    SpringBootMavenTransformRecipeContributor
+    SpringBootMavenTransformRecipeContributor,
 } from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
 import { scorers } from "./lib/scorer/scorers";
 import {
