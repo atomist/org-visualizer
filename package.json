@@ -32,7 +32,7 @@
     "@atomist/sdm-pack-fingerprint": "5.0.0-master.20190903062633",
     "@atomist/sdm-pack-fingerprints": "5.0.0-master.20190903060131",
     "@atomist/sdm-pack-node": "^1.1.1",
-    "@atomist/sdm-pack-sloc": "^1.0.3-master.20190709171721",
+    "@atomist/sdm-pack-sloc": "^1.0.3-master.20190502175705",
     "@atomist/sdm-pack-spring": "2.0.1-master.20190903203948",
     "@atomist/slack-messages": "^1.1.1",
     "@atomist/uhura": "1.0.0-deps2.20190904214617",
