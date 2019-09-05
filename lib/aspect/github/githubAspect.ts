@@ -19,7 +19,10 @@ import {
     CountAspect,
     CountData,
 } from "@atomist/sdm-pack-aspect/lib/aspect/compose/commonTypes";
-import { bandFor, Default } from "@atomist/sdm-pack-aspect/lib/util/bands";
+import {
+    bandFor,
+    Default,
+} from "@atomist/sdm-pack-aspect/lib/util/bands";
 import { SizeBands } from "@atomist/sdm-pack-aspect/lib/util/commonBands";
 import {
     fingerprintOf,
