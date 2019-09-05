@@ -17,39 +17,72 @@
 import { Project } from "@atomist/automation-client";
 import {
     NamedParameter,
-    SdmContext,
 } from "@atomist/sdm";
 import {
-    ProjectAnalysis,
-    TransformRecipe,
     TransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
 import {
-    HasSpringBootPom,
+    HasSpringBootPom, SpringBootProjectStructure,
     SpringProjectCreationParameterDefinitions,
     TransformMavenSpringBootSeedToCustomProject,
 } from "@atomist/sdm-pack-spring";
+import { inferSpringStructureAndDo } from "@atomist/sdm-pack-spring/lib/spring/generate/springBootUtils";
 
 /**
  * Add transform for pom.xml identification
  */
-export class SpringBootMavenTransformRecipeContributor implements TransformRecipeContributor {
+export const SpringBootMavenTransformRecipeContributor: TransformRecipeContributor = {
 
-    public async analyze(p: Project, analysis: ProjectAnalysis, sdmContext: SdmContext): Promise<TransformRecipe | undefined> {
-        const parameters: NamedParameter[] = [];
+    // Add POM
+    analyze: async (p: Project) => {
         const isBoot = await HasSpringBootPom.predicate(p);
         if (!isBoot) {
             return undefined;
         }
-        for (const name of Object.getOwnPropertyNames(SpringProjectCreationParameterDefinitions)) {
-            parameters.push({ name, ...(SpringProjectCreationParameterDefinitions as any)[name] });
-        }
         return {
-            parameters,
+            parameters: requiredSpringParameters(),
             transforms: [
                 ...TransformMavenSpringBootSeedToCustomProject,
             ],
         };
-    }
+    },
 
+};
+
+function requiredSpringParameters(): NamedParameter[] {
+    return Object.getOwnPropertyNames(SpringProjectCreationParameterDefinitions).map(name =>
+        ({ name, ...(SpringProjectCreationParameterDefinitions as any)[name] })
+    );
 }
+
+/**
+ * Transform a Spring Boot docker file to new Spring Boot Structure.
+ * Requires no parameters. Does nothing if not Docker or Spring Boot.
+ */
+export const DockerTransformRecipeContributor: TransformRecipeContributor = {
+
+    analyze: async (p: Project) => {
+        const oldSpringBootStructure = await SpringBootProjectStructure.inferFromJavaOrKotlinSource(p);
+        const dockerFile = await p.getFile("Dockerfile");
+        if (!oldSpringBootStructure && !dockerFile) {
+            return undefined;
+        }
+
+        return {
+            parameters: [],
+            transforms: [
+                async p => {
+                    const newSpringBootStructure = await SpringBootProjectStructure.inferFromJavaOrKotlinSource(p);
+                    const dockerFile = await p.getFile("Dockerfile");
+                    if (!!newSpringBootStructure && !!dockerFile) {
+                        await dockerFile.replaceAll(
+                            oldSpringBootStructure.applicationPackage + "." + oldSpringBootStructure.applicationClass,
+                            newSpringBootStructure.applicationPackage + "." + newSpringBootStructure.applicationClass);
+                    }
+                },
+            ],
+        };
+    },
+
+};
+

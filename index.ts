@@ -53,7 +53,10 @@ import { aspects } from "./lib/aspect/aspects";
 import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
 import * as commonCommitRiskScorers from "./lib/aspect/push/commonCommitRiskScorers";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
-import { SpringBootMavenTransformRecipeContributor } from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
+import {
+    DockerTransformRecipeContributor,
+    SpringBootMavenTransformRecipeContributor
+} from "./lib/aspect/spring/SpringBootMavenTransformRecipeContributor";
 import { scorers } from "./lib/scorer/scorers";
 import {
     combinationTaggers,
@@ -77,7 +80,12 @@ function addGenerators(sdm: SoftwareDeliveryMachine) {
         .withTransformRecipeContributor({
             originator: "spring-boot-maven",
             optional: false,
-            contributor: new SpringBootMavenTransformRecipeContributor(),
+            contributor: SpringBootMavenTransformRecipeContributor,
+        })
+        .withTransformRecipeContributor({
+            originator: "spring-docker",
+            optional: false,
+            contributor: DockerTransformRecipeContributor,
         });
     const um = universalGenerator(pa, {
         name: "universal generator",
