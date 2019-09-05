@@ -77,7 +77,7 @@ describe("An aspect distinguishes between Python versions used", () => {
         assert.deepStrictEqual(fingerprints[0].data.tags, ["python2"], "Wrong tag");
     });
 
-    async function inspectPythonCode(code: string, expectedTag: string) {
+    async function inspectPythonCode(code: string, expectedTag: string): Promise<void> {
         const project = InMemoryProject.of({
             path: "something.py", content: code,
         });

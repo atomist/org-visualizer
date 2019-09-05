@@ -61,10 +61,10 @@ function requiredSpringParameters(): NamedParameter[] {
  */
 export const DockerTransformRecipeContributor: TransformRecipeContributor = {
 
-    analyze: async (p: Project) => {
-        const oldSpringBootStructure = await SpringBootProjectStructure.inferFromJavaOrKotlinSource(p);
-        const dockerFile = await p.getFile("Dockerfile");
-        if (!oldSpringBootStructure && !dockerFile) {
+    analyze: async (seed: Project) => {
+        const oldSpringBootStructure = await SpringBootProjectStructure.inferFromJavaOrKotlinSource(seed);
+        const seedDockerFile = await seed.getFile("Dockerfile");
+        if (!oldSpringBootStructure && !seedDockerFile) {
             return undefined;
         }
 
