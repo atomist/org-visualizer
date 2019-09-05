@@ -19,13 +19,13 @@ import {
     CountAspect,
     CountData,
 } from "@atomist/sdm-pack-aspect/lib/aspect/compose/commonTypes";
+import { bandFor, Default } from "@atomist/sdm-pack-aspect/lib/util/bands";
+import { SizeBands } from "@atomist/sdm-pack-aspect/lib/util/commonBands";
 import {
     fingerprintOf,
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import * as Octokit from "@octokit/rest";
-import { bandFor, Default } from "@atomist/sdm-pack-aspect/lib/util/bands";
-import { SizeBands } from "@atomist/sdm-pack-aspect/lib/util/commonBands";
 
 export const GitHubType = "github";
 
