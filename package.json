@@ -20,9 +20,9 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.6.3-master.20190821065818",
+    "@atomist/automation-client": "1.6.3-master.20190905142444",
     "@atomist/microgrammar": "^1.2.1",
-    "@atomist/sdm": "1.6.2-master.20190821222758",
+    "@atomist/sdm": "1.6.2-master.20190905161334",
     "@atomist/sdm-core": "1.6.2-master.20190822002319",
     "@atomist/sdm-pack-analysis": "2.0.0-master.20190820223220",
     "@atomist/sdm-pack-aspect": "1.0.0-master.20190905095751",
