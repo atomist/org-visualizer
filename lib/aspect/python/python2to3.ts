@@ -98,5 +98,6 @@ export async function hasPython2Dependencies(p: Project, programToRun: string = 
             return true;
         }
         logger.debug(`Warning: other failure running ${programToRun}: ` + epe.stderr);
+        return false;
     }
 }
