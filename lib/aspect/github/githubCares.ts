@@ -27,5 +27,5 @@ export function gitHubCares(opts: { minStars: number }): Tagger {
                 .find(fp => fp.name === "stars");
             return found && found.data.count > opts.minStars;
         },
-    }
+    };
 }

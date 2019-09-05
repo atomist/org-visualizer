@@ -50,6 +50,7 @@ import { universalGenerator } from "@atomist/uhura/lib/generate/universal/univer
 import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 import { aspects } from "./lib/aspect/aspects";
 import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
+import { gitHubCares } from "./lib/aspect/github/githubCares";
 import { PackageJsonTransformRecipe } from "./lib/aspect/node/nodeTransformRecipes";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import {
@@ -62,7 +63,6 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-import { gitHubCares } from "./lib/aspect/github/githubCares";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
