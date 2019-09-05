@@ -23,16 +23,16 @@
     "@atomist/automation-client": "1.6.3-master.20190905142444",
     "@atomist/microgrammar": "^1.2.1",
     "@atomist/sdm": "1.6.2-master.20190905161334",
-    "@atomist/sdm-core": "1.6.2-master.20190822002319",
+    "@atomist/sdm-core": "1.6.2-master.20190903201907",
     "@atomist/sdm-pack-analysis": "2.0.0-master.20190820223220",
     "@atomist/sdm-pack-aspect": "1.0.0-master.20190905095751",
-    "@atomist/sdm-pack-build": "^1.0.5",
+    "@atomist/sdm-pack-build": "1.0.6-graphql-code-generator-1.20190902194339",
     "@atomist/sdm-pack-clojure": "2.0.1-master.20190903063949",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190903064256",
     "@atomist/sdm-pack-fingerprint": "5.0.0-master.20190903062633",
     "@atomist/sdm-pack-fingerprints": "5.0.0-master.20190903060131",
     "@atomist/sdm-pack-node": "^1.1.1",
-    "@atomist/sdm-pack-spring": "2.0.1-master.20190903203948",
+    "@atomist/sdm-pack-spring": "2.0.1-graphql-code-generator-1.20190903074650",
     "@atomist/slack-messages": "^1.1.1",
     "@atomist/uhura": "1.0.0-deps2.20190904214617",
     "js-yaml": "^3.13.1",
@@ -53,7 +53,7 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.19.0",
     "typedoc": "^0.15.0",
-    "typescript": "3.5.3"
+    "typescript": "^3.6.2"
   },
   "directories": {
     "test": "test"
