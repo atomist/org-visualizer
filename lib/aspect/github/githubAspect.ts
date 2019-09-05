@@ -24,6 +24,8 @@ import {
     FP,
 } from "@atomist/sdm-pack-fingerprints";
 import * as Octokit from "@octokit/rest";
+import { bandFor, Default } from "@atomist/sdm-pack-aspect/lib/util/bands";
+import { SizeBands } from "@atomist/sdm-pack-aspect/lib/util/commonBands";
 
 export const GitHubType = "github";
 
@@ -51,6 +53,15 @@ export function githubAspect(token: string): CountAspect {
             const issues = remote.data.open_issues_count;
             fingerprints.push(fingerprintOf({ type, name: "issues", data: { count: issues } }));
             return fingerprints;
+        },
+        toDisplayableFingerprintName: name => `GitHub ${name}`,
+        toDisplayableFingerprint: fp => {
+            return bandFor<SizeBands | "everywhere">({
+                low: { upTo: 50 },
+                medium: { upTo: 500 },
+                high: { upTo: 5000 },
+                everywhere: Default,
+            }, fp.data.count, { includeNumber: true });
         },
         stats: {
             defaultStatStatus: {
