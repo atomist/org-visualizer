@@ -43,6 +43,7 @@ import {
     JavaBuild,
     StackAspect,
 } from "./common/stackAspect";
+import { githubAspect } from "./github/githubAspect";
 import { K8sSpecs } from "./k8s/spec";
 import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
 import { NpmDependencies } from "./node/npmDependencies";
@@ -58,7 +59,6 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { githubAspect } from "./github/githubAspect";
 
 /**
  * The aspects managed by this SDM.
