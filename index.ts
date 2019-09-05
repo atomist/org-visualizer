@@ -137,6 +137,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
                 inMemoryTaggers: [
                     gitHubCares({ minStars: 500 }),
+                    gitHubCares({ minStars: 100 }),
                 ],
 
                 goals: {
