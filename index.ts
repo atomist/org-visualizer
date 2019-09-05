@@ -64,6 +64,7 @@ import {
 } from "./lib/tagger/taggers";
 import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
+import { PackageJsonTransformRecipe } from "./lib/aspect/node/nodeTransformRecipes";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
@@ -86,7 +87,8 @@ function addGenerators(sdm: SoftwareDeliveryMachine) {
             originator: "spring-docker",
             optional: false,
             contributor: DockerTransformRecipeContributor,
-        });
+        })
+        .withTransformRecipeContributor(PackageJsonTransformRecipe);
     const um = universalGenerator(pa, {
         name: "universal generator",
         intent: "generate",
