@@ -17,7 +17,10 @@
 import { Tagger } from "@atomist/sdm-pack-aspect";
 import { isGitHubFingerprint } from "./githubAspect";
 
-export function gitHubCares(opts: { minStars: number }): Tagger {
+/**
+ * Tag repos that have a minimum number of stars
+ */
+export function gitHubStarsOver(opts: { minStars: number }): Tagger {
     return {
         name: `stars>${opts.minStars}`,
         description: `GitHub cares: > ${opts.minStars} stars`,

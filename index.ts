@@ -52,7 +52,7 @@ import { universalGenerator } from "@atomist/uhura/lib/generate/universal/univer
 import { DefaultNodeSeeds } from "@atomist/uhura/lib/machine/nodeSeeds";
 import { aspects } from "./lib/aspect/aspects";
 import { sendFingerprintsEverywhere } from "./lib/aspect/common/publication";
-import { gitHubCares } from "./lib/aspect/github/githubCares";
+import { gitHubStarsOver } from "./lib/aspect/github/gitHubStarsOver";
 import { PackageJsonTransformRecipe } from "./lib/aspect/node/nodeTransformRecipes";
 import { addSuggestedFingerprintCommand } from "./lib/aspect/push/suggestTag";
 import {
@@ -102,9 +102,26 @@ function addGenerators(sdm: SoftwareDeliveryMachine): void {
     sdm.addGeneratorCommand(um);
 }
 
+/**
+ * Configure the SDM event handlers
+ */
+function addListeners(sdm: SoftwareDeliveryMachine): void {
+    sdm.addFirstPushListener(async pu => {
+        const hasPom = await pu.project.hasFile("pom.xml");
+        const hasPackageJson = await pu.project.hasFile("package.json");
+        const ok = hasPom || hasPackageJson;
+        await pu.context.messageClient.addressChannels(
+            ok ? `New project at ${pu.project.id.url} is of support stack :check:` :
+                `New project at ${pu.project.id.url} is of unsupported stack :warning:`,
+            "projects");
+    });
+}
+
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
         addGenerators(sdm);
+
+        addListeners(sdm);
 
         // Create goals that compute fingerprints during delivery
         const pushImpact = new PushImpact();
@@ -138,10 +155,9 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 taggers: taggers({}),
 
                 inMemoryTaggers: [
-                    gitHubCares({ minStars: 500 }),
-                    gitHubCares({ minStars: 100 }),
+                    gitHubStarsOver({ minStars: 500 }),
+                    gitHubStarsOver({ minStars: 100 }),
                     usesArchaius(),
-                    commonTaggers.dead({ deadDays: 365}),
                 ],
 
                 goals: {
@@ -182,6 +198,10 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         preProcessors: [startEmbeddedPostgres],
     });
 
+/**
+ * Tag Gradle projects that use Archaius 1
+ * Could easily combine with Maven check
+ */
 function usesArchaius(): Tagger {
     return {
         name: "archaius1",
@@ -189,9 +209,6 @@ function usesArchaius(): Tagger {
         severity: "warn",
         test: async rts => {
             const gfp = rts.analysis.fingerprints.find(fp => fp.type === "gradle");
-            if (gfp) {
-                console.log("gotcha");
-            }
             return (gfp && gfp.data.content.includes("com.netflix.archaius:"));
         },
     };

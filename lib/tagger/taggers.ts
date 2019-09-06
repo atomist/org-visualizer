@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    commonTaggers,
-    isClassificationDataFingerprint,
-    isFileMatchFingerprint,
-    Tagger,
-    TaggerDefinition,
-} from "@atomist/sdm-pack-aspect";
+import { commonTaggers, isClassificationDataFingerprint, Tagger, } from "@atomist/sdm-pack-aspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";
@@ -73,7 +67,6 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
     };
     return [
         commonTaggers.Vulnerable,
-        // commonTaggers.isProblematic(),
         {
             name: "docker",
             description: "Docker status",
@@ -129,12 +122,7 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
         commonTaggers.HasContributingFile,
         commonTaggers.HasLicense,
         commonTaggers.dead(optsToUse),
-        ...combinationTaggers(optsToUse),
+        commonTaggers.gitHot(optsToUse),
     ];
 }
 
-function combinationTaggers(opts: TaggersParams): Tagger[] {
-    return [
-        commonTaggers.gitHot(opts),
-    ];
-}

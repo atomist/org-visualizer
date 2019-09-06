@@ -30,34 +30,14 @@ import {
 } from "@atomist/sdm-pack-aspect";
 import { buildTimeAspect } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/BuildAspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure";
-import {
-    DockerfilePath,
-    DockerFrom,
-    DockerPorts,
-} from "@atomist/sdm-pack-docker";
-import {
-    Aspect,
-} from "@atomist/sdm-pack-fingerprint";
-import {
-    createFileFingerprint,
-    createFilesFingerprint,
-    filesAspect,
-} from "@atomist/sdm-pack-fingerprints";
-import {
-    CiAspect,
-    JavaBuild,
-    StackAspect,
-} from "./common/stackAspect";
+import { DockerfilePath, DockerFrom, DockerPorts, } from "@atomist/sdm-pack-docker";
+import { Aspect, } from "@atomist/sdm-pack-fingerprint";
+import { filesAspect, } from "@atomist/sdm-pack-fingerprints";
+import { CiAspect, JavaBuild, StackAspect, } from "./common/stackAspect";
 import { githubAspect } from "./github/githubAspect";
 import { K8sSpecs } from "./k8s/spec";
-import { CsProjectTargetFrameworks } from "./microsoft/CsProjectTargetFrameworks";
 import { NpmDependencies } from "./node/npmDependencies";
 import { TypeScriptVersion } from "./node/TypeScriptVersion";
-import * as commonCommitRiskScorers from "./push/commonCommitRiskScorers";
-import {
-    ConfirmedTags,
-    suggestTag,
-} from "./push/suggestTag";
 import { PythonVersion } from "./python/python2to3";
 import { PythonDependencies } from "./python/pythonDependencies";
 import { DirectMavenDependencies } from "./spring/directMavenDependencies";
@@ -87,20 +67,15 @@ export function aspects(): Aspect[] {
         TravisScriptsAspect,
         BranchCount,
         GitRecency,
-        // This is expensive as it requires deeper cloning
         gitActiveCommitters({ commitDepth: 30 }),
         githubAspect(process.env.GITHUB_TOKEN),
-        // This is also expensive
         CodeMetricsAspect,
         StackAspect,
         CiAspect,
         JavaBuild,
         // Don't show these
-        globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
-        // globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
         ChangelogAspect,
         ContributingAspect,
-        // globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
         globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
         SpringBootVersion,
         // allMavenDependenciesAspect,    // This is expensive
@@ -122,8 +97,7 @@ export function aspects(): Aspect[] {
 
         // Asks for human intervention to tag the commit
         // suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),
-
         // Show confirmed tag information
-        ConfirmedTags,
+        //ConfirmedTags,
     ];
 }
