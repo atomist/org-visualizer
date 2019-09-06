@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { commonTaggers, isClassificationDataFingerprint, Tagger } from "@atomist/sdm-pack-aspect";
+import {
+    commonTaggers,
+    isClassificationDataFingerprint,
+    Tagger,
+} from "@atomist/sdm-pack-aspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure/lib/fingerprints/clojure";
 import { DockerFrom } from "@atomist/sdm-pack-docker";
 import { PythonDependencies } from "../aspect/python/pythonDependencies";

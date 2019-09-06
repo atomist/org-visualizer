@@ -30,10 +30,18 @@ import {
 } from "@atomist/sdm-pack-aspect";
 import { buildTimeAspect } from "@atomist/sdm-pack-aspect/lib/aspect/delivery/BuildAspect";
 import { LeinDeps } from "@atomist/sdm-pack-clojure";
-import { DockerfilePath, DockerFrom, DockerPorts } from "@atomist/sdm-pack-docker";
+import {
+    DockerfilePath,
+    DockerFrom,
+    DockerPorts,
+} from "@atomist/sdm-pack-docker";
 import { Aspect } from "@atomist/sdm-pack-fingerprint";
 import { filesAspect } from "@atomist/sdm-pack-fingerprints";
-import { CiAspect, JavaBuild, StackAspect } from "./common/stackAspect";
+import {
+    CiAspect,
+    JavaBuild,
+    StackAspect,
+} from "./common/stackAspect";
 import { githubAspect } from "./github/githubAspect";
 import { K8sSpecs } from "./k8s/spec";
 import { NpmDependencies } from "./node/npmDependencies";
