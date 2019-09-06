@@ -59,6 +59,7 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
+import { createFileFingerprint, createFilesFingerprint, filesAspect } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * The aspects managed by this SDM.
@@ -107,6 +108,14 @@ export function aspects(): Aspect[] {
 
         // Time builds
         buildTimeAspect(),
+
+        filesAspect({
+                name: "gradle",
+                type: "gradle",
+                displayName: undefined,
+                canonicalize: content => content,
+            },
+            "build.gradle"),
 
         // Asks for human intervention to tag the commit
         // suggestTag({ tag: "frivolous", reason: "You people are silly", test: async () => true }),

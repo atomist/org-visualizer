@@ -25,7 +25,7 @@
     "@atomist/sdm": "1.6.2-master.20190905161334",
     "@atomist/sdm-core": "1.6.2-master.20190903201907",
     "@atomist/sdm-pack-analysis": "2.0.0-master.20190820223220",
-    "@atomist/sdm-pack-aspect": "1.0.0-master.20190905203158",
+    "@atomist/sdm-pack-aspect": "^1.0.0-nortissej.tag-reasons.20190905233656",
     "@atomist/sdm-pack-build": "1.0.6-master.20190903202948",
     "@atomist/sdm-pack-clojure": "2.0.1-master.20190903063949",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190903064256",
