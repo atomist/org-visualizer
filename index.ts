@@ -31,7 +31,8 @@ import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder, Tagger,
+    DefaultVirtualProjectFinder,
+    Tagger,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";

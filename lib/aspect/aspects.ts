@@ -38,7 +38,11 @@ import {
 import {
     Aspect,
 } from "@atomist/sdm-pack-fingerprint";
-import { createFileFingerprint, createFilesFingerprint, filesAspect } from "@atomist/sdm-pack-fingerprints";
+import {
+    createFileFingerprint,
+    createFilesFingerprint,
+    filesAspect,
+} from "@atomist/sdm-pack-fingerprints";
 import {
     CiAspect,
     JavaBuild,
