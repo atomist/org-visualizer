@@ -91,7 +91,7 @@ function addGenerators(sdm: SoftwareDeliveryMachine): void {
         .withTransformRecipeContributor(PackageJsonTransformRecipe);
     const um = universalGenerator(pa, {
         name: "universal generator",
-        intent: "generate",
+        intent: ["generate", "new project", "create project"],
         seedParameter: dropDownSeedUrlParameterDefinition({
                 url: "https://github.com/spring-team/spring-rest-seed",
                 description: "Spring Boot (Rest)",
