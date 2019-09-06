@@ -31,7 +31,7 @@ import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder,
+    DefaultVirtualProjectFinder, Tagger,
     UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
@@ -138,6 +138,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 inMemoryTaggers: [
                     gitHubCares({ minStars: 500 }),
                     gitHubCares({ minStars: 100 }),
+                    usesArchaius(),
                 ],
 
                 goals: {
@@ -179,3 +180,18 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
         name: "Org Visualizer",
         preProcessors: [startEmbeddedPostgres],
     });
+
+function usesArchaius(): Tagger {
+    return {
+        name: "archaius1",
+        description: "uses Archaius 1",
+        severity: "warn",
+        test: async rts => {
+            const gfp = rts.analysis.fingerprints.find(fp => fp.type === "gradle");
+            if (gfp) {
+                console.log("gotcha")
+            }
+            return (gfp && gfp.data.content.includes("com.netflix.archaius:"));
+        },
+    };
+}
