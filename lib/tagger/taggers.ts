@@ -124,24 +124,6 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: async repo => repo.analysis.fingerprints.some(
                 fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle")),
         },
-        {
-            name: "azure-pipelines",
-            description: "Azure pipelines files",
-            test: async repo => repo.analysis.fingerprints.some(fp => isFileMatchFingerprint(fp) &&
-                fp.name.includes("azure-pipeline") && fp.data.matches.length > 0),
-        },
-        commonTaggers.globRequired({
-            name: "snyk",
-            description: "Snyk policy",
-            glob: ".snyk",
-        }),
-        {
-            // TODO allow to use #
-            name: "CSharp",
-            description: "C# build",
-            test: async repo => repo.analysis.fingerprints.some(fp => isFileMatchFingerprint(fp) &&
-                fp.name.includes("csproj") && fp.data.matches.length > 0),
-        },
         commonTaggers.inadequateReadme({ minLength: 200 }),
         commonTaggers.SoleCommitter,
         commonTaggers.excessiveBranchCount(optsToUse),
