@@ -38,6 +38,7 @@ import {
 import {
     Aspect,
 } from "@atomist/sdm-pack-fingerprint";
+import { createFileFingerprint, createFilesFingerprint, filesAspect } from "@atomist/sdm-pack-fingerprints";
 import {
     CiAspect,
     JavaBuild,
@@ -59,7 +60,6 @@ import { DirectMavenDependencies } from "./spring/directMavenDependencies";
 import { SpringBootStarter } from "./spring/springBootStarter";
 import { SpringBootVersion } from "./spring/springBootVersion";
 import { TravisScriptsAspect } from "./travis/travisAspects";
-import { createFileFingerprint, createFilesFingerprint, filesAspect } from "@atomist/sdm-pack-fingerprints";
 
 /**
  * The aspects managed by this SDM.
@@ -93,10 +93,10 @@ export function aspects(): Aspect[] {
         JavaBuild,
         // Don't show these
         globAspect({ name: "csproject", displayName: undefined, glob: "*.csproj" }),
-        //globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
+        // globAspect({ name: "snyk", displayName: undefined, glob: ".snyk" }),
         ChangelogAspect,
         ContributingAspect,
-        //globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
+        // globAspect({ name: "azure-pipelines", displayName: "Azure pipeline", glob: "azure-pipelines.yml" }),
         globAspect({ name: "readme", displayName: "Readme file", glob: "README.md" }),
         SpringBootVersion,
         // allMavenDependenciesAspect,    // This is expensive

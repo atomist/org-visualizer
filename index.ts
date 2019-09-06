@@ -189,7 +189,7 @@ function usesArchaius(): Tagger {
         test: async rts => {
             const gfp = rts.analysis.fingerprints.find(fp => fp.type === "gradle");
             if (gfp) {
-                console.log("gotcha")
+                console.log("gotcha");
             }
             return (gfp && gfp.data.content.includes("com.netflix.archaius:"));
         },
