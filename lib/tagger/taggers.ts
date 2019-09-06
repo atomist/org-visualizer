@@ -118,12 +118,6 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             test: async repo => repo.analysis.fingerprints
                 .some(fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("jenkins")),
         },
-        {
-            name: "circleci",
-            description: "circleci",
-            test: async repo => repo.analysis.fingerprints.some(
-                fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle")),
-        },
         commonTaggers.inadequateReadme({ minLength: 200 }),
         commonTaggers.SoleCommitter,
         commonTaggers.excessiveBranchCount(optsToUse),

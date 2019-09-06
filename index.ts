@@ -31,6 +31,7 @@ import { ProjectAnalyzer } from "@atomist/sdm-pack-analysis";
 import { DefaultProjectAnalyzerBuilder } from "@atomist/sdm-pack-analysis/lib/analysis/support/DefaultProjectAnalyzerBuilder";
 import {
     aspectSupport,
+    commonTaggers,
     DefaultVirtualProjectFinder,
     Tagger,
     UndesirableUsageChecker,
@@ -140,6 +141,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                     gitHubCares({ minStars: 500 }),
                     gitHubCares({ minStars: 100 }),
                     usesArchaius(),
+                    commonTaggers.dead({ deadDays: 365}),
                 ],
 
                 goals: {
@@ -153,8 +155,6 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 undesirableUsageChecker,
                 virtualProjectFinder,
 
-                // In local mode, publish fingerprints to the local PostgreSQL
-                // instance, not the Atomist service
                 publishFingerprints:                    // Send them locally and to the service
                     sendFingerprintsEverywhere(store),
                 instanceMetadata: metadata(),
