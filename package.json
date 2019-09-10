@@ -20,18 +20,18 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.6.3-master.20190821065818",
+    "@atomist/automation-client": "^1.7.0",
     "@atomist/microgrammar": "^1.2.1",
-    "@atomist/sdm": "1.6.2-master.20190821222758",
-    "@atomist/sdm-core": "1.6.2-master.20190822002319",
+    "@atomist/sdm": "^1.7.0",
+    "@atomist/sdm-core": "^1.7.0",
     "@atomist/sdm-pack-aspect": "1.0.0-master.20190903071348",
-    "@atomist/sdm-pack-build": "^1.0.5",
+    "@atomist/sdm-pack-build": "^1.0.6",
     "@atomist/sdm-pack-clojure": "2.0.1-master.20190903063949",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190903064256",
     "@atomist/sdm-pack-fingerprint": "5.0.0-master.20190903062633",
     "@atomist/sdm-pack-node": "^1.1.1",
     "@atomist/sdm-pack-sloc": "1.0.3-master.20190502175705",
-    "@atomist/sdm-pack-spring": "^2.0.0",
+    "@atomist/sdm-pack-spring": "^2.0.1",
     "@atomist/slack-messages": "^1.1.1",
     "js-yaml": "^3.13.1",
     "json-stable-stringify": "^1.0.1",
@@ -39,7 +39,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@atomist/sdm-local": "^1.2.0",
+    "@atomist/sdm-local": "^1.2.1",
     "@types/mocha": "^5.2.7",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^9.0.2",
@@ -49,9 +49,9 @@
     "rimraf": "^3.0.0",
     "supervisor": "^0.12.0",
     "ts-node": "^8.3.0",
-    "tslint": "^5.19.0",
+    "tslint": "^5.20.0",
     "typedoc": "^0.15.0",
-    "typescript": "3.5.3"
+    "typescript": "^3.6.2"
   },
   "directories": {
     "test": "test"
