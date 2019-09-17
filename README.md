@@ -37,6 +37,75 @@ An example visualization, showing Docker images used across two GitHub organizat
 
 ![Docker image visualization](images/dockerImageSunburst.png "Docker image drift")
 
+## Running in Docker
+
+To try this program without installing anything (except Docker), you can use the Docker image. Start org_visualizer in Docker, then send commands to get it to analyze repositories (on your computer or from GitHub), then look at the results in your browser.
+
+#### Start the SDM in Docker
+
+Run this:
+
+`docker run -it --rm -p 2866:2866 -v /path/to/your/local/repositories:/root/atomist/projects --name org-visualizer atomist/org-visualizer`
+
+Which means:
+
+`docker run` says to start up a container.
+
+`-it` says, keep it interactive in the current terminal.
+
+`-p 2866:2866` makes the SDM's web interface available outside the container.
+
+`--rm` says, remove the container after it shuts down. (I've never not wanted this option to `docker run`)
+
+The `-v /path/to/your/local/repositories:/root/atomist/projects` part is optional. If you want to analyze repositories that exist on your computer, this will give the container access to them at `/root/atomist/projects`.
+
+`--name org-visualizer` lets you reference the container, as in the next section.
+
+`atomist/org-visualizer` is the name of the image on Docker Hub.
+
+Docker will download the image and then start up the SDM. The terminal will print a summary of the SDM when it's done with startup. This includes:
+
+```
+  SDM
+    Org Visualizer  started in local mode
+```
+
+and then some other stuff. You can also find the link to the web interface:
+
+```
+  Atomist Visualizations
+    http://localhost:2866/overview
+```
+
+(Ctrl-C will exit. But leave it running for the rest of this activity.)
+
+#### Send analysis commands
+
+Analysis is triggered at the command line. Use Docker to run the command line inside the container you just started.
+
+For example:
+
+`docker exec -it org-visualizer sh -c "atomist analyze github organization"`
+
+Here, `docker exec` says "run this command in the named docker container."
+
+`-it` makes it an interactive terminal command.
+
+`org-visualizer` is the name of the docker container, from the `--name` option to `docker run` above.
+
+`sh -c` says "Here's a command to run in shell"
+
+`"atomist analyze github organization"` is the shell command to run, in quotes. Here, it's requesting an analysis of a GitHub
+organization. It'll prompt you for the name of the organization.
+
+For other analysis commands to run, see [below](#analyze-your-repositories).
+
+#### Look at the results
+
+Find the interface at: http://localhost:2866/overview
+
+When you want to modify this program to make your own aspects, proceed with running this app on your laptop.
+
 ## Running
 
 To visualize your GitHub or local repositories:
@@ -116,6 +185,10 @@ All artifacts referenced in Maven or Node projects must be accessible when the a
 
 The `analyze` command is exposed by this org-visualizer project.
 It works as at Atomist command, which runs through the `atomist` CLI.
+
+#### Prerequisites
+
+Either [run the org_visualizer in Docker](#running-in-docker) or:
 
 * install the CLI: `npm i -g @atomist/cli`
 * start the org_visualizer (in the org_visualizer project): `atomist start --local`
