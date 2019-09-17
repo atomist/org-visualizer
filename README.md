@@ -41,7 +41,7 @@ An example visualization, showing Docker images used across two GitHub organizat
 
 To try this program without installing anything (except Docker), you can use the Docker image. Start org_visualizer in Docker, then send commands to get it to analyze repositories (on your computer or from GitHub), then look at the results in your browser.
 
-#### Start the SDM in Docker
+### Start the SDM in Docker
 
 Run this:
 
@@ -79,7 +79,7 @@ and then some other stuff. You can also find the link to the web interface:
 
 (Ctrl-C will exit. But leave it running for the rest of this activity.)
 
-#### Send analysis commands
+### Send analysis commands
 
 Analysis is triggered at the command line. Use Docker to run the command line inside the container you just started.
 
@@ -100,7 +100,7 @@ organization. It'll prompt you for the name of the organization.
 
 For other analysis commands to run, see [below](#analyze-your-repositories).
 
-#### Look at the results
+### Look at the results
 
 Find the interface at: http://localhost:2866/overview
 
