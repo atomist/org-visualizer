@@ -119,7 +119,7 @@ To visualize your GitHub or local repositories:
 
 ### Building
 
-Please use Node 10+.
+Please use Node 10+. You'll need node and git. For `npm ci`, You'll also need developer tools like python, make, etc. On a Mac, that's XCode command line tools. On ubuntu, that's `sudo apt-get install build-essentials.`
 
 First, install with `npm ci`.
 
