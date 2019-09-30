@@ -85,7 +85,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`url-template`|`2.0.8`|Bram Stein|[https://github.com/bramstein/url-template](https://github.com/bramstein/url-template)|
 
 #### BSD-2-Clause
-BSD 2-Clause "Simplified" License - [http://www.opensource.org/licenses/BSD-2-Clause](http://www.opensource.org/licenses/BSD-2-Clause)
+BSD 2-Clause "Simplified" License - [https://opensource.org/licenses/BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
@@ -100,7 +100,7 @@ BSD 2-Clause "Simplified" License - [http://www.opensource.org/licenses/BSD-2-Cl
 |`yarn`|`1.17.3`||[https://github.com/yarnpkg/yarn](https://github.com/yarnpkg/yarn)|
 
 #### BSD-3-Clause
-BSD 3-Clause "New" or "Revised" License - [http://www.opensource.org/licenses/BSD-3-Clause](http://www.opensource.org/licenses/BSD-3-Clause)
+BSD 3-Clause "New" or "Revised" License - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
@@ -164,7 +164,7 @@ BSD 3-Clause "New" or "Revised" License - [http://www.opensource.org/licenses/BS
 |`tough-cookie`|`2.4.3`|Jeremy Stashewsky|[https://github.com/salesforce/tough-cookie](https://github.com/salesforce/tough-cookie)|
 
 #### CC-BY-3.0
-Creative Commons Attribution 3.0 Unported - [http://creativecommons.org/licenses/by/3.0/legalcode](http://creativecommons.org/licenses/by/3.0/legalcode)
+Creative Commons Attribution 3.0 Unported - [https://creativecommons.org/licenses/by/3.0/legalcode](https://creativecommons.org/licenses/by/3.0/legalcode)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
@@ -172,7 +172,7 @@ Creative Commons Attribution 3.0 Unported - [http://creativecommons.org/licenses
 |`spdx-ranges`|`2.1.0`|The Linux Foundation|[https://github.com/kemitchell/spdx-ranges.js](https://github.com/kemitchell/spdx-ranges.js)|
 
 #### CC0-1.0
-Creative Commons Zero v1.0 Universal - [http://creativecommons.org/publicdomain/zero/1.0/legalcode](http://creativecommons.org/publicdomain/zero/1.0/legalcode)
+Creative Commons Zero v1.0 Universal - [https://creativecommons.org/publicdomain/zero/1.0/legalcode](https://creativecommons.org/publicdomain/zero/1.0/legalcode)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
@@ -206,7 +206,7 @@ Creative Commons Zero v1.0 Universal - [http://creativecommons.org/publicdomain/
 |`cli-color`|`0.1.7`|Mariusz Nowak|[https://github.com/medikoo/cli-color](https://github.com/medikoo/cli-color)|
 
 #### GPL-3.0
-GNU General Public License v3.0 only - [http://www.gnu.org/licenses/gpl-3.0-standalone.html](http://www.gnu.org/licenses/gpl-3.0-standalone.html)
+GNU General Public License v3.0 only - [https://www.gnu.org/licenses/gpl-3.0-standalone.html](https://www.gnu.org/licenses/gpl-3.0-standalone.html)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
@@ -295,7 +295,7 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 |`yargs-parser`|`13.1.1`|Ben Coe|[https://github.com/yargs/yargs-parser](https://github.com/yargs/yargs-parser)|
 
 #### MIT
-MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+MIT License - [https://opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
