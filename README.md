@@ -127,12 +127,26 @@ Next, build with `npm run build`
 
 ### Database setup
 
+To skip this section, [run in docker](#running-in-docker).
+
+#### Install PostgreSQL
+
+Running locally requires a local database. This gives you a handy window into the data as well, if you're comfortable with SQL databases.
+
+On a Mac: installing [PostgresApp](https://postgresapp.com/) will make all of this just work.
+
+Otherwise, you need the following (example commands are for Ubuntu):
+
+* postgresql is installed: `sudo apt-get postgresql postgresql-contrib`
+* the server is started, and listening on the default port: `sudo service postgresql start`
+* your username also has a database user, and that user is superuser: `createdb $(whoami)`
+* your username can also connect with a password. See [Connecting](#connecting-to-the-database) for where to put that.
+
 #### Creating the Database
 
 Data about your repositories are stored locally in a PostgreSQL database.
 
-Before starting to use `org-visualizer`, you need to create the required database by running the following command after
-starting your local PostgreSQL server:
+Before starting to use `org-visualizer`, you need to create the required database by running the following command:
 
 ```
 $ npm run db:create
@@ -155,7 +169,7 @@ Configure the PostgreSQL database details in `client.config.json` in your `~/.at
   "sdm": {
     "postgres": {
       "user": "<postgres user>",
-      "password": "<postgres password",
+      "password": "<postgres password>",
       "host": "<postgres host>",
       "port": "<postgres port>",
       "database": "org_viz"
