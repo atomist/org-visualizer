@@ -31,9 +31,8 @@ import { TypeScriptProjectsMustUseTsLint } from "./nodeScorers";
 /**
  * Scorers to rate projects
  */
-export function scorers(undesirableUsageChecker: UndesirableUsageChecker): RepositoryScorer[] {
+export function scorers(): RepositoryScorer[] {
     return [
-        // undesirableUsageScorer(undesirableUsageChecker),
         commonScorers.anchorScoreAt(2),
         commonScorers.penalizeForExcessiveBranches({ branchLimit: 5 }),
         commonScorers.PenalizeMonorepos,

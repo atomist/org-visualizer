@@ -29,7 +29,6 @@ import {
 import {
     aspectSupport,
     DefaultVirtualProjectFinder,
-    UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
@@ -52,7 +51,6 @@ import {
     combinationTaggers,
     taggers,
 } from "./lib/tagger/taggers";
-import { demoUndesirableUsageChecker } from "./lib/usage/demoUndesirableUsageChecker";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
 
 const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
@@ -61,9 +59,6 @@ interface TestGoals extends DeliveryGoals {
     build: Build;
     pushImpact: PushImpact;
 }
-
-// Use AcceptEverythingUndesirableUsageChecker to disable undesirable usage checking
-const undesirableUsageChecker: UndesirableUsageChecker = demoUndesirableUsageChecker;
 
 export const configuration: Configuration = configure<TestGoals>(async sdm => {
 
@@ -86,7 +81,7 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
             aspects: aspects(),
 
             scorers: {
-                all: scorers(undesirableUsageChecker),
+                all: scorers(),
                 commitRisk: [
                     commonCommitRiskScorers.fileChangeCount({ limitTo: 2 }),
                     commonCommitRiskScorers.pomChanged(),
@@ -103,7 +98,6 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 build,
             },
 
-            undesirableUsageChecker,
             virtualProjectFinder,
 
             // In local mode, publish fingerprints to the local PostgreSQL
