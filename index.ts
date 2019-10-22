@@ -28,7 +28,6 @@ import {
 } from "@atomist/sdm-core";
 import {
     aspectSupport,
-    DefaultVirtualProjectFinder,
 } from "@atomist/sdm-pack-aspect";
 import { sdmConfigClientFactory } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/pgClientFactory";
 import { PostgresProjectAnalysisResultStore } from "@atomist/sdm-pack-aspect/lib/analysis/offline/persist/PostgresProjectAnalysisResultStore";
@@ -52,8 +51,6 @@ import {
     taggers,
 } from "./lib/tagger/taggers";
 import { startEmbeddedPostgres } from "./lib/util/postgres";
-
-const virtualProjectFinder: VirtualProjectFinder = DefaultVirtualProjectFinder;
 
 interface TestGoals extends DeliveryGoals {
     build: Build;
@@ -97,8 +94,6 @@ export const configuration: Configuration = configure<TestGoals>(async sdm => {
                 // This enables demonstrating a build aspect
                 build,
             },
-
-            virtualProjectFinder,
 
             // In local mode, publish fingerprints to the local PostgreSQL
             // instance, not the Atomist service

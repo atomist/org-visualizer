@@ -18,7 +18,6 @@ import {
     CodeOfConductType,
     commonScorers,
     RepositoryScorer,
-    UndesirableUsageChecker,
 } from "@atomist/sdm-pack-aspect";
 import {
     PowerShellLanguage,

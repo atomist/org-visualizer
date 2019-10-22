@@ -17,7 +17,6 @@
 import {
     BranchCount,
     ChangelogAspect,
-    CodeMetricsAspect,
     codeOfConduct,
     codeOwnership,
     ContributingAspect,
@@ -81,8 +80,6 @@ export function aspects(): Aspect[] {
         GitRecency,
         // This is expensive as it requires deeper cloning
         gitActiveCommitters({ commitDepth: 30 }),
-        // This is also expensive
-        CodeMetricsAspect,
         StackAspect,
         CiAspect,
         JavaBuild,

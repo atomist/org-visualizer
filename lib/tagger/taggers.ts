@@ -104,13 +104,13 @@ export function taggers(opts: Partial<TaggersParams>): Tagger[] {
             name: "jenkins",
             description: "Jenkins",
             test: async repo => repo.analysis.fingerprints
-                .some(fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("jenkins")),
+                .some(fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && (fp.data as any).tags.includes("jenkins")),
         },
         {
             name: "circleci",
             description: "circleci",
             test: async repo => repo.analysis.fingerprints.some(
-                fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && fp.data.tags.includes("circle")),
+                fp => isClassificationDataFingerprint(fp) && fp.type === CiAspect.name && (fp.data as any).tags.includes("circle")),
         },
         {
             name: "azure-pipelines",

@@ -24,7 +24,7 @@
     "@atomist/microgrammar": "^1.2.1",
     "@atomist/sdm": "^1.7.0",
     "@atomist/sdm-core": "^1.7.1-master.20190916023230",
-    "@atomist/sdm-pack-aspect": "^1.0.0-master.20190917171204",
+    "@atomist/sdm-pack-aspect": "^1.0.0-fp-workspace-migration.20191022203643",
     "@atomist/sdm-pack-build": "^1.0.6",
     "@atomist/sdm-pack-clojure": "2.0.1-master.20190903063949",
     "@atomist/sdm-pack-docker": "2.0.3-master.20190903064256",
