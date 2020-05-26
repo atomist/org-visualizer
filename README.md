@@ -315,7 +315,7 @@ See the [developer guide](https://github.com/atomist/sdm-pack-aspect/blob/master
 ## Next Steps
 The [Atomist](https://www.atomist.com) service keeps analyses up to date automatically across all your repositories. It can also help to achieve consistency and convergence in eligible aspects by updating projects, and enabling workflows on change.
 
-See [https://atomist.com/developer.html](https://atomist.com/developer.html) for further information.
+See [https://docs.atomist.com/developer/](https://docs.atomist.com/developer/) for further information.
 
 -----
 
